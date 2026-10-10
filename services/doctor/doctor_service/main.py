@@ -11,21 +11,27 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .api.health import health_router
+from .api.private import private_router
 from .api.router import api_router
 from .constants import API_PREFIX, SERVICE_NAME, SERVICE_VERSION
 from .database import Database
-from .errors import error_response
+from .dependencies import DoctorDependencyClient
+from .errors import ApiError, error_response
 from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
 from .authorization import AuthConfig, Verifier
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None, auth_config: AuthConfig | None = None
+) -> FastAPI:
     """Create an independently configurable service application."""
     resolved_settings = settings or Settings.from_env()
     database = Database(resolved_settings)
-    auth_config = AuthConfig.from_env(resolved_settings.environment)
+    resolved_auth_config = auth_config or AuthConfig.from_env(
+        resolved_settings.environment
+    )
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
@@ -41,12 +47,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=SERVICE_VERSION,
         description=(
             "Synthetic educational prototype. Authentication and "
-            "domain operations are not implemented."
+            "Doctor profiles, specialties, and schedule proposals for a synthetic hospital."
         ),
     )
-    application.state.auth_config = auth_config
-    application.state.auth_verifier = Verifier(auth_config)
+    application.state.auth_config = resolved_auth_config
+    application.state.auth_verifier = Verifier(resolved_auth_config)
     application.state.database = database
+    application.state.dependencies = DoctorDependencyClient()
     application.state.settings = resolved_settings
     application.state.logger = get_service_logger(
         SERVICE_NAME, resolved_settings.log_level
@@ -56,10 +63,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
     application.include_router(api_router)
-    if auth_config.origins:
+    application.include_router(private_router)
+    if resolved_auth_config.origins:
         application.add_middleware(
             CORSMiddleware,
-            allow_origins=list(auth_config.origins),
+            allow_origins=list(resolved_auth_config.origins),
             allow_credentials=True,
             allow_methods=["GET", "POST", "PATCH", "DELETE"],
             allow_headers=[
@@ -81,10 +89,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def http_exception_handler(
         request: Request, exception: StarletteHTTPException
     ) -> JSONResponse:
+        headers = dict(exception.headers or {})
+        if exception.status_code in (429, 503):
+            headers.setdefault("Retry-After", "1")
         return error_response(
             request,
             exception.status_code,
-            headers=exception.headers,
+            headers=headers or None,
+        )
+
+    @application.exception_handler(ApiError)
+    async def api_error_handler(request: Request, exception: ApiError) -> JSONResponse:
+        return error_response(
+            request,
+            exception.status_code,
+            code=exception.code,
+            message=exception.message,
+            headers={"Retry-After": "1"} if exception.status_code == 503 else None,
         )
 
     @application.exception_handler(RequestValidationError)
@@ -109,7 +130,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def database_exception_handler(
         request: Request, _exception: SQLAlchemyError
     ) -> JSONResponse:
-        return error_response(request, 503)
+        return error_response(request, 503, headers={"Retry-After": "1"})
 
     @application.exception_handler(Exception)
     async def unexpected_exception_handler(

@@ -28,6 +28,16 @@ _STATUS_ERRORS: dict[int, tuple[str, str]] = {
 }
 
 
+class ApiError(Exception):
+    """A safe, contract-specific error returned by a Doctor operation."""
+
+    def __init__(self, status_code: int, code: str, message: str | None = None):
+        self.status_code = status_code
+        self.code = code
+        self.message = message
+        super().__init__(code)
+
+
 def error_response(
     request: Request,
     status_code: int,
@@ -36,6 +46,20 @@ def error_response(
     details: dict[str, Any] | None = None,
     headers: dict[str, str] | None = None,
 ) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content=error_payload(request, status_code, code, message, details),
+        headers=headers,
+    )
+
+
+def error_payload(
+    request: Request,
+    status_code: int,
+    code: str | None = None,
+    message: str | None = None,
+    details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     default_code, default_message = _STATUS_ERRORS.get(
         status_code, ("http_error", "The request could not be completed.")
     )
@@ -48,8 +72,4 @@ def error_response(
             "details": details,
         }
     )
-    return JSONResponse(
-        status_code=status_code,
-        content=body.model_dump(mode="json", exclude_none=True),
-        headers=headers,
-    )
+    return body.model_dump(mode="json", exclude_none=True)

@@ -17,6 +17,7 @@ from sqlalchemy import (
     UniqueConstraint,
     Index,
     text,
+    func,
 )
 from sqlalchemy.dialects.postgresql import JSONB, ExcludeConstraint
 
@@ -194,12 +195,18 @@ doctors = entity(
     value("profile_version", BigInteger, default="1"),
     UniqueConstraint("staff_user_id"),
     check("profile_version > 0", "positive_profile_version"),
+    check("length(btrim(display_name)) BETWEEN 1 AND 200", "display_name_nonempty"),
 )
 specialties = entity(
     "specialties",
     value("slug", String(128)),
     value("name", String(200)),
     UniqueConstraint("slug"),
+    check(
+        "slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$' AND length(slug) BETWEEN 1 AND 128",
+        "slug_format",
+    ),
+    check("length(btrim(name)) BETWEEN 1 AND 200", "name_nonempty"),
 )
 doctor_specialties = Table(
     "doctor_specialties",
@@ -217,6 +224,7 @@ schedule_versions = entity(
     value("status"),
     UniqueConstraint("doctor_id", "revision"),
     check("revision > 0 AND slot_minutes > 0", "positive_policy"),
+    check("slot_minutes BETWEEN 5 AND 120", "slot_minutes_range"),
     states("status", "pending accepted rejected"),
 )
 schedule_intervals = entity(
@@ -233,7 +241,9 @@ schedule_acknowledgements = entity(
     value("accepted", Boolean),
     value("operational_version", BigInteger, nullable=True),
     value("reason", Text, nullable=True),
+    Column("conflicts", JSONB, nullable=False, server_default=text("'[]'::jsonb")),
     UniqueConstraint("schedule_version_id"),
+    check("jsonb_typeof(conflicts) = 'array'", "conflicts_array"),
     version=False,
 )
 index(
@@ -251,6 +261,25 @@ Index(
 )
 index(doctors, "active")
 index(doctor_specialties, "specialty_id", "doctor_id")
+Index("ix_doctors_created_id", doctors.c.created_at, doctors.c.id)
+Index(
+    "ix_doctors_active_created_id",
+    doctors.c.active,
+    doctors.c.created_at,
+    doctors.c.id,
+)
+Index(
+    "ix_doctors_lower_display_name_prefix",
+    func.lower(doctors.c.display_name),
+    postgresql_ops={"lower": "text_pattern_ops"},
+)
+Index("ix_specialties_created_id", specialties.c.created_at, specialties.c.id)
+Index(
+    "ix_schedule_versions_doctor_created_id",
+    schedule_versions.c.doctor_id,
+    schedule_versions.c.created_at,
+    schedule_versions.c.id,
+)
 
 # Doctor's documented overlap invariant is local; Appointment's exclusions
 # remain explicitly deferred until booking/schedule-acceptance implementation.
