@@ -20,6 +20,7 @@ from .middleware import install_request_context
 from .settings import Settings
 from .authorization import AuthConfig, Verifier
 from .authentication import Identity, router as identity_router
+from .management import internal_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -42,7 +43,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=SERVICE_VERSION,
         description=(
             "Synthetic educational prototype with Patient-owned authentication. "
-            "Hospital workflows are not implemented."
+            "Patient profile and account management are available; "
+            "cross-service workflows are not implemented."
         ),
     )
     application.state.auth_config = auth_config
@@ -61,8 +63,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
-    application.include_router(api_router)
     application.include_router(identity_router)
+    application.include_router(api_router)
+    application.include_router(internal_router)
     if auth_config.origins:
         application.add_middleware(
             CORSMiddleware,
@@ -91,6 +94,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return error_response(
             request,
             exception.status_code,
+            code=getattr(exception, "error_code", None),
+            message=getattr(exception, "error_message", None),
+            details=getattr(exception, "error_details", None),
             headers=exception.headers,
         )
 

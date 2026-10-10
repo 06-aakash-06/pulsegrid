@@ -1,8 +1,5 @@
-"""Business API router; domain operations are added in later phases."""
+"""Public Patient-owned business routes."""
 
-from fastapi import APIRouter
+from ..management import api_router
 
-from ..constants import API_PREFIX
-
-# Reserve the documented service-specific prefix without adding fake operations.
-api_router = APIRouter(prefix=API_PREFIX)
+__all__ = ["api_router"]

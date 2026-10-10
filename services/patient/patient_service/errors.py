@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID, uuid4
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from .schemas import ErrorResponse
@@ -26,6 +26,24 @@ _STATUS_ERRORS: dict[int, tuple[str, str]] = {
     503: ("dependency_unavailable", "A required dependency is unavailable."),
     504: ("dependency_timeout", "A required dependency did not respond in time."),
 }
+
+
+class APIError(HTTPException):
+    """HTTP error with a stable domain-specific code and safe message."""
+
+    def __init__(
+        self,
+        status_code: int,
+        code: str,
+        message: str,
+        *,
+        details: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(status_code, detail=message, headers=headers)
+        self.error_code = code
+        self.error_message = message
+        self.error_details = details
 
 
 def error_response(

@@ -1,4 +1,32 @@
-# Phase 1.4C-A verification record
+# Phase 2.1 Patient Management verification
+
+Base: `de63867adb7f5863c708ee19f4376ccbb49a0691`. Work stayed in the assigned worktree and all changed repository paths are under `services/patient/**`.
+
+## Implemented
+
+Added authenticated self/staff profile reads and profile PATCH, receptionist/admin patient listing and demographic edits, hospital-admin user listing/filtering/detail, role replacement and account-state changes, and the frozen private patient-status and staff-status leaves. Role/account changes serialize with a PostgreSQL administration advisory lock, update account/auth versions, revoke refresh sessions, and append a local audit entry and unpublished outbox event. Added an explicit local first-admin bootstrap command for an existing synthetic `.test` account; it does not accept or set passwords.
+
+Migration `0004_patient_management_audit` adds a constrained `patient` audit-chain append function. It adds no tables or columns and does not change the Phase 1 authentication audit function. Cross-service callers still need their deployment service keys and private DNS configuration for integration: Appointment, Records and Emergency use `patients:status`; Doctor and Records use `users:staff-status`.
+
+## Verification
+
+- Patient Service suite: **189 passed, 10 skipped**. The 10 existing auth PostgreSQL tests require the configured shared auth stack; they were left skipped to avoid using or changing that stack. One existing Starlette/httpx deprecation warning remains.
+- The six new management PostgreSQL cases passed against a temporary loopback cluster and a dedicated database ending in `_test`. The migration owner and `patient_app` runtime role were separate. The runtime role was non-superuser and could not create public tables or update/delete audit entries.
+- `alembic upgrade head` and `alembic check` passed on the isolated database. Current migration head: `0004_patient_management_audit`.
+- `python -m compileall -q patient_service tests migrations/versions`, OpenAPI route inspection, and `git diff --check` passed.
+- No shared development database or Docker stack was started or modified. The cross-service private routes were tested with signed synthetic service/delegated-user tokens; other services were not run together.
+
+## Exact test invocation
+
+From `services/patient/`, with an isolated migrated loopback database in `PULSEGRID_PATIENT_MANAGEMENT_TEST_DB_URL`:
+
+```sh
+PYTHONPATH=.:../doctor:../appointment:../records:../pharmacy:../billing:../emergency python -m pytest
+```
+
+The database tests reject hosts outside loopback and database names that do not end in `_test`. The pre-existing `PULSEGRID_AUTH_INTEGRATION` tests remain a separate opt-in setup.
+
+# Phase 1.4C-A verification record (historical)
 
 Worktree branch: `foundation/backend-auth`. Base: `bd797050e097efecc5687a16b91c6bd37cf22976`.
 All changes are service-owned. Main and frontend sources were untouched. No merge or push was performed. The final commit is reported by `git rev-parse HEAD` after this record is committed.
