@@ -10,7 +10,7 @@ from appointment_service.authorization import AuthConfig, Verifier
 from appointment_service.database import Database
 from appointment_service.main import create_app
 from appointment_service.wire import Identity, PatientStatus, ProposalContext
-from test_concurrency import seed
+from .test_concurrency import seed
 
 
 @pytest.fixture

@@ -45,7 +45,7 @@ The Patient status route is part of the frozen Phase 2 private contract. It is n
 
 Emergency owns its request rows and references Patient IDs without a cross-database foreign key. A state or priority mutation, immutable history row, status outbox event, hash-chained audit append, and POST replay response share one PostgreSQL transaction. Audit writes use a constrained SECURITY DEFINER append function; the runtime role has no direct audit-table mutation rights. Events remain in the local outbox; Phase 2 does not publish to RabbitMQ. Status and submission events omit descriptions, contact values, and reasons.
 
-IDs use the service-owned database worker state and a row-serialized Snowflake allocator. `PULSEGRID_EMERGENCY_ID_WORKER_ID` defaults to 6; deployment must coordinate a distinct worker ID for each service. The 15-minute claim lease, 24-hour idempotency retention, retry limits, and service deadlines are prototype contract settings, not measured operational targets.
+Phase 2 IDs use positive CSPRNG BIGINT candidates with three bounded local collision checks and database primary keys as the final uniqueness backstop. The retained worker-state schema/configuration is unused; custom Snowflake generation is deferred. The 15-minute claim lease, 24-hour idempotency retention, retry limits, and service deadlines are prototype contract settings, not measured operational targets.
 
 Anonymous tracking tokens, rate limiting, clinical triage, dispatch, ambulance coordination, emergency bed management, Surge Mode, telemetry dashboards, and production/clinical validation are not implemented.
 

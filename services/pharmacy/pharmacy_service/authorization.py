@@ -360,12 +360,18 @@ async def check_current_authority(request: Request, principal: Principal, role: 
                     ),
                 },
             )
-        if result.status_code != 200 or len(result.content) > 4096:
+        if result.status_code != 200:
             raise HTTPException(503 if result.status_code >= 500 else 403)
+        if len(result.content) > 4096:
+            raise HTTPException(503)
         payload = result.json()
+        if (not isinstance(payload, dict)
+            or type(payload.get("active")) is not bool
+            or type(payload.get("allowed")) is not bool
+            or type(payload.get("current_auth_version")) is not int):
+            raise HTTPException(503)
         if (
-            not isinstance(payload, dict)
-            or payload.get("active") is not True
+            payload.get("active") is not True
             or payload.get("allowed") is not True
             or type(payload.get("current_auth_version")) is not int
             or payload["current_auth_version"] != principal.auth_version

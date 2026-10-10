@@ -7,6 +7,7 @@ import binascii
 import hashlib
 import json
 import re
+import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable
@@ -22,7 +23,6 @@ from .exceptions import DomainHTTPException
 from .models import (
     emergency_requests,
     emergency_status_history,
-    id_worker_state,
     idempotency_requests,
     outbox_events,
 )
@@ -30,8 +30,6 @@ from .schemas import EmergencyRequestCreate, PriorityUpdate, TransitionCommand
 
 CLAIM_LEASE = timedelta(minutes=15)
 IDEMPOTENCY_RETENTION = timedelta(hours=24)
-SNOWFLAKE_EPOCH_MS = 1_577_836_800_000  # 2020-01-01 UTC
-MAX_SNOWFLAKE_TIMESTAMP = 2**41 - 1
 MAX_SAFE_VERSION = 9_007_199_254_740_991
 _ETAG = re.compile(r'^"([1-9][0-9]{0,15})"$')
 _CURSOR = re.compile(r"^[A-Za-z0-9_-]{1,512}$")
@@ -76,45 +74,27 @@ async def _database_now(session: AsyncSession) -> datetime:
 
 
 async def _new_id(session: AsyncSession, worker_id: int) -> int:
-    """Allocate a DB-serialized Snowflake ID, safe across service replicas."""
-    await session.execute(
-        pg_insert(id_worker_state)
-        .values(worker_id=worker_id, reserved_through_ms=0, last_sequence=-1)
-        .on_conflict_do_nothing(index_elements=[id_worker_state.c.worker_id])
-    )
-    row = (
-        await session.execute(
-            select(id_worker_state)
-            .where(id_worker_state.c.worker_id == worker_id)
-            .with_for_update()
+    """Allocate a positive CSPRNG BIGINT; local PKs remain the final backstop.
+
+    Keep the internal worker argument compatible with agent command call sites;
+    it does not allocate a worker or read/update id_worker_state in Phase 2.
+    """
+    for _ in range(3):
+        candidate = secrets.randbelow(2**63 - 1) + 1
+        collision = await session.scalar(
+            text("""SELECT EXISTS (
+              SELECT id FROM emergency_requests WHERE id=:candidate
+              UNION ALL SELECT id FROM emergency_status_history WHERE id=:candidate
+              UNION ALL SELECT event_id FROM outbox_events WHERE event_id=:candidate
+              UNION ALL SELECT entry_id FROM audit_entries WHERE entry_id=:candidate
+            )"""),
+            {"candidate": candidate},
         )
-    ).mappings().one()
-    wall_clock_ms = int(
-        await session.scalar(
-            text("SELECT floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint")
-        )
+        if not collision:
+            return candidate
+    raise DomainHTTPException(
+        503, "dependency_unavailable", "Request processing is temporarily unavailable."
     )
-    timestamp_ms = max(0, wall_clock_ms - SNOWFLAKE_EPOCH_MS)
-    previous_ms = int(row["reserved_through_ms"])
-    previous_sequence = int(row["last_sequence"])
-    if timestamp_ms > previous_ms:
-        sequence = 0
-    else:
-        timestamp_ms = previous_ms
-        sequence = previous_sequence + 1
-        if sequence > 4095:
-            timestamp_ms += 1
-            sequence = 0
-    if timestamp_ms > MAX_SNOWFLAKE_TIMESTAMP:
-        raise DomainHTTPException(
-            503, "dependency_unavailable", "Request processing is temporarily unavailable."
-        )
-    await session.execute(
-        update(id_worker_state)
-        .where(id_worker_state.c.worker_id == worker_id)
-        .values(reserved_through_ms=timestamp_ms, last_sequence=sequence)
-    )
-    return (timestamp_ms << 22) | (worker_id << 12) | sequence
 
 
 def _safe_reason_digest(reason: str | None) -> str | None:

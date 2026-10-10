@@ -11,7 +11,7 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import DBAPIError
 
-from conftest import auth_headers
+from .conftest import auth_headers
 
 
 def _synthetic_id() -> str:
