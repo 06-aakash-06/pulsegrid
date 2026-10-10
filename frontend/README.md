@@ -28,6 +28,8 @@ Access tokens are held only in React memory. The frontend decodes role claims on
 - Billing staff: `/billing/dashboard`, `/billing/invoices`, `/billing/payments`, `/billing/insurance`
 - Emergency staff: `/emergency/dashboard`, `/emergency/requests`
 - Hospital administrator: `/admin/dashboard`, `/admin/staff`, `/admin/doctors`, `/admin/settings`
+- Receptionist: `/receptionist/dashboard`, `/receptionist/appointments`
+- Operations: `/ops/dashboard`, `/ops/traces`
 
 Workspace paths require an in-memory access-token session with the matching role hint. Direct service authorization is not delegated to the frontend.
 

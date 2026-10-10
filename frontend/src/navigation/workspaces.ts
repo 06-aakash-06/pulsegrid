@@ -89,6 +89,14 @@ export const workspaces: WorkspaceConfig[] = [
     page("doctors", "Doctor directory", "Manage doctor profiles through the doctor service.", "Doctor administration is not connected yet."),
     page("settings", "Administration", "Review available hospital configuration interfaces.", "Administrative configuration is not connected yet."),
   ]),
+  workspace("/receptionist", "Reception workspace", "Receptionist", ["receptionist"], [
+    page("dashboard", "Dashboard", "A starting point for appointment coordination and check-in.", "Reception tools are not connected yet."),
+    page("appointments", "Appointment coordination", "Review appointment, check-in, and queue interfaces owned by the appointment service.", "Appointment coordination is not connected yet."),
+  ]),
+  workspace("/ops", "Operations control room", "Operations", ["ops"], [
+    page("dashboard", "Dashboard", "Review aggregate system health after monitoring integrations are available.", "The control room is not connected yet. No live metrics, traces, or service status are shown."),
+    page("traces", "Trace search", "Search request and event traces after observability integration.", "Trace search is not connected yet. No trace data is fabricated."),
+  ]),
 ];
 
 export function getPageForPath(workspaceConfig: WorkspaceConfig, path: string): WorkspacePage | undefined {

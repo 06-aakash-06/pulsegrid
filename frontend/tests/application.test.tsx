@@ -78,6 +78,8 @@ describe("application routes", () => {
     ["billing_staff", "Billing workspace"],
     ["emergency_staff", "Emergency workspace"],
     ["hospital_admin", "Administration"],
+    ["receptionist", "Reception workspace"],
+    ["ops", "Operations control room"],
   ] as const)("renders the %s workspace shell after an identity response", async (role, workspaceName) => {
     await signInAs(role);
     expect(await screen.findAllByText(workspaceName)).not.toHaveLength(0);

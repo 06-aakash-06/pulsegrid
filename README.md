@@ -1,6 +1,6 @@
 # PulseGrid
 
-Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. **Phase 1.1 is a documentation-only foundation.** No services, algorithms, containers, schemas, dependencies, or UI have been implemented or tested at runtime.
+Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. The Phase 1.1 architecture foundation and Phase 1.2 service/frontend scaffolds are integrated. Seven minimal FastAPI applications expose liveness and explicitly unconfigured database readiness, and the React/TypeScript UI provides pending route shells for patient, staff, and operations roles. Authentication is not connected and domain workflows remain unimplemented.
 
 Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments and insurance providers are simulated.
 
@@ -21,7 +21,7 @@ PostgreSQL transactions and constraints enforce booking, inventory, and payment 
 - [Roadmap](docs/development-roadmap.md): nine phases and acceptance gates.
 - [Agent instructions](AGENTS.md): durable repository and parallel-work rules.
 
-## Planned layout
+## Current layout
 
 ```text
 PulseGrid/
@@ -29,16 +29,16 @@ PulseGrid/
   AGENTS.md
   .gitignore
   docs/                         # implemented documentation only
-  services/                     # future: seven independently packaged services
+  services/                     # seven independently packaged FastAPI scaffolds
     patient/ doctor/ appointment/ records/ pharmacy/ billing/ emergency/
-  frontend/                     # future: React/TypeScript, control room routes
+  frontend/                     # React/TypeScript patient, staff, and ops shells
   contracts/                    # future: reviewed OpenAPI and event JSON schemas
   infra/                        # future: Compose, Traefik, broker, monitoring config
   tests/                        # future: cross-service contract/integration tests
   experiments/                  # future: Locust, chaos, algorithm benchmarks
 ```
 
-Only root foundation files and `docs/` exist in Phase 1.1. Do not run installation or container commands for this phase. Follow [the roadmap](docs/development-roadmap.md) for subsequent work; no remote publication is configured or authorized.
+The current scope is scaffolding: service business routes and database adapters, connected authentication, executable contracts, and deployment infrastructure have not been implemented. Backend smoke tests and frontend UI tests are colocated with their packages. Follow [the roadmap](docs/development-roadmap.md) for later work; no remote publication is configured or authorized.
 
 ## Development conventions
 
