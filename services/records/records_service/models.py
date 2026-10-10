@@ -189,10 +189,14 @@ id_worker_state = Table(
 consultations = entity(
     "consultations",
     ref("appointment_id"),
-    ref("journey_id"),
+    ref("journey_id", nullable=True),
     ref("patient_id"),
     ref("doctor_id"),
+    ref("author_user_id", nullable=True),
+    value("hold_version", BigInteger, nullable=True),
+    timestamp("hold_finalized_at", nullable=True),
     value("status"),
+    states("status", "draft finalized"),
     value("revision", BigInteger),
     value("clinical_content", JSONB),
     UniqueConstraint("appointment_id"),
@@ -212,7 +216,7 @@ prescriptions = entity(
     "prescriptions",
     ref("consultation_id", "consultations.id"),
     ref("patient_id"),
-    ref("journey_id"),
+    ref("journey_id", nullable=True),
     value("revision", BigInteger),
     value("state"),
     UniqueConstraint("consultation_id", "revision"),
@@ -248,4 +252,18 @@ index(
     "grantee_user_id",
     where="revoked_at IS NULL",
     suffix="active_grants",
+)
+
+command_preparations = Table(
+    "command_preparations",
+    metadata,
+    Column("principal_scope", String(256), primary_key=True),
+    Column("key", String(128), primary_key=True),
+    value("request_hash", String(64)),
+    ref("consultation_id"),
+    ref("appointment_id"),
+    value("context", JSONB),
+    value("hold_version", BigInteger),
+    timestamp("created_at", default="CURRENT_TIMESTAMP"),
+    UniqueConstraint("consultation_id"),
 )

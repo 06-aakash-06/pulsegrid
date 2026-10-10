@@ -1,0 +1,26 @@
+# Phase 2.4 verification
+
+Base: `de63867adb7f5863c708ee19f4376ccbb49a0691`; branch `phase-2/records`. Ownership: only `services/records/**`. Synthetic data only. No merge, push, shared Compose edits or persistent database changes.
+
+## Executed checks
+
+- Original Records suite: **17 passed** before adding clinical tests.
+- Complete suite: `.venv/bin/python tests/run_isolated.py` from `services/records`: **74 passed**, using local PostgreSQL 14, 97 deprecation warnings (existing Starlette HTTPX TestClient and Alembic path_separator configuration).
+- The isolated runner creates a new cluster on a free loopback TCP port under `.test-resources/`, checks its actual data directory before creating roles/databases, uses per-test databases, and stops/removes the cluster. Each run gets its own pytest temporary directory. No Docker commands are used. Fixture JWT keys are generated locally; outgoing service JWT caller, target audience, exact scope and 60-second lifetime are checked.
+- Database upgrades start from empty disposable databases, install Phase 1 revisions, insert an audit anchor and append `0003_clinical`. The anchor survives. Runtime credentials execute actual commands. Tests prove clinical persistence, row/key lock behavior, local revision/source uniqueness, foreign-key enforcement, immutable text/items/event envelopes, denied runtime DDL and audit tampering, and rollback of finalization/record/prescription/outbox/audit/idempotency effects when audit append fails.
+- Authorization tests cover own/unrelated patients, assigned/unrelated doctors, authored document access, active/finalized holds, scoped/expired/revoked grants, multiple roles, pharmacist detail versus forbidden clinical histories/bulk listing, and all other staff roles without clinical privilege. Missing/expired/wrong-issuer/wrong-audience/wrong-purpose/invalid-signature user JWTs fail closed. Current inactive authority denies access.
+- Private tests cover valid minimum Pharmacy/Billing views, missing delegation, user-only authorization, wrong scope/caller/audience, caller-key forgery, wrong delegated role and unrelated patient. Leaves make no dependency calls and audit before returning content.
+- Mutation tests cover draft edits, stale/missing/malformed If-Match, finalize-once, preserved amendments, superseded-record conflicts, issued/revoked prescription behavior, strict quantity/text/ID/UTC validation, missing/inactive foreign references and bounded grant expiry. Diagnoses/notes remain within the frozen three-field schema.
+- Same-key concurrent create/finalize replays identical committed results. Distinct-key same-version finalization has one success and one 412, with one record/prescription/item. Same-key content conflicts are rejected. Pool restart retains persisted replay body/original ETag. Ambiguous remote hold success recovers the same prepared consultation ID; failed post-commit hold finalization is repaired by same-key finalize replay without another local clinical effect.
+- Dependency tests use real HTTPX clients with simulated owner transports: failures, timeout, oversized/malformed/redirect responses and circuit opening prevent clinical effects. Every dependency request verifies that its own Records session has no open local transaction. No foreign database is queried.
+- Hash-chain verification checks each metadata hash/link against the saved head; modified metadata, removed tail and reordered entries fail verification. Runtime cannot alter chain entries. This does not claim privileged-attacker resistance without an external anchor.
+- Exact response DTO checks and generated OpenAPI input/output/list-query checks passed. No extra clinical fields appear in private contexts.
+- Ruff formatting and scoped static checks (`--isolated --select E4,E7,E9,F,I`) passed for the new implementation/tests and touched main/error modules. `compileall` and `git diff --check` passed. README links and staged file ownership were checked before the local commit.
+
+## Limits and checks not run
+
+Patient/Appointment/Pharmacy/Billing replies are simulated contract responses; live cross-service integration, shared gateway routing and deployment-secret configuration were **not** tested or changed. No root full-stack tests, containers, throughput/latency benchmarks, chaos, broker delivery, Snowflake evaluation, external audit anchoring or Mermaid rendering ran. Runtime denial of foreign database connections remains a shared infrastructure/coordinator check; tests prove that Records code performs no foreign DB access.
+
+Legacy conflicting revisions/items make migration fail rather than erase rows. Legacy state/quantity constraints remain NOT VALID, enforcing new writes while leaving explicit legacy validation to the coordinator. No missing author/journey provenance is fabricated. The migration is forward-only. Database IDs are locally sequence-allocated, not globally unique across domains.
+
+Orphan holds deliberately favor safety over availability. Post-commit hold-finalize failure requires explicit same-key retry. Current-authority/catalog/assignment validation cannot eliminate remote changes immediately after checking. Revoked prescriptions require Pharmacy revalidation/release; committed dispensing is historical. No events are published or assumed delivered, and no queue/journey completion is implied.

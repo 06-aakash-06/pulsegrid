@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from .schemas import ErrorResponse
-
 
 _STATUS_ERRORS: dict[int, tuple[str, str]] = {
     400: ("bad_request", "The request could not be processed."),
@@ -51,5 +50,9 @@ def error_response(
     return JSONResponse(
         status_code=status_code,
         content=body.model_dump(mode="json", exclude_none=True),
-        headers=headers,
+        headers={
+            "Cache-Control": "no-store",
+            **({"Retry-After": "1"} if status_code in (429, 503) else {}),
+            **(headers or {}),
+        },
     )

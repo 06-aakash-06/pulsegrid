@@ -3,22 +3,26 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import SQLAlchemyError
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from .api.clinical import private_router
+from .api.clinical import router as clinical_router
 from .api.health import health_router
 from .api.router import api_router
+from .authorization import AuthConfig, Verifier
 from .constants import API_PREFIX, SERVICE_NAME, SERVICE_VERSION
 from .database import Database
+from .domain_client import DomainClient
 from .errors import error_response
 from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
-from .authorization import AuthConfig, Verifier
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -40,10 +44,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=f"PulseGrid {SERVICE_NAME.title()} Service",
         version=SERVICE_VERSION,
         description=(
-            "Synthetic educational prototype. Authentication and "
-            "domain operations are not implemented."
+            "Synthetic educational prototype. Secure Phase 2 clinical records."
         ),
     )
+    application.state.domain_client = DomainClient()
     application.state.auth_config = auth_config
     application.state.auth_verifier = Verifier(auth_config)
     application.state.database = database
@@ -56,6 +60,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
     application.include_router(api_router)
+    application.include_router(clinical_router)
+    application.include_router(private_router)
     if auth_config.origins:
         application.add_middleware(
             CORSMiddleware,
@@ -85,6 +91,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             request,
             exception.status_code,
             headers=exception.headers,
+            code=exception.detail
+            if isinstance(exception.detail, str)
+            and exception.detail
+            in {
+                "consultation_exists",
+                "appointment_unavailable",
+                "finalized",
+                "superseded",
+                "invalid_reference",
+            }
+            else None,
         )
 
     @application.exception_handler(RequestValidationError)

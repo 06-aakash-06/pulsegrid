@@ -395,6 +395,8 @@ def require_current_role(role):
                 or c.get("current_auth_version") != principal.auth_version
             ):
                 raise HTTPException(403)
+        except httpx.TimeoutException:
+            raise HTTPException(504) from None
         except (httpx.HTTPError, ValueError, KeyError):
             raise HTTPException(503) from None
         return principal
