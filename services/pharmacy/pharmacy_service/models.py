@@ -204,16 +204,22 @@ inventory_batches = entity(
     value("on_hand", Integer),
     value("reserved", Integer, default="0"),
     UniqueConstraint("medicine_id", "batch_code"),
-    check("0 <= reserved AND reserved <= on_hand", "stock_bounds"),
+    check(
+        "0 <= reserved AND reserved <= on_hand AND on_hand <= 1000000",
+        "stock_bounds",
+    ),
 )
 prescription_snapshots = entity(
     "prescription_snapshots",
     ref("prescription_id", primary_key=True),
     ref("patient_id"),
-    ref("journey_id"),
+    ref("journey_id", nullable=True),
+    ref("consultation_id", nullable=True),
+    ref("appointment_id", nullable=True),
     value("revision", BigInteger),
     value("state"),
     value("source_version", BigInteger),
+    states("state", "issued revoked"),
     with_id=False,
 )
 prescription_item_snapshots = entity(
@@ -225,7 +231,7 @@ prescription_item_snapshots = entity(
     value("reserved_quantity", Integer, default="0"),
     value("dispensed_quantity", Integer, default="0"),
     check(
-        "prescribed_quantity >= 0 AND reserved_quantity >= 0 AND dispensed_quantity >= 0 AND reserved_quantity + dispensed_quantity <= prescribed_quantity",
+        "prescribed_quantity BETWEEN 0 AND 1000000 AND reserved_quantity >= 0 AND dispensed_quantity >= 0 AND reserved_quantity + dispensed_quantity <= prescribed_quantity",
         "quantity_bounds",
     ),
     with_id=False,
@@ -244,6 +250,7 @@ reservation_items = entity(
     ref("item_id", "prescription_item_snapshots.item_id"),
     ref("batch_id", "inventory_batches.id"),
     value("quantity", Integer),
+    UniqueConstraint("reservation_id", "item_id"),
     check("quantity > 0", "positive_quantity"),
     version=False,
 )
@@ -253,7 +260,6 @@ dispensings = entity(
     ref("staff_user_id"),
     timestamp("completed_at"),
     UniqueConstraint("reservation_id"),
-    version=False,
 )
 dispensing_items = entity(
     "dispensing_items",
@@ -282,5 +288,7 @@ Index(
 index(inventory_batches, "medicine_id", "expires_on")
 index(reservations, "expires_at", "state")
 index(reservations, "patient_id", "prescription_id")
+index(reservations, "created_at", "id")
 index(reservation_items, "reservation_id")
 index(prescription_item_snapshots, "prescription_id")
+index(dispensings, "created_at", "id")

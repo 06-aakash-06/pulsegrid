@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pulsegrid-pharmacy-service"
 version = "0.1.0"
-description = "PulseGrid Pharmacy service scaffold"
+description = "PulseGrid Pharmacy catalog, inventory, reservations, and dispensing service"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

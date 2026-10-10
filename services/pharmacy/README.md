@@ -1,24 +1,48 @@
 # PulseGrid Pharmacy Service
 
-Independent FastAPI application scaffold for the **pharmacy** domain. The API prefix reserved by the contract is `/api/v1/pharmacy`. Business routes are intentionally absent in Phase 1.2.
+Phase 2 pharmacy operations for the synthetic educational prototype. The service owns its medicine catalog, stock batches, prescription snapshots, reservations, dispensing ledger, audit chain, and unpublished outbox rows. It never reads or modifies Records Service storage directly.
 
-## Run locally
+## Public API
 
-From this directory, create an isolated environment, install the package and its test extra, then start the ASGI app:
+All public routes require a valid Patient-issued Bearer access token. Current Patient authority is checked for pharmacist, hospital-admin, and patient operations as required by the frozen contract.
 
-```sh
-python -m venv .venv
-. .venv/bin/activate
-python -m pip install -e '.[test]'
-uvicorn pharmacy_service.main:app --host 127.0.0.1 --port 8000
-```
+| Method | Path | Scope |
+|---|---|---|
+| GET | `/api/v1/pharmacy/medicines` | Authenticated medicine prefix search and bounded pagination |
+| GET | `/api/v1/pharmacy/medicines/{medicine_id}` | Authenticated catalog detail |
+| POST, PATCH | `/api/v1/pharmacy/medicines` and `/api/v1/pharmacy/medicines/{medicine_id}` | Current pharmacist or hospital admin catalog writes |
+| GET | `/api/v1/pharmacy/inventory` | Current pharmacist batch inventory |
+| POST | `/api/v1/pharmacy/inventory-adjustments` | Current pharmacist audited adjustment |
+| GET, POST | `/api/v1/pharmacy/reservations` | Scoped reservation history and creation |
+| GET, DELETE | `/api/v1/pharmacy/reservations/{reservation_id}` | Own patient reservation or pharmacist access |
+| POST | `/api/v1/pharmacy/reservations/{reservation_id}/dispense` | Current pharmacist fulfillment |
+| POST | `/api/v1/pharmacy/reservations/{reservation_id}/revalidate` | Current pharmacist prescription revalidation |
+| GET | `/api/v1/pharmacy/dispensings` | Scoped dispensing history and filters |
+| GET | `/api/v1/pharmacy/dispensings/{dispensing_id}` | Own patient dispensing or pharmacist access |
 
-Configuration is read from `PULSEGRID_PHARMACY_ENVIRONMENT` and `PULSEGRID_PHARMACY_LOG_LEVEL`. Defaults are `development` and `INFO`. Database configuration uses the same service prefix with `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` and pool/deadline settings. See [the infrastructure runbook](../../docs/infrastructure.md).
+Single-resource responses use quoted version ETags. Conditional PATCH, DELETE, dispense, and revalidation require `If-Match`. Every public POST requires an `Idempotency-Key`; equal retries return the stored status, body, and ETag for at least 24 hours.
 
-`GET /health/live` reports process liveness. `GET /health/ready` checks PostgreSQL with a bounded SELECT: 200 when connected, 503 when unconfigured/unavailable. Redis and RabbitMQ are not yet required. The same routes are exposed through the gateway under the domain API prefix.
+## Private API
 
-This package owns `pharmacy_db`, `pharmacy_app` runtime credentials and an independent Alembic history. Compose runs `pharmacy-migrate` with the separate `pharmacy_migration` owner before starting the API. From the repository root, run `docker compose run --rm pharmacy-migrate` to apply outstanding revisions. Do not use runtime schema creation or another service's models/database.
+Service-authenticated callers use the frozen Phase 2 scopes and delegated user token:
 
-Run the colocated tests with `python -m pytest`. Build an independent container from this directory with `docker build -t pulsegrid-pharmacy .`.
+- Records: `POST /internal/v1/medicines/validate` returns catalog activity, version, and name for up to 50 distinct medicine IDs.
+- Billing: `GET /internal/v1/dispensings/{dispensing_id}/charge-context` returns only the completed dispensing's appointment, patient, medicine charge codes, quantities, and source-item IDs.
 
-This is a synthetic educational prototype scaffold. It has no business operations and is not a clinical or emergency-response system.
+Pharmacy reads live prescription context from Records before reservation, dispense, or revalidation. Dependency calls are bounded and happen before Pharmacy transactions. Dependency failure prevents a new reservation or dispense; staff can explicitly revalidate after Records recovers.
+
+## Transactions and lifecycle
+
+Stock, prescription allowance, reservation, dispensing, stock movement, append-only audit, unpublished outbox, and POST idempotency response writes commit in one Pharmacy transaction. PostgreSQL row locks are acquired in prescription, sorted allowance, sorted reservation, sorted batch, and audit-head order. FEFO batches are selected by expiry then ID, with lock acquisition kept in ID order. Checks prevent on-hand stock from going below reserved stock, below zero, or above one million units; prescription allowances cannot be over-reserved or over-dispensed. No database lock is held across a Records call.
+
+Reservations expire 30 minutes after creation. Relevant stock and reservation commands release expired reservations once. Revoked prescriptions cannot be newly reserved or dispensed; explicit revalidation releases unfilled reserved quantities. Already dispensed quantities remain historical and require staff review after revocation. Repeating dispense returns the existing dispensing and never deducts stock twice. These are local guarantees; a Records revocation immediately after validation remains a cross-service race.
+
+No RabbitMQ publisher or consumer is enabled. Outbox records remain unpublished. Trie autocomplete, invoice calculations, and category-specific catalog fields are outside the frozen Phase 2 Pharmacy contract. The contract provides medicine detail lookup but does not define a category field or category route, so category browsing needs a reviewed contract change before exposure.
+
+## Configuration and verification
+
+Database settings use `PULSEGRID_PHARMACY_DB_*`. Authentication and dependencies use `PULSEGRID_PHARMACY_AUTH_JWKS_PATH`, `SERVICE_JWKS_PATH`, `SERVICE_PRIVATE_KEY_PATH`, `SERVICE_KID`, `AUTHORITY_URL`, and `RECORDS_URL`, following the service-scoped conventions. Records defaults to `http://records:8000`.
+
+Run package tests with `python -m pytest` from this directory. PostgreSQL integration tests require `PULSEGRID_PHARMACY_TEST_DATABASE_URL` to point to a dedicated database whose name ends in `_test`, plus a migration-capable database user and the `pharmacy_app` role; tests apply the service migrations and clear only that explicitly named test database. Without the URL, the integration tests are skipped. SQLite or mocked database tests do not claim PostgreSQL locking or constraint correctness.
+
+This is a synthetic educational prototype, not a certified clinical or emergency-response system.

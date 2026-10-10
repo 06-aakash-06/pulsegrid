@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .api.health import health_router
-from .api.router import api_router
+from .api.router import api_router, internal_router
 from .constants import API_PREFIX, SERVICE_NAME, SERVICE_VERSION
 from .database import Database
 from .errors import error_response
@@ -19,6 +19,7 @@ from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
 from .authorization import AuthConfig, Verifier
+from .integrations import CircuitBreaker
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -40,12 +41,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=f"PulseGrid {SERVICE_NAME.title()} Service",
         version=SERVICE_VERSION,
         description=(
-            "Synthetic educational prototype. Authentication and "
-            "domain operations are not implemented."
+            "Synthetic educational prototype. Pharmacy catalog and inventory "
+            "operations are not a clinical or emergency-response system."
         ),
     )
     application.state.auth_config = auth_config
     application.state.auth_verifier = Verifier(auth_config)
+    application.state.records_circuit = CircuitBreaker()
+    application.state.records_transport = None
+    application.state.internal_transport = None
     application.state.database = database
     application.state.settings = resolved_settings
     application.state.logger = get_service_logger(
@@ -56,6 +60,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
     application.include_router(api_router)
+    application.include_router(internal_router)
     if auth_config.origins:
         application.add_middleware(
             CORSMiddleware,
@@ -81,9 +86,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def http_exception_handler(
         request: Request, exception: StarletteHTTPException
     ) -> JSONResponse:
+        detail = exception.detail if isinstance(exception.detail, dict) else {}
         return error_response(
             request,
             exception.status_code,
+            code=detail.get("code"),
+            message=detail.get("message"),
+            details=detail.get("details"),
             headers=exception.headers,
         )
 

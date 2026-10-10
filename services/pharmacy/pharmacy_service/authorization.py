@@ -13,6 +13,7 @@ import jwt
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from fastapi import Depends, HTTPException, Request
+from sqlalchemy.exc import SQLAlchemyError
 
 ROLES = frozenset(
     "patient doctor receptionist pharmacist billing_staff emergency_staff hospital_admin ops".split()
@@ -46,6 +47,7 @@ class AuthConfig:
     argon_memory_kib: int = 65536
     argon_time_cost: int = 3
     authority_url: str = "http://patient:8000/internal/v1/authorization/check"
+    records_url: str = "http://records:8000"
 
     @classmethod
     def from_env(cls, environment):
@@ -76,6 +78,7 @@ class AuthConfig:
             authority_url=get(
                 "AUTHORITY_URL", "http://patient:8000/internal/v1/authorization/check"
             ),
+            records_url=get("RECORDS_URL", "http://records:8000").rstrip("/"),
         )
         if config.allow_http and environment != "development":
             raise ValueError(
@@ -112,6 +115,21 @@ class AuthConfig:
             or not 2 <= config.argon_time_cost <= 6
         ):
             raise ValueError("Invalid Argon2 cost")
+        for name, target in (
+            ("AUTHORITY_URL", config.authority_url),
+            ("RECORDS_URL", config.records_url),
+        ):
+            parsed = urlsplit(target)
+            if (
+                parsed.scheme not in ("http", "https")
+                or not parsed.hostname
+                or parsed.username
+                or parsed.password
+                or parsed.query
+                or parsed.fragment
+                or (name == "RECORDS_URL" and parsed.path not in ("", "/"))
+            ):
+                raise ValueError(f"{name} must be a valid service URL")
         return config
 
 
@@ -299,12 +317,140 @@ def require_roles(*roles):
     if not roles or any(r not in ROLES for r in roles):
         raise ValueError("Unknown required role")
 
-    async def dependency(principal: Principal = Depends(authenticated_user)):
+    async def dependency(
+        request: Request, principal: Principal = Depends(authenticated_user)
+    ):
         if not principal.roles.intersection(roles):
+            await _audit_authority_denial(request, principal, "|".join(roles))
             raise HTTPException(403)
         return principal
 
     return dependency
+
+
+async def check_current_authority(request: Request, principal: Principal, role: str):
+    """Fail closed against Patient's current role and auth version."""
+    if role not in principal.roles:
+        raise HTTPException(403)
+    config = request.app.state.auth_config
+    token = service_token(config, "authorization:check", target="patient")
+    try:
+        async with httpx.AsyncClient(
+            timeout=2,
+            follow_redirects=False,
+            trust_env=False,
+            transport=getattr(request.app.state, "internal_transport", None),
+        ) as client:
+            result = await client.post(
+                config.authority_url,
+                json={
+                    "subject_user_id": principal.user_id,
+                    "required_role": role,
+                    "auth_version": principal.auth_version,
+                },
+                headers={
+                    "Authorization": "Bearer " + token,
+                    "X-Delegated-Authorization": "Bearer " + principal.access_token,
+                    "X-Request-ID": str(request.state.request_id),
+                    "X-Correlation-ID": str(request.state.correlation_id),
+                    **(
+                        {"traceparent": request.state.traceparent}
+                        if getattr(request.state, "traceparent", None)
+                        else {}
+                    ),
+                },
+            )
+        if result.status_code != 200 or len(result.content) > 4096:
+            raise HTTPException(503 if result.status_code >= 500 else 403)
+        payload = result.json()
+        if (
+            not isinstance(payload, dict)
+            or payload.get("active") is not True
+            or payload.get("allowed") is not True
+            or type(payload.get("current_auth_version")) is not int
+            or payload["current_auth_version"] != principal.auth_version
+        ):
+            await _audit_authority_denial(request, principal, role)
+            raise HTTPException(403)
+    except HTTPException:
+        raise
+    except (httpx.HTTPError, ValueError, TypeError, KeyError):
+        raise HTTPException(503) from None
+    return principal
+
+
+async def _audit_authority_denial(
+    request: Request, principal: Principal, attempted_role: str
+) -> None:
+    """Record a safely attributable authorization denial without exposing data."""
+    database = getattr(request.app.state, "database", None)
+    if database is None or database.session_factory is None:
+        return
+    try:
+        from .operations import append_audit
+
+        async with database.session_factory() as session:
+            async with session.begin():
+                await append_audit(
+                    session,
+                    request,
+                    actor_user_id=principal.user_id,
+                    action="authorization.denied",
+                    resource_type="authority_role",
+                    resource_id=principal.user_id,
+                    result="denied",
+                    content_digest=__import__("hashlib").sha256(
+                        attempted_role.encode("utf-8")
+                    ).hexdigest(),
+                    action_kind="read",
+                )
+    except (SQLAlchemyError, HTTPException, OSError):
+        # Access is denied regardless; do not turn an attributable failure into an allow.
+        return
+
+
+def require_current_role(role: str):
+    async def dependency(
+        request: Request, principal: Principal = Depends(require_roles(role))
+    ):
+        return await check_current_authority(request, principal, role)
+
+    return dependency
+
+
+def require_one_current_role(*roles: str):
+    if not roles or any(role not in ROLES for role in roles):
+        raise ValueError("Unknown required role")
+
+    async def dependency(
+        request: Request, principal: Principal = Depends(authenticated_user)
+    ):
+        selected = next((role for role in roles if role in principal.roles), None)
+        if selected is None:
+            await _audit_authority_denial(request, principal, "|".join(roles))
+            raise HTTPException(403)
+        await check_current_authority(request, principal, selected)
+        request.state.authorized_role = selected
+        return principal
+
+    return dependency
+
+
+def require_service(scope: str, caller: str):
+    async def dependency(request: Request):
+        token = bearer(request)
+        actual = request.app.state.auth_verifier.service(token, scope)
+        if actual != caller:
+            raise HTTPException(403)
+        return actual
+
+    return dependency
+
+
+async def delegated_user(request: Request) -> Principal:
+    return request.app.state.auth_verifier.user(
+        bearer(request, "X-Delegated-Authorization")
+    )
 
 
 def check_resource_scope(
@@ -351,52 +497,3 @@ def service_token(config, scope, target="patient"):
         algorithm="RS256",
         headers={"kid": config.service_kid},
     )
-
-
-def require_current_role(role):
-    async def dependency(
-        request: Request, principal: Principal = Depends(require_roles(role))
-    ):
-        config = request.app.state.auth_config
-        token = service_token(config, "authorization:check")
-        try:
-            async with httpx.AsyncClient(
-                timeout=2, follow_redirects=False, trust_env=False
-            ) as client:
-                result = await client.post(
-                    config.authority_url,
-                    json={
-                        "subject_user_id": principal.user_id,
-                        "required_role": role,
-                        "auth_version": principal.auth_version,
-                    },
-                    headers={
-                        "Authorization": "Bearer " + token,
-                        "X-Delegated-Authorization": "Bearer " + principal.access_token,
-                        "X-Request-ID": str(request.state.request_id),
-                        "X-Correlation-ID": str(request.state.correlation_id),
-                        **(
-                            {"traceparent": request.state.traceparent}
-                            if getattr(request.state, "traceparent", None)
-                            else {}
-                        ),
-                    },
-                )
-            if result.status_code != 200:
-                raise HTTPException(503 if result.status_code >= 500 else 403)
-            if len(result.content) > 4096:
-                raise HTTPException(503)
-            c = result.json()
-            if not isinstance(c, dict):
-                raise HTTPException(503)
-            if (
-                c.get("active") is not True
-                or c.get("allowed") is not True
-                or c.get("current_auth_version") != principal.auth_version
-            ):
-                raise HTTPException(403)
-        except (httpx.HTTPError, ValueError, KeyError):
-            raise HTTPException(503) from None
-        return principal
-
-    return dependency
