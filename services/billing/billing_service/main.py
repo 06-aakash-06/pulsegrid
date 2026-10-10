@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+import httpx
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .api.health import health_router
@@ -19,20 +20,27 @@ from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
 from .authorization import AuthConfig, Verifier
+from .domain_client import DomainClient
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None, auth_config: AuthConfig | None = None
+) -> FastAPI:
     """Create an independently configurable service application."""
     resolved_settings = settings or Settings.from_env()
     database = Database(resolved_settings)
-    auth_config = AuthConfig.from_env(resolved_settings.environment)
+    auth_config = auth_config or AuthConfig.from_env(resolved_settings.environment)
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
+        application.state.domain_http_client = httpx.AsyncClient(
+            follow_redirects=False, trust_env=False
+        )
         try:
             yield
         finally:
+            await application.state.domain_http_client.aclose()
             await database.close()
 
     application = FastAPI(
@@ -40,12 +48,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=f"PulseGrid {SERVICE_NAME.title()} Service",
         version=SERVICE_VERSION,
         description=(
-            "Synthetic educational prototype. Authentication and "
-            "domain operations are not implemented."
+            "Synthetic educational prototype. Billing operations and simulated "
+            "payments use integer minor units and owner-validated charge sources."
         ),
     )
     application.state.auth_config = auth_config
     application.state.auth_verifier = Verifier(auth_config)
+    application.state.billing_domain_client = DomainClient(auth_config)
     application.state.database = database
     application.state.settings = resolved_settings
     application.state.logger = get_service_logger(
@@ -81,10 +90,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def http_exception_handler(
         request: Request, exception: StarletteHTTPException
     ) -> JSONResponse:
+        detail = exception.detail
+        code = message = None
+        details = None
+        if isinstance(detail, dict):
+            code = detail.get("code") if isinstance(detail.get("code"), str) else None
+            message = detail.get("message") if isinstance(detail.get("message"), str) else None
+            details = detail.get("details") if isinstance(detail.get("details"), dict) else None
+        headers = dict(exception.headers or {})
+        if request.url.path.startswith(API_PREFIX):
+            headers.setdefault("Cache-Control", "no-store")
         return error_response(
             request,
             exception.status_code,
-            headers=exception.headers,
+            code=code,
+            message=message,
+            details=details,
+            headers=headers,
         )
 
     @application.exception_handler(RequestValidationError)
@@ -99,17 +121,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 if part not in {"body", "query", "path", "header"}
             ]
             fields.append({"location": ".".join(location), "code": error["type"]})
+        headers = {"Cache-Control": "no-store"} if request.url.path.startswith(API_PREFIX) else None
         return error_response(
             request,
             422,
             details={"fields": fields},
+            headers=headers,
         )
 
     @application.exception_handler(SQLAlchemyError)
     async def database_exception_handler(
         request: Request, _exception: SQLAlchemyError
     ) -> JSONResponse:
-        return error_response(request, 503)
+        headers = {"Cache-Control": "no-store"} if request.url.path.startswith(API_PREFIX) else None
+        return error_response(request, 503, headers=headers)
 
     @application.exception_handler(Exception)
     async def unexpected_exception_handler(
@@ -125,6 +150,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             500,
             code="internal_error",
             message="An unexpected error occurred.",
+            headers=(
+                {"Cache-Control": "no-store"}
+                if request.url.path.startswith(API_PREFIX)
+                else None
+            ),
         )
 
     return application

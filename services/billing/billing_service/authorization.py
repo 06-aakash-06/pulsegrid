@@ -46,6 +46,9 @@ class AuthConfig:
     argon_memory_kib: int = 65536
     argon_time_cost: int = 3
     authority_url: str = "http://patient:8000/internal/v1/authorization/check"
+    appointment_url: str = "http://appointment:8000"
+    records_url: str = "http://records:8000"
+    pharmacy_url: str = "http://pharmacy:8000"
 
     @classmethod
     def from_env(cls, environment):
@@ -76,7 +79,29 @@ class AuthConfig:
             authority_url=get(
                 "AUTHORITY_URL", "http://patient:8000/internal/v1/authorization/check"
             ),
+            appointment_url=get("APPOINTMENT_URL", "http://appointment:8000").rstrip("/"),
+            records_url=get("RECORDS_URL", "http://records:8000").rstrip("/"),
+            pharmacy_url=get("PHARMACY_URL", "http://pharmacy:8000").rstrip("/"),
         )
+        for service_name, service_url in (
+            ("appointment", config.appointment_url),
+            ("records", config.records_url),
+            ("pharmacy", config.pharmacy_url),
+        ):
+            parsed = urlsplit(service_url)
+            if (
+                parsed.scheme != "http"
+                or parsed.hostname != service_name
+                or parsed.port != 8000
+                or parsed.username
+                or parsed.password
+                or parsed.path
+                or parsed.query
+                or parsed.fragment
+            ):
+                raise ValueError(
+                    f"AUTH {service_name.upper()}_URL must use private DNS http://{service_name}:8000"
+                )
         if config.allow_http and environment != "development":
             raise ValueError(
                 "Insecure cookies require explicit development environment"
@@ -353,50 +378,57 @@ def service_token(config, scope, target="patient"):
     )
 
 
+async def verify_current_role(request: Request, principal: Principal, role: str) -> None:
+    """Ask Patient to verify the selected claimed role against current authority."""
+    if role not in principal.roles:
+        raise HTTPException(403)
+    config = request.app.state.auth_config
+    token = service_token(config, "authorization:check")
+    try:
+        async with httpx.AsyncClient(
+            timeout=2, follow_redirects=False, trust_env=False
+        ) as client:
+            result = await client.post(
+                config.authority_url,
+                json={
+                    "subject_user_id": principal.user_id,
+                    "required_role": role,
+                    "auth_version": principal.auth_version,
+                },
+                headers={
+                    "Authorization": "Bearer " + token,
+                    "X-Delegated-Authorization": "Bearer " + principal.access_token,
+                    "X-Request-ID": str(request.state.request_id),
+                    "X-Correlation-ID": str(request.state.correlation_id),
+                    **(
+                        {"traceparent": request.state.traceparent}
+                        if getattr(request.state, "traceparent", None)
+                        else {}
+                    ),
+                },
+            )
+        if result.status_code != 200:
+            raise HTTPException(503 if result.status_code >= 500 else 403)
+        if len(result.content) > 4096:
+            raise HTTPException(503)
+        c = result.json()
+        if not isinstance(c, dict):
+            raise HTTPException(503)
+        if (
+            c.get("active") is not True
+            or c.get("allowed") is not True
+            or c.get("current_auth_version") != principal.auth_version
+        ):
+            raise HTTPException(403)
+    except (httpx.HTTPError, ValueError, KeyError):
+        raise HTTPException(503) from None
+
+
 def require_current_role(role):
     async def dependency(
         request: Request, principal: Principal = Depends(require_roles(role))
     ):
-        config = request.app.state.auth_config
-        token = service_token(config, "authorization:check")
-        try:
-            async with httpx.AsyncClient(
-                timeout=2, follow_redirects=False, trust_env=False
-            ) as client:
-                result = await client.post(
-                    config.authority_url,
-                    json={
-                        "subject_user_id": principal.user_id,
-                        "required_role": role,
-                        "auth_version": principal.auth_version,
-                    },
-                    headers={
-                        "Authorization": "Bearer " + token,
-                        "X-Delegated-Authorization": "Bearer " + principal.access_token,
-                        "X-Request-ID": str(request.state.request_id),
-                        "X-Correlation-ID": str(request.state.correlation_id),
-                        **(
-                            {"traceparent": request.state.traceparent}
-                            if getattr(request.state, "traceparent", None)
-                            else {}
-                        ),
-                    },
-                )
-            if result.status_code != 200:
-                raise HTTPException(503 if result.status_code >= 500 else 403)
-            if len(result.content) > 4096:
-                raise HTTPException(503)
-            c = result.json()
-            if not isinstance(c, dict):
-                raise HTTPException(503)
-            if (
-                c.get("active") is not True
-                or c.get("allowed") is not True
-                or c.get("current_auth_version") != principal.auth_version
-            ):
-                raise HTTPException(403)
-        except (httpx.HTTPError, ValueError, KeyError):
-            raise HTTPException(503) from None
+        await verify_current_role(request, principal, role)
         return principal
 
     return dependency

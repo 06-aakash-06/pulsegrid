@@ -194,35 +194,48 @@ tariffs = entity(
     value("currency", String(3)),
     UniqueConstraint("charge_code", "revision"),
     check("revision > 0 AND unit_amount_minor >= 0", "tariff_bounds"),
-    check("currency ~ '^[A-Z]{3}$'", "currency_code"),
-    version=False,
+    check("revision <= 9007199254740991 AND unit_amount_minor <= 9007199254740991", "safe_range"),
+    check("currency = 'INR'", "currency_inr"),
+    check("charge_code = 'consultation' OR charge_code ~ '^medicine:[1-9][0-9]{0,18}$'", "charge_code_format"),
+    check("version <= 9007199254740991", "version_safe_range"),
+)
+tariff_heads = Table(
+    "tariff_heads",
+    metadata,
+    Column("charge_code", String(128), primary_key=True, nullable=False),
+    value("last_revision", BigInteger, default="0"),
+    check("last_revision BETWEEN 0 AND 9007199254740991", "last_revision_bounds"),
 )
 invoices = entity(
     "invoices",
-    ref("journey_id"),
+    ref("journey_id", nullable=True),
+    ref("appointment_id", nullable=True),
     ref("patient_id"),
     value("currency", String(3)),
     value("status"),
     value("total_minor", BigInteger, default="0"),
     value("paid_minor", BigInteger, default="0"),
     UniqueConstraint("journey_id"),
-    check(
-        "total_minor >= 0 AND paid_minor >= 0 AND paid_minor <= total_minor",
-        "money_bounds",
-    ),
-    check("currency ~ '^[A-Z]{3}$'", "currency_code"),
+    UniqueConstraint("appointment_id"),
+    states("status", "open paid"),
+    check("total_minor >= 0 AND paid_minor >= 0 AND paid_minor <= total_minor", "money_bounds"),
+    check("total_minor <= 9007199254740991 AND paid_minor <= 9007199254740991", "safe_range"),
+    check("currency = 'INR'", "currency_inr"),
+    check("status <> 'paid' OR (total_minor > 0 AND paid_minor = total_minor)", "paid_state_balance"),
+    check("version <= 9007199254740991", "version_safe_range"),
 )
 invoice_items = entity(
     "invoice_items",
     ref("invoice_id", "invoices.id"),
     value("source_service"),
-    ref("source_event_id"),
+    ref("source_event_id", nullable=True),
     ref("source_item_id"),
     ref("tariff_id", "tariffs.id"),
     value("quantity", Integer),
     value("unit_amount_minor", BigInteger),
     UniqueConstraint("source_service", "source_item_id"),
-    check("quantity > 0 AND unit_amount_minor >= 0", "item_bounds"),
+    check("quantity BETWEEN 1 AND 1000000 AND unit_amount_minor BETWEEN 0 AND 9007199254740991", "item_bounds"),
+    states("source_service", "records pharmacy"),
     version=False,
 )
 invoice_adjustments = entity(
@@ -237,13 +250,16 @@ payments = entity(
     "payments",
     ref("invoice_id", "invoices.id"),
     value("idempotency_key", String(256)),
+    value("request_hash", String(64), nullable=True),
     value("amount_minor", BigInteger),
     value("currency", String(3)),
     value("status"),
     UniqueConstraint("invoice_id", "idempotency_key"),
     check("amount_minor > 0", "positive_amount"),
-    check("currency ~ '^[A-Z]{3}$'", "currency_code"),
-    states("status", "success declined reversed"),
+    check("amount_minor <= 9007199254740991", "safe_range"),
+    check("currency = 'INR'", "currency_inr"),
+    states("status", "success declined"),
+    check("version <= 9007199254740991", "version_safe_range"),
 )
 insurance_providers = entity(
     "insurance_providers",
@@ -280,6 +296,7 @@ insurance_estimates = entity(
     check("estimate_minor >= 0", "nonnegative_estimate"),
 )
 index(invoices, "patient_id", "status", "created_at")
+index(invoice_items, "invoice_id", "created_at", "id", suffix="invoice_id_created_at_id")
 index(payments, "invoice_id", "created_at")
 index(crawler_runs, "provider_id", "created_at")
 index(insurance_estimates, "invoice_id", "calculated_at")
