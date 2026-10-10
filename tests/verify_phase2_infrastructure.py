@@ -55,8 +55,15 @@ with engine.connect() as c:
         constraints=set(c.scalars(text("SELECT conname FROM pg_constraint WHERE contype='x'")))
         expected={x.name for table in metadata.tables.values() for x in table.constraints if x.__class__.__name__=='ExcludeConstraint'}
         assert expected and expected.issubset(constraints)
-    invalid=c.scalar(text("SELECT count(*) FROM audit_entries WHERE entry_hash <> encode(sha256(convert_to(prev_hash || canonical_metadata::text,'UTF8')),'hex')"))
-    assert invalid==0,'Audit digest mismatch'
+    if 'DOMAIN'=='pharmacy':
+        import hashlib
+        from pharmacy_service.operations import _canonical
+        for prev_hash,entry_hash,metadata_value in c.execute(text('SELECT prev_hash,entry_hash,canonical_metadata FROM audit_entries')):
+            assert hashlib.sha256(prev_hash.encode('ascii')+_canonical(metadata_value)).hexdigest()==entry_hash
+    else:
+        invalid=c.scalar(text("SELECT count(*) FROM audit_entries WHERE entry_hash <> encode(sha256(convert_to(prev_hash || canonical_metadata::text,'UTF8')),'hex')"))
+        assert invalid==0,'Audit digest mismatch'
+
     chains=c.execute(text("SELECT chain_id,sequence,prev_hash,entry_hash FROM audit_entries ORDER BY chain_id,sequence")).all()
     heads={x[0]:(x[1],x[2]) for x in c.execute(text('SELECT chain_id,last_sequence,last_hash FROM audit_heads'))}
     previous={}
