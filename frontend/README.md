@@ -1,6 +1,6 @@
 # PulseGrid frontend
 
-React, TypeScript, Vite, and React Router foundation for the synthetic, single-hospital PulseGrid prototype. The screens are layout shells; patient and staff workflows are not implemented and no operational data is fabricated.
+React, TypeScript, Vite, and React Router application for the synthetic, single-hospital PulseGrid prototype. Patient registration, sign-in, in-memory access-token sessions, cookie-based session restoration, and role-gated workspace shells are implemented. Domain workflows remain unimplemented and no operational data is fabricated.
 
 ## Run locally
 
@@ -12,11 +12,11 @@ npm test
 npm run build
 ```
 
-Keep `VITE_API_BASE_URL` empty for same-origin development. Vite proxies `/api` and `/s/` to `PULSEGRID_GATEWAY_URL`, defaulting to `http://127.0.0.1:8080`. Copy `.env.example` to `.env.local` to customize the gateway URL. Start Compose from the repository root first; see [the infrastructure runbook](../docs/infrastructure.md). A production static host needs an equivalent proxy or a separately reviewed CORS policy. The API client uses the proposed `/api/v1/auth/login` and `/api/v1/auth/register` routes only. Domain pages remain empty until their owner APIs and reviewed contracts are available.
+Keep `VITE_API_BASE_URL` empty for same-origin development. Vite proxies `/api` and `/s/` to `PULSEGRID_GATEWAY_URL`, defaulting to `http://127.0.0.1:8080`. Copy `.env.example` to `.env.local` to customize the gateway URL. Start Compose from the repository root first; see [the infrastructure runbook](../docs/infrastructure.md). A production static host needs an equivalent proxy or a separately reviewed CORS policy. Authentication uses the proposed `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/refresh`, and `/api/v1/auth/logout` routes. Domain pages remain empty until their owner APIs and reviewed contracts are available.
 
-The identity contract leaves CSRF token delivery and the header name to deployment configuration. Before sign-in, the host must install `window.pulseGridSecurity.getCsrfHeaders`, which returns the required header or headers. The browser never guesses a CSRF header name. With no provider, sign-in, refresh, and sign-out fail clearly without sending a cookie-authenticated request.
+The identity contract leaves CSRF token delivery and the header name to deployment configuration. Before the frontend starts, the host must install `window.pulseGridSecurity.getCsrfHeaders`, which returns the required header or headers. The browser never guesses a CSRF header name. With no provider, sign-in, refresh, and sign-out fail clearly without sending a cookie-authenticated request.
 
-Access tokens are held only in React memory. The frontend decodes role claims only as navigation hints; each owning API remains responsible for identity, role, ownership, and assignment checks. Refresh tokens are expected in Secure HttpOnly cookies and are never read by the application. Registration does not automatically sign the user in.
+Access tokens are held only in React memory and refreshed from the rotating HttpOnly cookie at startup, before expiry, or once after a protected request receives 401. Concurrent refreshes share one request. The frontend decodes subject and role claims only for authenticated state and navigation hints; each owning API remains responsible for identity, role, ownership, and assignment checks. Refresh tokens are never read by the application. Registration sends only the documented required fields plus optional date of birth and synthetic contact, and does not automatically sign the user in.
 
 ## Routes
 

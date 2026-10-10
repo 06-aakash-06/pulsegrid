@@ -85,6 +85,74 @@ describe("API client", () => {
     expect(new Headers(init?.headers).get("X-CSRF-Integration")).toBe("test-only");
   });
 
+  it("uses cookie credentials and injected CSRF headers for refresh and logout", async () => {
+    const tokenResponse = () => new Response(JSON.stringify({
+      access_token: "short-lived-access-token",
+      token_type: "Bearer",
+      expires_in: 600,
+    }), { status: 200, headers: { "content-type": "application/json" } });
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(tokenResponse())
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const client = createApiClient({ fetcher });
+    const auth = createAuthApi(client, () => ({ "X-CSRF-Integration": "host-managed" }));
+
+    await auth.refresh();
+    await auth.logout();
+
+    expect(fetcher.mock.calls.map(([url]) => url)).toEqual([
+      "/api/v1/auth/refresh",
+      "/api/v1/auth/logout",
+    ]);
+    for (const [, init] of fetcher.mock.calls) {
+      expect(init?.credentials).toBe("include");
+      expect(new Headers(init?.headers).get("X-CSRF-Integration")).toBe("host-managed");
+    }
+  });
+
+  it("sends only contract registration fields without cookie authentication", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ id: "1", user_id: "2", display_name: "Synthetic Patient", version: 1 }), {
+        status: 201,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    const auth = createAuthApi(createApiClient({ fetcher }));
+
+    await auth.register({
+      email: "patient@example.test",
+      password: "synthetic passphrase",
+      display_name: "Synthetic Patient",
+      date_of_birth: "2000-01-02",
+      synthetic_contact: "synthetic@example.test",
+    });
+
+    const [url, init] = fetcher.mock.calls[0];
+    expect(url).toBe("/api/v1/auth/register");
+    expect(JSON.parse(String(init?.body))).toEqual({
+      email: "patient@example.test",
+      password: "synthetic passphrase",
+      display_name: "Synthetic Patient",
+      date_of_birth: "2000-01-02",
+      synthetic_contact: "synthetic@example.test",
+    });
+    expect(init?.credentials).toBe("omit");
+  });
+
+  it("normalizes network failures while preserving request cancellation", async () => {
+    const unavailableFetcher = vi.fn<typeof fetch>().mockRejectedValue(new TypeError("offline"));
+    const unavailableClient = createApiClient({ fetcher: unavailableFetcher });
+    await expect(unavailableClient.request("/api/v1/example")).rejects.toMatchObject({
+      name: "ApiError",
+      status: 0,
+      code: "network_error",
+    });
+
+    const abortFetcher = vi.fn<typeof fetch>().mockRejectedValue(new DOMException("Cancelled", "AbortError"));
+    const abortClient = createApiClient({ fetcher: abortFetcher });
+    await expect(abortClient.request("/api/v1/example")).rejects.toMatchObject({ name: "AbortError" });
+  });
+
   it("rejects protocol-relative API paths before sending a request", async () => {
     const fetcher = vi.fn<typeof fetch>();
     const client = createApiClient({ fetcher });

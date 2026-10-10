@@ -102,3 +102,19 @@ export const workspaces: WorkspaceConfig[] = [
 export function getPageForPath(workspaceConfig: WorkspaceConfig, path: string): WorkspacePage | undefined {
   return workspaceConfig.pages.find((workspacePage) => workspacePage.path === path);
 }
+
+export function getWorkspaceForRoleHints(roleHints: readonly Role[]): WorkspaceConfig | undefined {
+  return workspaces.find((item) => item.roles.some((role) => roleHints.includes(role)));
+}
+
+export function getWorkspaceForPath(
+  path: string,
+  roleHints: readonly Role[],
+): WorkspaceConfig | undefined {
+  return workspaces.find((item) => {
+    if (!item.roles.some((role) => roleHints.includes(role))) return false;
+    if (path === item.basePath) return true;
+    if (!path.startsWith(`${item.basePath}/`)) return false;
+    return item.pages.some(({ path: pagePath }) => path === `${item.basePath}/${pagePath}`);
+  });
+}

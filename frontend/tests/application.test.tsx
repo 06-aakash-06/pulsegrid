@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { PulseGridRoutes } from "../src/app/App";
 import { AuthProvider, type Role } from "../src/auth/authContext";
+import { ApiError } from "../src/api/client";
 import type { AuthApi } from "../src/api/authApi";
 import { workspaces } from "../src/navigation/workspaces";
 
@@ -28,7 +29,7 @@ function authClientFor(role: Role): AuthApi {
   return {
     login: async () => ({ access_token: tokenForRole(role), token_type: "Bearer", expires_in: 600 }),
     register: async () => ({ id: "1", user_id: "2", display_name: "Synthetic Test", version: 1 }),
-    refresh: async () => ({ access_token: tokenForRole(role), token_type: "Bearer", expires_in: 600 }),
+    refresh: async () => { throw new ApiError("No saved session.", 401, "unauthorized"); },
     logout: async () => undefined,
   };
 }
@@ -41,28 +42,28 @@ async function signInAs(role: Role) {
       </MemoryRouter>
     </AuthProvider>,
   );
-  fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "synthetic@example.test" } });
+  fireEvent.change(await screen.findByLabelText("Email address"), { target: { value: "synthetic@example.test" } });
   fireEvent.change(screen.getByLabelText("Password"), { target: { value: "test-only-password" } });
   fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
 }
 
 describe("application routes", () => {
-  it("renders the public landing page and navigates to sign in", () => {
+  it("renders the public landing page and navigates to sign in", async () => {
     renderPath("/");
     expect(screen.getByRole("heading", { name: "One place for care and hospital operations." })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("link", { name: "Sign in to PulseGrid" }));
-    expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
   });
 
-  it("keeps workspace routes behind a real session", () => {
+  it("redirects workspace routes to sign in when no session exists", async () => {
     renderPath("/patient/dashboard");
-    expect(screen.getByRole("heading", { name: "Sign in to continue" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
   });
 
-  it("renders the patient registration form without claiming registration succeeded", () => {
+  it("renders the patient registration form without claiming registration succeeded", async () => {
     renderPath("/register");
-    expect(screen.getByRole("heading", { name: "Create a patient account" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Create a patient account" })).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
@@ -95,6 +96,38 @@ describe("application routes", () => {
 
     fireEvent.click(screen.getByRole("link", { name: "Find a doctor" }));
     expect(await screen.findByRole("heading", { name: "Find a doctor" })).toBeInTheDocument();
+  });
+
+  it("restores a valid refresh-cookie session and redirects away from login", async () => {
+    const restoredClient: AuthApi = {
+      ...authClientFor("patient"),
+      refresh: async () => ({ access_token: tokenForRole("patient"), token_type: "Bearer", expires_in: 600 }),
+    };
+    render(
+      <AuthProvider client={restoredClient}>
+        <MemoryRouter initialEntries={["/login"]}>
+          <PulseGridRoutes />
+        </MemoryRouter>
+      </AuthProvider>,
+    );
+
+    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
+  });
+
+  it("preserves the requested workspace destination through login", async () => {
+    render(
+      <AuthProvider client={authClientFor("patient")}>
+        <MemoryRouter initialEntries={["/patient/appointments?view=upcoming"]}>
+          <PulseGridRoutes />
+        </MemoryRouter>
+      </AuthProvider>,
+    );
+
+    fireEvent.change(await screen.findByLabelText("Email address"), { target: { value: "synthetic@example.test" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "test-only-password" } });
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(await screen.findByRole("heading", { name: "Appointments" })).toBeInTheDocument();
   });
 
   it.each(workspaces)("renders each configured page in the $name workspace", async ({ roles: workspaceRoles, pages }) => {

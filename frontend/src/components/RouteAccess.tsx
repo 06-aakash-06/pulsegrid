@@ -1,34 +1,43 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth, type Role } from "../auth/authContext";
+import { getWorkspaceForRoleHints } from "../navigation/workspaces";
 import { EmptyState } from "./EmptyState";
 
 interface RequireRoleProps {
   roles: Role[];
 }
 
+export function SessionLoading() {
+  return (
+    <main className="access-page" role="status" aria-live="polite">
+      <div className="session-loading">
+        <span aria-hidden="true" className="loading-indicator" />
+        <p>Checking your session…</p>
+      </div>
+    </main>
+  );
+}
+
 export function RequireRole({ roles }: RequireRoleProps) {
   const { state } = useAuth();
   const location = useLocation();
 
+  if (state.status === "checking") return <SessionLoading />;
+
   if (state.status === "anonymous") {
-    return (
-      <main className="access-page">
-        <EmptyState
-          title="Sign in to continue"
-          message="A signed-in account is required to open this workspace."
-          action={<Link className="button button--small" to="/login" state={{ from: location.pathname }}>Go to sign in</Link>}
-        />
-      </main>
-    );
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   if (!roles.some((role) => state.roleHints.includes(role))) {
+    const workspace = getWorkspaceForRoleHints(state.roleHints);
+    if (workspace) {
+      return <Navigate replace to={`${workspace.basePath}/dashboard`} />;
+    }
     return (
       <main className="access-page">
         <EmptyState
-          title="This workspace is not available for this account"
-          message="Workspace visibility uses role hints from the access token. The owning API remains responsible for every access decision."
-          action={<Link className="text-link" to="/">Return to PulseGrid home</Link>}
+          title="No workspace is available for this account"
+          message="The identity service did not return a role for a configured workspace. Contact an administrator to review the account."
         />
       </main>
     );
@@ -43,7 +52,6 @@ export function NotFoundPage() {
       <EmptyState
         title="Page not found"
         message="The address may be incorrect or this page may not be part of the current application foundation."
-        action={<Link className="text-link" to="/">Return to PulseGrid home</Link>}
       />
     </main>
   );

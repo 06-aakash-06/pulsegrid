@@ -56,6 +56,11 @@ export interface ApiClient {
   requestWithMetadata<T>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>>;
 }
 
+export interface AuthenticatedApiClientOptions {
+  getAccessToken(): Promise<string>;
+  refreshAccessToken(expiredAccessToken: string): Promise<string>;
+}
+
 export interface ApiResponse<T> {
   data: T;
   status: number;
@@ -83,6 +88,10 @@ function joinUrl(baseUrl: string, path: string): string {
     throw new ApiConfigurationError("API paths must be origin-relative paths.");
   }
   return `${baseUrl.replace(/\/$/, "")}${path}`;
+}
+
+function isAbortError(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
 }
 
 async function readResponse<T>(response: Response): Promise<T> {
@@ -135,13 +144,24 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
     if (options.ifMatch) headers.set("If-Match", options.ifMatch);
     if (options.traceparent) headers.set("traceparent", options.traceparent);
 
-    const response = await fetcher(joinUrl(baseUrl, path), {
-      method: options.method ?? "GET",
-      headers,
-      credentials: options.credentials ?? "omit",
-      signal: options.signal,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
-    });
+    const url = joinUrl(baseUrl, path);
+    let response: Response;
+    try {
+      response = await fetcher(url, {
+        method: options.method ?? "GET",
+        headers,
+        credentials: options.credentials ?? "omit",
+        signal: options.signal,
+        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      });
+    } catch (error) {
+      if (isAbortError(error)) throw error;
+      throw new ApiError(
+        "Unable to connect to PulseGrid services. Check your connection and try again.",
+        0,
+        "network_error",
+      );
+    }
 
     const data = await readResponse<T>(response);
     return {
@@ -155,6 +175,51 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
   return {
     async request<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
       const response = await requestWithMetadata<T>(path, options);
+      return response.data;
+    },
+    requestWithMetadata,
+  };
+}
+
+/**
+ * Adds an in-memory bearer token to domain requests and retries a single 401
+ * after refreshing. Auth endpoints should continue to use the underlying
+ * client so refresh/login/logout requests cannot recursively refresh.
+ */
+export function createAuthenticatedApiClient(
+  client: ApiClient,
+  options: AuthenticatedApiClientOptions,
+): ApiClient {
+  async function requestWithMetadata<T>(
+    path: string,
+    requestOptions: ApiRequestOptions = {},
+  ): Promise<ApiResponse<T>> {
+    const initialToken = requestOptions.accessToken ?? await options.getAccessToken();
+    try {
+      return await client.requestWithMetadata<T>(path, {
+        ...requestOptions,
+        accessToken: initialToken,
+      });
+    } catch (error) {
+      if (
+        !(error instanceof ApiError) ||
+        error.status !== 401 ||
+        requestOptions.signal?.aborted
+      ) {
+        throw error;
+      }
+
+      const refreshedToken = await options.refreshAccessToken(initialToken);
+      return client.requestWithMetadata<T>(path, {
+        ...requestOptions,
+        accessToken: refreshedToken,
+      });
+    }
+  }
+
+  return {
+    async request<T>(path: string, requestOptions: ApiRequestOptions = {}): Promise<T> {
+      const response = await requestWithMetadata<T>(path, requestOptions);
       return response.data;
     },
     requestWithMetadata,

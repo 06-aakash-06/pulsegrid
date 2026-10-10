@@ -11,6 +11,8 @@ export interface LoginInput {
 
 export interface RegistrationInput extends LoginInput {
   display_name: string;
+  date_of_birth?: string;
+  synthetic_contact?: string;
 }
 
 export interface TokenSet {
@@ -31,10 +33,10 @@ export interface PatientProfile {
 export type CsrfHeadersProvider = () => HeadersInit | Promise<HeadersInit>;
 
 export interface AuthApi {
-  login(input: LoginInput): Promise<TokenSet>;
-  register(input: RegistrationInput): Promise<PatientProfile>;
-  refresh(): Promise<TokenSet>;
-  logout(): Promise<void>;
+  login(input: LoginInput, signal?: AbortSignal): Promise<TokenSet>;
+  register(input: RegistrationInput, signal?: AbortSignal): Promise<PatientProfile>;
+  refresh(signal?: AbortSignal): Promise<TokenSet>;
+  logout(signal?: AbortSignal): Promise<void>;
 }
 
 export function createAuthApi(
@@ -51,32 +53,36 @@ export function createAuthApi(
   };
 
   return {
-    async login(input) {
+    async login(input, signal) {
       return client.request<TokenSet>("/api/v1/auth/login", {
         method: "POST",
         body: input,
         headers: await requiredCsrfHeaders(),
         credentials: "include",
+        signal,
       });
     },
-    async register(input) {
+    async register(input, signal) {
       return client.request<PatientProfile>("/api/v1/auth/register", {
         method: "POST",
         body: input,
+        signal,
       });
     },
-    async refresh() {
+    async refresh(signal) {
       return client.request<TokenSet>("/api/v1/auth/refresh", {
         method: "POST",
         headers: await requiredCsrfHeaders(),
         credentials: "include",
+        signal,
       });
     },
-    async logout() {
+    async logout(signal) {
       await client.request<void>("/api/v1/auth/logout", {
         method: "POST",
         headers: await requiredCsrfHeaders(),
         credentials: "include",
+        signal,
       });
     },
   };
