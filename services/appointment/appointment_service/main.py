@@ -19,6 +19,7 @@ from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
 from .authorization import AuthConfig, Verifier
+from .dependencies import DomainClient
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -40,13 +41,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=f"PulseGrid {SERVICE_NAME.title()} Service",
         version=SERVICE_VERSION,
         description=(
-            "Synthetic educational prototype. Authentication and "
-            "domain operations are not implemented."
+            "Synthetic educational prototype. "
+            "Phase 2.3 appointment operations use PostgreSQL constraints."
         ),
     )
     application.state.auth_config = auth_config
     application.state.auth_verifier = Verifier(auth_config)
     application.state.database = database
+    application.state.domain_client = DomainClient()
     application.state.settings = resolved_settings
     application.state.logger = get_service_logger(
         SERVICE_NAME, resolved_settings.log_level
@@ -84,7 +86,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return error_response(
             request,
             exception.status_code,
-            headers=exception.headers,
+            headers=exception.headers or (
+                {"Retry-After": "1"} if exception.status_code == 503 else None
+            ),
+            code=exception.detail if isinstance(exception.detail, str) and exception.detail in {
+                "slot_occupied", "patient_overlap", "schedule_changed", "revision_gap",
+                "clinical_hold", "cancelled", "appointment_unavailable", "invalid_reference",
+            } else None,
         )
 
     @application.exception_handler(RequestValidationError)

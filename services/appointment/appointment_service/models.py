@@ -322,3 +322,24 @@ index(
 index(queue_entries, "doctor_id", "local_date", "state")
 index(journeys, "patient_id", "updated_at")
 index(checkin_links, "appointment_id", "purpose")
+
+# Phase 2 additions; historic migration revisions remain frozen.
+from sqlalchemy.dialects.postgresql import ExcludeConstraint
+slots.append_constraint(ExcludeConstraint(
+    ('doctor_id', '='), (text("tstzrange(starts_at,ends_at,'[)')"), '&&'),
+    where=text("state <> 'retired'"), name='slots_doctor_overlap', using='gist'))
+slots.append_constraint(check("state IN ('bookable','retired')", 'slots_phase2_state'))
+appointments.append_constraint(ExcludeConstraint(
+    ('patient_id', '='), (text("tstzrange(starts_at,ends_at,'[)')"), '&&'),
+    where=text("state IN ('confirmed','checked_in','in_consultation')"),
+    name='appointments_patient_overlap', using='gist'))
+appointments.append_column(ref('doctor_user_id'))
+appointments.append_constraint(check('doctor_user_id>0', 'appointments_doctor_user_positive'))
+schedule_proposals.append_column(value('reason_code', nullable=True))
+schedule_proposals.append_column(value('conflicting_appointment_ids', JSONB, default="'[]'::jsonb"))
+schedule_proposals.append_column(ref('staff_user_id'))
+clinical_holds = Table('clinical_holds', metadata,
+    ref('appointment_id', 'appointments.id', primary_key=True),
+    ref('consultation_id'), value('state', String(16)),
+    UniqueConstraint('consultation_id'), check('consultation_id>0', 'consultation_positive'),
+    states('state', 'active finalized'))

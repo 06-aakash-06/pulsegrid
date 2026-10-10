@@ -26,6 +26,7 @@ class Database:
             return
         self.engine = create_async_engine(
             self.settings.database_url,
+            isolation_level="READ COMMITTED",
             pool_size=self.settings.db_pool_size,
             max_overflow=self.settings.db_max_overflow,
             pool_timeout=self.settings.db_pool_timeout,

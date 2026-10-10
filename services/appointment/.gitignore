@@ -1,0 +1,5 @@
+.venv/
+.test-runtime/
+__pycache__/
+.pytest_cache/
+*.egg-info/
