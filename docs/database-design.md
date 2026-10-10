@@ -1,6 +1,6 @@
 # Database design
 
-Proposed schema only; Phase 1.1 creates no databases or migrations. Seven separate PostgreSQL logical databases may initially share an instance. Each has its own non-superuser migration owner and restricted runtime account, with no access to other databases. A later host split changes connection configuration, not domain foreign keys. No cross-database joins, FDWs, dblink, shared domain tables, or direct reads of another service's outbox.
+Phase 1.1 defined this schema. Phase 1.4B implements its initial storage in seven service-owned Alembic histories on one PostgreSQL instance; transactional algorithms and the explicitly deferred overlap exclusions remain later work. See [the infrastructure decisions and runbook](infrastructure.md) for exact tables, privileges and deferrals. Seven separate PostgreSQL logical databases initially share an instance. Each has its own non-superuser migration owner and restricted runtime account, with no access to other databases. A later host split changes connection configuration, not domain foreign keys. No cross-database joins, FDWs, dblink, shared domain tables, or direct reads of another service's outbox.
 
 ## Common conventions
 
@@ -17,7 +17,7 @@ An idempotency conflict with different request content returns 409. Concurrent e
 - `users(id PK, email_normalized UNIQUE, password_hash, account_state, auth_version)`; email normalization is documented and consistent, not ad hoc lowercase rules per endpoint.
 - `patient_profiles(id PK, user_id FK users UNIQUE, display_name, date_of_birth, synthetic_contact)`; profile ID is the cross-service `patient_id`.
 - `role_assignments(id PK, user_id FK users, role, UNIQUE(user_id,role))`.
-- `refresh_sessions(id PK, user_id FK users, family_id, token_hash UNIQUE, expires_at, revoked_at, replaced_by_id FK refresh_sessions nullable)`; single-use rotation and family replay detection.
+- `refresh_sessions(id PK, user_id FK users, family_id, token_hash UNIQUE, expires_at, family_expires_at, revoked_at, replaced_by_id FK refresh_sessions nullable)`; single-use rotation and family replay detection.
 - `access_grants` are not here: Records owns patient-to-record access grants. User roles remain here.
 
 Index normalized email; refresh family/user and expiry; patient profile lookup by user. Registration inserts user, patient profile, role, audit and registration outbox atomically. Authentication rotates/revokes sessions atomically. Role mutations increment `auth_version` and emit an account-state event; service replicas do not independently author roles.
@@ -27,7 +27,7 @@ Index normalized email; refresh family/user and expiry; patient profile lookup b
 - `doctors(id PK, staff_user_id ref UNIQUE, display_name, active, profile_version)`.
 - `specialties(id PK, slug UNIQUE, name)` and `doctor_specialties(doctor_id FK doctors,specialty_id FK specialties, composite PK)`.
 - `schedule_versions(id PK, doctor_id FK doctors, revision, timezone, slot_minutes, effective_from, status, UNIQUE(doctor_id,revision))`.
-- `schedule_intervals(id PK, schedule_version_id FK schedule_versions, starts_at, ends_at)`; bounds/length checks and no overlapping intervals per version (GiST exclusion).
+- `schedule_intervals(id PK, schedule_version_id FK schedule_versions, starts_at, ends_at)`; bounds/length checks and no overlapping intervals per version (local GiST exclusion, implemented in Doctor revision `0002_schedule_exclusion`).
 - `schedule_acknowledgements(id PK, schedule_version_id FK schedule_versions UNIQUE, accepted, operational_version, reason)`.
 
 Only one unacknowledged proposal per doctor via a partial unique index for `status='pending'`. Version creation and proposal outbox commit together. Acknowledgement consumption and status update commit together. Index doctor active/name normalized prefix and specialty association; ordinary B-tree text prefix with appropriate collation/operator class provides autocomplete baseline before trie experiments.
@@ -38,7 +38,7 @@ Only one unacknowledged proposal per doctor via a partial unique index for `stat
 - `schedule_proposals(id PK, doctor_id ref, revision, state, UNIQUE(doctor_id,revision))` records accepted/rejected decisions for replay.
 - `slots(id PK, doctor_id ref, schedule_revision, starts_at, ends_at, state, UNIQUE(doctor_id,starts_at,ends_at))`; GiST exclusion `(doctor_id WITH =, tstzrange(starts_at,ends_at,'[)') WITH &&)` for bookable/nonretired slots. Use PostgreSQL `btree_gist` in a later migration, not now.
 - `appointments(id PK, patient_id ref, slot_id FK slots, doctor_id ref, starts_at, ends_at, schedule_revision, state, version)`; copied doctor/time must match locked slot, enforced by transaction and later trigger/constraint design. Partial unique `(slot_id)` WHERE state IN ('confirmed','checked_in','in_consultation'); partial GiST exclusion `(patient_id WITH =, tstzrange(starts_at,ends_at,'[)') WITH &&)` for the same active states prevents overlapping patient bookings across doctors. Historical completed/cancelled rows release capacity.
-- `waitlist_entries(id PK, slot_id FK slots, patient_id ref, state, joined_at, promoted_appointment_id FK appointments nullable)`; partial UNIQUE `(slot_id,patient_id)` WHERE state='waiting'. Order `(slot_id,state,joined_at,id)`; one waiting row per patient/slot. Active appointment and waitlist for that same patient/slot are mutually exclusive, checked under the slot lock.
+- `waitlist_entries(id PK, slot_id FK slots, patient_id ref, state, joined_at, promoted_appointment_id FK appointments nullable, skip_reason nullable)`; partial UNIQUE `(slot_id,patient_id)` WHERE state='waiting'. Order `(slot_id,state,joined_at,id)`; one waiting row per patient/slot. Active appointment and waitlist for that same patient/slot are mutually exclusive, checked under the slot lock.
 - `patient_status_snapshots(patient_id ref PK, active, source_version, observed_at)`; eventual eligibility and reconciliation.
 - `checkin_links(id PK, appointment_id FK appointments, token_hash UNIQUE, purpose, expires_at, consumed_at, revoked_at)`; only one active purpose-specific link by transactional revocation on reissue. Expiry is evaluated at redemption, not a time-dependent index predicate.
 - `queue_counters(doctor_id ref, local_date, next_token, composite PK)` and `queue_entries(id PK, appointment_id FK appointments UNIQUE, doctor_id ref, local_date, token_number, state, UNIQUE(doctor_id,local_date,token_number))`; partial UNIQUE `(doctor_id)` WHERE state='in_consultation'. Counter allocation is atomic, gaps are acceptable.
@@ -52,8 +52,8 @@ Indexes: doctor/time/state availability; patient/time appointment history; waiti
 
 ## Records database
 
-- `consultations(id PK, appointment_id ref UNIQUE, journey_id ref, patient_id ref, doctor_id ref, status, revision)`.
-- `medical_records(id PK, consultation_id FK consultations, patient_id ref, author_user_id ref, version, content, supersedes_id FK medical_records nullable)`; immutable finalized revisions.
+- `consultations(id PK, appointment_id ref UNIQUE, journey_id ref, patient_id ref, doctor_id ref, status, revision, clinical_content JSONB)`.
+- `medical_records(id PK, consultation_id FK consultations, patient_id ref, author_user_id ref, version, revision, content JSONB, supersedes_id FK medical_records nullable)`; immutable finalized revisions.
 - `prescriptions(id PK, consultation_id FK consultations, patient_id ref, journey_id ref, revision, state, UNIQUE(consultation_id,revision))`.
 - `prescription_items(id PK, prescription_id FK prescriptions, medicine_id ref, medicine_snapshot, dosage, instructions, quantity)`; item IDs are stable source references for dispensing limits.
 - `record_access_grants(id PK, patient_id ref, grantee_user_id ref, scope, expires_at, revoked_at)`; explicit minimum scopes.
@@ -62,7 +62,7 @@ Record/prescription finalization, audit and outbox are atomic. Initial prescript
 
 ## Pharmacy database
 
-- `medicines(id PK, sku UNIQUE, normalized_name, active, catalog_version)`.
+- `medicines(id PK, sku UNIQUE, name, normalized_name, active, catalog_version)`.
 - `inventory_batches(id PK, medicine_id FK medicines, batch_code, expires_on, on_hand, reserved, UNIQUE(medicine_id,batch_code))`; CHECK `0 <= reserved <= on_hand`.
 - `prescription_snapshots(prescription_id ref PK, patient_id ref, journey_id ref, revision, state, source_version)` and `prescription_item_snapshots(item_id ref PK, prescription_id FK prescription_snapshots, medicine_id FK medicines, prescribed_quantity, reserved_quantity, dispensed_quantity)`; quantities >=0 and reserved + dispensed <= prescribed. Unavailable local catalog item quarantines event for resolution.
 - `reservations(id PK, prescription_id FK prescription_snapshots, patient_id ref, state, expires_at)`; items `reservation_items(id PK, reservation_id FK reservations, item_id FK prescription_item_snapshots, batch_id FK inventory_batches, quantity)`.
@@ -77,7 +77,7 @@ Lock prescription item allowances and batches in sorted IDs. Reservation atomica
 - `invoices(id PK, journey_id ref UNIQUE, patient_id ref, currency, status, total_minor, paid_minor, version)`.
 - `invoice_items(id PK, invoice_id FK invoices, source_service, source_event_id, source_item_id, tariff_id FK tariffs, quantity, unit_amount_minor, UNIQUE(source_service,source_item_id))`; consultation ID or dispensing item ID is the stable charge source.
 - `invoice_adjustments(id PK, invoice_id FK invoices, amount_minor, reason, source_adjustment_id UNIQUE)`; never delete posted charges.
-- `payments(id PK, invoice_id FK invoices, idempotency_key, amount_minor, status, UNIQUE(invoice_id,idempotency_key))`; payment ledger + invoice counters update in one locked transaction, prevent overpayment unless explicitly designing credits later.
+- `payments(id PK, invoice_id FK invoices, idempotency_key, amount_minor, currency, status, UNIQUE(invoice_id,idempotency_key))`; payment ledger + invoice counters update in one locked transaction, prevent overpayment unless explicitly designing credits later.
 - `insurance_providers(id PK, synthetic_slug UNIQUE, allowlisted_url)`, `crawler_runs(id PK, provider_id FK insurance_providers, fetched_at, state, content_hash, error_code)` and `insurance_rules(id PK, provider_id FK insurance_providers, source_run_id FK crawler_runs, revision, effective_from, rule_data, UNIQUE(provider_id,revision))`.
 - `insurance_estimates(id PK, invoice_id FK invoices, rules_id FK insurance_rules, estimate_minor, calculated_at, freshness_state)`.
 
@@ -94,4 +94,4 @@ Request acceptance/history/outbox is atomic. Staff claim uses a conditional stat
 
 No cross-service transaction rollback is promised. Inbox/outbox effects, source versions, durable uniqueness and compensating commands handle duplicates and delay. Retain outbox payloads for at least seven days after confirmed publish; active retries never expire silently. Inbox deduplication minimum 30 days; business source keys survive for aggregate lifetime. Older replay requires explicit reconciliation and cannot rely on inbox retention alone. Values are prototype defaults and must be configurable.
 
-Use bounded connection pools per replica, query deadlines and migration ownership per service. Add indexes based on measured query plans; avoid indexing full sensitive text. Paginate histories using stable cursors. Do not partition or shard domain tables before evidence justifies it. Backups and restore exercises must use synthetic data; one shared instance still has correlated failure and restore risks. No database performance, collision, concurrency, or recovery measurements exist yet.
+Use bounded connection pools per replica, query deadlines and migration ownership per service. Add indexes based on measured query plans; avoid indexing full sensitive text. Paginate histories using stable cursors. Do not partition or shard domain tables before evidence justifies it. Backups and restore exercises must use synthetic data; one shared instance still has correlated failure and restore risks. Phase 1.4B checks connectivity, privileges, schema and controlled PostgreSQL outage/recovery; it does not measure performance, collisions, booking concurrency or backup recovery.

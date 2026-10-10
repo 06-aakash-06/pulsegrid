@@ -2,7 +2,7 @@
 
 ## Scope and decisions
 
-PulseGrid serves one synthetic hospital. It includes patient and staff workflows, emergency request tracking, and a restricted distributed systems control room. Multi-hospital networking, emergency bed management, family health profiles, predictive autoscaling, and forecasting are excluded. No component in this document is implemented in Phase 1.1.
+PulseGrid serves one synthetic hospital. It includes patient and staff workflows, emergency request tracking, and a restricted distributed systems control room. Multi-hospital networking, emergency bed management, family health profiles, predictive autoscaling, and forecasting are excluded. Phase 1.1 defined this architecture. Phase 1.4B implements the local database, migration and gateway foundation described in [infrastructure.md](infrastructure.md); hospital workflows and algorithm components remain proposed.
 
 The stack is React/TypeScript, Python/FastAPI, PostgreSQL, Redis, RabbitMQ, Traefik, Docker Compose, Locust, Prometheus/Grafana, and OpenTelemetry. Avoid Kubernetes and additional infrastructure unless a later requirement justifies it through an architecture decision documented here.
 

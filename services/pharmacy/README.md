@@ -13,9 +13,11 @@ python -m pip install -e '.[test]'
 uvicorn pharmacy_service.main:app --host 127.0.0.1 --port 8000
 ```
 
-Configuration is read from `PULSEGRID_PHARMACY_ENVIRONMENT` and `PULSEGRID_PHARMACY_LOG_LEVEL`. Defaults are `development` and `INFO`. No credentials or database connection settings are defined in this scaffold.
+Configuration is read from `PULSEGRID_PHARMACY_ENVIRONMENT` and `PULSEGRID_PHARMACY_LOG_LEVEL`. Defaults are `development` and `INFO`. Database configuration uses the same service prefix with `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` and pool/deadline settings. See [the infrastructure runbook](../../docs/infrastructure.md).
 
-`GET /health/live` reports process liveness. `GET /health/ready` returns HTTP 503: the application process is ready, while the required database dependency is `unconfigured` because no database adapter or infrastructure exists yet. It does not claim database readiness.
+`GET /health/live` reports process liveness. `GET /health/ready` checks PostgreSQL with a bounded SELECT: 200 when connected, 503 when unconfigured/unavailable. Redis and RabbitMQ are not yet required. The same routes are exposed through the gateway under the domain API prefix.
+
+This package owns `pharmacy_db`, `pharmacy_app` runtime credentials and an independent Alembic history. Compose runs `pharmacy-migrate` with the separate `pharmacy_migration` owner before starting the API. From the repository root, run `docker compose run --rm pharmacy-migrate` to apply outstanding revisions. Do not use runtime schema creation or another service's models/database.
 
 Run the colocated tests with `python -m pytest`. Build an independent container from this directory with `docker build -t pulsegrid-pharmacy .`.
 

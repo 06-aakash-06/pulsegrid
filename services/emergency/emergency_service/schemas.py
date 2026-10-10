@@ -29,12 +29,12 @@ class LivenessResponse(BaseModel):
 
 
 class DependencyReadiness(BaseModel):
-    status: Literal["unconfigured"]
+    status: Literal["unconfigured", "available", "unavailable"]
     required: bool
 
 
 class ReadinessResponse(BaseModel):
-    status: Literal["not_ready"]
+    status: Literal["ready", "not_ready"]
     service: str
     application: Literal["ready"]
     dependencies: dict[str, DependencyReadiness] = Field(min_length=1)

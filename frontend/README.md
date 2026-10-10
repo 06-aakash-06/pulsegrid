@@ -5,14 +5,14 @@ React, TypeScript, Vite, and React Router foundation for the synthetic, single-h
 ## Run locally
 
 ```sh
-npm install
+npm ci
 npm run dev
 npm run typecheck
 npm test
 npm run build
 ```
 
-Set `VITE_API_BASE_URL` to the configured API origin when a gateway is available. It defaults to the current origin. The API client uses the proposed `/api/v1/auth/login` and `/api/v1/auth/register` routes only. Domain pages remain empty until their owner APIs and reviewed contracts are available.
+Keep `VITE_API_BASE_URL` empty for same-origin development. Vite proxies `/api` and `/s/` to `PULSEGRID_GATEWAY_URL`, defaulting to `http://127.0.0.1:8080`. Copy `.env.example` to `.env.local` to customize the gateway URL. Start Compose from the repository root first; see [the infrastructure runbook](../docs/infrastructure.md). A production static host needs an equivalent proxy or a separately reviewed CORS policy. The API client uses the proposed `/api/v1/auth/login` and `/api/v1/auth/register` routes only. Domain pages remain empty until their owner APIs and reviewed contracts are available.
 
 The identity contract leaves CSRF token delivery and the header name to deployment configuration. Before sign-in, the host must install `window.pulseGridSecurity.getCsrfHeaders`, which returns the required header or headers. The browser never guesses a CSRF header name. With no provider, sign-in, refresh, and sign-out fail clearly without sending a cookie-authenticated request.
 

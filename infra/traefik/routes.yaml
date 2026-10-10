@@ -1,0 +1,59 @@
+http:
+  routers:
+    patient:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/patients`) || PathPrefix(`/api/v1/patients/`) || Path(`/api/v1/auth`) || PathPrefix(`/api/v1/auth/`)"
+      service: patient
+    doctor:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/doctors`) || PathPrefix(`/api/v1/doctors/`)"
+      service: doctor
+    appointment:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/appointments`) || PathPrefix(`/api/v1/appointments/`) || PathPrefix(`/s/`)"
+      service: appointment
+    records:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/records`) || PathPrefix(`/api/v1/records/`)"
+      service: records
+    pharmacy:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/pharmacy`) || PathPrefix(`/api/v1/pharmacy/`)"
+      service: pharmacy
+    billing:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/billing`) || PathPrefix(`/api/v1/billing/`)"
+      service: billing
+    emergency:
+      entryPoints: [web]
+      rule: "Path(`/api/v1/emergencies`) || PathPrefix(`/api/v1/emergencies/`)"
+      service: emergency
+  services:
+    patient:
+      loadBalancer:
+        servers:
+          - url: http://patient:8000
+    doctor:
+      loadBalancer:
+        servers:
+          - url: http://doctor:8000
+    appointment:
+      loadBalancer:
+        servers:
+          - url: http://appointment:8000
+    records:
+      loadBalancer:
+        servers:
+          - url: http://records:8000
+    pharmacy:
+      loadBalancer:
+        servers:
+          - url: http://pharmacy:8000
+    billing:
+      loadBalancer:
+        servers:
+          - url: http://billing:8000
+    emergency:
+      loadBalancer:
+        servers:
+          - url: http://emergency:8000

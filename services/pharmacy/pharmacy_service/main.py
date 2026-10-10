@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
+from sqlalchemy.exc import SQLAlchemyError
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .api.health import health_router
 from .api.router import api_router
-from .constants import SERVICE_NAME, SERVICE_VERSION
+from .constants import API_PREFIX, SERVICE_NAME, SERVICE_VERSION
+from .database import Database
 from .errors import error_response
 from .logging_config import get_service_logger
 from .middleware import install_request_context
@@ -19,19 +22,34 @@ from .settings import Settings
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create an independently configurable service application."""
     resolved_settings = settings or Settings.from_env()
+    database = Database(resolved_settings)
+
+    @asynccontextmanager
+    async def lifespan(application: FastAPI):
+        await database.start()
+        try:
+            yield
+        finally:
+            await database.close()
+
     application = FastAPI(
+        lifespan=lifespan,
         title=f"PulseGrid {SERVICE_NAME.title()} Service",
         version=SERVICE_VERSION,
         description=(
-            "Synthetic educational prototype scaffold. Business operations and "
-            "database adapters are not implemented."
+            "Synthetic educational prototype. Authentication and "
+            "domain operations are not implemented."
         ),
     )
+    application.state.database = database
     application.state.settings = resolved_settings
     application.state.logger = get_service_logger(
         SERVICE_NAME, resolved_settings.log_level
     )
     application.include_router(health_router)
+    application.include_router(
+        health_router, prefix=API_PREFIX, include_in_schema=False
+    )
     application.include_router(api_router)
     install_request_context(application)
 
@@ -62,6 +80,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             422,
             details={"fields": fields},
         )
+
+    @application.exception_handler(SQLAlchemyError)
+    async def database_exception_handler(
+        request: Request, _exception: SQLAlchemyError
+    ) -> JSONResponse:
+        return error_response(request, 503)
 
     @application.exception_handler(Exception)
     async def unexpected_exception_handler(

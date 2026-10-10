@@ -1,0 +1,431 @@
+name: pulsegrid
+services:
+  postgres:
+    image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
+    environment:
+      POSTGRES_USER: pulsegrid_bootstrap
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate .env first}
+      PATIENT_DB_PASSWORD: ${PATIENT_DB_PASSWORD:?Generate .env first}
+      PATIENT_MIGRATION_PASSWORD: ${PATIENT_MIGRATION_PASSWORD:?Generate .env first}
+      DOCTOR_DB_PASSWORD: ${DOCTOR_DB_PASSWORD:?Generate .env first}
+      DOCTOR_MIGRATION_PASSWORD: ${DOCTOR_MIGRATION_PASSWORD:?Generate .env first}
+      APPOINTMENT_DB_PASSWORD: ${APPOINTMENT_DB_PASSWORD:?Generate .env first}
+      APPOINTMENT_MIGRATION_PASSWORD: ${APPOINTMENT_MIGRATION_PASSWORD:?Generate .env first}
+      RECORDS_DB_PASSWORD: ${RECORDS_DB_PASSWORD:?Generate .env first}
+      RECORDS_MIGRATION_PASSWORD: ${RECORDS_MIGRATION_PASSWORD:?Generate .env first}
+      PHARMACY_DB_PASSWORD: ${PHARMACY_DB_PASSWORD:?Generate .env first}
+      PHARMACY_MIGRATION_PASSWORD: ${PHARMACY_MIGRATION_PASSWORD:?Generate .env first}
+      BILLING_DB_PASSWORD: ${BILLING_DB_PASSWORD:?Generate .env first}
+      BILLING_MIGRATION_PASSWORD: ${BILLING_MIGRATION_PASSWORD:?Generate .env first}
+      EMERGENCY_DB_PASSWORD: ${EMERGENCY_DB_PASSWORD:?Generate .env first}
+      EMERGENCY_MIGRATION_PASSWORD: ${EMERGENCY_MIGRATION_PASSWORD:?Generate .env first}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks: [database]
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+  redis:
+    image: redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Generate .env first}
+    command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD" --maxmemory 64mb --maxmemory-policy noeviction']
+    volumes: [redis_data:/data]
+    networks: [backbone]
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -q PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  rabbitmq:
+    image: rabbitmq:4-alpine@sha256:2cb43283d8bbd3caa6c0f0dc00e96c8de772df33df7fd8af6aee4d605aeb8ada
+    environment:
+      RABBITMQ_DEFAULT_USER: pulsegrid_infra
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Generate .env first}
+    volumes: [rabbitmq_data:/var/lib/rabbitmq]
+    networks: [backbone]
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, rabbitmq-diagnostics, -q, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+  traefik:
+    image: traefik:v3@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c
+    ports: ['127.0.0.1:${GATEWAY_PORT:-8080}:8080']
+    volumes:
+      - ./infra/traefik:/etc/traefik:ro
+    networks:
+      edge:
+        ipv4_address: ${GATEWAY_IP:-172.29.40.2}
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test: [CMD, traefik, healthcheck, --ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  patient:
+    image: pulsegrid-patient:local
+    build: ./services/patient
+    environment:
+      PULSEGRID_PATIENT_DB_HOST: "postgres"
+      PULSEGRID_PATIENT_DB_NAME: "patient_db"
+      PULSEGRID_PATIENT_DB_USER: "patient_app"
+      PULSEGRID_PATIENT_DB_PASSWORD: "${PATIENT_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_PATIENT_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_PATIENT_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_PATIENT_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_PATIENT_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_PATIENT_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_PATIENT_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      patient-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  patient-migrate:
+    image: pulsegrid-patient:local
+    build: ./services/patient
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_PATIENT_DB_HOST: postgres
+      PULSEGRID_PATIENT_DB_NAME: patient_db
+      PULSEGRID_PATIENT_DB_USER: patient_migration
+      PULSEGRID_PATIENT_DB_PASSWORD: ${PATIENT_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+  doctor:
+    image: pulsegrid-doctor:local
+    build: ./services/doctor
+    environment:
+      PULSEGRID_DOCTOR_DB_HOST: "postgres"
+      PULSEGRID_DOCTOR_DB_NAME: "doctor_db"
+      PULSEGRID_DOCTOR_DB_USER: "doctor_app"
+      PULSEGRID_DOCTOR_DB_PASSWORD: "${DOCTOR_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_DOCTOR_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_DOCTOR_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_DOCTOR_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_DOCTOR_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_DOCTOR_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_DOCTOR_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      doctor-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  doctor-migrate:
+    image: pulsegrid-doctor:local
+    build: ./services/doctor
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_DOCTOR_DB_HOST: postgres
+      PULSEGRID_DOCTOR_DB_NAME: doctor_db
+      PULSEGRID_DOCTOR_DB_USER: doctor_migration
+      PULSEGRID_DOCTOR_DB_PASSWORD: ${DOCTOR_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+  appointment:
+    image: pulsegrid-appointment:local
+    build: ./services/appointment
+    environment:
+      PULSEGRID_APPOINTMENT_DB_HOST: "postgres"
+      PULSEGRID_APPOINTMENT_DB_NAME: "appointment_db"
+      PULSEGRID_APPOINTMENT_DB_USER: "appointment_app"
+      PULSEGRID_APPOINTMENT_DB_PASSWORD: "${APPOINTMENT_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_APPOINTMENT_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_APPOINTMENT_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_APPOINTMENT_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_APPOINTMENT_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_APPOINTMENT_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_APPOINTMENT_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      appointment-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  appointment-migrate:
+    image: pulsegrid-appointment:local
+    build: ./services/appointment
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_APPOINTMENT_DB_HOST: postgres
+      PULSEGRID_APPOINTMENT_DB_NAME: appointment_db
+      PULSEGRID_APPOINTMENT_DB_USER: appointment_migration
+      PULSEGRID_APPOINTMENT_DB_PASSWORD: ${APPOINTMENT_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+  records:
+    image: pulsegrid-records:local
+    build: ./services/records
+    environment:
+      PULSEGRID_RECORDS_DB_HOST: "postgres"
+      PULSEGRID_RECORDS_DB_NAME: "records_db"
+      PULSEGRID_RECORDS_DB_USER: "records_app"
+      PULSEGRID_RECORDS_DB_PASSWORD: "${RECORDS_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_RECORDS_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_RECORDS_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_RECORDS_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_RECORDS_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_RECORDS_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_RECORDS_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      records-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  records-migrate:
+    image: pulsegrid-records:local
+    build: ./services/records
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_RECORDS_DB_HOST: postgres
+      PULSEGRID_RECORDS_DB_NAME: records_db
+      PULSEGRID_RECORDS_DB_USER: records_migration
+      PULSEGRID_RECORDS_DB_PASSWORD: ${RECORDS_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+  pharmacy:
+    image: pulsegrid-pharmacy:local
+    build: ./services/pharmacy
+    environment:
+      PULSEGRID_PHARMACY_DB_HOST: "postgres"
+      PULSEGRID_PHARMACY_DB_NAME: "pharmacy_db"
+      PULSEGRID_PHARMACY_DB_USER: "pharmacy_app"
+      PULSEGRID_PHARMACY_DB_PASSWORD: "${PHARMACY_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_PHARMACY_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_PHARMACY_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_PHARMACY_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_PHARMACY_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_PHARMACY_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_PHARMACY_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pharmacy-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  pharmacy-migrate:
+    image: pulsegrid-pharmacy:local
+    build: ./services/pharmacy
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_PHARMACY_DB_HOST: postgres
+      PULSEGRID_PHARMACY_DB_NAME: pharmacy_db
+      PULSEGRID_PHARMACY_DB_USER: pharmacy_migration
+      PULSEGRID_PHARMACY_DB_PASSWORD: ${PHARMACY_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+  billing:
+    image: pulsegrid-billing:local
+    build: ./services/billing
+    environment:
+      PULSEGRID_BILLING_DB_HOST: "postgres"
+      PULSEGRID_BILLING_DB_NAME: "billing_db"
+      PULSEGRID_BILLING_DB_USER: "billing_app"
+      PULSEGRID_BILLING_DB_PASSWORD: "${BILLING_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_BILLING_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_BILLING_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_BILLING_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_BILLING_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_BILLING_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_BILLING_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      billing-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  billing-migrate:
+    image: pulsegrid-billing:local
+    build: ./services/billing
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_BILLING_DB_HOST: postgres
+      PULSEGRID_BILLING_DB_NAME: billing_db
+      PULSEGRID_BILLING_DB_USER: billing_migration
+      PULSEGRID_BILLING_DB_PASSWORD: ${BILLING_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+  emergency:
+    image: pulsegrid-emergency:local
+    build: ./services/emergency
+    environment:
+      PULSEGRID_EMERGENCY_DB_HOST: "postgres"
+      PULSEGRID_EMERGENCY_DB_NAME: "emergency_db"
+      PULSEGRID_EMERGENCY_DB_USER: "emergency_app"
+      PULSEGRID_EMERGENCY_DB_PASSWORD: "${EMERGENCY_DB_PASSWORD:?Generate .env first}"
+      FORWARDED_ALLOW_IPS: "${GATEWAY_IP:-172.29.40.2}"
+      PULSEGRID_EMERGENCY_DB_POOL_SIZE: "${DB_POOL_SIZE:-3}"
+      PULSEGRID_EMERGENCY_DB_MAX_OVERFLOW: "${DB_MAX_OVERFLOW:-2}"
+      PULSEGRID_EMERGENCY_DB_POOL_TIMEOUT: "${DB_POOL_TIMEOUT:-2}"
+      PULSEGRID_EMERGENCY_DB_CONNECT_TIMEOUT: "${DB_CONNECT_TIMEOUT:-2}"
+      PULSEGRID_EMERGENCY_DB_STATEMENT_TIMEOUT_MS: "${DB_STATEMENT_TIMEOUT_MS:-2000}"
+      PULSEGRID_EMERGENCY_DB_HEALTH_TIMEOUT: "${DB_HEALTH_TIMEOUT:-3}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      emergency-migrate:
+        condition: service_completed_successfully
+    networks: [edge, database]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=4)"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+  emergency-migrate:
+    image: pulsegrid-emergency:local
+    build: ./services/emergency
+    command: [alembic, upgrade, head]
+    environment:
+      PULSEGRID_EMERGENCY_DB_HOST: postgres
+      PULSEGRID_EMERGENCY_DB_NAME: emergency_db
+      PULSEGRID_EMERGENCY_DB_USER: emergency_migration
+      PULSEGRID_EMERGENCY_DB_PASSWORD: ${EMERGENCY_MIGRATION_PASSWORD:?Generate .env first}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [database]
+    restart: 'no'
+    mem_limit: 192m
+    cpus: 0.5
+networks:
+  edge:
+    ipam:
+      config:
+        - subnet: ${EDGE_SUBNET:-172.29.40.0/24}
+  database:
+    internal: true
+  backbone:
+    internal: true
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:

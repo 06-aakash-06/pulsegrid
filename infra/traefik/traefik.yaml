@@ -1,0 +1,22 @@
+api:
+  dashboard: false
+  insecure: false
+entryPoints:
+  web:
+    address: ':8080'
+    http:
+      aliasHeadersStrategy: reject
+    forwardedHeaders:
+      insecure: false
+  health:
+    address: ':8082'
+    http:
+      aliasHeadersStrategy: reject
+ping:
+  entryPoint: health
+providers:
+  file:
+    filename: /etc/traefik/routes.yaml
+    watch: true
+log:
+  level: WARN

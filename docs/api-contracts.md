@@ -4,7 +4,7 @@ Proposed contracts, not implemented endpoints. Each service will publish its own
 
 ## Common protocol
 
-Routes are `/api/v1/<domain>/...`, internal routes `/internal/v1/...`. `/s/{token}` is the Appointment public link landing resolver routed by Traefik; it never performs check-in as a GET. `/health/live`, `/health/ready`, `/metrics` are service-local infrastructure routes, with metrics protected from public access.
+Routes are `/api/v1/<domain>/...`, internal routes `/internal/v1/...`. `/s/{token}` is the Appointment public link landing resolver routed by Traefik; it never performs check-in as a GET. `/health/live`, `/health/ready`, `/metrics` are service-local infrastructure routes, with metrics protected from public access. Phase 1.4B also exposes additive `<domain-prefix>/health/live` and `<domain-prefix>/health/ready` gateway aliases; PostgreSQL connectivity is required for readiness. Other routes below remain proposed.
 
 Requests carry `Authorization: Bearer <access_token>` when required, `X-Request-ID` (validated UUID or generated), `X-Correlation-ID` (validated UUID or generated), W3C `traceparent`, and `Idempotency-Key` for retryable POST commands. Write updates of existing aggregates require `If-Match: "<version>"`; successful reads/writes return `ETag`. Missing precondition returns 428; stale version 412. DELETE commands that release reservations/waitlists also use If-Match and are idempotent by resource state. No access decisions rely on a caller-provided actor/role header.
 

@@ -1,6 +1,6 @@
 # PulseGrid
 
-Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. The Phase 1.1 architecture foundation and Phase 1.2 service/frontend scaffolds are integrated. Seven minimal FastAPI applications expose liveness and explicitly unconfigured database readiness, and the React/TypeScript UI provides pending route shells for patient, staff, and operations roles. Authentication is not connected and domain workflows remain unimplemented.
+Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. Phase 1.4B integrates PostgreSQL, service-owned migrations, Redis, RabbitMQ and Traefik with the seven FastAPI foundations. The React/TypeScript UI provides pending route shells for patient, staff and operations roles. Authentication and domain workflows remain unimplemented.
 
 Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments and insurance providers are simulated.
 
@@ -14,10 +14,11 @@ PostgreSQL transactions and constraints enforce booking, inventory, and payment 
 
 - [Architecture](docs/architecture.md): flows, resilience, consistency, scaling, algorithm integrations.
 - [Service boundaries](docs/service-boundaries.md): responsibilities, ownership, dependencies.
-- [Database design](docs/database-design.md): proposed models, keys, constraints, transactions.
+- [Database design](docs/database-design.md): initial schema, keys, constraints and planned transactions.
 - [API contracts](docs/api-contracts.md): versioned REST routes, schemas, authorization, failure semantics.
 - [Event contracts](docs/event-contracts.md): event catalog, schemas, outbox, replay, dead letters.
 - [Security](docs/security.md): identity, authorization, sensitive operations, privacy.
+- [Local infrastructure](docs/infrastructure.md): startup, database isolation, migrations, gateway, tests and limits.
 - [Roadmap](docs/development-roadmap.md): nine phases and acceptance gates.
 - [Agent instructions](AGENTS.md): durable repository and parallel-work rules.
 
@@ -28,17 +29,38 @@ PulseGrid/
   README.md
   AGENTS.md
   .gitignore
-  docs/                         # implemented documentation only
-  services/                     # seven independently packaged FastAPI scaffolds
+  docs/                         # architecture, contracts and development runbooks
+  services/                     # seven independent FastAPI packages and migration histories
     patient/ doctor/ appointment/ records/ pharmacy/ billing/ emergency/
   frontend/                     # React/TypeScript patient, staff, and ops shells
   contracts/                    # future: reviewed OpenAPI and event JSON schemas
-  infra/                        # future: Compose, Traefik, broker, monitoring config
-  tests/                        # future: cross-service contract/integration tests
+  infra/                        # Compose database bootstrap, Traefik and credential generation
+  tests/                        # real infrastructure verification (no domain journeys yet)
   experiments/                  # future: Locust, chaos, algorithm benchmarks
 ```
 
-The current scope is scaffolding: service business routes and database adapters, connected authentication, executable contracts, and deployment infrastructure have not been implemented. Backend smoke tests and frontend UI tests are colocated with their packages. Follow [the roadmap](docs/development-roadmap.md) for later work; no remote publication is configured or authorized.
+## Local development
+
+With Docker running, from this directory:
+
+```sh
+python3 infra/scripts/init-env.py
+docker compose config --quiet
+docker compose up -d --build
+python3 tests/verify_infrastructure.py
+```
+
+The script creates private, ignored credentials; never commit `.env`. All seven migration jobs must exit 0 before their APIs start. Gateway: `http://127.0.0.1:8080`; example readiness: `/api/v1/patients/health/ready`. PostgreSQL is required for readiness; Redis and RabbitMQ are not yet application dependencies.
+
+```sh
+cd frontend
+npm ci
+npm run dev
+```
+
+Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
+
+Service business routes, connected authentication, executable API/event contracts and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
 
 ## Development conventions
 
