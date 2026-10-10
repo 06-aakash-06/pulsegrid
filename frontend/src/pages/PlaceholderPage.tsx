@@ -16,9 +16,9 @@ export function PlaceholderPage({ page, workspaceName }: PlaceholderPageProps) {
           <h1>{page.title}</h1>
           <p className="page-description">{page.description}</p>
         </div>
-        <StatusBadge>Integration pending</StatusBadge>
+        <StatusBadge>Unavailable in Phase 2</StatusBadge>
       </div>
-      <EmptyState title="No service data is connected" message={page.emptyMessage} />
+      <EmptyState title="Future workflow unavailable" message="This workflow is deferred. Phase 2 does not implement automatic waitlists, QR check-in, live queues, patient journey automation, insurance, monitoring or administrative settings." />
     </div>
   );
 }

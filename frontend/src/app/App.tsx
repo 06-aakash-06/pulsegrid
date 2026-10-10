@@ -7,7 +7,7 @@ import { WorkspaceLayout } from "../layouts/WorkspaceLayout";
 import { workspaces } from "../navigation/workspaces";
 import { LoginPage, RegistrationPage } from "../pages/AuthPages";
 import { HomePage } from "../pages/HomePage";
-import { PlaceholderPage } from "../pages/PlaceholderPage";
+import { HospitalPage } from "../hospital/HospitalPage";
 
 export function App() {
   return (
@@ -35,7 +35,7 @@ export function PulseGridRoutes() {
             <Route index element={<Navigate replace to="dashboard" />} />
             {workspace.pages.map((page) => (
               <Route
-                element={<PlaceholderPage page={page} workspaceName={workspace.name} />}
+                element={<HospitalPage key={`${workspace.basePath}/${page.path}`} page={page} workspace={workspace} />}
                 key={page.path}
                 path={page.path}
               />

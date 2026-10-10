@@ -85,7 +85,7 @@ describe("application routes", () => {
     await signInAs(role);
     expect(await screen.findAllByText(workspaceName)).not.toHaveLength(0);
     expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
-    expect(screen.getByText("No service data is connected")).toBeInTheDocument();
+    if (role === "ops") expect(screen.getByText("Future workflow unavailable")).toBeInTheDocument();
   });
 
   it("supports keyboard-visible responsive navigation interaction", async () => {
@@ -127,7 +127,7 @@ describe("application routes", () => {
     fireEvent.change(await screen.findByLabelText("Email address"), { target: { value: "synthetic@example.test" } });
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "test-only-password" } });
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
-    expect(await screen.findByRole("heading", { name: "Appointments" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Appointments", level: 1 })).toBeInTheDocument();
   });
 
   it.each(workspaces)("renders each configured page in the $name workspace", async ({ roles: workspaceRoles, pages }) => {
@@ -135,7 +135,7 @@ describe("application routes", () => {
     expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
     for (const page of pages) {
       fireEvent.click(screen.getByRole("link", { name: page.title }));
-      expect(await screen.findByRole("heading", { name: page.title })).toBeInTheDocument();
+      expect(await screen.findByRole("heading", { name: page.title, level: 1 })).toBeInTheDocument();
     }
   });
 });

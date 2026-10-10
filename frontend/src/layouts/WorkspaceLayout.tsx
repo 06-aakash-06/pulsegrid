@@ -2,7 +2,7 @@ import { useState, type KeyboardEvent } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Brand } from "../components/Brand";
 import { useAuth } from "../auth/authContext";
-import type { WorkspaceConfig } from "../navigation/workspaces";
+import { workspaces, type WorkspaceConfig } from "../navigation/workspaces";
 
 interface WorkspaceLayoutProps {
   workspace: WorkspaceConfig;
@@ -35,6 +35,13 @@ export function WorkspaceLayout({ workspace }: WorkspaceLayoutProps) {
           <strong>{workspace.name}</strong>
         </div>
         <nav aria-label={`${workspace.roleLabel} navigation`} className="workspace-nav" id="workspace-navigation">
+          {state.status === "authenticated" && workspaces.filter(item => item.roles.some(role => state.roleHints.includes(role))).length > 1 ? (
+            <div className="workspace-switcher" aria-label="Available workspaces">
+              {workspaces.filter(item => item.roles.some(role => state.roleHints.includes(role))).map(item => (
+                <NavLink key={item.basePath} to={`${item.basePath}/dashboard`} onClick={() => setMenuOpen(false)}>{item.name}</NavLink>
+              ))}
+            </div>
+          ) : null}
           <span className="nav-section-label">Menu</span>
           {workspace.navigation.map((item) => (
             <NavLink
@@ -50,7 +57,7 @@ export function WorkspaceLayout({ workspace }: WorkspaceLayoutProps) {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="connection-status"><span aria-hidden="true" />API connection pending</div>
+          <div className="connection-status"><span aria-hidden="true" />Synthetic hospital prototype</div>
           <button className="sign-out-button" onClick={handleLogout} type="button">Sign out</button>
         </div>
       </aside>

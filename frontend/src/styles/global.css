@@ -1012,3 +1012,27 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Phase 2 functional controls reuse the existing workspace palette and spacing. */
+.hospital-panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
+.hospital-panel h2 { margin-top: 0; font-size: 21px; }
+.hospital-form { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 18px; }
+.hospital-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); gap: 14px; margin-block: 12px; }
+.workspace-content label { display: grid; gap: 7px; margin-block: 10px; font-size: 14px; font-weight: 600; }
+.workspace-content input, .workspace-content textarea, .workspace-content select { width: 100%; max-width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; background: #fff; color: var(--ink); }
+.workspace-content textarea { min-height: 96px; resize: vertical; }
+.workspace-content button { padding: 9px 13px; border: 1px solid var(--line); border-radius: 6px; background: #f5fafb; color: var(--ink); font: inherit; cursor: pointer; margin: 5px 5px 5px 0; }
+.workspace-content button:disabled { cursor: not-allowed; opacity: .55; }
+.workspace-content fieldset { min-width: 0; border: 1px solid var(--line); border-radius: 6px; padding: 12px; margin: 12px 0; }
+.hospital-items { display: grid; gap: 12px; margin-block: 16px; }
+.hospital-item { border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
+.hospital-facts { display: grid; gap: 8px; margin-block: 14px; }
+.hospital-facts > div { display: grid; grid-template-columns: minmax(110px, .3fr) minmax(0, 1fr); gap: 16px; }
+.hospital-facts dt { font-weight: 600; }
+.hospital-facts dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.hospital-confirm { border: 1px solid #b8d6c9; background: #f0f9f5; padding: 14px; margin-block: 12px; }
+.workspace-content [role="alert"] { color: #a52e31; overflow-wrap: anywhere; }
+.workspace-content [role="status"] { color: #285a45; }
+@media (max-width: 600px) { .hospital-panel { padding: 15px; } .hospital-facts > div { grid-template-columns: 1fr; gap: 3px; } }
+.hospital-command-inputs:empty { display: none; }
+.workspace-switcher { display: grid; gap: 8px; margin-bottom: 14px; font-size: 13px; }

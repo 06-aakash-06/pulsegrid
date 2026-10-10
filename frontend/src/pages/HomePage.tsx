@@ -15,7 +15,7 @@ export function HomePage() {
             <h1>One place for care and hospital operations.</h1>
             <p className="hero-description">
               PulseGrid is preparing connected workspaces for patients and hospital teams.
-              Service connections are not configured yet, so this preview contains no live activity.
+              Sign in to access service-backed synthetic hospital workflows. No activity is fabricated.
             </p>
             <div className="hero-actions">
               <Link className="button" to="/login">Sign in to PulseGrid <span aria-hidden="true">→</span></Link>
