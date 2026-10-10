@@ -55,6 +55,18 @@ with engine.connect() as c:
         constraints=set(c.scalars(text("SELECT conname FROM pg_constraint WHERE contype='x'")))
         expected={x.name for table in metadata.tables.values() for x in table.constraints if x.__class__.__name__=='ExcludeConstraint'}
         assert expected and expected.issubset(constraints)
+    invalid=c.scalar(text("SELECT count(*) FROM audit_entries WHERE entry_hash <> encode(sha256(convert_to(prev_hash || canonical_metadata::text,'UTF8')),'hex')"))
+    assert invalid==0,'Audit digest mismatch'
+    chains=c.execute(text("SELECT chain_id,sequence,prev_hash,entry_hash FROM audit_entries ORDER BY chain_id,sequence")).all()
+    heads={x[0]:(x[1],x[2]) for x in c.execute(text('SELECT chain_id,last_sequence,last_hash FROM audit_heads'))}
+    previous={}
+    for chain,sequence,prev_hash,entry_hash in chains:
+        last,expected=previous.get(chain,(0,'0'*64))
+        assert sequence==last+1 and prev_hash==expected
+        previous[chain]=(sequence,entry_hash)
+    assert all(heads[chain]==value for chain,value in previous.items())
+    outbox=c.scalar(text('SELECT count(*) FROM outbox_events'))
+    assert outbox>0 and chains,'Expected retained synthetic workflow evidence'
     exclusions=len(list(c.scalars(text("SELECT conname FROM pg_constraint WHERE contype='x'"))))
 engine.dispose()
 denied=0
@@ -71,7 +83,7 @@ actual={(method,normalize(path)) for path,spec in app.openapi()['paths'].items()
 required=json.loads(sys.stdin.read())
 missing=[(method,path) for method,path in required if (method.lower(),normalize(path)) not in actual]
 assert not missing,missing
-print(json.dumps({'service':'DOMAIN','migration':revision,'tables':len(metadata.tables),'exclusions':exclusions,'foreign_connections_denied':denied,'frozen_routes_present':len(required)}))
+print(json.dumps({'service':'DOMAIN','migration':revision,'tables':len(metadata.tables),'exclusions':exclusions,'foreign_connections_denied':denied,'frozen_routes_present':len(required),'audit_entries_verified':len(chains),'outbox_rows':outbox}))
 '''
 
 def main():
