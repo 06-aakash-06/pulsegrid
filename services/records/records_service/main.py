@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -17,12 +18,14 @@ from .errors import error_response
 from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
+from .authorization import AuthConfig, Verifier
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create an independently configurable service application."""
     resolved_settings = settings or Settings.from_env()
     database = Database(resolved_settings)
+    auth_config = AuthConfig.from_env(resolved_settings.environment)
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
@@ -41,6 +44,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "domain operations are not implemented."
         ),
     )
+    application.state.auth_config = auth_config
+    application.state.auth_verifier = Verifier(auth_config)
     application.state.database = database
     application.state.settings = resolved_settings
     application.state.logger = get_service_logger(
@@ -51,6 +56,25 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
     application.include_router(api_router)
+    if auth_config.origins:
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=list(auth_config.origins),
+            allow_credentials=True,
+            allow_methods=["GET", "POST", "PATCH", "DELETE"],
+            allow_headers=[
+                "Authorization",
+                "Content-Type",
+                "X-CSRF-Token",
+                "Idempotency-Key",
+                "X-Anonymous-Command-ID",
+                "X-Request-ID",
+                "X-Correlation-ID",
+                "traceparent",
+                "If-Match",
+            ],
+            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID"],
+        )
     install_request_context(application)
 
     @application.exception_handler(StarletteHTTPException)

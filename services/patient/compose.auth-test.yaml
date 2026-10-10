@@ -1,0 +1,8 @@
+# Optional isolated PostgreSQL test access, bound only to localhost. Never use for deployment.
+services:
+  postgres:
+    ports: ['127.0.0.1:55433:5432']
+    networks: [database, auth_test]
+networks:
+  auth_test:
+    driver: bridge

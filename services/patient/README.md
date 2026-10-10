@@ -1,6 +1,6 @@
 # PulseGrid Patient Service
 
-Independent FastAPI application scaffold for the **patient** domain. The API prefix reserved by the contract is `/api/v1/patients`. Business routes are intentionally absent in Phase 1.2.
+Independent FastAPI application scaffold for the **patient** domain. The API prefix reserved by the contract is `/api/v1/patients`. Phase 1.4C-A adds Patient-owned authentication; hospital business routes remain absent. See [authentication setup and frontend contract](AUTHENTICATION.md).
 
 ## Run locally
 
@@ -21,4 +21,4 @@ This package owns `patient_db`, `patient_app` runtime credentials and an indepen
 
 Run the colocated tests with `python -m pytest`. Build an independent container from this directory with `docker build -t pulsegrid-patient .`.
 
-This is a synthetic educational prototype scaffold. It has no business operations and is not a clinical or emergency-response system.
+This is a synthetic educational prototype scaffold. It has no hospital business operations and is not a clinical or emergency-response system.

@@ -1,0 +1,173 @@
+# Combine with root compose.yaml. Generate ignored keys first; only Patient gets user-signing secrets.
+services:
+  patient:
+    image: pulsegrid-auth-patient:local
+    user: "0:0"
+    entrypoint: [python, -m, patient_service.secure_entrypoint]
+    command: [uvicorn, patient_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_PATIENT_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_PATIENT_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_PATIENT_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_PATIENT_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_PATIENT_AUTH_SERVICE_KID: patient-service-1
+      PULSEGRID_PATIENT_AUTH_PRIVATE_KEY_PATH: /run/auth/patient-signing.pem
+      PULSEGRID_PATIENT_AUTH_IDEMPOTENCY_SECRET_PATH: /run/auth/idempotency.key
+      PULSEGRID_PATIENT_AUTH_ACCESS_SECONDS: ${AUTH_ACCESS_SECONDS:-600}
+      PULSEGRID_PATIENT_AUTH_REFRESH_IDLE_SECONDS: ${AUTH_REFRESH_IDLE_SECONDS:-604800}
+      PULSEGRID_PATIENT_AUTH_REFRESH_ABSOLUTE_SECONDS: ${AUTH_REFRESH_ABSOLUTE_SECONDS:-2592000}
+      PULSEGRID_PATIENT_AUTH_ARGON_MEMORY_KIB: ${AUTH_ARGON_MEMORY_KIB:-65536}
+      PULSEGRID_PATIENT_AUTH_ARGON_TIME_COST: ${AUTH_ARGON_TIME_COST:-3}
+      PULSEGRID_PATIENT_AUTH_KID: ${AUTH_KID:-patient-dev-1}
+      PULSEGRID_PATIENT_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_PATIENT_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY:?Generate keys first}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/patient-service.pem:/run/auth/service.pem:ro
+      - ${AUTH_KEYS_DIRECTORY}/patient-signing.pem:/run/auth/patient-signing.pem:ro
+      - ${AUTH_KEYS_DIRECTORY}/idempotency.key:/run/auth/idempotency.key:ro
+  doctor:
+    image: pulsegrid-auth-doctor:local
+    user: "0:0"
+    entrypoint: [python, -m, doctor_service.secure_entrypoint]
+    command: [uvicorn, doctor_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_DOCTOR_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_DOCTOR_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_DOCTOR_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_DOCTOR_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_DOCTOR_AUTH_SERVICE_KID: doctor-service-1
+      PULSEGRID_DOCTOR_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_DOCTOR_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/doctor-service.pem:/run/auth/service.pem:ro
+  appointment:
+    image: pulsegrid-auth-appointment:local
+    user: "0:0"
+    entrypoint: [python, -m, appointment_service.secure_entrypoint]
+    command: [uvicorn, appointment_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_APPOINTMENT_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_APPOINTMENT_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_APPOINTMENT_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_APPOINTMENT_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_APPOINTMENT_AUTH_SERVICE_KID: appointment-service-1
+      PULSEGRID_APPOINTMENT_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_APPOINTMENT_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/appointment-service.pem:/run/auth/service.pem:ro
+  records:
+    image: pulsegrid-auth-records:local
+    user: "0:0"
+    entrypoint: [python, -m, records_service.secure_entrypoint]
+    command: [uvicorn, records_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_RECORDS_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_RECORDS_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_RECORDS_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_RECORDS_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_RECORDS_AUTH_SERVICE_KID: records-service-1
+      PULSEGRID_RECORDS_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_RECORDS_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/records-service.pem:/run/auth/service.pem:ro
+  pharmacy:
+    image: pulsegrid-auth-pharmacy:local
+    user: "0:0"
+    entrypoint: [python, -m, pharmacy_service.secure_entrypoint]
+    command: [uvicorn, pharmacy_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_PHARMACY_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_PHARMACY_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_PHARMACY_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_PHARMACY_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_PHARMACY_AUTH_SERVICE_KID: pharmacy-service-1
+      PULSEGRID_PHARMACY_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_PHARMACY_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/pharmacy-service.pem:/run/auth/service.pem:ro
+  billing:
+    image: pulsegrid-auth-billing:local
+    user: "0:0"
+    entrypoint: [python, -m, billing_service.secure_entrypoint]
+    command: [uvicorn, billing_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_BILLING_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_BILLING_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_BILLING_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_BILLING_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_BILLING_AUTH_SERVICE_KID: billing-service-1
+      PULSEGRID_BILLING_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_BILLING_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/billing-service.pem:/run/auth/service.pem:ro
+  emergency:
+    image: pulsegrid-auth-emergency:local
+    user: "0:0"
+    entrypoint: [python, -m, emergency_service.secure_entrypoint]
+    command: [uvicorn, emergency_service.main:app, --host, 0.0.0.0, --port, "8000", --proxy-headers, --no-access-log]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ['/run/credentials:mode=0700']
+    environment:
+      PULSEGRID_EMERGENCY_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_EMERGENCY_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_EMERGENCY_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_EMERGENCY_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_EMERGENCY_AUTH_SERVICE_KID: emergency-service-1
+      PULSEGRID_EMERGENCY_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_EMERGENCY_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+    volumes:
+      - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+      - ${AUTH_KEYS_DIRECTORY}/emergency-service.pem:/run/auth/service.pem:ro
+  patient-migrate:
+    image: pulsegrid-auth-patient:local
+  doctor-migrate:
+    image: pulsegrid-auth-doctor:local
+  appointment-migrate:
+    image: pulsegrid-auth-appointment:local
+  records-migrate:
+    image: pulsegrid-auth-records:local
+  pharmacy-migrate:
+    image: pulsegrid-auth-pharmacy:local
+  billing-migrate:
+    image: pulsegrid-auth-billing:local
+  emergency-migrate:
+    image: pulsegrid-auth-emergency:local
