@@ -9,6 +9,7 @@ export interface ApiRequestOptions {
   headers?: HeadersInit;
   accessToken?: string;
   credentials?: RequestCredentials;
+  referrerPolicy?: ReferrerPolicy;
   idempotencyKey?: string;
   ifMatch?: string;
   requestId?: string;
@@ -151,6 +152,7 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
         method: options.method ?? "GET",
         headers,
         credentials: options.credentials ?? "omit",
+        referrerPolicy: options.referrerPolicy,
         signal: options.signal,
         body: options.body === undefined ? undefined : JSON.stringify(options.body),
       });

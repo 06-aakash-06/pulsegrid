@@ -1,6 +1,7 @@
 """Real Compose checks; --failure briefly stops PostgreSQL and always restores it.
 
-Run only against this synthetic development stack. No domain rows are created.
+Run only against this synthetic development stack. No domain rows are retained.
+--authentication permits retained Patient auth history and checks its auth migration.
 """
 
 from __future__ import annotations
@@ -118,7 +119,7 @@ with engine.connect() as c:
     assert not any(flags)
     assert not c.scalar(text("SELECT has_schema_privilege(current_user,'public','CREATE')"))
     assert not c.scalar(text("SELECT has_database_privilege(current_user,current_database(),'TEMP')"))
-    assert c.scalar(text('SELECT version_num FROM alembic_version')) == ('0003_explicit_worker' if 'DOMAIN' == 'doctor' else '0002_explicit_worker')
+    assert c.scalar(text('SELECT version_num FROM alembic_version')) == ('0003_auth_audit' if AUTHENTICATION and 'DOMAIN' == 'patient' else '0003_explicit_worker' if 'DOMAIN' == 'doctor' else '0002_explicit_worker')
     inspector=inspect(c)
     assert set(inspector.get_table_names()) == set(metadata.tables) | {'alembic_version'}
     assert inspector.get_sequence_names()==[], 'Worker/domain IDs must not use database sequences'
@@ -147,7 +148,8 @@ with engine.connect() as c:
             assert actual[i.name]['unique'] == i.unique
             assert actual[i.name]['column_names'] == [col.name for col in i.columns]
             assert bool(actual[i.name].get('dialect_options',{}).get('postgresql_where')) == (i.dialect_options['postgresql']['where'] is not None)
-        assert c.scalar(text('SELECT count(*) FROM "'+t.name+'"')) == 0, 'Verifier expects an empty foundation database'
+        if not (AUTHENTICATION and 'DOMAIN' == 'patient'):
+            assert c.scalar(text('SELECT count(*) FROM "'+t.name+'"')) == 0, 'Verifier expects empty non-Patient foundation databases'
         counts[t.name]=len(cols)
     for table in ('audit_entries','audit_heads','alembic_version'):
         for privilege in ('INSERT','UPDATE','DELETE','TRUNCATE'):
@@ -207,7 +209,7 @@ def verify_databases():
                 domain,
                 "python",
                 "-",
-                code=DATABASE_CODE.replace("DOMAIN", domain),
+                code=("AUTHENTICATION = " + repr(args.authentication) + "\n" + DATABASE_CODE).replace("DOMAIN", domain),
             )
         )
     # Both runtime and migration users must lack cross-database CONNECT.
@@ -239,10 +241,10 @@ def verify_gateway():
             assert headers["x-request-id"] and headers["x-correlation-id"]
         # The prefix must match its complete path segment.
         assert request(f"/api/v1/{PREFIXES[domain]}-collision/health/live")[0] == 404
-    # Reserved paths route to their future owner, which returns the safe API envelope.
+    # Auth GET is method-rejected when integrated; short links remain reserved.
     for path in ("/api/v1/auth/login", "/s/reserved"):
         status, body, _ = request(path)
-        assert status == 404 and "error" in body
+        assert status == (405 if args.authentication and path == "/api/v1/auth/login" else 404) and "error" in body
     for path in (
         "/internal/v1/anything",
         "/dashboard/",
@@ -266,7 +268,7 @@ def verify_gateway():
         == 200
     )
     print(
-        "PASS: seven gateway routes, preserved health paths, reserved auth/short-link routes, collision/admin/internal rejection"
+        "PASS: seven gateway routes, preserved health paths, auth method/reserved short-link routes, collision/admin/internal rejection"
     )
 
 
@@ -330,7 +332,11 @@ if __name__ == "__main__":
         action="store_true",
         help="Stop/restart the seven development API containers and verify graceful shutdown",
     )
+    parser.add_argument("--authentication", action="store_true",
+                        help="Verify auth migration/routes and allow retained synthetic Patient auth history")
     args = parser.parse_args()
+    if args.authentication and (args.failure or args.shutdown):
+        parser.error("Auth mode does not support outage/shutdown checks; preserve the configured overlay")
     wait_readiness(200)
     verify_databases()
     verify_gateway()

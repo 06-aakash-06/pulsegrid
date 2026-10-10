@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ApiConfigurationError, ApiError } from "../api/client";
-import type { RegistrationInput } from "../api/authApi";
+import { createRegistrationAttempt, type RegistrationAttempt, type RegistrationInput } from "../api/authApi";
 import { useAuth } from "../auth/authContext";
 import { Brand } from "../components/Brand";
 import {
@@ -173,6 +173,7 @@ export function RegistrationPage() {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const registrationAttempt = useRef<{ input: RegistrationInput; attempt: RegistrationAttempt } | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const requestController = useRef<AbortController | null>(null);
@@ -204,9 +205,16 @@ export function RegistrationPage() {
       ...(syntheticContact.trim() ? { synthetic_contact: syntheticContact.trim() } : {}),
     };
     try {
-      await register(input, controller.signal);
+      if (!registrationAttempt.current || JSON.stringify(registrationAttempt.current.input) !== JSON.stringify(input)) {
+        registrationAttempt.current = { input, attempt: createRegistrationAttempt() };
+      }
+      await register(input, controller.signal, registrationAttempt.current.attempt);
+      registrationAttempt.current = null;
       if (!controller.signal.aborted) setSubmitted(true);
     } catch (requestError) {
+      if (requestError instanceof ApiError && requestError.status >= 400 && requestError.status < 500) {
+        registrationAttempt.current = null;
+      }
       if (!controller.signal.aborted) setError(requestErrorMessage(requestError, "register"));
     } finally {
       if (!controller.signal.aborted) setIsSubmitting(false);

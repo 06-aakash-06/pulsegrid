@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { ApiConfigurationError, createApiClient } from "../src/api/client";
-import { createAuthApi } from "../src/api/authApi";
+import { createAuthApi, createCsrfHeadersProvider, createRegistrationAttempt } from "../src/api/authApi";
 
 describe("API client", () => {
   it("adds protocol identifiers and bearer authorization without persisting tokens", async () => {
@@ -160,5 +160,53 @@ describe("API client", () => {
     await expect(client.request("//untrusted.example/api/v1/auth/login"))
       .rejects.toBeInstanceOf(ApiConfigurationError);
     expect(fetcher).not.toHaveBeenCalled();
+  });
+});
+
+
+describe("backend authentication contract", () => {
+  it("initializes credentialed CSRF before every serialized cookie mutation", async () => {
+    const fetcher = vi.fn<typeof fetch>(async (url) => {
+      if (String(url).endsWith("/csrf")) return new Response(JSON.stringify({
+        csrf_token: "signed-test-token", header_name: "X-CSRF-Token", expires_in: 3600,
+      }), { headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ access_token: "token", token_type: "Bearer", expires_in: 600 }),
+        { headers: { "content-type": "application/json" } });
+    });
+    const client = createApiClient({ fetcher });
+    const auth = createAuthApi(client, createCsrfHeadersProvider(client));
+    await Promise.all([auth.refresh(), auth.refresh()]);
+    expect(fetcher.mock.calls.map(([url]) => url)).toEqual([
+      "/api/v1/auth/csrf", "/api/v1/auth/refresh", "/api/v1/auth/csrf", "/api/v1/auth/refresh",
+    ]);
+    expect(fetcher.mock.calls.every(([, init]) => init?.credentials === "include")).toBe(true);
+    expect(fetcher.mock.calls[0][1]?.referrerPolicy).toBe("origin");
+    expect(new Headers(fetcher.mock.calls[1][1]?.headers).get("X-CSRF-Token")).toBe("signed-test-token");
+  });
+
+  it("fails closed for an invalid CSRF delivery response", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ csrf_token: "bad" }),
+      { headers: { "content-type": "application/json" } }));
+    const client = createApiClient({ fetcher });
+    await expect(createAuthApi(client, createCsrfHeadersProvider(client)).refresh())
+      .rejects.toBeInstanceOf(ApiConfigurationError);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("reuses both registration headers for an explicit attempt and rotates for a new attempt", async () => {
+    const fetcher = vi.fn<typeof fetch>(async () => new Response(JSON.stringify({ id: "1" }),
+      { status: 201, headers: { "content-type": "application/json" } }));
+    const auth = createAuthApi(createApiClient({ fetcher }));
+    const input = { email: "synthetic@example.test", password: "synthetic passphrase", display_name: "Synthetic" };
+    const attempt = createRegistrationAttempt();
+    await auth.register(input, undefined, attempt);
+    await auth.register(input, undefined, attempt);
+    await auth.register(input, undefined, createRegistrationAttempt());
+    const headers = fetcher.mock.calls.map(([, init]) => new Headers(init?.headers));
+    for (const field of ["Idempotency-Key", "X-Anonymous-Command-ID"]) {
+      expect(headers[0].get(field)).toBe(headers[1].get(field));
+      expect(headers[0].get(field)).not.toBe(headers[2].get(field));
+    }
+    expect(headers[0].get("X-Anonymous-Command-ID")).toMatch(/^[A-Za-z0-9_-]{43}$/);
   });
 });

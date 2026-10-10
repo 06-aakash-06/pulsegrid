@@ -1,6 +1,6 @@
 # API contracts
 
-Proposed contracts, not implemented endpoints. Each service will publish its own OpenAPI specification in `contracts/api/<service>/`. Root routing is Traefik; each service performs its own authorization. REST JSON uses `snake_case`. IDs are decimal strings, UTC timestamps RFC 3339, dates `YYYY-MM-DD`, and enums lowercase. Monetary schemas use `{amount_minor: integer, currency: "INR"}`. Examples are synthetic, and abbreviated typed schemas below define required fields unless marked `?`. API changes follow the compatibility policy in AGENTS.md.
+Authentication endpoints listed in the Phase 1.4C-C integration runbook are implemented; other domain contracts below remain proposed. Each service will publish its own OpenAPI specification in `contracts/api/<service>/`. Root routing is Traefik; each service performs its own authorization. REST JSON uses `snake_case`. IDs are decimal strings, UTC timestamps RFC 3339, dates `YYYY-MM-DD`, and enums lowercase. Monetary schemas use `{amount_minor: integer, currency: "INR"}`. Examples are synthetic, and abbreviated typed schemas below define required fields unless marked `?`. API changes follow the compatibility policy in AGENTS.md.
 
 ## Common protocol
 
@@ -20,8 +20,9 @@ Patient service is the identity issuer. Role names: `patient`, `doctor`, `recept
 
 | Method / route | Request | Response | Access / special outcomes |
 |---|---|---|---|
-| POST `/auth/register` | `Registration {email, password, display_name, date_of_birth?, synthetic_contact?}` | 201 `PatientProfile` | Public, controlled quota; 409 email unavailable with generic safe message |
-| POST `/auth/login` | `{email,password}` | 200 `TokenSet` | Public; generic 401 |
+| GET `/auth/csrf` | Credentialed request with allowed Origin (or GET Referer) | `{csrf_token,header_name:"X-CSRF-Token",expires_in:3600}` + HttpOnly cookie | Exact configured origin |
+| POST `/auth/register` | `Registration {email, password, display_name, date_of_birth?, synthetic_contact?}` | 201 `PatientProfile` | Allowed Origin, Idempotency-Key (16–128 chars), X-Anonymous-Command-ID (256-bit base64url nonce); 409 email unavailable with generic safe message; distributed quotas deferred |
+| POST `/auth/login` | `{email,password}` | 200 `TokenSet` | Allowed Origin + CSRF cookie/header; generic 401 |
 | POST `/auth/refresh` | Rotating refresh cookie + CSRF header | 200 `TokenSet` | Refresh session; replay revokes family |
 | POST `/auth/logout` | Refresh cookie + CSRF header | 204 | Idempotent revocation |
 | GET `/patients/me` | None | `PatientProfile` | patient |
@@ -29,6 +30,8 @@ Patient service is the identity issuer. Role names: `patient`, `doctor`, `recept
 | GET `/patients/{patient_id}` | None | Minimal `PatientProfile` | Scoped care/administration need; private fields filtered |
 | PATCH `/patients/users/{user_id}/roles` | `{roles:[Role]}` | `{user_id,roles,auth_version,version}` | hospital_admin, current authority, If-Match |
 | PATCH `/patients/users/{user_id}/account-state` | `{state:"active"|"disabled",reason}` | `{user_id,state,auth_version,version}` | hospital_admin, audited, If-Match |
+
+Only register/login/refresh/logout/csrf and GET me are implemented in this public section. Cookie Secure defaults to true; explicit development loopback HTTP is the sole exception. See [actual integration](authentication-integration.md).
 
 `PatientProfile {id,user_id,display_name,date_of_birth?,synthetic_contact?,version}`. `TokenSet {access_token,token_type:"Bearer",expires_in:integer}`; refresh token is a Secure HttpOnly cookie, never response JSON. Client role hints can be derived from token but server remains authority.
 

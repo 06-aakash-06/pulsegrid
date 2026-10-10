@@ -158,6 +158,31 @@ describe("authentication pages", () => {
     expect(fetcher.mock.calls.filter(([url]) => String(url).includes("/auth/register"))).toHaveLength(1);
   });
 
+  it("keeps registration identifiers on retry and changes them when the form changes", async () => {
+    const { fetcher } = setupApplication((path) => {
+      if (path.endsWith("/register")) throw new TypeError("offline");
+      return anonymousHandler(path);
+    }, "/register");
+    await screen.findByRole("heading", { name: "Create a patient account" });
+    fillRegistration();
+    const submit = async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+      await screen.findByRole("alert");
+      await waitFor(() => expect(screen.getByRole("button", { name: "Create account" })).toBeEnabled());
+    };
+    await submit();
+    await submit();
+    fireEvent.change(screen.getByLabelText("Display name"), { target: { value: "New Synthetic Patient" } });
+    await submit();
+    const calls = fetcher.mock.calls.filter(([url]) => String(url).endsWith("/register"));
+    expect(calls).toHaveLength(3);
+    const headers = calls.map(([, init]) => new Headers(init?.headers));
+    for (const field of ["Idempotency-Key", "X-Anonymous-Command-ID"]) {
+      expect(headers[0].get(field)).toBe(headers[1].get(field));
+      expect(headers[0].get(field)).not.toBe(headers[2].get(field));
+    }
+  });
+
   it("validates login, supports password visibility, and sends credentials to the documented endpoint", async () => {
     const { fetcher } = setupApplication((path) => {
       if (path === "/api/v1/auth/refresh") return errorResponse(401, "unauthorized", "No session.");

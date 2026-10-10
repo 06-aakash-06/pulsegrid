@@ -1,6 +1,6 @@
-# Local infrastructure: Phase 1.4B
+# Local infrastructure: Phase 1.4B and authentication integration
 
-Implemented for synthetic development: one PostgreSQL 16 instance, seven owned databases, Redis 7, RabbitMQ 4, Traefik 3 and seven FastAPI processes. Each service has its own SQLAlchemy metadata, connection pool, session dependency, Dockerfile and Alembic history. No domain commands, authentication endpoints, event workers or caching algorithms are implemented. The frontend remains an independent Vite application.
+Implemented for synthetic development: one PostgreSQL 16 instance, seven owned databases, Redis 7, RabbitMQ 4, Traefik 3 and seven FastAPI processes. Each service has its own SQLAlchemy metadata, connection pool, session dependency, Dockerfile and Alembic history. Patient authentication is implemented using the service-owned auth overlay. Hospital domain commands, event workers and caching algorithms remain deferred. For current launch commands use [README](../README.md) and [authentication integration](authentication-integration.md); the plain Compose commands below describe the unauthenticated infrastructure foundation. The frontend remains an independent Vite application.
 
 ## Start and stop
 
@@ -109,7 +109,7 @@ Traefik uses the file provider with container DNS discovery, no Docker socket, n
 | `/api/v1/billing` and descendants | Billing |
 | `/api/v1/emergencies` and descendants | Emergency |
 
-Reserved auth and short-link routes currently return the owning application's safe 404 envelope; they do not log users in or resolve tokens. Service-local `/health/live` and `/health/ready` remain available inside containers. Additive gateway aliases are `<domain-prefix>/health/live` and `<domain-prefix>/health/ready`. No `/internal/v1`, `/docs`, `/metrics` or dashboard routes are exposed by the gateway. Traefik ping uses a private health entrypoint. Redis/RabbitMQ have no published ports and live on a separate internal backbone network, disconnected from APIs until a later feature requires them.
+Auth routes operate when the auth overlay and keys are configured. Short-link routes remain reserved and return the owning application's safe 404 envelope. Service-local `/health/live` and `/health/ready` remain available inside containers. Additive gateway aliases are `<domain-prefix>/health/live` and `<domain-prefix>/health/ready`. No `/internal/v1`, `/docs`, `/metrics` or dashboard routes are exposed by the gateway. Traefik ping uses a private health entrypoint. Redis/RabbitMQ have no published ports and live on a separate internal backbone network, disconnected from APIs until a later feature requires them.
 
 Traefik rejects aliased header names and ignores untrusted incoming forwarded headers, following its [entrypoint configuration](https://doc.traefik.io/traefik/routing/entrypoints/). Uvicorn trusts proxy headers only from Traefik's configured IP (`GATEWAY_IP` inside `EDGE_SUBNET`). Change both together if the subnet conflicts locally. Gateway/API access logs are disabled so future opaque token paths are not automatically logged. This is loopback HTTP development only, with no TLS or production authentication policy.
 
@@ -124,7 +124,7 @@ npm run dev
 
 Open `http://127.0.0.1:5173`. `VITE_API_BASE_URL` defaults to the current origin. Vite proxies `/api` and `/s/` to `PULSEGRID_GATEWAY_URL` (default `http://127.0.0.1:8080`). That variable is server configuration and is not a browser secret. Override it in `frontend/.env.local` if the gateway port changes. Same-origin proxying avoids a permissive CORS policy. A production frontend host must likewise proxy those paths, or implement a reviewed separate-origin CORS/cookie policy later; Vite's production build does not start a gateway.
 
-Authentication preparation is limited to routes, persistence and connectivity. The next task must define JWT issuer/audience/algorithms and key management, Argon2id password policy, refresh-cookie path/Secure/SameSite and rotation, absolute/idle expiry, CSRF delivery/header hook, ownership/current-authority checks and integration tests. Existing browser access tokens stay in memory and role hints are navigation only. Secure cookie authentication requires an appropriate HTTPS development/deployment plan; this HTTP foundation does not bypass it.
+Authentication now uses the Patient-owned overlay `services/patient/compose.auth.yaml`. See [the authentication runbook](authentication-integration.md) for exact origins, keys, secure cookie exceptions, CSRF delivery and real browser checks. The original infrastructure verifier has empty-foundation assumptions, including reserved auth routes and audit grants; it must not be treated as an authentication-stack verifier. The new HTTP verifier and Patient PostgreSQL tests cover the integrated auth stack.
 
 ## Verification commands
 

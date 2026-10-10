@@ -13,6 +13,7 @@ import {
   type AuthApi,
   type LoginInput,
   type RegistrationInput,
+  type RegistrationAttempt,
   type TokenSet,
 } from "../api/authApi";
 import {
@@ -55,7 +56,7 @@ export interface AuthContextValue {
   state: AuthState;
   api: ApiClient;
   login(input: LoginInput, signal?: AbortSignal): Promise<Role[]>;
-  register(input: RegistrationInput, signal?: AbortSignal): ReturnType<AuthApi["register"]>;
+  register(input: RegistrationInput, signal?: AbortSignal, attempt?: RegistrationAttempt): ReturnType<AuthApi["register"]>;
   refresh(): Promise<void>;
   logout(): Promise<void>;
 }
@@ -233,7 +234,7 @@ export function AuthProvider({
   }, [client, updateState]);
 
   const register = useCallback(
-    (input: RegistrationInput, signal?: AbortSignal) => client.register(input, signal),
+    (input: RegistrationInput, signal?: AbortSignal, attempt?: RegistrationAttempt) => client.register(input, signal, attempt),
     [client],
   );
 

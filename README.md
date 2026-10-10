@@ -1,6 +1,6 @@
 # PulseGrid
 
-Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. Phase 1.4B integrates PostgreSQL, service-owned migrations, Redis, RabbitMQ and Traefik with the seven FastAPI foundations. The React/TypeScript UI provides pending route shells for patient, staff and operations roles. Authentication and domain workflows remain unimplemented.
+Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. Phase 1.4C-C integrates patient authentication with the React frontend. PostgreSQL, service-owned migrations, Redis, RabbitMQ and Traefik support the seven FastAPI foundations. The UI provides registration, login, rotating session restoration and protected workspace shells. Hospital domain workflows remain unimplemented.
 
 Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments and insurance providers are simulated.
 
@@ -35,7 +35,7 @@ PulseGrid/
   frontend/                     # React/TypeScript patient, staff, and ops shells
   contracts/                    # future: reviewed OpenAPI and event JSON schemas
   infra/                        # Compose database bootstrap, Traefik and credential generation
-  tests/                        # real infrastructure verification (no domain journeys yet)
+  tests/                        # real infrastructure and authentication HTTP verification
   experiments/                  # future: Locust, chaos, algorithm benchmarks
 ```
 
@@ -45,9 +45,18 @@ With Docker running, from this directory:
 
 ```sh
 python3 infra/scripts/init-env.py
-docker compose config --quiet
-docker compose up -d --build
-python3 tests/verify_infrastructure.py
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e 'services/patient[test]'
+python services/patient/generate_auth_keys.py --directory secrets/auth
+# Add services/patient/auth.env.example settings to the ignored root .env.
+# Do not overwrite existing DB credentials or regenerate existing keys.
+docker compose -f compose.yaml -f services/patient/compose.auth.yaml config --quiet
+# Build each domain separately on small Docker VMs; migration jobs share these images.
+for domain in patient doctor appointment records pharmacy billing emergency; do
+  docker compose -f compose.yaml -f services/patient/compose.auth.yaml build "$domain" || exit 1
+done
+docker compose -f compose.yaml -f services/patient/compose.auth.yaml up -d --no-build
 ```
 
 The script creates private, ignored credentials; never commit `.env`. All seven migration jobs must exit 0 before their APIs start. Gateway: `http://127.0.0.1:8080`; example readiness: `/api/v1/patients/health/ready`. PostgreSQL is required for readiness; Redis and RabbitMQ are not yet application dependencies.
@@ -55,12 +64,12 @@ The script creates private, ignored credentials; never commit `.env`. All seven 
 ```sh
 cd frontend
 npm ci
-npm run dev
+npm run dev -- --strictPort
 ```
 
-Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
+Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose -f compose.yaml -f services/patient/compose.auth.yaml down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
 
-Service business routes, connected authentication, executable API/event contracts and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Service business routes, executable contract snapshots and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
 
 ## Development conventions
 

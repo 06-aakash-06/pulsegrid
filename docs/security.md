@@ -1,6 +1,6 @@
 # Security
 
-PulseGrid uses synthetic identities, records, prescriptions, provider websites and payments exclusively. It is an educational prototype, not a certified clinical or emergency-response platform. Never import real patient data, send real emergency dispatches, or collect real payment credentials. Security controls here are requirements for later implementation, not certified guarantees.
+PulseGrid uses synthetic identities, records, prescriptions, provider websites and payments exclusively. It is an educational prototype, not a certified clinical or emergency-response platform. Never import real patient data, send real emergency dispatches, or collect real payment credentials. Authentication controls are implemented and verified in Phase 1.4C-C; future hospital workflow controls remain requirements, not certified guarantees.
 
 ## Authentication and lifecycle
 
@@ -62,4 +62,4 @@ Retention is configurable and documented: broker/outbox/inbox defaults in databa
 
 ## Phase 1.4B development infrastructure
 
-The implemented Compose environment publishes only the loopback HTTP gateway. APIs and databases have no host ports; database runtime and migration credentials remain separate and service-scoped. Runtime roles cannot create schema objects, connect to another database or modify audit storage. Random ignored local credentials, trusted-proxy boundaries and path-template application logs prepare later integration. See [infrastructure.md](infrastructure.md) for commands, privileges and limits. Authentication, CSRF delivery, signing keys, audit append functions and production TLS remain unimplemented; local readiness is not an authorization claim.
+The implemented Compose environment publishes only the loopback HTTP gateway. APIs and databases have no host ports; database runtime and migration credentials remain separate and service-scoped. Runtime roles cannot create schema objects, connect to another database or modify audit storage. Random ignored local credentials, trusted-proxy boundaries and path-template application logs prepare later integration. See [infrastructure.md](infrastructure.md) for commands, privileges and limits. Authentication, signed CSRF delivery, private signing keys and Patient auth audit append are implemented. Production TLS remains unimplemented; local readiness is not an authorization claim. See [authentication integration](authentication-integration.md).
