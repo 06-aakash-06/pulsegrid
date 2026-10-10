@@ -182,8 +182,10 @@ id_worker_state = Table(
     metadata,
     Column("worker_id", Integer, primary_key=True, autoincrement=False),
     value("reserved_through_ms", BigInteger),
+    value("last_sequence", Integer, default="-1"),
     check("worker_id BETWEEN 0 AND 1023", "worker_range"),
     check("reserved_through_ms >= 0", "high_watermark_nonnegative"),
+    check("last_sequence BETWEEN -1 AND 4095", "sequence_range"),
 )
 
 emergency_requests = entity(
@@ -200,11 +202,17 @@ emergency_requests = entity(
     timestamp("tracking_expires_at", nullable=True),
     UniqueConstraint("tracking_token_hash"),
     states("state", "submitted triaged claimed processing resolved cancelled"),
+    states("reported_urgency", "unspecified urgent"),
+    check("char_length(btrim(description)) BETWEEN 1 AND 4000", "description_length"),
     check("assigned_priority BETWEEN 1 AND 5", "priority_range"),
     check(
         "(tracking_token_hash IS NULL) = (tracking_expires_at IS NULL)", "tracking_pair"
     ),
-    check("(claimed_by_user_id IS NULL) = (claim_expires_at IS NULL)", "claim_pair"),
+    check(
+        "(state IN ('claimed','processing')) = (claimed_by_user_id IS NOT NULL) "
+        "AND (state = 'claimed') = (claim_expires_at IS NOT NULL)",
+        "claim_state",
+    ),
 )
 emergency_status_history = entity(
     "emergency_status_history",

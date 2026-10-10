@@ -25,6 +25,7 @@ class Settings:
     db_connect_timeout: int = 2
     db_statement_timeout_ms: int = 2000
     db_health_timeout: float = 3.0
+    id_worker_id: int = 6
 
     @property
     def database_configured(self) -> bool:
@@ -103,4 +104,6 @@ class Settings:
                 raise ValueError(f"{prefix}{name.upper()} must be positive")
         if not 1 <= settings.db_port <= 65535 or settings.db_max_overflow < 0:
             raise ValueError("Invalid database port or overflow limit")
+        if not 0 <= settings.id_worker_id <= 1023:
+            raise ValueError(f"{prefix}ID_WORKER_ID must be between 0 and 1023")
         return settings

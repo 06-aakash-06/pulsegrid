@@ -15,6 +15,7 @@ from .api.router import api_router
 from .constants import API_PREFIX, SERVICE_NAME, SERVICE_VERSION
 from .database import Database
 from .errors import error_response
+from .exceptions import DomainHTTPException
 from .logging_config import get_service_logger
 from .middleware import install_request_context
 from .settings import Settings
@@ -40,8 +41,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=f"PulseGrid {SERVICE_NAME.title()} Service",
         version=SERVICE_VERSION,
         description=(
-            "Synthetic educational prototype. Authentication and "
-            "domain operations are not implemented."
+            "Synthetic educational emergency request management for an "
+            "educational prototype. This is not an emergency dispatch or "
+            "medical triage system."
         ),
     )
     application.state.auth_config = auth_config
@@ -81,6 +83,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def http_exception_handler(
         request: Request, exception: StarletteHTTPException
     ) -> JSONResponse:
+        if isinstance(exception, DomainHTTPException):
+            return error_response(
+                request,
+                exception.status_code,
+                code=exception.code,
+                message=exception.message,
+                details=exception.details,
+                headers=exception.headers,
+            )
         return error_response(
             request,
             exception.status_code,
