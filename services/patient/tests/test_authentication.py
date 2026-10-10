@@ -12,6 +12,7 @@ import httpx
 import jwt
 import pytest
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
 from patient_service.main import create_app
 from patient_service.settings import Settings
 
@@ -45,13 +46,17 @@ def setup(monkeypatch):
         "ALLOW_HTTP": "true",
     }.items():
         monkeypatch.setenv("PULSEGRID_PATIENT_AUTH_" + field, value)
-    settings = Settings(
-        db_host="127.0.0.1",
-        db_port=55433,
-        db_name="patient_db",
-        db_user="patient_app",
-        db_password=values["PATIENT_DB_PASSWORD"],
-    )
+    isolated_url = os.environ.get("PULSEGRID_PATIENT_AUTH_TEST_DATABASE_URL")
+    if isolated_url:
+        url = make_url(isolated_url)
+        assert url.host == "127.0.0.1" and url.database.endswith("_test")
+        settings = Settings(db_host=url.host, db_port=url.port, db_name=url.database,
+                            db_user=url.username, db_password=url.password)
+    else:
+        settings = Settings(
+            db_host="127.0.0.1", db_port=55433, db_name="patient_db",
+            db_user="patient_app", db_password=values["PATIENT_DB_PASSWORD"],
+        )
     app = create_app(settings)
     engine = create_engine(
         settings.database_url,

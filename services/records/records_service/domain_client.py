@@ -178,7 +178,7 @@ class DomainClient:
 
     async def hold(self, request, principal, preparation, *, finalize=False):
         suffix = "/finalize" if finalize else ""
-        key = f"records-hold{'-finalize' if finalize else ''}-{preparation['consultation_id']}"
+        key = f"records-clinical-hold{'-finalize' if finalize else ''}-{preparation['consultation_id']}"
         result = await self.call(
             request,
             principal,

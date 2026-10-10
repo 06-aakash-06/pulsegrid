@@ -229,6 +229,9 @@ def clinical(database, tmp_path, monkeypatch):
             else "appointments:clinical-hold"
         )
         assert service_claims["scopes"] == [expected_scope]
+        if request.method == "POST" and "clinical-hold" in path:
+            # Enforce the real Appointment command contract even for small sequence IDs.
+            assert 16 <= len(request.headers["Idempotency-Key"]) <= 128
         delegated = request.headers.get("x-delegated-authorization", "").split()[-1]
         p = app.state.auth_verifier.user(delegated)
         if path.endswith("/authorization/check"):

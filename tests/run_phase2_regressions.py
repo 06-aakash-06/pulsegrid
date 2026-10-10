@@ -42,9 +42,11 @@ def main():
                 with psycopg.connect(host='127.0.0.1',port=port,dbname='postgres',autocommit=True) as connection:
                     for suffix,password in [('migration','migration-test'),('app','runtime-test')]:
                         connection.execute(sql.SQL('CREATE ROLE {} LOGIN PASSWORD {}').format(sql.Identifier(domain+'_'+suffix),sql.Literal(password)))
+                    connection.execute(sql.SQL('GRANT {} TO {}').format(sql.Identifier(domain+'_app'),sql.Identifier(domain+'_migration')))
                     connection.execute(sql.SQL('CREATE DATABASE {} OWNER {}').format(sql.Identifier(name),sql.Identifier(domain+'_migration')))
                 with psycopg.connect(host='127.0.0.1',port=port,dbname=name,autocommit=True) as connection:
                     connection.execute('REVOKE CREATE ON SCHEMA public FROM PUBLIC')
+                    connection.execute(sql.SQL('GRANT USAGE,CREATE ON SCHEMA public TO {}').format(sql.Identifier(domain+'_migration')))
                     connection.execute(sql.SQL('GRANT USAGE ON SCHEMA public TO {}').format(sql.Identifier(domain+'_app')))
                     connection.execute(sql.SQL('ALTER DEFAULT PRIVILEGES FOR ROLE {} IN SCHEMA public GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO {}').format(sql.Identifier(domain+'_migration'),sql.Identifier(domain+'_app')))
                 migration_env = {**env, **{f'PULSEGRID_{domain.upper()}_{key}':str(value) for key,value in {'DB_HOST':'127.0.0.1','DB_PORT':port,'DB_NAME':name,'DB_USER':domain+'_migration','DB_PASSWORD':'migration-test'}.items()}}
@@ -57,10 +59,12 @@ def main():
                 runtime = domain in {'billing','emergency'}
                 user = domain+('_app' if runtime else '_migration')
                 password = 'runtime-test' if runtime else 'migration-test'
-                env[variable_names[domain]] = f'postgresql+psycopg://{user}:{password}@127.0.0.1:{port}/{name}'
-            result = subprocess.run([sys.executable,'-m','pytest',str(ROOT/'services'),'-q','-ra',*sys.argv[1:]],cwd=ROOT,env=env)
+                env[variable_names[domain]] = f'postgresql://{user}:{password}@127.0.0.1:{port}/{name}'
+            env['PULSEGRID_AUTH_INTEGRATION'] = '1'
+            env['PULSEGRID_PATIENT_AUTH_TEST_DATABASE_URL'] = f'postgresql://patient_app:runtime-test@127.0.0.1:{port}/patient_management_test'
+            result = subprocess.run([sys.executable,'-m','pytest',str(ROOT/'services'),'-q','-ra','-o','addopts=','--junitxml=/tmp/pulsegrid-phase29-backend.xml',*sys.argv[1:]],cwd=ROOT,env=env)
             # Records requires its service-local path-verified isolated cluster.
-            records = subprocess.run([sys.executable,'tests/run_isolated.py','-q','-ra'],cwd=ROOT/'services/records',env=env)
+            records = subprocess.run([sys.executable,'tests/run_isolated.py','-q','-ra','-o','addopts=','--junitxml=/tmp/pulsegrid-phase29-records.xml'],cwd=ROOT/'services/records',env=env)
             return result.returncode or records.returncode
         finally:
             subprocess.run([str(bindir/'pg_ctl'),'-D',str(path/'data'),'-m','fast','-w','stop'],check=True,stdout=subprocess.DEVNULL)
