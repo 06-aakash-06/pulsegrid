@@ -1,3 +1,4 @@
+import { BrowserQRCodeReader } from "@zxing/browser";
 import { useEffect, useRef, useState } from "react";
 import { parseCheckinQr, type ScannedCheckin } from "./utils";
 
@@ -43,12 +44,23 @@ export function CheckinScanner({
 
   async function startCamera() {
     const Detector = (window as BarcodeWindow).BarcodeDetector;
-    if (!Detector || !navigator.mediaDevices?.getUserMedia) {
+    if (!navigator.mediaDevices?.getUserMedia) {
       setScannerMessage("QR scanning is unavailable in this browser. Enter the appointment ID and token below.");
       return;
     }
     try {
-      const scanner = new Detector({ formats: ["qr_code"] });
+      const reader = new BrowserQRCodeReader();
+      const scanner: BarcodeDetectorLike = Detector ? new Detector({ formats: ["qr_code"] }) : {
+        async detect(video) {
+          const canvas = document.createElement("canvas");
+          canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+          const context = canvas.getContext("2d");
+          if (!context || !canvas.width || !canvas.height) return [];
+          context.drawImage(video, 0, 0);
+          try { return [{ rawValue: reader.decodeFromCanvas(canvas).getText() }]; }
+          catch { return []; } // A frame without a readable code keeps scanning.
+        },
+      };
       const camera = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: "environment" } },
         audio: false,

@@ -1,3 +1,4 @@
+import { CheckinQr } from "../shared/CheckinQr";
 import {
   useCallback,
   useEffect,
@@ -424,7 +425,7 @@ export function PatientCheckinPage({
           <h3>Check-in link issued</h3>
           <p>Expires at <time dateTime={issue.expires_at}>{formatTime(issue.expires_at)}</time>. The expiry is shown from the service; this page does not decide whether the link is valid.</p>
           <div className="patient-workflow__qr" aria-label="Check-in QR display">
-            {renderQr ? renderQr(activeIssueUrl) : <p role="status">QR rendering awaits the reviewed QR encoder dependency. Use the secure URL or token below for manual check-in.</p>}
+            {renderQr ? renderQr(activeIssueUrl) : <CheckinQr value={activeIssueUrl} />}
           </div>
           <label htmlFor="checkin-landing-url">Secure same-origin landing URL</label>
           <input id="checkin-landing-url" readOnly value={activeIssueUrl} onFocus={(event) => event.currentTarget.select()} />

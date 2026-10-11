@@ -46,7 +46,7 @@ class QueueEntry(Input):
     doctor_id: ID
     local_date: date
     token_number: Annotated[StrictInt, Field(ge=1, le=9007199254740991)]
-    state: Literal["waiting", "in_consultation", "completed", "cancelled", "no_show"]
+    state: Literal["waiting", "skipped", "in_consultation", "completed", "cancelled", "no_show"]
     position: Annotated[StrictInt, Field(ge=1)] | None
     version: Version
 

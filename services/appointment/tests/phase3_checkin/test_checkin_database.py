@@ -45,37 +45,9 @@ class QueueAdapter:
         self.calls += 1
         if self.fail:
             raise RuntimeError("injected queue failure")
-        workflow = next(iter(context.workflows.values()))
-        booking_row = context.bookings[workflow["appointment_id"]]
-        local_date = context.now.date()
-        counter = await session.execute(text(
-            "INSERT INTO queue_counters (doctor_id, local_date, next_token) "
-            "VALUES (:doctor_id, :local_date, 2) "
-            "ON CONFLICT (doctor_id, local_date) DO UPDATE "
-            "SET next_token = queue_counters.next_token + 1 "
-            "RETURNING next_token - 1"
-        ), {"doctor_id": booking_row["doctor_id"], "local_date": local_date})
-        token_number = counter.scalar_one()
-        entry_id = op.new_id()
-        await session.execute(insert(m.queue_entries).values(
-            id=entry_id,
-            appointment_id=booking_row["id"],
-            doctor_id=booking_row["doctor_id"],
-            local_date=local_date,
-            token_number=token_number,
-            state="waiting",
-            position=1,
-        ))
-        return {
-            "id": str(entry_id),
-            "appointment_id": str(booking_row["id"]),
-            "doctor_id": str(booking_row["doctor_id"]),
-            "local_date": local_date.isoformat(),
-            "token_number": token_number,
-            "state": "waiting",
-            "position": 1,
-            "version": 1,
-        }
+        from appointment_service.features.queue.service import allocate_on_checkin
+        return await allocate_on_checkin(session, context)
+
 
 
 @pytest.fixture
@@ -147,6 +119,8 @@ async def prepare_enrolled(db, patient_id="11", slot_id=1):
             starts_at=start,
             ends_at=start + timedelta(minutes=30),
         ))
+    async with db.session_factory() as session, session.begin():
+        await session.execute(update(m.doctor_schedule_snapshots).values(policy_snapshot={'timezone': 'UTC'}))
     _, appointment = await booking(db, pid=patient_id, sid=slot_id)
     aid = int(appointment["id"])
     journey_id = op.new_id()

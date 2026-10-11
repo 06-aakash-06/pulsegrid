@@ -231,7 +231,7 @@ describe("Agent 6 patient workflows", () => {
     expect(fetcher.mock.calls.some(([input, init]) => String(input).endsWith("/check-in") && method(init ?? {}) === "POST")).toBe(false);
     fireEvent.click(screen.getByRole("button", { name: "Request check-in QR" }));
     expect(await screen.findByLabelText("One-time token (held in memory)")).toHaveValue(token);
-    expect(screen.getByText(/QR rendering awaits the reviewed QR encoder dependency/)).toBeInTheDocument();
+    expect(await screen.findByAltText("Single-use appointment check-in QR")).toBeInTheDocument();
     expect(issueRequest).not.toBeNull();
     expect(headers(issueRequest!.init).get("If-Match")).toBe('"2"');
     expect(screen.getByLabelText("Secure same-origin landing URL")).toHaveValue(`${window.location.origin}/patient/check-in#appointment_id=51&token=${token}`);

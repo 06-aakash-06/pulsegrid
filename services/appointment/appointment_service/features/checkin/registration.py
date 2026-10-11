@@ -256,15 +256,16 @@ async def _lock_appointment_context(core, session, request, principal, appointme
     """Discover queue children before asking G0 to acquire its canonical lock set."""
     aid = int(appointment_id)
     workflow = await core.read_workflow(session, appointment_id)
-    queue_days = ()
-    queue_entry_ids = ()
-    if workflow is not None and workflow["queue_entry_id"] is not None:
-        queue_id = int(workflow["queue_entry_id"])
-        queue_table = core.metadata.tables["queue_entries"]
-        queue_row = (await session.execute(select(queue_table).where(queue_table.c.id == queue_id))).mappings().first()
-        if queue_row is not None:
-            queue_days = ((int(queue_row["doctor_id"]), queue_row["local_date"]),)
-            queue_entry_ids = (queue_id,)
+    from ... import models as m
+    from ..queue.service import _timezone
+    booking = (await session.execute(select(m.appointments).where(m.appointments.c.id == aid))).mappings().one()
+    policy = (await session.execute(select(m.doctor_schedule_snapshots.c.policy_snapshot).where(
+        m.doctor_schedule_snapshots.c.doctor_id == booking['doctor_id']))).scalar_one()
+    day = shared_core.op.now().astimezone(_timezone(policy)).date()
+    rows = (await session.execute(select(m.queue_entries.c.id, m.queue_entries.c.local_date).where(
+        m.queue_entries.c.doctor_id == booking['doctor_id']))).all()
+    queue_days = tuple(sorted({(booking['doctor_id'], day)} | {(booking['doctor_id'], r.local_date) for r in rows}))
+    queue_entry_ids = tuple(sorted(r.id for r in rows))
     try:
         return await core.lock_context(
             session,
@@ -419,6 +420,8 @@ async def _issue_in_transaction(core, session, request, principal, appointment_i
         "expires_at": _wire_time(expires_at),
         "version": 1,
     }
+    core.stage_effect(session, context, 'workflow_link_issued', int(appointment_id), workflow['version'],
+        {'resource_id': appointment_id, 'version': workflow['version'], 'state': 'booked'})
     return safe_value, token
 
 
@@ -501,29 +504,14 @@ async def _redeem_in_transaction(
     ):
         _fail("dependency_unavailable", 503)
 
-    workflow_table = core.metadata.tables["appointment_workflows"]
-    updated = (await session.execute(update(workflow_table).where(
-        workflow_table.c.appointment_id == int(appointment_id),
-        workflow_table.c.version == workflow["version"],
-        workflow_table.c.state == "booked",
-    ).values(
-        state="checked_in",
-        queue_entry_id=int(queue_entry["id"]),
-        version=workflow_table.c.version + 1,
-        updated_at=context.now,
-    ).returning(workflow_table))).mappings().one_or_none()
-    if updated is None:
-        _fail("version_conflict", 412)
-    workflow_value = core.workflow_view(dict(updated))
-    core.stage_effect(
-        session,
-        context,
-        "workflow_checked_in",
-        int(appointment_id),
-        updated["version"],
-        {"resource_id": appointment_id, "version": updated["version"], "state": "checked_in"},
-        reason,
-    )
+    updated = await core.read_workflow(session, appointment_id)
+    if (updated['state'] != 'checked_in' or updated['queue_entry_id'] != int(queue_entry['id'])
+            or updated['version'] != workflow['version'] + 1):
+        _fail('dependency_unavailable', 503)
+    # Queue allocation owns the single shared workflow transition and audit.
+    from ..journey.service import local_stages
+    await local_stages(session, context, int(appointment_id))
+    workflow_value = core.workflow_view(updated)
     return 200, {"workflow": workflow_value, "queue_entry": queue_entry}
 
 
