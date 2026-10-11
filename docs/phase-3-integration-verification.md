@@ -83,3 +83,19 @@ audit digest chains, runtime privileges, all **42 foreign service database
 connections denied** (all fourteen app/migration roles also deny foreign CONNECT),
 Traefik route isolation and all eleven container health checks. Real Phase 3
 workflow verification remains checkpoint I/J work, not claimed by this gate.
+
+## Checkpoint H: frontend mounting
+
+Mounted distinct patient waitlists/offers, check-in, live queue, journey/history
+and fulfillment panels; reception QR/manual check-in and discharge inspection;
+doctor queues with skip/recall/history and consultation controls. Pharmacy staff
+uses one fulfillment panel around the existing forms, preserving Phase 2 stock
+and dispensing screens. Offer decisions retain the original idempotency key and
+version on ambiguous failures. Queue polling remains three seconds for staff,
+five seconds for patients; hidden documents pause polling. Real in-memory QR
+encoding/native-or-ZXing scanning and manual fallback remain. No redesign.
+
+Executed typecheck, **109 frontend tests** across seven files and production
+build successfully. Added offer ambiguous-response retry/receipt coverage and
+updated the prior intentionally-deferred UI assertion for authorized activation.
+Production bundle size warning is recorded; runtime/browser checks follow at J.

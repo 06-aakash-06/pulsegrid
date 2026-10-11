@@ -80,6 +80,7 @@ export interface QueueEntry {
   token_number: number;
   state:
     | "waiting"
+  | "skipped"
     | "in_consultation"
     | "completed"
     | "cancelled"

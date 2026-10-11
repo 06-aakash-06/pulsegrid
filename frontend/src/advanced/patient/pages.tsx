@@ -1,3 +1,4 @@
+import { WorkflowHistory } from "../shared/WorkflowHistory";
 import { CheckinQr } from "../shared/CheckinQr";
 import {
   useCallback,
@@ -636,6 +637,7 @@ export function PatientJourneyPage() {
           <div><dt>Review required</dt><dd>{detail.data.review_required ? "Yes" : "No"}</dd></div>
         </dl>
         <JourneyTimeline journey={detail.data} />
+        <WorkflowHistory path={`/api/v1/appointments/journeys/${detail.data.id}/history`} />
         <button type="button" onClick={() => void reconcile()} disabled={reconcilePending || detail.loading || !detail.etag}>{reconcilePending ? "Refreshing journey…" : "Refresh journey from current owner snapshots"}</button>
         {reconcileError && <p role="alert">{reconcileError}</p>}
         {detail.data.review_required && <p role="status">The service has flagged this journey for review. Patient actions cannot clear that flag.</p>}

@@ -1,6 +1,7 @@
 export type ID = string;
 export type QueueState =
   | "waiting"
+  | "skipped"
   | "in_consultation"
   | "completed"
   | "cancelled"

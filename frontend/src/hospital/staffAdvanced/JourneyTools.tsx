@@ -1,3 +1,4 @@
+import { WorkflowHistory } from "../../advanced/shared/WorkflowHistory";
 import { useState } from "react";
 import { CommandForm, Facts, Lookup, Panel, Resource } from "../ui";
 import type { Journey } from "./contracts";
@@ -24,6 +25,7 @@ export function StaffJourneyTools() {
             !journey.review_required;
           return (
             <div className="staff-advanced-journey">
+              <WorkflowHistory path={`/api/v1/appointments/journeys/${journey.id}/history`} />
               <Facts
                 values={{
                   "Journey ID": journey.id,

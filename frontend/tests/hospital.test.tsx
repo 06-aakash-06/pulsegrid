@@ -614,9 +614,9 @@ describe("command safety and states", () => {
     view.unmount();
     const deferred = setup("/patient/check-in", "patient");
     expect(
-      await screen.findByText("Future workflow unavailable"),
+      await screen.findByText("Secure QR check-in"),
     ).toBeInTheDocument();
-    expect(deferred.fetcher).not.toHaveBeenCalled();
+    expect(writes(deferred.fetcher)).toHaveLength(0);
     expect(writes(fetcher)).toHaveLength(0);
   });
   it.each(["0", "-1", "1.1", "9223372036854775808", "1e5"])(

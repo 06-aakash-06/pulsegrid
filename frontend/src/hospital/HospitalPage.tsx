@@ -1,3 +1,6 @@
+import { PatientWaitlistPage, PatientCheckinPage, PatientQueuePage, PatientJourneyPage, PatientFulfillmentPanel } from "../advanced/patient";
+import { WaitlistOffers } from "../advanced/patient/WaitlistOffers";
+import { DoctorQueuePage, ReceptionWorkflowPanel, StaffFulfillmentPanel } from "./staffAdvanced";
 import type { WorkspaceConfig, WorkspacePage } from "../navigation/workspaces";
 import { PlaceholderPage } from "../pages/PlaceholderPage";
 import {
@@ -9,7 +12,7 @@ import {
   StaffManagement,
 } from "./patientDoctor";
 import { Consultations, Prescriptions, RecordsPage } from "./records";
-import { Fulfillment, MedicineCatalog } from "./pharmacy";
+import { MedicineCatalog } from "./pharmacy";
 import { BillingPage, EmergencyPage } from "./billingEmergency";
 
 export function HospitalPage({
@@ -26,13 +29,17 @@ export function HospitalPage({
     if (route === "dashboard") content = <PatientDashboard />;
     if (route === "doctors") content = <DoctorDirectory />;
     if (route === "appointments") content = <Appointments />;
+    if (route === "waitlist") content = <><PatientWaitlistPage /><WaitlistOffers /></>;
+    if (route === "check-in") content = <PatientCheckinPage />;
+    if (route === "queue") content = <PatientQueuePage />;
+    if (route === "journey") content = <PatientJourneyPage />;
     if (route === "records") content = <RecordsPage />;
     if (route === "prescriptions") content = <Prescriptions />;
     if (route === "pharmacy")
       content = (
         <>
           <MedicineCatalog />
-          <Fulfillment />
+          <PatientFulfillmentPanel />
         </>
       );
     if (route === "billing") content = <BillingPage />;
@@ -41,6 +48,7 @@ export function HospitalPage({
   if (role === "/doctor") {
     if (route === "dashboard") content = <DoctorDashboard />;
     if (route === "consultations") content = <Consultations doctor />;
+    if (route === "queue") content = <DoctorQueuePage />;
     if (route === "prescriptions")
       content = (
         <>
@@ -52,7 +60,7 @@ export function HospitalPage({
   if (role === "/pharmacist") {
     if (route === "inventory" || route === "dashboard")
       content = <MedicineCatalog staff inventory />;
-    if (route === "prescriptions") content = <Fulfillment pharmacist />;
+    if (route === "prescriptions") content = <StaffFulfillmentPanel />;
   }
   if (
     role === "/billing" &&
@@ -73,7 +81,7 @@ export function HospitalPage({
   }
   if (role === "/receptionist")
     content =
-      route === "dashboard" ? <Demographics /> : <Appointments reception />;
+      route === "dashboard" ? <Demographics /> : <><Appointments reception /><ReceptionWorkflowPanel /></>;
   if (!content)
     return <PlaceholderPage page={page} workspaceName={workspace.name} />;
   return (

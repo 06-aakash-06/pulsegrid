@@ -397,3 +397,27 @@ describe("Agent 6 patient workflows", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 });
+
+describe("temporary waitlist offers", () => {
+  it("retains the original command identity after ambiguous acceptance and shows only owner confirmation", async () => {
+    const { WaitlistOffers } = await import("../../src/advanced/patient/WaitlistOffers");
+    const offer = { id: "91", entry_id: "61", slot_id: "41", patient_id: "11", state: "pending",
+      expires_at: new Date(Date.now() + 120000).toISOString(), appointment_id: null, version: 1 };
+    const calls: RequestInit[] = [];
+    setup(<WaitlistOffers />, (url, init) => {
+      if (url.pathname.endsWith("/waitlist-offers") && method(init) === "GET") return json(page([offer]));
+      if (url.pathname.endsWith("/91/accept")) {
+        calls.push(init);
+        return calls.length === 1 ? failure(503, "dependency_unavailable", "Retry original command.")
+          : json({ offer: { ...offer, state: "accepted", version: 2 }, appointment: { id: "51" } });
+      }
+      return undefined;
+    });
+    fireEvent.click(await screen.findByRole("button", { name: "Accept slot offer" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Retry original command");
+    fireEvent.click(await screen.findByRole("button", { name: "Retry original offer command" }));
+    expect(await screen.findByRole("status")).toHaveTextContent("Booking confirmed: appointment 51");
+    expect(headers(calls[0]).get("Idempotency-Key")).toBe(headers(calls[1]).get("Idempotency-Key"));
+    expect(headers(calls[0]).get("If-Match")).toBe('"1"');
+  });
+});

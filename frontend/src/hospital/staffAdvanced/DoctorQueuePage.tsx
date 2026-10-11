@@ -1,3 +1,4 @@
+import { QueueTransitions } from "./QueueTransitions";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "../../api/client";
@@ -431,6 +432,7 @@ export function DoctorQueuePage() {
                           <p>Appointment {entry.appointment_id} • Patient ID {entry.patient_id}</p>
                           <p>State: {entry.state}{entry.position === null ? "" : ` • Position ${entry.position}`}</p>
                           <p>Queue entry version {entry.version}</p>
+                          <QueueTransitions entry={entry} refresh={() => refreshFirstPageRef.current()} />
                         </article>
                       ))}
                     </div>
