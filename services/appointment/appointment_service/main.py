@@ -57,6 +57,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
+    from . import phase3_core
+    from .extensions import register_extensions
+    register_extensions(application, phase3_core)
     application.include_router(api_router)
     if auth_config.origins:
         application.add_middleware(
@@ -92,6 +95,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             code=exception.detail if isinstance(exception.detail, str) and exception.detail in {
                 "slot_occupied", "patient_overlap", "schedule_changed", "revision_gap",
                 "clinical_hold", "cancelled", "appointment_unavailable", "invalid_reference",
+                "workflow_locked", "invalid_transition",
             } else None,
         )
 

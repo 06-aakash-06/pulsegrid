@@ -343,3 +343,24 @@ clinical_holds = Table('clinical_holds', metadata,
     ref('consultation_id'), value('state', String(16)),
     UniqueConstraint('consultation_id'), check('consultation_id>0', 'consultation_positive'),
     states('state', 'active finalized'))
+
+# G0 shared operational aggregate. Legacy appointments are never backfilled.
+appointment_workflows = entity(
+    'appointment_workflows',
+    ref('appointment_id', 'appointments.id', primary_key=True),
+    ref('journey_id', 'journeys.id'),
+    ref('patient_id'), ref('doctor_id'), ref('slot_id', 'slots.id'),
+    value('schedule_revision', BigInteger),
+    value('schedule_fingerprint', String(64)),
+    value('state', String(32)),
+    timestamp('window_starts_at'), timestamp('window_ends_at'),
+    ref('queue_entry_id', 'queue_entries.id', nullable=True),
+    UniqueConstraint('journey_id'), UniqueConstraint('queue_entry_id'),
+    states('state', 'booked checked_in in_consultation completed cancelled no_show'),
+    check('schedule_revision > 0', 'positive_schedule_revision'),
+    check('version <= 9007199254740991', 'safe_version'),
+    check('window_ends_at > window_starts_at', 'valid_window'),
+    check("schedule_fingerprint ~ '^[0-9a-f]{64}$'", 'fingerprint'),
+    check("state NOT IN ('checked_in','in_consultation','completed') OR queue_entry_id IS NOT NULL", 'queue_required'),
+    with_id=False,
+)

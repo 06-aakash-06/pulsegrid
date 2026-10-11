@@ -97,7 +97,7 @@ async def audit(session,request,principal,action,resource_id,reason=None):
         {'id':new_id(),'metadata':canonical(metadata)})
 
 
-async def effect(session,request,principal,action,row_value,payload,reason=None):
+async def _append_effect(session,request,principal,action,row_value,payload,reason=None):
     await audit(session,request,principal,action,row_value['id'],reason)
     event_id=new_id()
     kind='schedule' if action.startswith('schedule_') else 'appointment'
@@ -115,6 +115,32 @@ async def effect(session,request,principal,action,row_value,payload,reason=None)
     await session.execute(insert(m.outbox_events).values(event_id=event_id,
         aggregate_type=kind,aggregate_id=row_value['id'],aggregate_version=row_value['version'],
         event_type=event_type,envelope=envelope))
+
+
+
+def stage_effect(session, request, principal, action, row_value, payload, reason=None):
+    """Participants stage effects; only command finalization acquires audit head."""
+    if not session.in_transaction() or session.info.get('effects_flushed'):
+        raise RuntimeError('Effects require an unfinished owner transaction')
+    # Copy mutable payloads so later participant changes cannot rewrite effects.
+    session.info.setdefault('appointment_effects', []).append(
+        (request, principal, action, dict(row_value), json.loads(canonical(payload)), reason))
+
+
+async def effect(session,request,principal,action,row_value,payload,reason=None):
+    stage_effect(session,request,principal,action,row_value,payload,reason)
+
+
+async def flush_effects(session):
+    if session.info.get('effects_flushed'):
+        raise RuntimeError('Effects already finalized')
+    session.info['effects_flushed'] = True
+    from .phase3_core import FeatureEffect, append_feature_effect
+    for item in session.info.pop('appointment_effects', []):
+        if isinstance(item, FeatureEffect):
+            await append_feature_effect(session, item)
+        else:
+            await _append_effect(session, *item)
 
 
 async def replay(session,identity,fingerprint):
@@ -135,6 +161,7 @@ async def command(factory,identity,fingerprint,work):
                 if cached:
                     return cached
                 code,result=await work(session)
+                await flush_effects(session)
                 await session.execute(insert(m.idempotency_requests).values(**identity,
                     request_hash=fingerprint,response_code=code,response=result,expires_at=now()+timedelta(days=1)))
                 return code,result
@@ -183,6 +210,9 @@ async def lock_resources(session,slot_ids,appointment_id=None):
     if a:
         hold=(await session.execute(select(m.clinical_holds).where(
             m.clinical_holds.c.appointment_id==a['id']).with_for_update())).mappings().first()
+    if a:
+        await session.execute(select(m.appointment_workflows).where(
+            m.appointment_workflows.c.appointment_id==a['id']).with_for_update())
     return {s['id']:s for s in locked},a,hold
 
 
@@ -245,6 +275,12 @@ async def change(session,request,p,aid,body,identity=None):
         return 200,appointment(a)
     if hold:
         fail('clinical_hold')
+    workflow=(await session.execute(select(m.appointment_workflows).where(
+        m.appointment_workflows.c.appointment_id==a['id']))).mappings().first()
+    # Enrollment remains disabled at G0. Fail closed until G2 wires all
+    # participants; never mutate an enrolled row without token/queue/journey hooks.
+    if workflow:
+        fail('workflow_locked')
     if a['state']!='confirmed':
         fail('cancelled' if a['state']=='cancelled' else 'conflict')
     values={'version':a['version']+1,'updated_at':now()}
@@ -347,6 +383,10 @@ async def clinical_hold(session,request,p,aid,body,finalize=False):
         fail('not_found',404)
     if a['version']!=precondition(request.headers.get('If-Match')):
         fail('version_conflict',412)
+    workflow=(await session.execute(select(m.appointment_workflows).where(
+        m.appointment_workflows.c.appointment_id==a['id']))).mappings().first()
+    if workflow and workflow['state']!='in_consultation':
+        fail('workflow_locked')
     if a['state']!='confirmed':
         fail('appointment_unavailable')
     if hold and hold['consultation_id']!=int(body.consultation_id):

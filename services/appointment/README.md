@@ -86,3 +86,11 @@ services/appointment/.venv/bin/python -m compileall -q services/appointment/appo
 The PostgreSQL fixture starts a separate temporary cluster on a dynamically allocated loopback port, with no Unix socket, and creates a random database for each test. It applies the real Alembic chain and uses `appointment_app` for application transactions, with audit writes/DDL denied. It stops/removes its own cluster and never loads shared DB credentials or connects to an existing instance. `initdb`, `pg_ctl` and PostgreSQL extensions must be available; missing PostgreSQL is a reported blocker/skip, not concurrency proof. Generated database files stay within the ignored service-local `.test-runtime/` directory. External authorization/owner responses are test-only fixtures, while user/service JWT signature and scope verification execute normally in HTTP tests.
 
 The service-local [verification record](PHASE_2_3_VERIFICATION.md) lists executed results and skipped integration checks. No throughput, latency, availability, clinical or broker-delivery claims are made.
+
+## Phase 3.1A shared framework
+
+The G0 [framework handoff](FRAMEWORK_HANDOFF.md) supplies disabled feature
+registration, shared workflow storage/locks and deferred command effects.
+The migration head is `0004_phase3_core`; future 0005–0008 revisions require
+feature manifest handoffs. Existing Phase 2 APIs remain active; no new feature
+endpoint or automatic enrollment is enabled. See [verification](PHASE_3_1A_VERIFICATION.md).
