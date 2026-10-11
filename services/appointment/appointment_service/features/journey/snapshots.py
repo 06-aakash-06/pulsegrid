@@ -14,6 +14,10 @@ class SnapshotUnavailable(TimeoutError):
     pass
 
 
+class SnapshotUnknown(SnapshotUnavailable):
+    """A healthy owner has no identity-bound resource yet; do not trip its circuit."""
+
+
 def validate(snapshot, owner, aid, pid):
     if not isinstance(snapshot, dict) or snapshot.get('appointment_id') != str(aid) or snapshot.get('patient_id') != str(pid):
         raise SnapshotUnavailable('identity_mismatch')
@@ -56,6 +60,8 @@ class SnapshotClient:
                     async with httpx.AsyncClient(timeout=1, trust_env=False, follow_redirects=False,
                                                 transport=self.transport) as client:
                         async with client.stream(method, 'http://'+owner+':8000'+path,headers=headers,json=body) as response:
+                            if response.status_code == 404:
+                                raise SnapshotUnknown('source_unknown')
                             if response.status_code != 200:
                                 raise SnapshotUnavailable('source_changed' if response.status_code == 409 else 'owner_unavailable')
                             raw = bytearray()
@@ -64,6 +70,9 @@ class SnapshotClient:
                                 if len(raw)>262144: raise SnapshotUnavailable('source_too_large')
                 result = json.loads(raw); self.failures[owner]=0
                 return result
+            except SnapshotUnknown:
+                self.failures[owner]=0
+                raise
             except (httpx.HTTPError, TimeoutError, ValueError, SnapshotUnavailable):
                 self.failures[owner]=self.failures.get(owner,0)+1
                 if self.failures[owner]>=5: self.open_until[owner]=time.monotonic()+15

@@ -6,6 +6,7 @@ import os
 import re
 import time
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from urllib.parse import urlsplit
 import httpx
@@ -330,11 +331,18 @@ def check_resource_scope(
     raise HTTPException(403)
 
 
+@lru_cache(maxsize=4)
+def _parsed_signing_key(contents):
+    # Cache only cryptographic parsing, never authorization or issued tokens.
+    # Reading the file on every call makes key replacement select a new entry.
+    return load_pem_private_key(contents, password=None)
+
+
 def service_token(config, scope, target="patient"):
     if not config.service_private_key_path or not config.service_kid:
         raise HTTPException(503)
     now = int(time.time())
-    key = Path(config.service_private_key_path).read_bytes()
+    key = _parsed_signing_key(Path(config.service_private_key_path).read_bytes())
     return jwt.encode(
         {
             "iss": "pulsegrid-service:appointment",

@@ -454,7 +454,7 @@ export function DoctorQueuePage() {
                       ) : (
                         <p>No waiting entry is available in this queue snapshot.</p>
                       )}
-                      <p>Skip and recall commands are not in the frozen API. Queue completion is reported after Records finalization; there is no manual completion command.</p>
+                      <p>Skipped patients retain their daily token and can be recalled. Queue completion follows Records finalization and journey reconciliation.</p>
                     </div>
                   )}
                   {pageIndex === 0 && startAttempt && (

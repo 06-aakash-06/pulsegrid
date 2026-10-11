@@ -34,7 +34,8 @@ export interface Waitlist {
     | "inactive_patient"
     | "patient_overlap"
     | "slot_retired"
-    | "window_closed";
+    | "window_closed"
+    | "offer_expired";
   version: Version;
 }
 

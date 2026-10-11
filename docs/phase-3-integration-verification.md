@@ -99,3 +99,39 @@ Executed typecheck, **109 frontend tests** across seven files and production
 build successfully. Added offer ambiguous-response retry/receipt coverage and
 updated the prior intentionally-deferred UI assertion for authorized activation.
 Production bundle size warning is recorded; runtime/browser checks follow at J.
+
+## Checkpoint I: complete regressions and concurrency
+
+Complete shared backend runner: **531 passed**, 51 Records database cases
+intentionally delegated to the isolated Records runner; **77 Records passed**
+(26 overlap). After final Appointment fixes, its complete suite **184 passed**,
+including the two additional snapshot/signing tests not collected in the earlier
+shared run. There are **584 distinct passed backend tests**, no unresolved skips
+or failures. Frontend **109 passed**, typecheck/build passed. Deprecation and
+bundle-size warnings remain non-fatal. Python compilation and diff checks pass.
+
+Real PostgreSQL tests cover enrollment races, FIFO, competing offer acceptance
+(twelve commands/one booking), expiry/accept and competing expiry workers,
+simultaneous token redemption, concurrent daily allocation, competing starts,
+exactly-one completion transition under eight concurrent reconciliations, and
+eight competing discharges (one success/seven stale versions). Constraint,
+rollback/idempotency, duplicate/older snapshots, revocation and worker lease/
+restart tests also pass. Disposable clusters only for destructive cases.
+
+Gateway testing exposed and fixed a Records circuit-breaker issue: a normal
+missing resource (404) now remains unknown/pending without treating the owner as
+down or delaying other completed consultations. Added a targeted transport test.
+The twelve-request gateway QR race exposed repeated RSA private-key parsing that
+blocked the async service. Parsed-key reuse retains fresh JWT jti/expiry/exact
+scopes and reads the key file each call so rotation selects a new cached key;
+no authority decision or token is cached. Rotation regression passes. Measured
+in the same Appointment container: twelve signatures took 6.595 seconds before,
+0.079 seconds warm after. The rerun produced exactly **one successful redemption
+and one queue entry across twelve gateway requests**. Initial timeouts are not
+reported as passes. Also tightened query rejection on new offer/queue commands.
+
+Refreshed existing migration-job containers after an outage recovery attempt
+found their old image could not recognize the new Billing head. All seven jobs
+now exit zero; the same Billing container was immediately restored, no reset or
+replacement deployment. Remaining J work is browser/staff evidence and final
+report/clean-tree checks; Phase 3 is not yet declared complete by this entry.

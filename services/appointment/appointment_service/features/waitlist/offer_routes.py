@@ -50,6 +50,7 @@ def register_offer_routes(router, core):
         return core.response(200, offers.view(row))
 
     async def decision(request, p, offer_id, body, accept):
+        core.query_keys(request, ())
         await core.authorize(request, p, ('patient', 'receptionist'))
         row = await stored(request, p, offer_id)
         _, _, replay = await early_replay(request, p, body.model_dump())

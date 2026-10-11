@@ -87,3 +87,18 @@ def test_zero_balance_missing_sources_outage_and_recovery(database):
         _, pending=await reconcile(db,jid,older)
         assert not pending['discharge_eligible']
     run(database,work)
+
+
+def test_competing_reconciliation_and_completion_have_one_versioned_effect(database):
+    async def work(db):
+        a,jid=await setup(db)
+        async with db.session_factory() as session:
+            before=await service.view(session,jid)
+        outcomes=await asyncio.gather(*(reconcile(db,jid,sources(a),before['version']) for _ in range(8)))
+        assert sorted(code for code,_ in outcomes)==[200]+[412]*7
+        async with db.session_factory() as session:
+            workflow=await core.read_workflow(session,a['id'])
+            assert workflow['state']=='completed'
+            transitions=(await session.execute(text("SELECT count(*) FROM queue_transitions WHERE entry_id=:id AND to_state='completed'"),{'id':workflow['queue_entry_id']})).scalar_one()
+            assert transitions==1
+    run(database,work)

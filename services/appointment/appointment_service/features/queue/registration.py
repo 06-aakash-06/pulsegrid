@@ -92,6 +92,7 @@ def register_routes(app, core_module) -> None:
     @router.post(prefix + '/queue-entries/{entry_id}/start')
     async def start(request: Request, entry_id: ID, body: Empty,
                     principal=Depends(core.authenticated_user)):
+        core.query_keys(request, ())
         entry = await _entry_scope(request, principal, int(entry_id))
         expected = core.precondition(request.headers.get('If-Match'))
         actor = core.ActorScope.user(principal)
@@ -110,6 +111,7 @@ def register_routes(app, core_module) -> None:
     @router.post(prefix + '/{appointment_id}/no-show')
     async def mark_no_show(request: Request, appointment_id: ID, body: Reason,
                            principal=Depends(core.authenticated_user)):
+        core.query_keys(request, ())
         await core.authorize(request, principal, ('receptionist',), appointment_id, write=True)
         expected = core.precondition(request.headers.get('If-Match'))
         reason = body.reason.strip()
@@ -138,6 +140,7 @@ def register_routes(app, core_module) -> None:
         return await core.execute(request, principal, body.model_dump(), work)
 
     async def transition(request, principal, entry_id, body, recall):
+        core.query_keys(request, ())
         core.query_keys(request, ())
         entry = await _entry_scope(request, principal, int(entry_id))
         expected = core.precondition(request.headers.get('If-Match'))
