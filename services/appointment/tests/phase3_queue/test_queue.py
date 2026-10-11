@@ -291,3 +291,45 @@ def test_parallel_allocation_serializes_counter_and_retries_discovery(database):
             next_token = (await session.execute(select(m.queue_counters.c.next_token))).scalar_one()
             assert next_token == 3
     run(database, work)
+
+
+def test_skip_recall_fifo_and_active_consultation_exclusion(database):
+    async def work(db):
+        await move_test_slots_into_window(db)
+        async with db.session_factory() as session, session.begin():
+            await session.execute(update(m.doctor_schedule_snapshots).values(policy_snapshot={'timezone':'UTC'}))
+        _, first = await booking(db, pid='11', sid=1)
+        _, second = await booking(db, pid='12', sid=2)
+        await enroll(db, int(first['id']), 9001)
+        await enroll(db, int(second['id']), 9002)
+        e1 = await checkin(db, int(first['id'])); e2 = await checkin(db, int(second['id']))
+        async def change(entry, recall, expected):
+            r = request('/synthetic/recall' if recall else '/synthetic/skip', expected)
+            async with db.session_factory() as session, session.begin():
+                plan = await service._complete_plan(session, 1, op.now().date())
+                ctx = await core.lock_context(session, r, core.worker_actor(), plan)
+                result = await service.skip_or_recall(session, ctx, int(entry['id']), expected, recall, 'synthetic')
+                await op.flush_effects(session)
+                return result
+        skipped = await change(e1, False, 1)
+        assert skipped['state'] == 'skipped' and skipped['position'] is None
+        recalled = await change(e1, True, skipped['version'])
+        assert recalled['state'] == 'waiting' and recalled['position'] == 1
+        async def start(entry):
+            async with db.session_factory() as session, session.begin():
+                plan = await service._complete_plan(session, 1, op.now().date())
+                ctx = await core.lock_context(session, request(), core.worker_actor(), plan)
+                current = await service._entry(session, int(entry['id']))
+                result = await service.start_entry(session, ctx, current['id'], current['version'])
+                await op.flush_effects(session)
+                return result
+        assert (await start(e1))['state'] == 'in_consultation'
+        with pytest.raises(HTTPException) as exc:
+            await start(e2)
+        assert exc.value.detail == 'doctor_busy'
+        with pytest.raises(HTTPException):
+            await change(e1, False, recalled['version']+1)
+        async with db.session_factory() as session:
+            history = (await session.execute(text('SELECT to_state FROM queue_transitions WHERE entry_id=:id ORDER BY id'), {'id':int(e1['id'])})).scalars().all()
+            assert history == ['waiting', 'skipped', 'waiting', 'in_consultation']
+    run(database, work)

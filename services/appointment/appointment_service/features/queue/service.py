@@ -12,7 +12,7 @@ from sqlalchemy import insert, select, text, update
 from appointment_service import models as m, operations as op, phase3_core as core
 
 MAX_SAFE = 9007199254740991
-STATES = frozenset({'waiting', 'in_consultation', 'completed', 'cancelled', 'no_show'})
+STATES = frozenset({'waiting', 'skipped', 'in_consultation', 'completed', 'cancelled', 'no_show'})
 
 
 def register_tables(metadata):
@@ -290,7 +290,7 @@ async def no_show(session, context, appointment_id, expected_version, reason):
         op.fail('clinical_hold')
     if workflow['queue_entry_id'] is not None:
         entry = await _entry(session, workflow['queue_entry_id'])
-        if entry['state'] != 'waiting':
+        if entry['state'] not in ('waiting', 'skipped'):
             op.fail('invalid_transition')
         await session.execute(text("""
             UPDATE queue_entries SET state='no_show', position=NULL,
@@ -328,7 +328,7 @@ async def cancel_for_booking_change(session, context, appointment_id) -> None:
         entry = await _entry(session, workflow['queue_entry_id'])
         if entry['id'] not in context.plan.queue_entry_ids:
             raise op.Restart()
-        if entry['state'] != 'waiting':
+        if entry['state'] not in ('waiting', 'skipped'):
             op.fail('workflow_locked')
         await session.execute(text("""
             UPDATE queue_entries SET state='cancelled', position=NULL,
@@ -421,3 +421,28 @@ async def own_snapshot(session, appointment_id):
             'in_consultation_count': counts['active'],
             'queue_version': snapshot['version'] if snapshot else 1,
             'observed_at': op.wire_time(op.now())}
+
+
+async def skip_or_recall(session, context, entry_id, expected_version, recall, reason):
+    core.require_context(session, context)
+    entry = await _entry(session, entry_id)
+    if entry_id not in context.plan.queue_entry_ids or entry['appointment_id'] not in context.bookings:
+        raise op.Restart()
+    if entry['version'] != expected_version:
+        op.fail('version_conflict', 412)
+    source, target = ('skipped', 'waiting') if recall else ('waiting', 'skipped')
+    workflow = await core.read_workflow(session, entry['appointment_id'])
+    if (entry['state'] != source or workflow is None or workflow['state'] != 'checked_in'
+            or context.bookings[entry['appointment_id']]['state'] != 'confirmed'):
+        op.fail('invalid_transition')
+    if entry['appointment_id'] in context.holds:
+        op.fail('clinical_hold')
+    await session.execute(text('UPDATE queue_entries SET state=:state,position=:position,version=version+1,'
+        'updated_at=:now WHERE id=:id'), dict(state=target,position=1 if recall else None,
+        now=context.now,id=entry_id))
+    await _reposition(session, context, entry['doctor_id'], entry['local_date'])
+    await _bump_snapshot(session, entry['doctor_id'], entry['local_date'], context.now)
+    result = await _entry(session, entry_id)
+    core.stage_effect(session, context, 'queue_recalled' if recall else 'queue_skipped', entry_id,
+        result['version'], dict(resource_id=str(entry_id),version=result['version'],state=result['state']), reason)
+    return entry_view(result)

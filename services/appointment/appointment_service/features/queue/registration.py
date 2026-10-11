@@ -48,9 +48,12 @@ async def _doctor_scope(request, principal, doctor_id):
 async def _entry_scope(request, principal, entry_id):
     async with core.session_factory(request)() as session:
         entry = await service._entry(session, entry_id)
-    await _doctor_scope(request, principal, entry['doctor_id'])
-    if 'doctor' not in principal.roles:
-        op.fail('forbidden', 403)
+    await core.current(request, principal, ('doctor',))
+    async with core.session_factory(request)() as session:
+        user_id = (await session.execute(select(m.doctor_schedule_snapshots.c.staff_user_id).where(
+            m.doctor_schedule_snapshots.c.doctor_id == entry['doctor_id']))).scalar_one_or_none()
+    if user_id is None or str(user_id) != principal.user_id:
+        op.fail('not_found', 404)
     return entry
 
 
@@ -133,5 +136,43 @@ def register_routes(app, core_module) -> None:
             return 200, result
 
         return await core.execute(request, principal, body.model_dump(), work)
+
+    async def transition(request, principal, entry_id, body, recall):
+        core.query_keys(request, ())
+        entry = await _entry_scope(request, principal, int(entry_id))
+        expected = core.precondition(request.headers.get('If-Match'))
+        reason = body.reason.strip()
+        if not reason:
+            op.fail('validation_error', 422)
+        async def work(session):
+            plan = await service._complete_plan(session, entry['doctor_id'], entry['local_date'])
+            ctx = await core.lock_context(session, request, core.ActorScope.user(principal), plan)
+            return 200, await service.skip_or_recall(session, ctx, int(entry_id), expected, recall, reason)
+        return await core.execute(request, principal, body.model_dump(), work)
+
+    @router.post(prefix + '/queue-entries/{entry_id}/skip')
+    async def skip(request: Request, entry_id: ID, body: Reason, principal=Depends(core.authenticated_user)):
+        return await transition(request, principal, entry_id, body, False)
+
+    @router.post(prefix + '/queue-entries/{entry_id}/recall')
+    async def recall(request: Request, entry_id: ID, body: Reason, principal=Depends(core.authenticated_user)):
+        return await transition(request, principal, entry_id, body, True)
+
+    @router.get(prefix + '/queue-entries/{entry_id}/history')
+    async def history(request: Request, entry_id: ID, cursor: ID | None = None,
+                      limit: int = Query(20, ge=1, le=100), principal=Depends(core.authenticated_user)):
+        from sqlalchemy import text
+        core.query_keys(request, ('cursor', 'limit'))
+        async with core.session_factory(request)() as session:
+            entry = await service._entry(session, int(entry_id))
+        await core.authorize(request, principal, ('patient', 'receptionist', 'doctor'), entry['appointment_id'])
+        async with core.session_factory(request)() as session, session.begin():
+            rows = (await session.execute(text('SELECT id,from_state,to_state,occurred_at,version '
+                'FROM queue_transitions WHERE entry_id=:entry AND id>:cursor ORDER BY id LIMIT :limit'),
+                dict(entry=int(entry_id),cursor=int(cursor or '0'),limit=limit+1))).mappings().all()
+            await op.audit(session, request, principal, 'read', entry_id)
+        return core.response(200, dict(items=[dict(id=str(r['id']),from_state=r['from_state'],
+            to_state=r['to_state'],occurred_at=op.wire_time(r['occurred_at']),version=r['version']) for r in rows[:limit]],
+            next_cursor=str(rows[limit-1]['id']) if len(rows)>limit else None))
 
     app.include_router(router)
