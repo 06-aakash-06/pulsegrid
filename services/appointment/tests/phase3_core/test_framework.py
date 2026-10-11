@@ -21,9 +21,9 @@ def test_linear_g0_migration_chain():
     config = Config(str(Path(__file__).resolve().parents[2] / 'alembic.ini'))
     config.set_main_option('script_location', str(Path(__file__).resolve().parents[2] / 'migrations'))
     script = ScriptDirectory.from_config(config)
-    assert script.get_heads() == ['0008_phase3_journey']
+    assert script.get_heads() == ['0009_phase3_registration_history']
     assert [r.revision for r in script.walk_revisions()] == [
-        '0008_phase3_journey','0007_phase3_queue','0006_phase3_checkin','0005_phase3_waitlist',
+        '0009_phase3_registration_history','0008_phase3_journey','0007_phase3_queue','0006_phase3_checkin','0005_phase3_waitlist',
         '0004_phase3_core','0003_booking','0002_explicit_worker','0001_initial']
     assert all(r.branch_labels == set() and not r.is_merge_point for r in script.walk_revisions())
 
@@ -88,7 +88,7 @@ def test_lock_context_order_immutable_and_enrollment(database):
                 core.LockPlan(appointment_ids=(aid,),waitlist_slot_ids=(1,),queue_days=((1,op.now().date()),)))
             event.remove(db.engine.sync_engine,'before_cursor_execute',record)
             names = ['doctor_schedule_snapshots','slots','appointments','clinical_holds',
-                     'appointment_workflows','waitlist_entries','queue_counters']
+                     'appointment_workflows','waitlist_entries','waitlist_offers','queue_counters','queue_snapshots']
             assert [next(name for name in names if 'FROM '+name+' ' in q or 'FROM '+name+'\n' in q) for q in queries] == names
             with pytest.raises(FrozenInstanceError):
                 ctx.now = op.now()
@@ -187,7 +187,7 @@ def test_parent_binding_and_runtime_privileges(database):
                 async with db.session_factory() as s,s.begin():
                     await s.execute(text(sql))
         async with db.session_factory() as s:
-            assert (await s.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()=='0008_phase3_journey'
+            assert (await s.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()=='0009_phase3_registration_history'
     run(database,work)
 
 

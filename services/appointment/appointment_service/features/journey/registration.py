@@ -45,19 +45,24 @@ async def on_booking_created(session, context):
         return
     journey_id = op.new_id()
     await session.execute(insert(m.journeys).values(id=journey_id, appointment_id=booking['id'], patient_id=booking['patient_id'], state='active'))
+    await session.execute(insert(m.journey_snapshots).values(journey_id=journey_id))
+    await session.execute(op.text("SELECT journey_registration_transition(:jid)"), {'jid':journey_id})
     for name in STAGES:
         await session.execute(insert(m.journey_stages).values(journey_id=journey_id, stage=name,
-                          state='complete' if name == 'appointment' else 'pending', source_resources=[]))
+                          state='complete' if name == 'appointment' else 'pending', source_resources=[],
+                          observed_at=context.now if name == 'appointment' else None))
     core.stage_effect(session, context, 'journey_created', journey_id, 1,
                       {'resource_id': str(journey_id), 'version': 1, 'state': 'active'})
 
 
-async def on_booking_changed(session, context):
+async def on_booking_changed(session, context, appointment_id=None):
     """Apply local cancellation or reschedule without remote reads or new locks."""
     from ... import phase3_core as core
     core.require_context(session, context)
-    for booking in context.bookings.values():
-        workflow = context.workflows.get(booking['id'])
+    for previous_booking in context.bookings.values():
+        if appointment_id is not None and previous_booking['id'] != int(appointment_id):continue
+        booking=await op.row(session,m.appointments,previous_booking['id'])
+        workflow = await core.read_workflow(session,booking['id'])
         if workflow is None:
             continue
         journey = (await session.execute(select(m.journeys).where(m.journeys.c.id == workflow['journey_id']))).mappings().one()
