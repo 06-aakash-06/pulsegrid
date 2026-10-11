@@ -103,12 +103,15 @@ def verify(base, fixture):
     start=(datetime.now(timezone.utc)+timedelta(days=2)).replace(hour=4,minute=0,second=0,microsecond=0)
     start_text=start.isoformat();end_text=(start+timedelta(hours=2)).isoformat()
     schedule=create('schedule',doctor,'POST',f'/api/v1/doctors/{d["id"]}/schedules',{'timezone':'Asia/Kolkata','slot_minutes':15,'intervals':[{'starts_at':start_text,'ends_at':end_text}],'expected_revision':0},de,(202,))
+    # Resume against the persisted proposal, even if the UTC date changed.
+    start=datetime.fromisoformat(schedule['intervals'][0]['starts_at'].replace('Z','+00:00'))
+    end=datetime.fromisoformat(schedule['intervals'][-1]['ends_at'].replace('Z','+00:00'))
     decision=create('decision',doctor,'POST','/api/v1/appointments/schedule-decisions',{'doctor_id':d['id'],'proposal_id':schedule['id'],'expected_accepted_revision':0})
     assert decision['state']=='accepted'
     proposal,pe,_=doctor.call('GET',f'/api/v1/doctors/{d["id"]}/schedules/{schedule["id"]}')
     if proposal['status']=='pending':
         doctor.call('POST',f'/api/v1/doctors/{d["id"]}/schedules/{schedule["id"]}/reconcile',{},pe,key('reconcile'))
-    availability,_,_=patient.call('GET',f'/api/v1/appointments/availability?doctor_id={d["id"]}&from={start.strftime("%Y-%m-%dT%H:%M:%SZ")}&to={(start+timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ")}')
+    availability,_,_=patient.call('GET',f'/api/v1/appointments/availability?doctor_id={d["id"]}&from={start.strftime("%Y-%m-%dT%H:%M:%SZ")}&to={end.strftime("%Y-%m-%dT%H:%M:%SZ")}')
     slots=availability['slots'];assert len(slots)>=4
     revision=availability['accepted_revision']
     checked('doctor_schedule_accept_reconcile_availability')
