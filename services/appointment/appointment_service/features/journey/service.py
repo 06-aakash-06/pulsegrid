@@ -96,10 +96,14 @@ async def apply(session, context, journey_id, sources, failures, expected=None, 
         target='reopened' if changed or not eligible else 'discharged'
     else:
         target='ready' if eligible else 'reopened' if journey['state']=='reopened' else 'active'
+    stage_changed=False
+    def business_sources(items):
+        return [{key:value for key,value in item.items() if key!='observed_at'} for item in items]
     for stage in result['stages']:
         row = (await session.execute(select(m.journey_stages).where(
             m.journey_stages.c.journey_id==journey['id'],m.journey_stages.c.stage==stage['name']))).mappings().one()
-        if row['state'] != stage['state'] or row['source_resources'] != stage['sources']:
+        if row['state'] != stage['state'] or business_sources(row['source_resources']) != business_sources(stage['sources']):
+            stage_changed=True
             await session.execute(update(m.journey_stages).where(m.journey_stages.c.journey_id==journey['id'],
                 m.journey_stages.c.stage==stage['name']).values(state=stage['state'],source_resources=stage['sources'],
                 observed_at=context.now if stage['state'] in ('complete','skipped') else None,
@@ -112,10 +116,18 @@ async def apply(session, context, journey_id, sources, failures, expected=None, 
         next_attempt_at=context.now+timedelta(seconds=min(60,2**min(snapshot['attempts'],6)) if failures else 10))
     for owner,data in sources.items(): values[owner+'_revision']=data['revision']
     await session.execute(update(m.journey_snapshots).where(m.journey_snapshots.c.journey_id==journey['id']).values(**values))
-    version=journey['version']+1
-    await session.execute(update(m.journeys).where(m.journeys.c.id==journey['id']).values(state=target,version=version,updated_at=context.now))
-    action='journey_discharged' if discharge else 'journey_reopened' if target=='reopened' and journey['state']=='discharged' else 'journey_updated'
-    core.stage_effect(session,context,action,journey['id'],version,dict(resource_id=str(journey['id']),version=version,state=target),reason)
+    # A healthy unchanged heartbeat updates freshness/lease metadata without
+    # invalidating a staff review. Explicit commands and business changes keep
+    # their audited, versioned effect; fresh owner reads still gate discharge.
+    business_changed=(expected is not None or changed or stage_changed or target!=journey['state'] or
+        review!=snapshot['review_required'] or values['last_error']!=snapshot['last_error'] or
+        values['pending_reasons']!=snapshot['pending_reasons'] or
+        values['expected_source_keys']!=snapshot['expected_source_keys'])
+    if business_changed:
+        version=journey['version']+1
+        await session.execute(update(m.journeys).where(m.journeys.c.id==journey['id']).values(state=target,version=version,updated_at=context.now))
+        action='journey_discharged' if discharge else 'journey_reopened' if target=='reopened' and journey['state']=='discharged' else 'journey_updated'
+        core.stage_effect(session,context,action,journey['id'],version,dict(resource_id=str(journey['id']),version=version,state=target),reason)
     return await view(session,journey['id'])
 
 

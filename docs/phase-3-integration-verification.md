@@ -135,3 +135,44 @@ found their old image could not recognize the new Billing head. All seven jobs
 now exit zero; the same Billing container was immediately restored, no reset or
 replacement deployment. Remaining J work is browser/staff evidence and final
 report/clean-tree checks; Phase 3 is not yet declared complete by this entry.
+
+## Checkpoint J: gateway and browser demonstration
+
+All six requested workflow groups passed with real synthetic owner HTTP calls
+through the existing Traefik gateway. The retained demonstration consists of ten
+Phase 3 gateway groups and three additional security/race groups, plus a fresh
+rerun of **all eleven retained Phase 2 gateway groups** on the activated stack.
+No mocked backend is substituted for these requests.
+
+| Requested workflow | Executed result |
+|---|---|
+| 1: registration through prescription, dispensing, payment and discharge | Passed: current assigned doctor, real QR redemption/token, finalized Records, Pharmacy stock/dispensing, Billing source import/simulated success payment, fresh reconciliation and reception discharge |
+| 2: full slot, waitlist, cancellation, offer acceptance | Passed: FIFO reservation; four competing gateway accepts yield one booking |
+| 3: offer expiry and next patient | Passed: real five-minute persisted expiry, next FIFO patient's pending offer, production worker recovery across Appointment container replacement |
+| 4: skip/recall/consultation completion | Passed: original token/FIFO restored, busy guard, finalized Records completes queue/history; also exercised browser skip/recall/call-next and clinical creation/finalization |
+| 5: no prescription | Passed: authoritative finalized Records null prescription, Pharmacy skipped, consultation charges/payment and authorized discharge |
+| 6: downstream unavailable/recovered | Passed: one bounded synthetic Billing stop/reconciliation, pending/failed stage with discharge denied, same container restored and reconciliation recovered; finally restoration is mandatory |
+
+Additional gateway checks passed: cancellation and reschedule revoke old
+credentials, twelve competing QR redemptions produce exactly one queue entry,
+wrong patient access/check-in denied, patient discharge denied, private owner
+leaves blocked at gateway, and late prescription revocation preserves committed
+dispensing while flagging review and blocking discharge. Earlier successful full
+journey is intentionally left requiring review after that negative test; this is
+expected safe behavior, not a failed primary workflow.
+
+Real in-app browser (Chrome connector unavailable) used actual Vite/API proxy:
+patient sign-in, QR generation/render and confirmed check-in (token 5), live queue
+position, waitlist offers and journey/history; assigned doctor skip/recall/FIFO
+start plus real clinical create/finalize without prescription; reception manual
+check-in (token 7). Browser discharge review exposed version churn on unchanged
+worker heartbeats; fixed it to retain review versions while updating freshness,
+with a ten-test journey rerun passing. Fresh source/version checks remain on every
+discharge, and actual source changes still invalidate a review. Final reception
+discharge/browser evidence and final clean-tree check are recorded below.
+
+Temporary verification helpers were corrected for plain-text Traefik 404s and
+FastAPI included-router introspection (use generated OpenAPI); those helper
+failures are not represented as application passes. Supplemental security uses
+a separate private fixture file so verification writers do not share state.
+No credentials, raw tokens or private fixture files are committed.

@@ -36,7 +36,7 @@ def main():
     for domain,expected in routes.items():
         code=f'''import json
 from {domain}_service.main import app
-routes={{(method,route.path) for route in app.routes for method in getattr(route,'methods',())}}
+routes={{(method.upper(),path) for path,spec in app.openapi()['paths'].items() for method in spec if method.upper() in ('GET','POST','PATCH','DELETE')}}
 print(json.dumps(sorted(routes)))
 '''
         actual={tuple(item) for item in json.loads(baseline.compose('exec','-T',domain,'python','-',code=code))}

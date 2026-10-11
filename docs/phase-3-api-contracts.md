@@ -206,3 +206,14 @@ open a fifteen-second circuit after repeated failures. No broker consumer or
 Redis correctness mechanism is activated. App defaults remain inactive for
 framework reuse; reviewed development Compose explicitly enables Phase 3 and
 the Records consultation-start gate together after all owner heads are applied.
+
+Periodic journey heartbeats refresh snapshot freshness and retry/lease metadata
+without changing the aggregate or stage version when state, owner resource
+versions, charge membership and failure/review conditions are unchanged. An
+explicit reconciliation command remains audited/versioned. A real owner change,
+failure/recovery or discharge still advances the aggregate version. This keeps a
+staff review valid across healthy polling; every discharge nevertheless fetches
+and validates fresh owner data before its locked version/source-vector check.
+Stage timestamps describe first observation of the current state/source version;
+`last_reconciled_at` describes the latest freshness check. These diagnostics are
+not cache authority (all workflow responses remain no-store).

@@ -102,3 +102,18 @@ def test_competing_reconciliation_and_completion_have_one_versioned_effect(datab
             transitions=(await session.execute(text("SELECT count(*) FROM queue_transitions WHERE entry_id=:id AND to_state='completed'"),{'id':workflow['queue_entry_id']})).scalar_one()
             assert transitions==1
     run(database,work)
+
+
+def test_unchanged_worker_refresh_preserves_staff_review_version(database):
+    async def work(db):
+        a,jid=await setup(db)
+        _,first=await reconcile(db,jid,sources(a))
+        _,heartbeat=await reconcile(db,jid,sources(a))
+        assert heartbeat['version']==first['version']
+        assert heartbeat['last_reconciled_at']>=first['last_reconciled_at']
+        assert heartbeat['stages']==first['stages']
+        # A review survives a heartbeat; a real source revision remains a change.
+        assert (await reconcile(db,jid,sources(a),first['version'],True))[0]==200
+        _,changed=await reconcile(db,jid,sources(a,balance=100,revision=3))
+        assert changed['state']=='reopened' and changed['version']>first['version']
+    run(database,work)
