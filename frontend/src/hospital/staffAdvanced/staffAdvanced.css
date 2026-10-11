@@ -1,0 +1,40 @@
+.staff-advanced-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.staff-advanced-scanner {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.staff-advanced-scanner video {
+  width: min(100%, 28rem);
+  max-height: 20rem;
+  border-radius: 0.5rem;
+  background: #111827;
+}
+
+.staff-advanced-stage-list,
+.staff-advanced-summary-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.staff-advanced-stage,
+.staff-advanced-summary {
+  padding: 0.75rem;
+  border: 1px solid #d7dee8;
+  border-radius: 0.5rem;
+}
+
+.staff-advanced-muted {
+  color: #526174;
+}
+
+.staff-advanced-stale {
+  color: #8a4b08;
+  font-weight: 600;
+}
