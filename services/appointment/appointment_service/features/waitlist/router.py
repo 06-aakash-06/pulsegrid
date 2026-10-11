@@ -113,4 +113,6 @@ def make_router(core):
             await op.audit(session,request,p,'read',slot_id)
         return core.response(200,dict(slot_id=slot_id,waiting_count=count,promotion_pending=pending,
             accepted_revision=row['accepted_revision'],observed_at=op.wire_time(op.now())))
+    from .offer_routes import register_offer_routes
+    register_offer_routes(router, core)
     return router

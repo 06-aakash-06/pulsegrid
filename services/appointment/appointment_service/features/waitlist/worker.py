@@ -40,7 +40,7 @@ async def claim(factory):
     return row['slot_id'],token
 
 
-async def run_once(factory,request,fetch,create_episode=None):
+async def run_once(factory,request,fetch,create_episode=None,*,promotion_policy=promote):
     claimed = await claim(factory)
     if claimed is None:
         return False
@@ -59,7 +59,7 @@ async def run_once(factory,request,fetch,create_episode=None):
             dict(slot=sid))).mappings().one()
         if job['lease_token'] != token or job['lease_expires_at'] <= ctx.now or not job['pending']:
             return 200,{'lost_lease':True}
-        result = await promote(session,ctx,prepared,create_episode)
+        result = await promotion_policy(session,ctx,prepared,create_episode)
         job = (await session.execute(text('SELECT * FROM promotion_jobs WHERE slot_id=:slot'),dict(slot=sid))).mappings().one()
         if job['pending']:
             attempts = job['attempt_count']+1

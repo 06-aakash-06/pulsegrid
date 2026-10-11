@@ -13,7 +13,7 @@ class Waitlist(Input):
     state: Literal['waiting', 'promoted', 'withdrawn', 'skipped']
     joined_at: Time
     promoted_appointment_id: ID | None
-    skip_reason: Literal['inactive_patient', 'patient_overlap', 'slot_retired', 'window_closed'] | None
+    skip_reason: Literal['inactive_patient', 'patient_overlap', 'slot_retired', 'window_closed', 'offer_expired'] | None
     version: Version
 
 

@@ -143,6 +143,8 @@ async def lock_context(session, request, actor, plan: LockPlan):
         raise ValueError('Link parent missing from lock plan')
     await _lock(session, m.waitlist_entries, m.waitlist_entries.c.slot_id, plan.waitlist_slot_ids,
                 m.waitlist_entries.c.joined_at, m.waitlist_entries.c.id)
+    await _lock(session, m.waitlist_offers, m.waitlist_offers.c.slot_id, plan.waitlist_slot_ids,
+                m.waitlist_offers.c.id)
     # Explicit G1 waitlist plans only; dormant G0 paths never query future jobs.
     # Advisory serialization protects absent status rows; no external locks/cache.
     for patient_id in sorted(set(plan.waitlist_patient_ids)):
@@ -156,6 +158,9 @@ async def lock_context(session, request, actor, plan: LockPlan):
         await session.execute(select(m.queue_counters).where(
             m.queue_counters.c.doctor_id == doctor_id,
             m.queue_counters.c.local_date == local_date).with_for_update())
+        await session.execute(select(m.queue_snapshots).where(
+            m.queue_snapshots.c.doctor_id == doctor_id,
+            m.queue_snapshots.c.local_date == local_date).with_for_update())
     queue_ids = set(plan.queue_entry_ids) | {w['queue_entry_id'] for w in workflows if w['queue_entry_id'] is not None}
     queues = await _lock(session, m.queue_entries, m.queue_entries.c.id, queue_ids)
     if any(q['doctor_id'] not in doctor_ids or (q['doctor_id'],q['local_date']) not in plan.queue_days for q in queues):
@@ -166,6 +171,7 @@ async def lock_context(session, request, actor, plan: LockPlan):
         raise ValueError('Journey parent missing from lock plan')
     await _lock(session, m.journey_stages, m.journey_stages.c.journey_id, journey_ids,
                 m.journey_stages.c.journey_id, m.journey_stages.c.stage)
+    await _lock(session, m.journey_snapshots, m.journey_snapshots.c.journey_id, journey_ids)
     complete_plan = LockPlan(tuple(sorted(doctor_ids)), tuple(sorted(slot_ids)),
         tuple(sorted(set(plan.appointment_ids))), tuple(sorted(link_ids)),
         tuple(sorted(set(plan.waitlist_slot_ids))), tuple(sorted(set(plan.queue_days))),
@@ -236,6 +242,11 @@ precondition = op.precondition
 can_access = op.can_access
 
 FEATURE_EVENTS = MappingProxyType({
+    **{f'offer_{state}': ('waitlist_offer', f'appointment.waitlist_offer.{state}.v1')
+       for state in ('pending', 'accepted', 'declined', 'expired', 'revoked')},
+    'queue_skipped': ('queue', 'appointment.queue.skipped.v1'),
+    'queue_recalled': ('queue', 'appointment.queue.recalled.v1'),
+    'workflow_link_issued': ('workflow', 'appointment.workflow.link_issued.v1'),
     'waitlist_joined': ('waitlist', 'appointment.waitlist.joined.v1'),
     'waitlist_withdrawn': ('waitlist', 'appointment.waitlist.withdrawn.v1'),
     'waitlist_skipped': ('waitlist', 'appointment.waitlist.skipped.v1'),
@@ -267,7 +278,7 @@ class ResourceEffect(Input):
     version: Version
     state: Literal['waiting','promoted','withdrawn','skipped','booked','checked_in',
                    'in_consultation','completed','cancelled','no_show','active','ready',
-                   'discharged','reopened']
+                   'discharged','reopened','pending','accepted','declined','expired','revoked']
 
 
 class PromotionPayload(Input):

@@ -47,7 +47,8 @@ async def join(session, request, principal, body, identity):
         select(m.waitlist_entries).where(m.waitlist_entries.c.slot_id == slot['id'],
         m.waitlist_entries.c.state == 'waiting'))).mappings()):
         op.fail('already_waiting')
-    if not active:
+    from .offers import pending as pending_offer
+    if not active and not await pending_offer(session, slot['id']):
         op.fail('slot_available')
     row = dict((await session.execute(insert(m.waitlist_entries).values(id=op.new_id(),
         slot_id=slot['id'],patient_id=int(body.patient_id),state='waiting',joined_at=ctx.now)
@@ -75,7 +76,7 @@ async def transition(session,ctx,row,state,reason=None,appointment_id=None):
 async def withdraw(session,request,principal,entry_id,version,reason):
     preliminary = await op.row(session,m.waitlist_entries,entry_id)
     ctx = await core.lock_context(session,request,core.ActorScope.user(principal),
-        core.LockPlan(waitlist_slot_ids=(preliminary['slot_id'],)))
+        core.LockPlan(waitlist_slot_ids=(preliminary['slot_id'],),promotion_slot_ids=(preliminary['slot_id'],)))
     row = await op.row(session,m.waitlist_entries,entry_id)
     if row['slot_id'] != preliminary['slot_id']:
         raise op.Restart()
@@ -87,6 +88,11 @@ async def withdraw(session,request,principal,entry_id,version,reason):
         op.fail('version_conflict',412)
     if row['state'] == 'withdrawn':
         return 200,view(row)
+    from . import offers
+    offered = await offers.pending(session, row['slot_id'])
+    if offered and offered['entry_id'] == row['id']:
+        await offers.end(session, ctx, offered, 'revoked')
+        await mark_pending(session, row['slot_id'], ctx.now)
     value = await transition(session,ctx,row,'withdrawn')
     # Reason is hashed only, never stored in waitlist/outbox content.
     from dataclasses import replace

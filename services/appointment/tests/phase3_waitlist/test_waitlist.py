@@ -340,5 +340,5 @@ def test_freshness_exact_boundaries_and_routes():
     assert not w.fresh(now+timedelta(microseconds=1),now)
     app=FastAPI();extensions.register_extensions(app,core,enabled=('waitlist',))
     paths=app.openapi()['paths']
-    assert len(paths)==4
+    assert len(paths)==8
     assert paths['/api/v1/appointments/waitlists'].keys() >= {'get','post'}
