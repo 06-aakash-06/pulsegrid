@@ -364,3 +364,32 @@ appointment_workflows = entity(
     check("state NOT IN ('checked_in','in_consultation','completed') OR queue_entry_id IS NOT NULL", 'queue_required'),
     with_id=False,
 )
+
+# G2 reviewed feature schema. All DDL remains in owner migrations 0005-0008.
+checkin_links.append_column(value('workflow_version', BigInteger))
+checkin_links.append_column(value('schedule_fingerprint', String(64)))
+queue_entries.append_column(value('position', Integer, nullable=True))
+queue_snapshots = Table('queue_snapshots', metadata,
+    ref('doctor_id', 'doctor_schedule_snapshots.doctor_id', primary_key=True),
+    Column('local_date', Date, primary_key=True),
+    value('version', BigInteger, default='1'),
+    timestamp('created_at', default='CURRENT_TIMESTAMP'),
+    timestamp('updated_at', default='CURRENT_TIMESTAMP'))
+waitlist_offers = entity('waitlist_offers',
+    ref('entry_id', 'waitlist_entries.id'), ref('slot_id', 'slots.id'), ref('patient_id'),
+    value('state', String(16)), timestamp('expires_at'),
+    ref('appointment_id', 'appointments.id', nullable=True))
+journey_snapshots = Table('journey_snapshots', metadata,
+    ref('journey_id', 'journeys.id', primary_key=True),
+    value('records_revision', BigInteger, nullable=True),
+    value('pharmacy_revision', BigInteger, nullable=True),
+    value('billing_revision', BigInteger, nullable=True),
+    value('expected_source_keys', JSONB, default="'[]'::jsonb"),
+    value('review_required', Boolean, default='false'),
+    timestamp('last_reconciled_at', nullable=True),
+    value('lease_token', String(64), nullable=True), timestamp('lease_until', nullable=True),
+    timestamp('next_attempt_at', default='CURRENT_TIMESTAMP'),
+    value('attempts', Integer, default='0'), value('sources', JSONB, default="'{}'::jsonb"),
+    value('pending_reasons', JSONB, default="'{}'::jsonb"),
+    value('last_error', String(64), nullable=True))
+journey_stages.c.observed_at.nullable = True

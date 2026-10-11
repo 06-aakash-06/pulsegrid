@@ -382,8 +382,7 @@ async def staff_snapshot(session, doctor_id, day, state, cursor, limit, actor):
     if decoded:
         conditions.append((m.queue_entries.c.token_number > decoded['t']) |
             ((m.queue_entries.c.token_number == decoded['t']) & (m.queue_entries.c.id > decoded['i'])))
-    rows = (await session.execute(select(m.queue_entries, m.appointments.c.patient_id,
-        text('queue_entries.position')).join(m.appointments,
+    rows = (await session.execute(select(m.queue_entries, m.appointments.c.patient_id).join(m.appointments,
         m.appointments.c.id == m.queue_entries.c.appointment_id).where(*conditions)
         .order_by(m.queue_entries.c.token_number, m.queue_entries.c.id).limit(limit+1))).mappings().all()
     counts = (await session.execute(text("""

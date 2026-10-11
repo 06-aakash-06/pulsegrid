@@ -16,20 +16,8 @@ from ..test_concurrency import run, booking, mutation, request, patient, identit
 
 
 async def schema(db):
-    # Explicit G1 fixture DDL only in an existing disposable test database.
-    # The reviewed G2 migration must implement these requirements with runtime grants.
-    import psycopg
-    with psycopg.connect(host='127.0.0.1',port=db.settings.db_port,user='appointment_owner',dbname=db.settings.db_name) as conn:
-        columns = schema_spec()['columns']
-        conn.execute('CREATE TABLE promotion_jobs ('+', '.join(c['name']+' '+c['type']+
-            ('' if c['nullable'] else ' NOT NULL')+(' DEFAULT '+c['default'] if c['default'] else '') for c in columns)+
-            ', '+', '.join(c['sql'] for c in schema_spec()['constraints'] if c['table']=='promotion_jobs')+')')
-        for index in schema_spec()['indexes']:
-            conn.execute(index['sql'])
-        for constraint in schema_spec()['constraints']:
-            if constraint['table']!='promotion_jobs':
-                conn.execute('ALTER TABLE '+constraint['table']+' ADD CONSTRAINT '+constraint['name']+' '+constraint['sql'])
-        conn.execute('GRANT SELECT,INSERT,UPDATE ON promotion_jobs TO appointment_app')
+    # Actual migrations now supply these tables and runtime grants.
+    return None
 
 
 async def enroll(db,pid='12',sid=1,r=None):

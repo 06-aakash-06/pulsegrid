@@ -14,16 +14,7 @@ from ..test_concurrency import booking, patient, request, run
 
 
 def install_queue_schema(database):
-    """Only this random isolated test database; production migration is G2."""
-    with psycopg.connect(host=database.db_host, port=database.db_port,
-                         dbname=database.db_name, user='appointment_owner') as conn:
-        conn.execute('ALTER TABLE queue_entries ADD COLUMN position integer')
-        conn.execute('CREATE TABLE queue_snapshots (doctor_id bigint NOT NULL REFERENCES '
-                     'doctor_schedule_snapshots(doctor_id), local_date date NOT NULL, '
-                     'version bigint NOT NULL CHECK (version BETWEEN 1 AND 9007199254740991), '
-                     'created_at timestamptz NOT NULL, updated_at timestamptz NOT NULL, '
-                     'PRIMARY KEY (doctor_id, local_date))')
-        conn.execute('GRANT SELECT,INSERT,UPDATE ON queue_snapshots TO appointment_app')
+    """The disposable database has already run the reviewed migration chain."""
     service.register_tables(core.metadata)
 
 

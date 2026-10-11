@@ -21,8 +21,9 @@ def test_linear_g0_migration_chain():
     config = Config(str(Path(__file__).resolve().parents[2] / 'alembic.ini'))
     config.set_main_option('script_location', str(Path(__file__).resolve().parents[2] / 'migrations'))
     script = ScriptDirectory.from_config(config)
-    assert script.get_heads() == ['0004_phase3_core']
+    assert script.get_heads() == ['0008_phase3_journey']
     assert [r.revision for r in script.walk_revisions()] == [
+        '0008_phase3_journey','0007_phase3_queue','0006_phase3_checkin','0005_phase3_waitlist',
         '0004_phase3_core','0003_booking','0002_explicit_worker','0001_initial']
     assert all(r.branch_labels == set() and not r.is_merge_point for r in script.walk_revisions())
 
@@ -186,7 +187,7 @@ def test_parent_binding_and_runtime_privileges(database):
                 async with db.session_factory() as s,s.begin():
                     await s.execute(text(sql))
         async with db.session_factory() as s:
-            assert (await s.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()=='0004_phase3_core'
+            assert (await s.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()=='0008_phase3_journey'
     run(database,work)
 
 
@@ -216,9 +217,9 @@ def test_real_queue_binding_and_parent_guard(database):
         _, other=await booking(db,pid='12',sid=2)
         async with db.session_factory() as s,s.begin():
             await s.execute(insert(m.queue_entries).values(id=600,appointment_id=aid,doctor_id=1,
-                local_date=op.now().date(),token_number=1,state='waiting'))
+                local_date=op.now().date(),token_number=1,state='waiting',position=1))
             await s.execute(insert(m.queue_entries).values(id=601,appointment_id=int(other['id']),doctor_id=1,
-                local_date=op.now().date(),token_number=2,state='waiting'))
+                local_date=op.now().date(),token_number=2,state='waiting',position=2))
             ctx=await core.lock_context(s,request(),core.ActorScope.user(patient()),
                 core.LockPlan(appointment_ids=(aid,),queue_days=((1,op.now().date()),),queue_entry_ids=(600,)))
             await s.execute(insert(m.journeys).values(id=504,appointment_id=aid,patient_id=11,state='active'))

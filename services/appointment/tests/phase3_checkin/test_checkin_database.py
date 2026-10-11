@@ -64,6 +64,7 @@ class QueueAdapter:
             local_date=local_date,
             token_number=token_number,
             state="waiting",
+            position=1,
         ))
         return {
             "id": str(entry_id),

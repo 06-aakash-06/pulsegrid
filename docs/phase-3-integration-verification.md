@@ -31,3 +31,9 @@ Frontend typecheck and tests pass: 107 tests in six files. Appointment integrate
 - Execute full regressions, concurrency, gateway workflows and browser verification. No claims of these gates passing yet.
 
 No Phase 4 algorithm, RabbitMQ business delivery, predictive scaling, redesign or push. Final SHA and clean status are reported after final verification commit rather than embedded into their own commit.
+
+## Checkpoint B: reviewed forward schema
+
+Appointment has one linear head `0008_phase3_journey`, following 0001–0004, then waitlist/offers, check-in credential bindings, queue ranks/history and journey snapshots/history. Local foreign keys and runtime grants remain owner-specific. Cross-table offer guards acquire the slot parent; acceptance uses a deferred local appointment FK. History IDs use owner sequences; no custom distributed ID algorithm. Existing dormant credentials/queues are preflighted and rejected for explicit review rather than rewritten.
+
+Executed: complete Appointment suite **174 passed** against disposable PostgreSQL after replacing G1 fixture DDL with real migrations. Found/fixed duplicate queue position selection when metadata includes the new column; test queue adapters now insert a valid waiting position. Re-ran seven upgrade checks after adding the offer audit allowlist and parent guard: **7 passed**, including retained 0003 bookings/audit/outbox/idempotency unchanged through 0008 and six dormant-data rejection cases. No persistent database was modified. Development migration remains pending operational activation at G.
