@@ -10,7 +10,7 @@ from ...wire import ID, Version, Time
 from pydantic import TypeAdapter
 
 
-class SnapshotUnavailable(Exception):
+class SnapshotUnavailable(TimeoutError):
     pass
 
 

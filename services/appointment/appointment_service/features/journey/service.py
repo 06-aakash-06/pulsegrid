@@ -136,4 +136,7 @@ async def view(session, jid):
             snapshot and not snapshot['review_required'] and not snapshot['last_error']),
         review_required=bool(snapshot and snapshot['review_required']),
         last_reconciled_at=op.wire_time(snapshot['last_reconciled_at']) if snapshot and snapshot['last_reconciled_at'] else None,
+        reconciliation=dict(state='failed' if snapshot and snapshot['last_error'] else 'pending' if any(s['state']=='pending' for s in stages) else 'complete',
+            last_error=snapshot['last_error'] if snapshot else None,attempts=snapshot['attempts'] if snapshot else 0,
+            next_attempt_at=op.wire_time(snapshot['next_attempt_at']) if snapshot else None),
         version=journey['version'])

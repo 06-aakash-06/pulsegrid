@@ -303,6 +303,10 @@ async def no_show(session, context, appointment_id, expected_version, reason):
         state='no_show', version=workflow['version']+1, updated_at=context.now))
     core.stage_effect(session, context, 'workflow_no_show', aid, workflow['version']+1,
         {'resource_id': str(aid), 'version': workflow['version']+1, 'state': 'no_show'}, reason=reason)
+    from ..checkin.registration import revoke_for_booking_change
+    from ..journey.registration import on_booking_changed
+    await revoke_for_booking_change(session,context,aid)
+    await on_booking_changed(session,context,aid)
     result = await core.read_workflow(session, aid)
     return core.workflow_view(result)
 

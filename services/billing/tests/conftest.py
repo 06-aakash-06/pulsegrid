@@ -82,6 +82,7 @@ class BillingTestEnvironment:
     patient_id: str
     staff_user_id: str
     database_url: str
+    appointment_private_key: object
 
     def token(self, role: str, *, user_id: str | None = None, patient_id: str | None = None) -> str:
         private_key = self.user_private_key
@@ -122,7 +123,10 @@ def billing_env(database_url, migrated_database, tmp_path, monkeypatch):
     user_jwks.write_text(json.dumps({"keys": [_jwk(user_private, "user-test")]}))
     service_entry = _jwk(service_private, "billing-test")
     service_entry["service"] = "billing"
-    service_jwks.write_text(json.dumps({"keys": [service_entry]}))
+    appointment_private=rsa.generate_private_key(public_exponent=65537,key_size=2048)
+    appointment_entry=_jwk(appointment_private,'appointment-test')
+    appointment_entry['service']='appointment'
+    service_jwks.write_text(json.dumps({"keys": [service_entry,appointment_entry]}))
     service_key_path = tmp_path / "billing-private.pem"
     service_key_path.write_bytes(
         service_private.private_bytes(
@@ -253,6 +257,7 @@ def billing_env(database_url, migrated_database, tmp_path, monkeypatch):
             str(secrets.randbelow(9_000_000_000_000_000_000) + 1),
             str(secrets.randbelow(9_000_000_000_000_000_000) + 1),
             database_url,
+            appointment_private,
         )
     finally:
         client.__exit__(None, None, None)

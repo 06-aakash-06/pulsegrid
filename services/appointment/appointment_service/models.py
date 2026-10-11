@@ -393,3 +393,17 @@ journey_snapshots = Table('journey_snapshots', metadata,
     value('pending_reasons', JSONB, default="'{}'::jsonb"),
     value('last_error', String(64), nullable=True))
 journey_stages.c.observed_at.nullable = True
+
+# Match the reviewed explicit foreign-key actions and offer constraints.
+for constraint in list(waitlist_offers.constraints):
+    if isinstance(constraint, CheckConstraint): waitlist_offers.constraints.remove(constraint)
+for expression, name in (
+    ('id > 0', 'offer_positive_id'), ('patient_id > 0', 'offer_positive_patient'),
+    ("state IN ('pending','accepted','declined','expired','revoked')", 'offer_state'),
+    ('version BETWEEN 1 AND 9007199254740991', 'offer_version'),
+    ("(state='accepted')=(appointment_id IS NOT NULL)", 'offer_acceptance')):
+    waitlist_offers.append_constraint(check(expression,name))
+for table in (queue_snapshots,journey_snapshots):
+    for constraint in table.foreign_key_constraints:
+        constraint.ondelete=None
+        for foreign_key in constraint.elements: foreign_key.ondelete=None

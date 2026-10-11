@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+import asyncio
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
@@ -31,9 +33,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
+        tasks=[]
         try:
+            if application.state.phase3_enabled:
+                from sqlalchemy import text
+                async with database.session_factory() as session:
+                    revision=(await session.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()
+                if revision!='0009_phase3_registration_history':raise RuntimeError('Phase 3 schema not reviewed at current head')
+                from .integration_workers import worker_loop
+                tasks=[asyncio.create_task(worker_loop(application))]
             yield
         finally:
+            for task in tasks:task.cancel()
+            if tasks:await asyncio.gather(*tasks,return_exceptions=True)
             await database.close()
 
     application = FastAPI(
@@ -59,7 +71,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     from . import phase3_core
     from .extensions import register_extensions
-    register_extensions(application, phase3_core)
+    enabled_value=os.environ.get('PULSEGRID_APPOINTMENT_PHASE3_ENABLED','false')
+    if enabled_value not in ('true','false'):raise ValueError('Phase 3 activation must be true or false')
+    application.state.phase3_enabled=enabled_value=='true'
+    from .features.journey.snapshots import SnapshotClient
+    application.state.snapshot_client=SnapshotClient()
+    register_extensions(application, phase3_core, enabled=('waitlist','checkin','queue','journey') if application.state.phase3_enabled else ())
     application.include_router(api_router)
     if auth_config.origins:
         application.add_middleware(
@@ -98,6 +115,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "workflow_locked", "invalid_transition",
                 "already_waiting", "already_booked", "slot_available", "waitlist_pending",
                 "offer_unavailable", "version_conflict", "source_changed",
+                "journey_not_ready", "doctor_busy", "not_queue_head", "queue_changed",
+                "checkin_window_closed", "checkin_window_open",
             } else None,
         )
 

@@ -37,7 +37,7 @@ def test_disabled_registration_preserves_legacy_openapi():
     schema = app.openapi()
     legacy = schema['components']['schemas']['AppointmentView']['properties']
     assert legacy['state']['enum'] == ['confirmed','cancelled']
-    assert legacy['journey_id']['type'] == 'null'
+    assert {'type':'null'} in legacy['journey_id']['anyOf']
     assert not any('workflow' in path or 'waitlist' in path or 'queue' in path for path in schema['paths'])
     for path in ('/api/v1/appointments', '/api/v1/appointments/{appointment_id}',
                  '/api/v1/appointments/{appointment_id}/cancel',

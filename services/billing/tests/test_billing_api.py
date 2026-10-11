@@ -448,3 +448,35 @@ def test_concurrent_full_payments_never_exceed_balance(billing_env):
     assert sorted(result.status_code for result in results) == [201, 412]
     assert _db_scalar(env, "SELECT paid_minor FROM invoices WHERE id=%s", (int(invoice["id"]),)) == 100
     assert _db_scalar(env, "SELECT count(*) FROM payments WHERE invoice_id=%s AND status='success'", (int(invoice["id"]),)) == 1
+
+
+def test_service_only_workflow_snapshot_tracks_financial_versions(billing_env):
+    import time,jwt
+    env=billing_env
+    invoice_response,aid,pid=_create_invoice(env,key='phase3-snapshot-invoice-001')
+    invoice=invoice_response.json()
+    def headers(scope='workflow:billing-read'):
+        now=int(time.time())
+        token=jwt.encode(dict(iss='pulsegrid-service:appointment',aud='pulsegrid-internal:billing',
+            sub='appointment',jti=_id(),iat=now,nbf=now,exp=now+60,token_use='service',scopes=[scope]),
+            env.appointment_private_key,algorithm='RS256',headers={'kid':'appointment-test'})
+        return {'Authorization':'Bearer '+token}
+    path=f'/internal/v1/appointments/{aid}/workflow-snapshot?patient_id={pid}'
+    result=env.client.get(path,headers=headers())
+    assert result.status_code==200,result.text
+    before=result.json()['snapshot']
+    assert before['revision']>=2 and before['invoice']['balance_minor']==0
+    assert before['invoice']['charge_source_keys']==[]
+    assert env.client.get(path,headers=env.headers('patient')).status_code==401
+    assert env.client.get(path,headers=headers('invoice:write')).status_code==403
+    assert env.client.get(path.replace(pid,_id()),headers=headers()).status_code==404
+    medicine=_id()
+    assert _create_tariff(env,'medicine:'+medicine,125,'phase3-snapshot-tariff-001').status_code==201
+    dispensing,source=_add_dispensing(env,aid,pid,medicine,2)
+    charged=env.client.post(f"/api/v1/billing/invoices/{invoice['id']}/charges",json={'dispensing_ids':[dispensing]},
+        headers=env.headers('billing_staff',key='phase3-snapshot-charges-001',etag=invoice_response.headers['etag']))
+    assert charged.status_code==200,charged.text
+    after=env.client.get(path,headers=headers()).json()['snapshot']
+    assert after['revision']>before['revision']
+    assert after['invoice']['total_minor']==250 and after['invoice']['balance_minor']==250
+    assert after['invoice']['charge_source_keys']==[{'source_service':'pharmacy','source_item_id':source}]

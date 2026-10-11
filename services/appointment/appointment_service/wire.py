@@ -128,7 +128,7 @@ class AvailabilityView(Input):
 
 class AppointmentView(Input):
     id: ID
-    journey_id: None
+    journey_id: ID | None
     patient_id: ID
     doctor_id: ID
     slot_id: ID

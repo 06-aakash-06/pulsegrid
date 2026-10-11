@@ -61,3 +61,25 @@ Executed **8 queue tests passed** on disposable PostgreSQL, including skip/recal
 Implemented journey list/detail/history, explicit idempotent reconciliation/discharge, timestamped stages, retained owner snapshots/version vectors, pending failure metadata, fenced leases/backoff and continued discharged-episode checks. Reconciliation completes the queue only from finalized Records and matching finalized local hold. Optional no-prescription stages skip only on that authoritative finalized snapshot. Discharge requires completed queue/workflow, exact charge-source membership, valid Billing arithmetic, no review and fresh complete sources; a late source change reopens discharge. No global atomic snapshot is claimed. Registration prerequisite history uses narrow owner append function in additional forward revision `0009_phase3_registration_history` so runtime cannot edit history.
 
 Executed **7 journey tests passed**, including real PostgreSQL clinical/queue completion, no-prescription progression, eight competing discharges (one success/seven stale versions), source outage/recovery, zero balance without charge acknowledgments, older revisions rejected and late billing change reopening with history. Full Appointment regression run: 180 passed/one outdated lock-order assertion failed after new offer/snapshot locks; updated that assertion and its isolated rerun passed. Complete combined regressions will run again at G/I. Owner leaf deployment, real service HTTP and browser gates remain pending.
+
+## Checkpoint G: owner HTTP assembly and operational activation
+
+Mounted the reviewed four Appointment modules, production durable offer/journey
+workers, atomic booking episode creation and target-scoped revocation/queue/
+journey change hooks. Added Patient eligibility and Billing workflow leaves with
+exact service scopes and current owner data. Records gate now has its operational
+Appointment dependency. Existing legacy bookings remain unenrolled. Corrected
+metadata/DDL constraint parity and preserved repeated cancellation behavior.
+
+Disposable full regressions: **530 passed, 51 Records PostgreSQL cases skipped**
+in the shared runner; separate Records isolated run **77 passed**, covering those
+51 cases (26 non-PostgreSQL cases overlap). Frontend at assembly: **109 passed**,
+typecheck and production build passed. Python compilation/diff checks passed.
+Applied forward migrations successfully to the existing development stack after
+these disposable checks; recreated only five changed business-service containers.
+No volume/database reset or duplicate full deployment. Read-only live schema
+verification passed for all seven owner heads, constraint/FK metadata, immutable
+audit digest chains, runtime privileges, all **42 foreign service database
+connections denied** (all fourteen app/migration roles also deny foreign CONNECT),
+Traefik route isolation and all eleven container health checks. Real Phase 3
+workflow verification remains checkpoint I/J work, not claimed by this gate.

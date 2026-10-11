@@ -64,6 +64,8 @@ def create_app(
     application.include_router(
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
+    from .api.workflow import router as workflow_router
+    application.include_router(workflow_router)
     application.include_router(api_router)
     if auth_config.origins:
         application.add_middleware(

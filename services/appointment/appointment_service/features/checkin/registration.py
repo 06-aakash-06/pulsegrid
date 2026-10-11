@@ -515,11 +515,12 @@ async def _redeem_in_transaction(
     return 200, {"workflow": workflow_value, "queue_entry": queue_entry}
 
 
-async def revoke_for_booking_change(session, context) -> None:
+async def revoke_for_booking_change(session, context, appointment_id=None) -> None:
     """Revoke every unconsumed QR under the framework's already-held link locks."""
     core = shared_core
     core.require_context(session, context)
-    for appointment_id in context.plan.appointment_ids:
+    targets=(int(appointment_id),) if appointment_id is not None else context.plan.appointment_ids
+    for appointment_id in targets:
         if appointment_id in context.workflows:
             await _revoke_open_links(session, appointment_id, context.now)
 
@@ -619,6 +620,30 @@ def register_routes(app, core) -> None:
         # Normalized body fingerprints contain the reason but never any QR secret.
         response = await _execute_with_discovery_retry(core, request, p, normalized_body, work)
         return _decorate_checkin_response(response)
+
+    @router.get('/internal/v1/appointments/{appointment_id}/workflow-context')
+    async def workflow_context(request:Request,appointment_id:ID):
+        from ... import models as m,operations as op
+        from sqlalchemy import func
+        core.query_keys(request,())
+        p=core.private_principal(request,'records','appointments:workflow-context')
+        await core.current(request,p,('doctor',))
+        async with core.session_factory(request)() as session,session.begin():
+            row=(await session.execute(select(m.appointments,
+                func.row_to_json(m.appointment_workflows.table_valued()).label('workflow_row'),
+                m.clinical_holds.c.state.label('hold_state')).outerjoin(m.appointment_workflows,
+                m.appointment_workflows.c.appointment_id==m.appointments.c.id).outerjoin(m.clinical_holds,
+                m.clinical_holds.c.appointment_id==m.appointments.c.id).where(m.appointments.c.id==int(appointment_id)))).mappings().first()
+            if row is None or str(row['doctor_user_id'])!=p.user_id:op.fail('not_found',404)
+            wf=row['workflow_row']
+            if wf:
+                for key in ('window_starts_at','window_ends_at'):
+                    wf[key]=__import__('datetime').datetime.fromisoformat(wf[key])
+            result=dict(appointment_id=appointment_id,patient_id=str(row['patient_id']),doctor_id=str(row['doctor_id']),
+                doctor_user_id=str(row['doctor_user_id']),workflow=core.workflow_view(wf) if wf else None,
+                clinical_hold=row['hold_state'] or 'none',version=row['version'])
+            await op.audit(session,request,p,'read',appointment_id)
+        return core.response(200,result)
 
     async def checkin_error_handler(request: Request, exc: CheckinFailure):
         return _error(request, exc.status_code, exc.code, exc.details)

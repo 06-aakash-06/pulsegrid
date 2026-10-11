@@ -166,3 +166,43 @@ Queue skip/recall extends the never-deployed G1 queue resource enum with skipped
 Journey metadata includes timestamped stage/episode transition history and durable recovery leases. GET `/api/v1/appointments/journeys/{journey_id}/history` returns scoped stable paginated transitions. Registration is verified Patient identity prerequisite; six operational stages remain compatible, and journey history explicitly records registration/appointment and administrative discharge. Pending owner data never becomes completed. Failed reconciliation is recorded with safe reason, retained sources and pending state; retry can recover. Discharge requires actual source membership and Billing arithmetic, complete clinical hold/queue and <=5-second fresh owner snapshots; no global atomic snapshot is claimed. A later owner change reopens the episode. Reconcile/history/queue transitions are owner-audited without notes/tokens.
 
 Current user also authorizes maintained QR encoder/decoder libraries and camera scanning with manual fallback. QR holds only same-origin fragment appointment ID/opaque secret. Browser camera availability/permission failure cannot block manual check-in. No Phase 4 shortener, broker publication or Pub/Sub.
+
+## G2/G3 owner assembly and compatibility extensions
+
+The integrator explicitly activates all four Appointment feature modules after a
+successful owner migration preflight. New Phase 3 bookings return an additive
+`journey_id: ID | null`; retained Phase 2 bookings continue to return null and
+retain their original clinical workflow. Enrollment, booking, audit, outbox and
+idempotency response commit atomically. Cancellation/rescheduling revoke only
+the changed booking's credentials; checked-in bookings may be cancelled before
+a clinical hold, but cannot be rescheduled. Clinical writes recheck the local
+workflow/hold under the Appointment parent locks, after bounded owner reads.
+
+`POST /internal/v1/patients/waitlist-eligibility` is service-only for Appointment
+with `patients:waitlist-eligibility`: distinct decimal patient IDs (1–50), an
+identity-bound current active/version batch, no delegated impersonation.
+`GET /internal/v1/appointments/{appointment_id}/workflow-context` accepts only
+Records with `appointments:workflow-context` and current assigned-doctor scope.
+Records/Pharmacy/Billing private workflow snapshot leaves accept only Appointment
+with their exact `workflow:<owner>-read` scope; `patient_id` must match the owner's
+appointment binding. Lists are bounded and cursor pages retain the same revision
+and membership. Internal paths remain unreachable through Traefik.
+
+Journey responses add `reconciliation:{state:pending|failed|complete,
+last_error:string|null,attempts:integer,next_attempt_at:UTC|null}`. Six operational
+stages retain their frozen names; authenticated registration is recorded as a
+prerequisite history transition, and discharge/reopening as episode transitions.
+No clinical clearance is implied. Billing episode revisions change on invoice,
+charge, adjustment and payment effects, including null-to-invoice membership.
+Exact Records consultation and Pharmacy dispensing charge-source membership,
+valid money arithmetic and fresh source versions are required for discharge.
+No invoice or zero balance without charge acknowledgments remains pending.
+
+A local durable polling worker runs every five seconds: waitlist claims are
+leased/fenced, expired offers are repaired from PostgreSQL; journey snapshots
+use thirty-second leases with retry backoff up to sixty seconds. HTTP reads
+occur outside transactions, use one-second deadlines and bounded retries, and
+open a fifteen-second circuit after repeated failures. No broker consumer or
+Redis correctness mechanism is activated. App defaults remain inactive for
+framework reuse; reviewed development Compose explicitly enables Phase 3 and
+the Records consultation-start gate together after all owner heads are applied.

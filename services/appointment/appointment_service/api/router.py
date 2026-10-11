@@ -154,6 +154,9 @@ async def availability(request:Request,doctor_id:ID,
         # A single statement gives revision and slots one PostgreSQL statement snapshot.
         occupied=select(m.appointments.c.id).where(m.appointments.c.slot_id==m.slots.c.id,
             m.appointments.c.state.in_(op.ACTIVE)).exists()
+        if getattr(request.app.state,'phase3_enabled',False):
+            reserved=select(m.waitlist_entries.c.id).where(m.waitlist_entries.c.slot_id==m.slots.c.id,m.waitlist_entries.c.state=='waiting').exists()
+            occupied=occupied|reserved
         valid=and_(m.slots.c.doctor_id==m.doctor_schedule_snapshots.c.doctor_id,
             m.slots.c.state=='bookable',m.slots.c.starts_at>=start,m.slots.c.ends_at<=end,
             m.slots.c.starts_at>op.now(),~occupied)
@@ -179,6 +182,9 @@ async def book(request:Request,body:Book,p=Depends(authenticated_user)):
         return response(*cached)
     await patient_status(request,p,body.patient_id)
     identity=await doctor_identity(request,p,body.slot_id)
+    if getattr(request.app.state,'phase3_enabled',False):
+        from ..integration import book as integrated_book
+        return await execute(request,p,body.model_dump(),lambda s:integrated_book(s,request,p,body,identity))
     return await execute(request,p,body.model_dump(),lambda s:op.book(s,request,p,body,identity))
 
 
@@ -218,13 +224,14 @@ async def appointments(request:Request,patient_id:ID|None=None,doctor_id:ID|None
     async with factory(request)() as s,s.begin():
         rows=(await s.execute(select(m.appointments).where(*conditions)
             .order_by(m.appointments.c.created_at,m.appointments.c.id).limit(limit+1))).mappings().all()
+        refs=dict((await s.execute(select(m.appointment_workflows.c.appointment_id,m.appointment_workflows.c.journey_id).where(m.appointment_workflows.c.appointment_id.in_([r['id'] for r in rows])))).all())
         await op.audit(s,request,p,'read',p.user_id)
     next_cursor=None
     if len(rows)>limit:
         last=rows[limit-1]
         next_cursor=base64.urlsafe_b64encode(op.canonical({'created_at':op.wire_time(last['created_at']),
             'id':str(last['id']),'filter_hash':filter_hash}).encode()).decode().rstrip('=')
-    return response(200,{'items':[op.appointment(r) for r in rows[:limit]],'next_cursor':next_cursor})
+    return response(200,{'items':[{**op.appointment(r),'journey_id':str(refs[r['id']]) if r['id'] in refs else None} for r in rows[:limit]],'next_cursor':next_cursor})
 
 
 @api_router.get(PUBLIC+'/{appointment_id}', response_model=AppointmentView)
@@ -235,17 +242,22 @@ async def get_appointment(request:Request,appointment_id:ID,p=Depends(authentica
         a=await op.row(s,m.appointments,appointment_id)
         op.can_access(p,a)
         await op.audit(s,request,p,'read',appointment_id)
-        return response(200,op.appointment(a))
+        jid=(await s.execute(select(m.appointment_workflows.c.journey_id).where(m.appointment_workflows.c.appointment_id==int(appointment_id)))).scalar_one_or_none()
+        return response(200,{**op.appointment(a),'journey_id':str(jid) if jid else None})
 
 
 @api_router.post(PUBLIC+'/{appointment_id}/cancel', response_model=AppointmentView)
 async def cancel(request:Request,appointment_id:ID,body:Cancel,p=Depends(authenticated_user)):
     await current(request,p,('receptionist','patient'))
-    await accessible(request,p,appointment_id,True)
+    a=await accessible(request,p,appointment_id,True)
     _,_,cached=await early_replay(request,p,body.model_dump())
     if cached:
         return response(*cached)
     op.precondition(request.headers.get('If-Match'))
+    if getattr(request.app.state,'phase3_enabled',False):
+        from ..integration import change as integrated_change,prepare_release
+        prepared=await prepare_release(request,a)
+        return await execute(request,p,body.model_dump(),lambda s:integrated_change(s,request,p,appointment_id,body,prepared))
     return await execute(request,p,body.model_dump(),lambda s:op.change(s,request,p,appointment_id,body))
 
 
@@ -259,6 +271,10 @@ async def reschedule(request:Request,appointment_id:ID,body:Move,p=Depends(authe
     op.precondition(request.headers.get('If-Match'))
     await patient_status(request,p,str(a['patient_id']))
     identity=await doctor_identity(request,p,body.target_slot_id)
+    if getattr(request.app.state,'phase3_enabled',False):
+        from ..integration import change as integrated_change,prepare_release
+        prepared=await prepare_release(request,a)
+        return await execute(request,p,body.model_dump(),lambda s:integrated_change(s,request,p,appointment_id,body,prepared,identity))
     return await execute(request,p,body.model_dump(),lambda s:op.change(s,request,p,appointment_id,body,identity))
 
 

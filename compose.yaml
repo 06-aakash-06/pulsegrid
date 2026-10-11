@@ -180,6 +180,7 @@ services:
     image: pulsegrid-appointment:local
     build: ./services/appointment
     environment:
+      PULSEGRID_APPOINTMENT_PHASE3_ENABLED: "true"
       PULSEGRID_APPOINTMENT_DB_HOST: "postgres"
       PULSEGRID_APPOINTMENT_DB_NAME: "appointment_db"
       PULSEGRID_APPOINTMENT_DB_USER: "appointment_app"
@@ -228,6 +229,7 @@ services:
     image: pulsegrid-records:local
     build: ./services/records
     environment:
+      PULSEGRID_RECORDS_WORKFLOW_GATE: "true"
       PULSEGRID_RECORDS_DB_HOST: "postgres"
       PULSEGRID_RECORDS_DB_NAME: "records_db"
       PULSEGRID_RECORDS_DB_USER: "records_app"

@@ -1298,3 +1298,36 @@ async def staff_status(
         "roles": roles,
         "version": version,
     }
+
+
+class WaitlistEligibilityRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    patient_ids:list[str]=Field(min_length=1,max_length=50)
+
+    @field_validator('patient_ids')
+    @classmethod
+    def distinct_ids(cls,values):
+        if len(set(values))!=len(values) or any(not valid_id(v) for v in values):
+            raise ValueError('Distinct decimal IDs required')
+        return values
+
+
+@internal_router.post('/internal/v1/patients/waitlist-eligibility')
+async def waitlist_eligibility(body:WaitlistEligibilityRequest,request:Request,
+                              session=Depends(get_database_session)):
+    _reject_query(request)
+    if request.app.state.auth_verifier.service(bearer(request),'patients:waitlist-eligibility')!='appointment':
+        raise HTTPException(403)
+    ids=[int(value) for value in body.patient_ids]
+    async with session.begin():
+        patient_role=select(role_assignments.c.id).where(
+            role_assignments.c.user_id==users.c.id,role_assignments.c.role=='patient').exists()
+        rows=(await session.execute(select(patient_profiles.c.id,users.c.account_state,users.c.version,
+            patient_role.label('patient_role')).join(users,users.c.id==patient_profiles.c.user_id)
+            .where(patient_profiles.c.id.in_(ids)))).mappings().all()
+        by_id={r['id']:r for r in rows}
+        items=[dict(patient_id=str(pid),active=bool(pid in by_id and by_id[pid]['account_state']=='active'
+            and by_id[pid]['patient_role']),version=by_id[pid]['version'] if pid in by_id else 0) for pid in ids]
+        await _domain_audit(session,request,'patient.waitlist.eligibility_read',actor_type='service:appointment')
+    from fastapi.responses import JSONResponse
+    return JSONResponse({'items':items,'observed_at':now().isoformat()},headers={'Cache-Control':'no-store'})

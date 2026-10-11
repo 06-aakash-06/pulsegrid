@@ -101,7 +101,7 @@ def context(tmp_path, monkeypatch):
     )
     with engine.connect() as connection:
         assert connection.scalar(text("SELECT version_num FROM alembic_version")) == (
-            "0004_patient_management_audit"
+            "0005_waitlist_eligibility"
         )
     client = TestClient(app)
     with client:
@@ -609,3 +609,24 @@ def test_private_status_leaves_require_service_scope_and_delegated_authority(con
     )
     assert invalid.status_code == 422
     assert invalid.json()["error"]["code"] == "invalid_reference"
+
+
+def test_service_only_waitlist_eligibility_is_current_and_audited(context):
+    patient=_seed_user(context,'Synthetic Waitlist Patient',['patient'])
+    headers=_service_headers(context,'appointment','patients:waitlist-eligibility',patient)
+    headers.pop('X-Delegated-Authorization',None)
+    path='/internal/v1/patients/waitlist-eligibility'
+    body={'patient_ids':[str(patient['patient_id']),'9223372036854775807']}
+    result=context['client'].post(path,json=body,headers=headers)
+    assert result.status_code==200
+    assert result.json()['items']==[
+        {'patient_id':str(patient['patient_id']),'active':True,'version':1},
+        {'patient_id':'9223372036854775807','active':False,'version':0}]
+    assert context['client'].post(path,json=body,headers=_user_headers(context,patient)).status_code==401
+    wrong=_service_headers(context,'records','patients:waitlist-eligibility',patient)
+    assert context['client'].post(path,json=body,headers=wrong).status_code==403
+    assert context['client'].post(path,json={'patient_ids':[body['patient_ids'][0]]*2},headers=headers).status_code==422
+    with context['engine'].connect() as connection:
+        metadata=connection.execute(select(audit_entries.c.canonical_metadata).where(audit_entries.c.canonical_metadata['action'].astext=='patient.waitlist.eligibility_read').order_by(audit_entries.c.sequence.desc()).limit(1)).scalar_one()
+        assert metadata['actor_type']=='service:appointment'
+        assert 'actor_user_id' not in metadata

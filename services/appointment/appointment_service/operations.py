@@ -269,7 +269,7 @@ async def book(session,request,p,body,identity,phase3_context=None):
     return 201,appointment(a)
 
 
-async def change(session,request,p,aid,body,identity=None,phase3_context=None):
+async def change(session,request,p,aid,body,identity=None,phase3_context=None,workflow_participants=False):
     preliminary=await row(session,m.appointments,aid)
     slot_ids=[preliminary['slot_id']]
     if identity:
@@ -295,7 +295,7 @@ async def change(session,request,p,aid,body,identity=None,phase3_context=None):
         m.appointment_workflows.c.appointment_id==a['id']))).mappings().first()
     # Enrollment remains disabled at G0. Fail closed until G2 wires all
     # participants; never mutate an enrolled row without token/queue/journey hooks.
-    if workflow:
+    if workflow and not workflow_participants:
         fail('workflow_locked')
     if a['state']!='confirmed':
         fail('cancelled' if a['state']=='cancelled' else 'conflict')
@@ -401,7 +401,7 @@ async def clinical_hold(session,request,p,aid,body,finalize=False):
         fail('version_conflict',412)
     workflow=(await session.execute(select(m.appointment_workflows).where(
         m.appointment_workflows.c.appointment_id==a['id']))).mappings().first()
-    if workflow and workflow['state']!='in_consultation':
+    if workflow and workflow['state']!='in_consultation' and not (finalize and workflow['state']=='completed' and hold and hold['state']=='finalized' and hold['consultation_id']==int(body.consultation_id)):
         fail('workflow_locked')
     if a['state']!='confirmed':
         fail('appointment_unavailable')
