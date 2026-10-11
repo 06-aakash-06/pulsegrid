@@ -1,14 +1,16 @@
 # PulseGrid
 
-Surge-aware, fault-tolerant hospital management system for the System Design Laboratory. Phase 1.4C-C integrates patient authentication with the React frontend. PostgreSQL, service-owned migrations, Redis, RabbitMQ and Traefik support the seven FastAPI foundations. The UI provides registration, login, rotating session restoration and protected workspace shells. Hospital domain workflows remain unimplemented.
+PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 2.9 integrates all eight domain/frontend implementations on main. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests now use real owner APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
 
-Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments and insurance providers are simulated.
+See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the current interface. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
+
+Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments are simulated; insurance functionality is deferred.
 
 ## Architecture
 
-Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database. React/TypeScript provides patient and staff interfaces plus a restricted distributed systems control room. Traefik routes versioned APIs. Redis accelerates lookups and admission decisions; RabbitMQ carries durable outbox events. Prometheus, Grafana, and OpenTelemetry provide observability; Locust provides reproducible load experiments. Docker Compose is the prototype deployment target.
+Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. The existing Docker Compose deployment also runs Redis and RabbitMQ, which are not yet business workflow dependencies.
 
-PostgreSQL transactions and constraints enforce booking, inventory, and payment correctness. Cross-service workflows use idempotent events, explicit pending states, reconciliation, and compensations rather than distributed database transactions.
+PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Audit chains and unpublished outbox rows persist locally. Broker publication/consumption, distributed caches, telemetry deployment, control room and advanced journey features remain future work.
 
 ## Foundation documents
 
@@ -32,10 +34,10 @@ PulseGrid/
   docs/                         # architecture, contracts and development runbooks
   services/                     # seven independent FastAPI packages and migration histories
     patient/ doctor/ appointment/ records/ pharmacy/ billing/ emergency/
-  frontend/                     # React/TypeScript patient, staff, and ops shells
+  frontend/                     # React/TypeScript hospital workflows and deferred route shells
   contracts/                    # future: reviewed OpenAPI and event JSON schemas
   infra/                        # Compose database bootstrap, Traefik and credential generation
-  tests/                        # real infrastructure and authentication HTTP verification
+  tests/                        # isolated backend suites and live infrastructure/auth/hospital verification
   experiments/                  # future: Locust, chaos, algorithm benchmarks
 ```
 
@@ -69,7 +71,13 @@ npm run dev -- --strictPort
 
 Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose -f compose.yaml -f services/patient/compose.auth.yaml down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
 
-See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Service business routes, executable contract snapshots and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2 business routes are integrated. Shared executable contract artifacts and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+
+## Phase 2 verification
+
+Install the seven service test extras in one local test environment, with local PostgreSQL `initdb` and `pg_ctl` on PATH. Run `python tests/run_phase2_regressions.py` from the root. It uses disposable service databases, including Patient authentication and Records/Appointment isolated clusters; it never truncates the Compose databases. Ignored development auth keys must already exist for the retained Patient authentication tests. Run frontend typecheck, test and build commands from `frontend/`.
+
+With the existing authenticated Compose stack running, `python tests/verify_phase2_infrastructure.py` checks live migration heads, owned schemas, audit chains, database isolation, gateway routing and frozen endpoint presence without resetting data. `python tests/verify_authentication.py` exercises real authentication through Traefik; `--base-url http://127.0.0.1:5173` checks the frontend proxy. The hospital workflow verifier's operator bootstrap and private resume fixture are explained in the verification report. Synthetic test identities and audit history are retained.
 
 ## Development conventions
 
