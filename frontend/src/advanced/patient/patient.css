@@ -1,0 +1,162 @@
+.patient-workflow {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+}
+
+.patient-workflow__panel,
+.patient-workflow__item {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #d8dee8;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.patient-workflow__panel h2,
+.patient-workflow__item h3,
+.patient-workflow__item h4 {
+  margin-top: 0;
+}
+
+.patient-workflow form,
+.patient-workflow__panel > label,
+.patient-workflow__panel > input,
+.patient-workflow__panel > select,
+.patient-workflow__item > label,
+.patient-workflow__item > input {
+  display: grid;
+  gap: 0.4rem;
+  margin-block: 0.65rem;
+}
+
+.patient-workflow input,
+.patient-workflow select,
+.patient-workflow button {
+  max-width: 100%;
+  min-height: 2.5rem;
+  font: inherit;
+}
+
+.patient-workflow input,
+.patient-workflow select {
+  width: min(100%, 34rem);
+  padding: 0.45rem 0.6rem;
+}
+
+.patient-workflow button {
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+
+.patient-workflow button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.patient-workflow :focus-visible {
+  outline: 3px solid #2458a6;
+  outline-offset: 2px;
+}
+
+.patient-workflow__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: 0.65rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.patient-workflow__facts > div {
+  min-width: 0;
+}
+
+.patient-workflow__facts dt {
+  font-weight: 700;
+}
+
+.patient-workflow__facts dd {
+  margin: 0.15rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.patient-workflow__hint,
+.patient-workflow__meta,
+.patient-workflow__muted {
+  color: #4d5968;
+  font-size: 0.925rem;
+}
+
+.patient-workflow__stale {
+  padding: 0.7rem;
+  border-left: 0.25rem solid #a15c00;
+  background: #fff7e6;
+}
+
+.patient-workflow__qr {
+  display: grid;
+  min-height: 8rem;
+  place-items: center;
+  border: 1px dashed #8b97a7;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.patient-workflow__timeline {
+  display: grid;
+  gap: 0;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.patient-workflow__stage {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.5rem 0 1rem;
+}
+
+.patient-workflow__stage-marker {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: 0.25rem;
+  border: 2px solid #586476;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.patient-workflow__stage--complete .patient-workflow__stage-marker {
+  border-color: #176b3a;
+  background: #176b3a;
+}
+
+.patient-workflow__stage--skipped .patient-workflow__stage-marker {
+  border-color: #586476;
+  background: #d9dee6;
+}
+
+.patient-workflow__stage--reopened .patient-workflow__stage-marker {
+  border-color: #a13832;
+  background: #a13832;
+}
+
+.patient-workflow__stage h4,
+.patient-workflow__stage p {
+  margin: 0 0 0.35rem;
+}
+
+.patient-workflow__stage ul {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 36rem) {
+  .patient-workflow__panel,
+  .patient-workflow__item {
+    padding: 0.75rem;
+  }
+
+  .patient-workflow__facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
