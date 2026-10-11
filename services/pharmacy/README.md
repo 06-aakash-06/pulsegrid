@@ -1,5 +1,21 @@
 # PulseGrid Pharmacy Service
 
+## Phase 3 G1 fulfillment view
+
+The public `GET /prescriptions/{prescription_id}/fulfillment` revalidates the
+minimum Records context before returning patient or pharmacist status. The
+private `GET /internal/v1/appointments/{appointment_id}/workflow-snapshot`
+serves a bounded local projection to Appointment under its new service scope;
+it does not call Records. PostgreSQL triggers advance the local episode
+revision with prescription snapshot, reservation and dispensing changes.
+
+Revocation with committed dispensing sets `review_required`. A revoked
+prescription's active reservations still need the existing pharmacist
+revalidation command to release stock. Records revocation and Pharmacy dispense
+cannot commit atomically across services; later revalidation/reconciliation
+detects a mismatch. Only committed dispensing item IDs are Billing charge
+sources. The integrator must wire the new private scope before activation.
+
 Phase 2 pharmacy operations for the synthetic educational prototype. The service owns its medicine catalog, stock batches, prescription snapshots, reservations, dispensing ledger, audit chain, and unpublished outbox rows. It never reads or modifies Records Service storage directly.
 
 ## Public API

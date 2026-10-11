@@ -96,6 +96,49 @@ def test_database_author_integrity_preserves_nullable_legacy_rows(database):
         ).fetchone()[0] == 0
 
 
+def test_workflow_snapshot_tracks_finalization_and_revocation(clinical):
+    client, app, state, token, service, dsn, password = clinical
+    consultation = create(clinical).json()
+    snapshot_url = "/internal/v1/appointments/100/workflow-snapshot?patient_id=10"
+    service_headers = {"Authorization": "Bearer " + service("appointment", "workflow:records-read")}
+    draft = client.get(snapshot_url, headers=service_headers)
+    assert draft.status_code == 200, draft.text
+    assert draft.json()["snapshot"]["consultation"]["status"] == "draft"
+    assert draft.json()["next_cursor"] is None
+    final = client.post(PREFIX + f"/consultations/{consultation['id']}/finalize",
+                        json={"prescription_items": [ITEM]},
+                        headers=headers(token(), consultation["version"]))
+    assert final.status_code == 200, final.text
+    issued = client.get(snapshot_url, headers=service_headers)
+    assert issued.status_code == 200, issued.text
+    prescription = issued.json()["snapshot"]["consultation"]["prescription"]
+    assert prescription["state"] == "issued"
+    assert issued.json()["snapshot"]["revision"] > draft.json()["snapshot"]["revision"]
+    revoked = client.post(PREFIX + f"/prescriptions/{prescription['id']}/revoke",
+                          json={"reason": "Synthetic correction"},
+                          headers=headers(token(), prescription["version"]))
+    assert revoked.status_code == 200, revoked.text
+    after_revoke = client.get(snapshot_url, headers=service_headers)
+    assert after_revoke.status_code == 200
+    assert after_revoke.json()["snapshot"]["consultation"]["prescription"]["state"] == "revoked"
+    assert after_revoke.json()["snapshot"]["revision"] > issued.json()["snapshot"]["revision"]
+    denied = client.get(snapshot_url.replace("patient_id=10", "patient_id=11"), headers=service_headers)
+    assert denied.status_code == 404
+
+
+def test_enrolled_workflow_requires_consultation_start(clinical, monkeypatch):
+    client, app, state, token, *_ = clinical
+    monkeypatch.setenv("PULSEGRID_RECORDS_WORKFLOW_GATE", "true")
+    state["workflow_state"] = "booked"
+    blocked = client.post(PREFIX + "/consultations",
+                          json=dict(appointment_id="100", clinical_content=CONTENT),
+                          headers=headers(token()))
+    assert blocked.status_code == 409, blocked.text
+    state["workflow_state"] = "in_consultation"
+    allowed = create(clinical)
+    assert allowed.status_code == 201
+
+
 def test_create_read_update_finalize_and_persistence(clinical):
     client, app, state, token, service, dsn, password = clinical
     c = create(clinical).json()

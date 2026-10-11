@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import hashlib
+import base64
+import json
 from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, Header, Path, Query, Request
@@ -27,6 +29,7 @@ from ..models import (
     dispensings,
     dispensing_items,
     inventory_batches,
+    pharmacy_episode_revisions,
     medicines,
     prescription_item_snapshots,
     prescription_snapshots,
@@ -39,6 +42,7 @@ from ..operations import (
     allocate_id,
     append_mutation_records,
     append_sensitive_read,
+    append_audit,
     batch_json,
     constraint_name,
     dispensing_json,
@@ -90,6 +94,53 @@ def _require_numeric_id(value: str) -> int:
 
 def _utc_today() -> date:
     return datetime.now(timezone.utc).date()
+
+
+async def _fulfillment(session: AsyncSession, snapshot):
+    prescription_id = snapshot["prescription_id"]
+    item_rows = list((await session.execute(
+        select(prescription_item_snapshots).where(
+            prescription_item_snapshots.c.prescription_id == prescription_id
+        ).order_by(prescription_item_snapshots.c.item_id)
+    )).mappings())
+    reservation_rows = list((await session.execute(
+        select(reservations).where(reservations.c.prescription_id == prescription_id)
+        .order_by(reservations.c.id)
+    )).mappings())
+    reservation_ids = [row["id"] for row in reservation_rows]
+    dispensing_rows = list((await session.execute(
+        select(dispensings).where(dispensings.c.reservation_id.in_(reservation_ids))
+        .order_by(dispensings.c.id)
+    )).mappings()) if reservation_ids else []
+    dispensing_ids = [row["id"] for row in dispensing_rows]
+    source_rows = list((await session.execute(
+        select(dispensing_items.c.dispensing_id, dispensing_items.c.id)
+        .where(dispensing_items.c.dispensing_id.in_(dispensing_ids))
+        .order_by(dispensing_items.c.id)
+    )).mappings()) if dispensing_ids else []
+    sources = {row["id"]: [] for row in dispensing_rows}
+    for row in source_rows:
+        sources[row["dispensing_id"]].append(str(row["id"]))
+    items = [dict(
+        prescription_item_id=str(row["item_id"]), medicine_id=str(row["medicine_id"]),
+        prescribed_quantity=row["prescribed_quantity"],
+        reserved_quantity=row["reserved_quantity"],
+        dispensed_quantity=row["dispensed_quantity"],
+        remaining_quantity=row["prescribed_quantity"] - row["dispensed_quantity"],
+    ) for row in item_rows]
+    return dict(
+        prescription_id=str(prescription_id), appointment_id=str(snapshot["appointment_id"]),
+        patient_id=str(snapshot["patient_id"]), prescription_revision=snapshot["revision"],
+        prescription_state=snapshot["state"], items=items,
+        reservations=[dict(id=str(row["id"]), state=row["state"], version=row["version"])
+                      for row in reservation_rows],
+        dispensings=[dict(id=str(row["id"]), version=row["version"],
+                          source_item_ids=sources[row["id"]]) for row in dispensing_rows],
+        review_required=snapshot["state"] == "revoked" and any(
+            row["dispensed_quantity"] > 0 for row in item_rows
+        ),
+        version=snapshot["version"], observed_at=iso_time(datetime.now(timezone.utc)),
+    )
 
 
 async def _medicine_availability(session: AsyncSession, medicine_id: int) -> bool:
@@ -1573,3 +1624,110 @@ async def dispensing_charge_context(
         body,
         headers={"ETag": etag(row["version"]), "Cache-Control": "no-store"},
     )
+
+
+@api_router.get("/prescriptions/{prescription_id}/fulfillment")
+async def get_fulfillment(
+    request: Request,
+    prescription_id: str = _path_id(),
+    principal: Principal = Depends(require_one_current_role("patient", "pharmacist")),
+    session: AsyncSession = Depends(get_database_session),
+):
+    reject_unknown_query(request, set())
+    numeric_id = _require_numeric_id(prescription_id)
+    context = await get_prescription_context(request, principal, prescription_id)
+    if request.state.authorized_role == "patient" and principal.patient_id != context.patient_id:
+        fail(404, "not_found")
+    async with session.begin():
+        snapshot, _ = await sync_prescription_snapshot(session, context)
+        fulfillment = await _fulfillment(session, snapshot)
+        episode_revision = await session.scalar(select(pharmacy_episode_revisions.c.revision).where(
+            pharmacy_episode_revisions.c.appointment_id == int(context.appointment_id)
+        ))
+        fulfillment["version"] = episode_revision or snapshot["version"]
+        await append_sensitive_read(
+            session, request, principal=principal, action="prescription.fulfillment_read",
+            resource_type="prescription", resource_id=numeric_id,
+        )
+    return JSONResponse(fulfillment, headers={"ETag": etag(fulfillment["version"]),
+                                              "Cache-Control": "no-store"})
+
+
+@internal_router.get("/appointments/{appointment_id}/workflow-snapshot")
+async def pharmacy_workflow_snapshot(
+    request: Request,
+    appointment_id: str = _path_id(),
+    patient_id: str = Query(...),
+    prescription_id: str = Query(...),
+    cursor: str | None = Query(None, max_length=2048),
+    limit: int = Query(100, ge=1, le=100),
+    caller: str = Depends(require_service("workflow:pharmacy-read", "appointment")),
+    session: AsyncSession = Depends(get_database_session),
+):
+    reject_unknown_query(request, {"patient_id", "prescription_id", "cursor", "limit"})
+    if any(len(request.query_params.getlist(key)) != 1 for key in request.query_params):
+        fail(422, "validation_error")
+    appointment_number = _require_numeric_id(appointment_id)
+    patient_number = _require_numeric_id(patient_id)
+    prescription_number = _require_numeric_id(prescription_id)
+    async with session.begin():
+        snapshot = (await session.execute(
+            select(prescription_snapshots).where(
+                prescription_snapshots.c.prescription_id == prescription_number
+            )
+        )).mappings().first()
+        if snapshot and (snapshot["appointment_id"] != appointment_number or
+                         snapshot["patient_id"] != patient_number):
+            fail(404, "not_found")
+        episode = (await session.execute(
+            select(pharmacy_episode_revisions).where(
+                pharmacy_episode_revisions.c.appointment_id == appointment_number
+            )
+        )).mappings().first()
+        if episode and (episode["patient_id"] != patient_number or
+                        episode["prescription_id"] != prescription_number):
+            fail(404, "not_found")
+        revision = episode["revision"] if episode else 1
+        offset = 0
+        if cursor:
+            try:
+                decoded = json.loads(base64.urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4)))
+                if decoded["a"] != appointment_id or decoded["p"] != patient_id or decoded["x"] != prescription_id:
+                    raise ValueError
+                if decoded["r"] != revision:
+                    fail(409, "source_changed")
+                offset = decoded["o"]
+                if type(offset) is not int or offset < 0:
+                    raise ValueError
+            except (ValueError, KeyError, TypeError):
+                fail(422, "validation_error")
+        fulfillment = await _fulfillment(session, snapshot) if snapshot else None
+        next_cursor = None
+        if fulfillment is not None:
+            fulfillment["version"] = revision
+            collections = (fulfillment["items"], fulfillment["reservations"],
+                           fulfillment["dispensings"])
+            if offset > max(map(len, collections)):
+                fail(422, "validation_error")
+            for key in ("items", "reservations", "dispensings"):
+                fulfillment[key] = fulfillment[key][offset:offset + limit]
+            if any(offset + limit < len(collection) for collection in collections):
+                next_cursor = base64.urlsafe_b64encode(json.dumps(dict(
+                    a=appointment_id, p=patient_id, x=prescription_id,
+                    r=revision, o=offset + limit,
+                ), separators=(",", ":")).encode()).decode().rstrip("=")
+        result = dict(snapshot=dict(
+            appointment_id=appointment_id, patient_id=patient_id,
+            prescription_id=prescription_id, revision=revision,
+            fulfillment=fulfillment, observed_at=iso_time(datetime.now(timezone.utc)),
+        ), next_cursor=next_cursor)
+        latest = await session.scalar(select(pharmacy_episode_revisions.c.revision).where(
+            pharmacy_episode_revisions.c.appointment_id == appointment_number
+        )) or 1
+        if latest != revision:
+            fail(409, "source_changed")
+        await append_audit(
+            session, request, actor_user_id="0", action="prescription.workflow_snapshot_read",
+            action_kind="read", resource_type="prescription", resource_id=prescription_number,
+        )
+    return JSONResponse(result, headers={"ETag": etag(revision), "Cache-Control": "no-store"})

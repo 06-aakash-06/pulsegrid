@@ -44,6 +44,7 @@ class FakeVerifier:
         allowed = {
             ("records-service", "medicines:validate"): "records",
             ("billing-service", "dispensings:charge-context"): "billing",
+            ("appointment-service", "workflow:pharmacy-read"): "appointment",
         }
         caller = allowed.get((token, scope))
         if caller is None:
@@ -529,3 +530,26 @@ def test_records_medicine_validation_private_contract(pharmacy_client):
             }
         ]
     }
+
+
+def test_fulfillment_snapshot_and_patient_scope(pharmacy_client):
+    client, _engine, app = pharmacy_client
+    medicine = _new_medicine(client)
+    assert _add_stock(client, medicine["id"], 5).status_code == 201
+    _set_prescription_context(app, medicine["id"])
+    reservation = _reserve(client)
+    assert reservation.status_code == 201, reservation.text
+    url = "/api/v1/pharmacy/prescriptions/301/fulfillment"
+    own = client.get(url, headers=_headers("patient"))
+    assert own.status_code == 200, own.text
+    assert own.json()["items"][0]["reserved_quantity"] == 3
+    assert own.json()["items"][0]["dispensed_quantity"] == 0
+    assert client.get(url, headers=_headers("other_patient")).status_code == 404
+    private_url = "/internal/v1/appointments/501/workflow-snapshot?patient_id=201&prescription_id=301"
+    private = client.get(private_url, headers={"Authorization": "Bearer appointment-service"})
+    assert private.status_code == 200, private.text
+    assert private.json()["snapshot"]["fulfillment"]["prescription_id"] == "301"
+    assert private.json()["next_cursor"] is None
+    assert client.get(private_url, headers={"Authorization": "Bearer records-service"}).status_code == 403
+    assert client.get(private_url.replace("patient_id=201", "patient_id=202"),
+                      headers={"Authorization": "Bearer appointment-service"}).status_code == 404

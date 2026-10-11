@@ -9,7 +9,7 @@ import httpx
 from fastapi import HTTPException
 
 from .authorization import service_token
-from .clinical_schemas import AppointmentContext, Medicines, PatientStatus, StaffStatus
+from .clinical_schemas import AppointmentContext, Medicines, PatientStatus, StaffStatus, WorkflowContext
 
 
 class DomainClient:
@@ -112,6 +112,15 @@ class DomainClient:
             "appointments:consultation-context",
             f"/internal/v1/appointments/{appointment_id}/consultation-context",
             AppointmentContext,
+        )
+        if result["appointment_id"] != str(appointment_id):
+            raise HTTPException(503)
+        return result
+
+    async def workflow_context(self, request, principal, appointment_id):
+        result = await self.call(
+            request, principal, "appointment", "appointments:workflow-context",
+            f"/internal/v1/appointments/{appointment_id}/workflow-context", WorkflowContext,
         )
         if result["appointment_id"] != str(appointment_id):
             raise HTTPException(503)

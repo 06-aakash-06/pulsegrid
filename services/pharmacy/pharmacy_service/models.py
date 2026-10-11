@@ -222,6 +222,14 @@ prescription_snapshots = entity(
     states("state", "issued revoked"),
     with_id=False,
 )
+pharmacy_episode_revisions = Table(
+    "pharmacy_episode_revisions", metadata,
+    Column("appointment_id", BigInteger, primary_key=True),
+    Column("patient_id", BigInteger, nullable=False),
+    Column("prescription_id", BigInteger, nullable=False, unique=True),
+    Column("revision", BigInteger, nullable=False),
+    check("appointment_id > 0 AND patient_id > 0 AND prescription_id > 0 AND revision >= 2", "bounds"),
+)
 prescription_item_snapshots = entity(
     "prescription_item_snapshots",
     ref("item_id", primary_key=True),

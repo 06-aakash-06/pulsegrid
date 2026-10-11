@@ -1,5 +1,20 @@
 # PulseGrid Records Service
 
+## Phase 3 G1 workflow leaf
+
+The metadata-only `GET /internal/v1/appointments/{appointment_id}/workflow-snapshot`
+requires Appointment service authentication, `patient_id`, and a revision-bound
+cursor. It excludes clinical notes, dosage and instructions. PostgreSQL triggers
+advance the local episode revision with consultation, record, prescription and
+item mutations. Unknown local appointments return 404; a consumer must preserve
+pending state rather than infer no prescription.
+
+`PULSEGRID_RECORDS_WORKFLOW_GATE=true` enables a delegated pre-hold call to
+Appointment's `workflow-context` leaf. Enrolled appointments must be
+`in_consultation`; unenrolled legacy appointments keep the Phase 2 path. Enable
+this only after Appointment's leaf, service scope and under-lock hold recheck
+are integrated. Existing hold finalization/replay remains the recovery path.
+
 Phase 2.4 implements synthetic medical histories, consultations, immutable finalized records and prescriptions in the existing independent FastAPI service. The [frozen Phase 2 contracts](../../docs/phase-2-api-contracts.md), [security rules](../../docs/security.md) and [database ownership](../../docs/database-design.md) remain authoritative. Diagnoses and consultation notes use the bounded `summary`, `assessment`, `plan` fields; no extra diagnosis fields or arbitrary clinical JSON are introduced.
 
 ## Endpoints

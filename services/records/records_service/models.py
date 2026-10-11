@@ -202,6 +202,13 @@ consultations = entity(
     UniqueConstraint("appointment_id"),
     check("revision > 0", "positive_revision"),
 )
+records_episode_revisions = Table(
+    "records_episode_revisions", metadata,
+    Column("appointment_id", BigInteger, primary_key=True),
+    Column("patient_id", BigInteger, nullable=False),
+    Column("revision", BigInteger, nullable=False),
+    check("appointment_id > 0 AND patient_id > 0 AND revision >= 2", "bounds"),
+)
 medical_records = entity(
     "medical_records",
     ref("consultation_id", "consultations.id"),

@@ -226,6 +226,8 @@ def clinical(database, tmp_path, monkeypatch):
             if path.endswith("/medicines/validate")
             else "appointments:consultation-context"
             if path.endswith("/consultation-context")
+            else "appointments:workflow-context"
+            if path.endswith("/workflow-context")
             else "appointments:clinical-hold"
         )
         assert service_claims["scopes"] == [expected_scope]
@@ -309,6 +311,16 @@ def clinical(database, tmp_path, monkeypatch):
             if p.user_id != "20" and p.patient_id != context["patient_id"]:
                 return httpx.Response(404, json={})
             return httpx.Response(200, json=context)
+        if path.endswith("/workflow-context"):
+            return httpx.Response(200, json={
+                "appointment_id": context["appointment_id"],
+                "patient_id": context["patient_id"],
+                "doctor_id": context["doctor_id"],
+                "doctor_user_id": context["doctor_user_id"],
+                "clinical_hold": context["clinical_hold"],
+                "version": context["version"],
+                "workflow": {"state": state.get("workflow_state", "booked")},
+            })
         if state["fail_finalize_hold"] and path.endswith("/finalize"):
             return httpx.Response(503, json={})
         body = json.loads(request.content)

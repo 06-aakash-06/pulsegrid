@@ -121,6 +121,16 @@ class AppointmentContext(Input):
     version: Version
 
 
+class WorkflowContext(Input):
+    appointment_id: ID
+    patient_id: ID
+    doctor_id: ID
+    doctor_user_id: ID
+    workflow: dict | None
+    clinical_hold: Literal["none", "active", "finalized"]
+    version: Version
+
+
 class PatientStatus(Input):
     patient_id: ID
     active: bool = Field(strict=True)

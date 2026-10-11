@@ -1,9 +1,13 @@
 """Assignment-scoped synthetic consultation and immutable record commands."""
 
 import time
+import os
+import base64
+import json
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy import exists, insert, select, update
 
 from .. import models as m
@@ -330,6 +334,16 @@ async def create_consultation(
         await s.deny(session, request, principal, body.appointment_id)
     if context["state"] != "confirmed" or context["clinical_hold"] == "finalized":
         raise HTTPException(409, detail="appointment_unavailable")
+    if os.environ.get("PULSEGRID_RECORDS_WORKFLOW_GATE", "false") == "true":
+        workflow_context = await request.app.state.domain_client.workflow_context(
+            request, principal, body.appointment_id
+        )
+        if any(workflow_context[key] != context[key] for key in (
+            "appointment_id", "patient_id", "doctor_id", "doctor_user_id"
+        )):
+            raise HTTPException(503)
+        if workflow_context["workflow"] is not None and workflow_context["workflow"]["state"] != "in_consultation":
+            raise HTTPException(409, detail="appointment_unavailable")
     await request.app.state.domain_client.patient(
         request, principal, context["patient_id"]
     )
@@ -1013,3 +1027,107 @@ async def charge_context(
     await s.audit(session, request, principal, "read", c["id"])
     await session.commit()
     return s.reply(result, version=c["version"])
+
+
+@private_router.get("/appointments/{appointment_id}/workflow-snapshot")
+async def workflow_snapshot(
+    appointment_id: ID,
+    request: Request,
+    patient_id: ID = Query(...),
+    cursor: str | None = Query(None, max_length=2048),
+    limit: int = Query(100, ge=1, le=100),
+    session=Depends(get_database_session),
+):
+    """Service-only, metadata-only local Records episode projection."""
+    if set(request.query_params) - {"patient_id", "cursor", "limit"} or any(
+        len(request.query_params.getlist(key)) != 1 for key in request.query_params
+    ):
+        raise HTTPException(422)
+    caller = request.app.state.auth_verifier.service(
+        bearer(request), "workflow:records-read"
+    )
+    if caller != "appointment":
+        raise HTTPException(403)
+    c = (
+        await session.execute(
+            select(m.consultations).where(m.consultations.c.appointment_id == int(appointment_id))
+        )
+    ).mappings().first()
+    if c and c["patient_id"] != int(patient_id):
+        raise HTTPException(404)
+    if c is None:
+        raise HTTPException(404)
+    episode = (
+        await session.execute(
+            select(m.records_episode_revisions).where(
+                m.records_episode_revisions.c.appointment_id == int(appointment_id)
+            )
+        )
+    ).mappings().first()
+    revision = episode["revision"] if episode else 1
+    offset = 0
+    if cursor:
+        try:
+            decoded = json.loads(base64.urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4)))
+            if decoded["a"] != appointment_id or decoded["p"] != patient_id:
+                raise ValueError
+            if decoded["r"] != revision:
+                raise HTTPException(409, detail="source_changed")
+            offset = decoded["o"]
+            if type(offset) is not int or offset < 0:
+                raise ValueError
+        except HTTPException:
+            raise
+        except (ValueError, KeyError, TypeError):
+            raise HTTPException(422) from None
+    consultation = None
+    items = []
+    if c:
+        p = (
+            await session.execute(
+                select(m.prescriptions).where(m.prescriptions.c.consultation_id == c["id"])
+            )
+        ).mappings().first()
+        prescription = None
+        if p:
+            all_items = list((await session.execute(
+                select(m.prescription_items.c.id, m.prescription_items.c.medicine_id,
+                       m.prescription_items.c.quantity)
+                .where(m.prescription_items.c.prescription_id == p["id"])
+                .order_by(m.prescription_items.c.id)
+            )).mappings())
+            items = [dict(prescription_item_id=str(i["id"]), medicine_id=str(i["medicine_id"]),
+                          quantity=i["quantity"]) for i in all_items[offset:offset + limit]]
+            prescription = dict(id=str(p["id"]), revision=p["revision"],
+                                state=p["state"], version=p["version"], items=items)
+        record_revision = await session.scalar(
+            select(m.medical_records.c.revision).where(
+                m.medical_records.c.consultation_id == c["id"]
+            ).order_by(m.medical_records.c.revision.desc()).limit(1)
+        ) or 0
+        consultation = dict(id=str(c["id"]), status=c["status"], version=c["version"],
+                            record_revision=record_revision, prescription=prescription)
+    if offset > (len(all_items) if consultation["prescription"] else 0):
+        raise HTTPException(422)
+    next_cursor = None
+    if c and consultation["prescription"] and offset + limit < len(all_items):
+        next_cursor = base64.urlsafe_b64encode(json.dumps(
+            dict(a=appointment_id, p=patient_id, r=revision, o=offset + limit),
+            separators=(",", ":")
+        ).encode()).decode().rstrip("=")
+    snapshot = dict(appointment_id=appointment_id, patient_id=patient_id,
+                    doctor_id=str(c["doctor_id"]) if c else None, revision=revision,
+                    consultation=consultation, observed_at=s.now().isoformat())
+    latest = await session.scalar(select(m.records_episode_revisions.c.revision).where(
+        m.records_episode_revisions.c.appointment_id == int(appointment_id)
+    )) or 1
+    if latest != revision:
+        raise HTTPException(409, detail="source_changed")
+    await session.execute(s.text(
+        "SELECT records_append_audit(0,'workflow_snapshot_read',:resource,'allowed',NULL,"
+        "CAST(:request AS uuid),CAST(:correlation AS uuid))"
+    ), dict(resource=int(appointment_id), request=str(request.state.request_id),
+            correlation=str(request.state.correlation_id)))
+    await session.commit()
+    return JSONResponse(dict(snapshot=snapshot, next_cursor=next_cursor),
+                        headers={"ETag": f'"{revision}"', "Cache-Control": "no-store"})
