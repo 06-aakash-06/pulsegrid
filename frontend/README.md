@@ -1,6 +1,6 @@
 # PulseGrid frontend
 
-React, TypeScript, Vite, and React Router application for the synthetic, single-hospital PulseGrid prototype. Patient registration, sign-in, in-memory access-token sessions, cookie-based session restoration, and role-gated workspace shells are implemented. Phase 2.8 connects hospital forms and views to the frozen Phase 2 owner APIs. No operational data is fabricated.
+React, TypeScript, Vite, and React Router application for the synthetic, single-hospital PulseGrid prototype. Patient registration, sign-in, in-memory access-token sessions, cookie-based session restoration, and role-gated workspace shells are implemented. Phase 2.8 connects hospital forms and views to the Phase 2 owner APIs. Phase 3 mounts patient waitlists/offers, real QR check-in, live queues, journey/history and fulfillment, plus reception and doctor controls backed by the activated owner APIs. No operational data is fabricated.
 
 ## Run locally
 
@@ -73,3 +73,9 @@ No real gateway/backend integration, PostgreSQL concurrency checks, shared Docke
 ## Foundation limits
 
 This project is an educational prototype and not a certified clinical or emergency-response platform. Do not use real patient records, credentials, or payment information. Empty states report empty successful owner pages; unavailable services show errors. Neither implies a completed workflow or clinical reliability.
+
+Phase 3 QR rendering uses `qrcode`; camera decoding uses native BarcodeDetector
+when available or ZXing, with an audited staff manual fallback. Raw QR secrets
+remain in mounted component memory. Polling pauses for hidden documents. See the
+[Phase 3 verification report](../docs/phase-3-integration-verification.md) for
+executed browser/API checks and the explicitly untested physical camera path.

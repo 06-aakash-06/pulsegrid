@@ -1,8 +1,8 @@
 # PulseGrid
 
-PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 2.9 integrates all eight domain/frontend implementations on main. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests now use real owner APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
+PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 3 integrates the advanced hospital workflows on main, preserving the Phase 2 domain/frontend foundation. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests now use real owner APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
 
-See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the current interface. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
+See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the compatible baseline interface. See [Phase 3 contracts](docs/phase-3-api-contracts.md) and [Phase 3 verification](docs/phase-3-integration-verification.md) for activated waitlists and temporary offers, QR check-in, consultation queues, patient journeys and staff/patient UI. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
 
 Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments are simulated; insurance functionality is deferred.
 
@@ -10,7 +10,7 @@ Uses synthetic data exclusively. This is an educational prototype, not a certifi
 
 Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. The existing Docker Compose deployment also runs Redis and RabbitMQ, which are not yet business workflow dependencies.
 
-PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Audit chains and unpublished outbox rows persist locally. Broker publication/consumption, distributed caches, telemetry deployment, control room and advanced journey features remain future work.
+PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Audit chains and unpublished outbox rows persist locally. Broker publication/consumption, distributed caches, telemetry deployment, control room and Phase 4 algorithm components remain future work. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
 
 ## Foundation documents
 
@@ -73,7 +73,7 @@ Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the 
 
 See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2 business routes are integrated. Shared executable contract artifacts and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
 
-## Phase 2 verification
+## Hospital workflow verification
 
 Install the seven service test extras in one local test environment, with local PostgreSQL `initdb` and `pg_ctl` on PATH. Run `python tests/run_phase2_regressions.py` from the root. It uses disposable service databases, including Patient authentication and Records/Appointment isolated clusters; it never truncates the Compose databases. Ignored development auth keys must already exist for the retained Patient authentication tests. Run frontend typecheck, test and build commands from `frontend/`.
 
@@ -82,3 +82,15 @@ With the existing authenticated Compose stack running, `python tests/verify_phas
 ## Development conventions
 
 Python uses `snake_case`, TypeScript uses `camelCase` and PascalCase components. Service directories are singular lowercase names. Wire fields use `snake_case`; IDs are decimal strings. APIs start at `/api/v1/<domain>`. UTC timestamps use RFC 3339. Documentation and contracts precede implementation, and verification reports distinguish planned checks from executed checks.
+
+Phase 3 verification reuses the disposable backend runner and read-only owner
+schema/isolation checks. `python tests/verify_phase3_infrastructure.py` additionally
+checks reviewed active routes and private-leaf protection. `tests/verify_phase3.py`
+executes the six synthetic gateway workflows against the existing deployment,
+including a bounded Billing outage with mandatory restoration; it requires the
+existing private operator fixture described in the report. Supplemental
+`tests/verify_phase3_security.py` uses a separate private fixture for QR races,
+revocation and dispensing-history safety. Never run these writers concurrently
+against a shared fixture or use real patient data. Browser camera hardware is
+not certified or validated; QR encode/decode and manual/browser workflows are
+covered as described in the report.

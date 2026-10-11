@@ -68,7 +68,7 @@ Business mutation, unpublished immutable event envelope, constrained ordered aud
 
 Before booking/rescheduling transactions, Patient's status leaf validates the patient and Doctor's identity leaf validates the doctor. Schedule decision uses Doctor's exact proposal leaf. Signed service tokens plus delegated user tokens, request/correlation IDs and trace context accompany calls. No other service database is queried. New calls have a five-second aggregate dependency budget, one-second per-call bound and at most two safe read attempts with jitter. The existing authority helper retains its two-second bound; timeouts now report 504. Transport/5xx failures open a per-process circuit after five consecutive attempts with a probe after 15 seconds. Redirects, invalid/oversized (>256 KiB) schemas fail closed; 4xx is never retried. No production fixture fallback exists. Network calls finish before any command lock/transaction opens.
 
-Remote authority/status can change immediately after validation; this is bounded validation, not a distributed transaction or instantaneous remote revocation. Local accepted schedules remain authoritative. Dependency failure prevents a new mutation; same-key retry after recovery returns the committed response or safely completes once. No remote schedule reconciliation occurs automatically. Doctor explicitly reads the durable decision and reconciles its own state. Outbox events remain unpublished; no RabbitMQ business producer/consumer, journey, waitlist, QR/check-in or consultation queue was added. Event payloads preserve existing catalog names with nullable Phase 2 journey references; new clinical-hold events contain only resource ID/version/state. Shared schemas and broker activation belong to the integrator/later phases.
+Remote authority/status can change immediately after validation; this is bounded validation, not a distributed transaction or instantaneous remote revocation. Local accepted schedules remain authoritative. Dependency failure prevents a new mutation; same-key retry after recovery returns the committed response or safely completes once. No remote schedule reconciliation occurs automatically. Doctor explicitly reads the durable decision and reconciles its own state. Outbox events remain unpublished. The Phase 2 baseline did not add RabbitMQ business delivery or advanced workflow features; the later Phase 3 integration below activates the operational features. Event payloads preserve existing catalog names with nullable Phase 2 journey references; new clinical-hold events contain only resource ID/version/state. Shared schemas and broker activation belong to the integrator/later phases.
 
 **Frozen-contract gap:** when no local doctor snapshot exists, the operational-status leaf has no trusted staff mapping to authorize an own-doctor caller. A Doctor callback is forbidden for a leaf, and user JWTs contain no doctor ID. This implementation returns 404 for that own-doctor case, while an admin receives the documented zero counts/version 1. The integrator must approve a trusted mapping preparation contract or require an initial admin decision before own-doctor deactivation; the service does not invent a mapping or trust a raw header.
 
@@ -91,6 +91,22 @@ The service-local [verification record](PHASE_2_3_VERIFICATION.md) lists execute
 
 The G0 [framework handoff](FRAMEWORK_HANDOFF.md) supplies disabled feature
 registration, shared workflow storage/locks and deferred command effects.
-The migration head is `0004_phase3_core`; future 0005–0008 revisions require
-feature manifest handoffs. Existing Phase 2 APIs remain active; no new feature
-endpoint or automatic enrollment is enabled. See [verification](PHASE_3_1A_VERIFICATION.md).
+At the historical G0 handoff the head was `0004_phase3_core`; 0005–0008 required
+feature manifest handoffs. At that handoff existing Phase 2 APIs remained active and advanced endpoints/enrollment were disabled. See [verification](PHASE_3_1A_VERIFICATION.md).
+
+## Completed Phase 3 integration
+
+The reviewed development Compose enables `PULSEGRID_APPOINTMENT_PHASE3_ENABLED=true`.
+All four feature modules, new-booking enrollment, durable offer/journey workers,
+QR/queue/journey APIs and scoped booking-change hooks are active. The app factory
+default remains disabled for framework reuse and legacy contract tests. Retained
+Phase 2 bookings are not backfilled or forcibly enrolled. One forward migration
+head is `0009_phase3_registration_history` (0005 waitlists/offers, 0006 credentials,
+0007 queue/history, 0008 journey/history, 0009 narrow registration history append).
+
+See [Phase 3 contracts](../../docs/phase-3-api-contracts.md) and
+[executed integration verification](../../docs/phase-3-integration-verification.md)
+for temporary offers/expiry, safe queue skip/recall, clinical completion, owner
+versions, exact expected charge coverage and authorized administrative discharge.
+Owner calls use authenticated bounded REST outside database locks. Outbox rows
+remain unpublished; no RabbitMQ business delivery or Phase 4 component is added.

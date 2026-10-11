@@ -1,6 +1,6 @@
 # Phase 3 acceptance tests
 
-Status: frozen future acceptance requirements; no Phase 3 feature test has run. [API freeze](phase-3-api-contracts.md) specifies wire/state rules; [parallel plan](phase-3-parallel-plan.md) specifies exclusive ownership and sequential gates. Synthetic data only. Test fixtures are evidence for their tested layer, never substitutes for real owner integration.
+Status: historical Phase 3.0 frozen acceptance requirements, with executed G2/G3/G4 extensions recorded below and in the [integration verification](phase-3-integration-verification.md). At preparation no Phase 3 feature test had run. [API freeze](phase-3-api-contracts.md) specifies wire/state rules; [parallel plan](phase-3-parallel-plan.md) specifies exclusive ownership and sequential gates. Synthetic data only. Test fixtures are evidence for their tested layer, never substitutes for real owner integration.
 
 ## Preparation prerequisite evidence
 
@@ -70,3 +70,29 @@ Integrator records exact commit, topology, migration heads, commands, test total
 Phase 3.0 checks structure, link targets, method/path uniqueness/prefixes, typed-schema references, exclusive path-set ownership and migration chain reservations, balanced fences/Markdown tables, focused diff, main/commit/clean tree. Static review must trace each endpoint to exactly one owner and integration gate; verify no overlapping migration/router/model/initializer/test/frontend assignment. These checks are not formal executable OpenAPI/JSON Schema validation or runtime feature proofs. Future agents generate owned OpenAPI fixtures and integrator collects shared executable contracts later.
 
 Executed Phase 3.0 preparation checks: PASS 10 local Markdown link targets, 10 rectangular Markdown tables, balanced code fences, 24 unique owner/method/path rows with versioned prefixes (19 public, 5 private), 12 disjoint reserved agent prefixes plus Agent 1's explicitly excluded complement, six reserved Appointment chain positions (existing base plus five forward revisions), 35 distinct acceptance IDs and 12 named primary response schema definitions. Manual contract/ownership review confirmed static route ordering, strict legacy enum/null preservation, issuance replay exception, source pagination/freshness/coverage gates and sequential shared-file handoffs. An initial table check found unescaped union pipes and they were corrected; private path uniqueness is correctly scoped by owner because three independent services use the same leaf path. `git diff --check` passes; status contains only these three new Markdown files before staging. No application source/AGENTS/infrastructure changes. Commit/main/final clean-tree verification is reported after commit. Phase 3 feature unit/PostgreSQL/API/browser/load/chaos and broker-delivery tests are **not executed** by preparation. Mermaid rendering is not executed; the new documents contain no Mermaid diagrams. Do not infer runtime success from these acceptance requirements.
+
+## Executed G2/G3/G4 acceptance and explicit extensions
+
+The preparation evidence above is historical. Phase 3 is now verified using the
+frozen requirements plus the authorized offers/expiry and skip/recall extensions;
+see [complete executed evidence](phase-3-integration-verification.md) for counts,
+source mappings, database heads, browser checks and limits. An additive real
+journey ID for newly enrolled bookings supersedes P3-C01's null-only assertion;
+retained legacy bookings keep null and their original workflows. The additional
+0009 registration-history append function preserves a single forward head and
+immutable runtime history.
+
+| Extension gate | Pass criterion and executed evidence |
+|---|---|
+| Durable offers | FIFO, one pending reservation/slot and entry, five-minute expiry bounded by slot start, decline/expiry successor, transactional acceptance; PostgreSQL 12-accept and expiry races plus four-request gateway race and real persisted expiry/worker recovery |
+| QR and booking changes | Opaque single-use hashes, version/fingerprint/expiry/scope binding, local queue/journey transaction; real PostgreSQL races and 12 gateway redemptions with one success, gateway cancellation/reschedule revocation, actual browser rendered QR and confirmation |
+| Skip/recall | waiting -> skipped -> waiting, original daily FIFO token, no second active consultation, immutable history; PostgreSQL guards, gateway workflow and real doctor browser actions |
+| Complete journey | Registration prerequisite and episode discharge history, six operational stages, optional Pharmacy skip, owner-versioned pending/failed/retry metadata, exact Billing source coverage and freshness; concurrent completion/reconciliation/discharge tests, all six gateway workflows, real staff browser discharge |
+| Review stability | Unchanged heartbeat retains aggregate/stage versions while refreshing diagnostics; real business/source/failure change invalidates reviews; PostgreSQL regression and browser discharge after polling |
+| Compatibility/security | Complete backend/frontend regressions, fresh 11-group Phase 2 gateway rerun, seven owner schemas/heads and immutable audit checks, 42 foreign DB connection denials, current RBAC/ownership and exact service scopes, private gateway rejection |
+
+Physical camera capture is not executed; QR image encoding and pixel decoding,
+camera/manual fallback component behavior and actual reception manual check-in
+are executed. Broker business delivery, load/HA/chaos experiments beyond the
+explicit bounded synthetic outage, and Phase 4 algorithms remain deferred by
+the user's scope. They are not unresolved Phase 3 test skips or runtime claims.

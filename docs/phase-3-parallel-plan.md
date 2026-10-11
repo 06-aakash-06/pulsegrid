@@ -129,3 +129,22 @@ Integrator mounts exports in `frontend/src/hospital/HospitalPage.tsx`, preserves
 Every later dispatch includes exact path set/exclusions, preparation SHA, framework SHA when available, relevant freeze routes/signatures/migration manifest, acceptance IDs, stop-at-scoped-commit/no merge/no push rule and test environment scope. Isolated DBs/ports/test namespaces are unique; no worker/full Compose stack in another worktree. Only integrator manages one reviewed runtime topology; schema upgrades/global checks serialize. If shared interface needs a change, stop dependent integration and send a proposed diff to its owner; reviewed freeze update and notification precede implementation.
 
 Phase 3.0 changes exactly three documentation files and commits locally on main. No AGENTS.md change, agent launch, feature business logic, database reset, container start, dependency install or push. Final preparation SHA is reported after commit, avoiding self-reference.
+
+## Completed coordinator handoff (G2/G3/G4)
+
+The original assignment above is historical frozen agent ownership. All supplied
+G0/G1 commits are now handed off and integrated sequentially by main's coordinator;
+there are no implementation agents active in this task. Original branches and
+worktrees remain intact. The review also incorporated explicitly authorized offer
+accept/decline/expiry and queue skip/recall extensions; see the API contract
+extensions and [executed verification](phase-3-integration-verification.md).
+
+The reserved 0005–0008 Appointment chain is implemented without branching. The
+coordinator additionally approved `0009_phase3_registration_history`, descending
+from 0008, for a narrow append-only registration prerequisite function; runtime
+cannot arbitrarily edit journey history. Thus the completed service has **one
+head, 0009_phase3_registration_history**, superseding the preparation-only exact
+0008-head assertion. Patient eligibility/Billing owner snapshots have their own
+forward revisions. Shared framework assembly, source review, migrations, owner
+HTTP leaves, production workers, frontend mounting and final checks are all
+sequential integrator work, not changes to the original concurrent file sets.

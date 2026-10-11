@@ -1,6 +1,6 @@
 # Phase 3 API contract freeze
 
-Status: frozen Phase 3.0 preparation, **not implemented behavior**. Inspected foundation: main `32cdbdbc9f7dd95503b62e53e3b4f44c96b53ab4`. The [parallel plan](phase-3-parallel-plan.md) and [acceptance tests](phase-3-acceptance-tests.md) are binding companions. Existing [Phase 2 contracts](phase-2-api-contracts.md) and actual code remain authoritative outside explicit changes below. Older architecture/event proposals do not authorize their implementation.
+Status: historical Phase 3.0 freeze with explicit G2/G3/G4 extensions below, now activated and tested as recorded in the [integration verification](phase-3-integration-verification.md). Inspected preparation foundation: main `32cdbdbc9f7dd95503b62e53e3b4f44c96b53ab4`. The [parallel plan](phase-3-parallel-plan.md) and [acceptance tests](phase-3-acceptance-tests.md) are binding companions. Existing [Phase 2 contracts](phase-2-api-contracts.md) and actual code remain authoritative outside explicit changes below. Older architecture/event proposals do not authorize their implementation.
 
 ## Verified foundation and scope
 
