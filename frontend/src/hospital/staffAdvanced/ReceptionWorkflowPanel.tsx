@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ApiError } from "../../api/client";
 import { useAuth } from "../../auth/authContext";
-import { Facts, Panel, Resource } from "../ui";
+import { CommandForm, Facts, Panel, Resource } from "../ui";
 import type { CheckinResult, Workflow } from "./contracts";
 import { CheckinScanner } from "./CheckinScanner";
 import { StaffJourneyTools } from "./JourneyTools";
@@ -247,6 +247,22 @@ function CheckinPanel() {
                 </div>
               )}
               {workflow.state !== "booked" && <p className="staff-advanced-muted">This workflow is not eligible for another check-in. Reload it after any concurrent state change.</p>}
+              {!pendingCommand && (workflow.state === "booked" || workflow.state === "checked_in") && (
+                <CommandForm<Workflow>
+                  title="Mark no-show"
+                  path={`/api/v1/appointments/${workflow.appointment_id}/no-show`}
+                  conditional
+                  etag={etag}
+                  fields={[{ name: "reason", label: "No-show reason", kind: "textarea", required: true, max: 500 }]}
+                  notice="The service permits this audited action only after the check-in window closes and when no consultation hold is active."
+                  onSuccess={() => {
+                    setReceipt(null);
+                    setPendingCommand(null);
+                    refresh();
+                    setReload((value) => value + 1);
+                  }}
+                />
+              )}
               <button type="button" onClick={() => { refresh(); setReload((value) => value + 1); }} disabled={busy}>Reload workflow</button>
             </div>
           )}

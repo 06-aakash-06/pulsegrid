@@ -16,6 +16,7 @@ def main():
             ('POST','/api/v1/appointments/{appointment_id}/check-in-links'),
             ('POST','/api/v1/appointments/{appointment_id}/check-in'),
             ('POST','/api/v1/appointments/{appointment_id}/staff-check-in'),
+            ('POST','/api/v1/appointments/{appointment_id}/no-show'),
             ('GET','/api/v1/appointments/queues'),
             ('POST','/api/v1/appointments/queue-entries/{entry_id}/start'),
             ('POST','/api/v1/appointments/queue-entries/{entry_id}/skip'),

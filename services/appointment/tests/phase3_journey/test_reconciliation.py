@@ -10,7 +10,7 @@ from appointment_service.features.journey import service
 from ..test_concurrency import run, booking, request, patient
 
 
-async def setup(db):
+async def setup(db, *, started=True):
     async with db.session_factory() as session, session.begin():
         start=op.now()+timedelta(minutes=10)
         await session.execute(update(m.slots).where(m.slots.c.id==1).values(starts_at=start,ends_at=start+timedelta(minutes=5)))
@@ -23,6 +23,8 @@ async def setup(db):
     async with db.session_factory() as session,session.begin():
         ctx=await core.lock_context(session,request(),core.worker_actor(),core.LockPlan(appointment_ids=(int(a['id']),),queue_days=((1,op.now().date()),)))
         e=await queue.allocate_on_checkin(session,ctx);await op.flush_effects(session)
+    if not started:
+        return a,jid
     async with db.session_factory() as session,session.begin():
         plan=await queue._complete_plan(session,1,op.now().date())
         ctx=await core.lock_context(session,request(),core.worker_actor(),plan)
@@ -30,6 +32,38 @@ async def setup(db):
     async with db.session_factory() as session,session.begin():
         await session.execute(insert(m.clinical_holds).values(appointment_id=int(a['id']),consultation_id=700,state='finalized'))
     return a,jid
+
+
+def test_no_show_after_window_closes_updates_queue_journey_and_history(database, monkeypatch):
+    async def work(db):
+        a,jid=await setup(db, started=False)
+        aid=int(a['id'])
+        async with db.session_factory() as session:
+            workflow=await core.read_workflow(session,aid)
+        closed_at=workflow['window_ends_at']+timedelta(seconds=1)
+        # Only this disposable test uses a clock override; persistent data is untouched.
+        monkeypatch.setattr(op,'now',lambda: closed_at)
+        async with db.session_factory() as session,session.begin():
+            plan=await queue._complete_plan(session,1,closed_at.date(),(aid,))
+            ctx=await core.lock_context(session,request(),core.worker_actor(),plan)
+            result=await queue.no_show(session,ctx,aid,workflow['version'],'Synthetic missed appointment')
+            await op.flush_effects(session)
+            assert result['state']=='no_show'
+        async with db.session_factory() as session:
+            entry=await queue._entry(session,workflow['queue_entry_id'])
+            assert entry['state']=='no_show' and entry['position'] is None
+            journey=await op.row(session,m.journeys,jid)
+            assert journey['state']=='no_show'
+            history=(await session.execute(text(
+                'SELECT to_state,occurred_at FROM journey_transitions WHERE journey_id=:jid AND stage IS NULL ORDER BY id'
+            ),{'jid':jid})).mappings().all()
+            assert history[-1]['to_state']=='no_show'
+            assert history[-1]['occurred_at']>=history[0]['occurred_at']
+            queue_history=(await session.execute(text(
+                "SELECT to_state FROM queue_transitions WHERE entry_id=:eid ORDER BY id"
+            ),{'eid':entry['id']})).scalars().all()
+            assert queue_history==['waiting','no_show']
+    run(database,work)
 
 
 def sources(a, balance=0, revision=2):

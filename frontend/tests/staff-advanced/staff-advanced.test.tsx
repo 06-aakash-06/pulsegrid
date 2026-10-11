@@ -162,6 +162,33 @@ afterEach(() => {
 });
 
 describe("reception check-in", () => {
+  it("confirms an audited no-show using the current workflow version and refreshes its terminal state", async () => {
+    let currentWorkflow = workflow;
+    const { fetcher } = setup("receptionist", <ReceptionWorkflowPanel />, (url, init) => {
+      if (url.pathname === "/api/v1/appointments/51/workflow") return json(currentWorkflow, 200, `"${currentWorkflow.version}"`);
+      if (url.pathname === "/api/v1/appointments/51/no-show" && init.method === "POST") {
+        currentWorkflow = { ...workflow, state: "no_show", version: 4 };
+        return json(currentWorkflow, 200, '"4"');
+      }
+      return undefined;
+    });
+    await screen.findByLabelText("Appointment ID");
+    fill("Appointment ID", "51");
+    fireEvent.submit(screen.getByLabelText("Appointment ID").closest("form")!);
+    await screen.findByLabelText("No-show reason");
+    fill("No-show reason", "Synthetic patient did not attend");
+    fireEvent.click(screen.getByRole("button", { name: "Review Mark no-show" }));
+    expect(writes(fetcher)).toHaveLength(0);
+    fireEvent.click(await screen.findByRole("button", { name: "Confirm Mark no-show" }));
+    await screen.findByText("no_show");
+    const [url, init] = lastWrite(fetcher);
+    expect(String(url)).toContain("/api/v1/appointments/51/no-show");
+    expect(JSON.parse(String(init?.body))).toEqual({ reason: "Synthetic patient did not attend" });
+    expect(requestHeaders(init!).get("If-Match")).toBe('"3"');
+    expect(requestHeaders(init!).get("Idempotency-Key")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Review Mark no-show" })).not.toBeInTheDocument();
+  });
+
   it("validates manual token input, supports scanner fallback and confirms owner success", async () => {
     let currentWorkflow = workflow;
     const { fetcher } = setup("receptionist", <ReceptionWorkflowPanel />, async (url, init) => {
