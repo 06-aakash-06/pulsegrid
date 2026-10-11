@@ -73,6 +73,29 @@ def counts(dsn):
         }
 
 
+def test_database_author_integrity_preserves_nullable_legacy_rows(database):
+    dsn, _ = database
+    statement = """INSERT INTO consultations
+        (id, appointment_id, patient_id, doctor_id, author_user_id,
+         status, revision, clinical_content)
+        VALUES (%s, %s, 10, 30, %s, 'draft', 1, '{}'::jsonb)"""
+    with psycopg.connect(**dsn) as connection:
+        connection.execute(statement, (100, 100, None))
+    with psycopg.connect(**dsn) as connection:
+        with pytest.raises(psycopg.errors.CheckViolation) as error:
+            connection.execute(statement, (101, 101, -1))
+        assert error.value.diag.constraint_name == (
+            "ck_consultations_author_user_id_nonnegative"
+        )
+    with psycopg.connect(**dsn) as connection:
+        assert connection.execute(
+            "SELECT author_user_id FROM consultations WHERE id=100"
+        ).fetchone() == (None,)
+        assert connection.execute(
+            "SELECT count(*) FROM consultations WHERE id=101"
+        ).fetchone()[0] == 0
+
+
 def test_create_read_update_finalize_and_persistence(clinical):
     client, app, state, token, service, dsn, password = clinical
     c = create(clinical).json()

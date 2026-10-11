@@ -48,6 +48,27 @@ with engine.connect() as c:
             assert columns[col.name]['nullable']==col.nullable,(name,col.name)
         for fk in inspector.get_foreign_keys(name):
             assert fk['referred_table'] in metadata.tables and fk.get('referred_schema') in (None,'public')
+        expected_fks={(tuple(element.parent.name for element in fk.elements),fk.elements[0].column.table.name,tuple(element.column.name for element in fk.elements),fk.ondelete) for fk in table.foreign_key_constraints}
+        actual_fks={(tuple(fk['constrained_columns']),fk['referred_table'],tuple(fk['referred_columns']),fk['options'].get('ondelete')) for fk in inspector.get_foreign_keys(name)}
+        assert expected_fks==actual_fks,(name,'foreign key semantics')
+        primary_key=inspector.get_pk_constraint(name)['constrained_columns']
+        assert primary_key==[col.name for col in table.primary_key.columns],name
+        actual_indexes={index['name'] for index in inspector.get_indexes(name)}
+        assert {index.name for index in table.indexes}.issubset(actual_indexes),name
+        # Raw-SQL migrations and SQLAlchemy assign different constraint names.
+        expected_unique={tuple(col.name for col in constraint.columns) for constraint in table.constraints if constraint.__class__.__name__=='UniqueConstraint'}
+        actual_unique={tuple(constraint['column_names']) for constraint in inspector.get_unique_constraints(name)}
+        for index in inspector.get_indexes(name):
+            if not index['unique']:continue
+            key=tuple(index['column_names'])
+            predicate=str(index.get('dialect_options',{}).get('postgresql_where','')).strip()
+            # A one-column IS NOT NULL index has ordinary PostgreSQL UNIQUE
+            # semantics: NULL legacy references do not conflict with each other.
+            equivalent_null_filter=(len(key)==1 and predicate.strip('()')==key[0]+' IS NOT NULL')
+            if not predicate or equivalent_null_filter:actual_unique.add(key)
+        assert expected_unique.issubset(actual_unique),(name,'unique columns')
+        expected_checks=sum(constraint.__class__.__name__=='CheckConstraint' for constraint in table.constraints)
+        assert len(inspector.get_check_constraints(name))>=expected_checks,(name,'check constraints')
     for table in ('audit_entries','audit_heads','alembic_version'):
         for privilege in ('INSERT','UPDATE','DELETE','TRUNCATE'):
             assert not c.scalar(text("SELECT has_table_privilege(current_user,:table,:privilege)"),{'table':table,'privilege':privilege})
