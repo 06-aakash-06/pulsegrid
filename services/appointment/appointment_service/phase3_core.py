@@ -74,6 +74,8 @@ class LockPlan:
     queue_days: tuple[tuple[int, date], ...] = ()
     queue_entry_ids: tuple[int, ...] = ()
     journey_ids: tuple[int, ...] = ()
+    waitlist_patient_ids: tuple[int, ...] = ()
+    promotion_slot_ids: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -141,6 +143,15 @@ async def lock_context(session, request, actor, plan: LockPlan):
         raise ValueError('Link parent missing from lock plan')
     await _lock(session, m.waitlist_entries, m.waitlist_entries.c.slot_id, plan.waitlist_slot_ids,
                 m.waitlist_entries.c.joined_at, m.waitlist_entries.c.id)
+    # Explicit G1 waitlist plans only; dormant G0 paths never query future jobs.
+    # Advisory serialization protects absent status rows; no external locks/cache.
+    for patient_id in sorted(set(plan.waitlist_patient_ids)):
+        await op.advisory(session,f'waitlist-patient-status:{patient_id}')
+    await _lock(session,m.patient_status_snapshots,m.patient_status_snapshots.c.patient_id,plan.waitlist_patient_ids)
+    if not set(plan.promotion_slot_ids)<=set(plan.waitlist_slot_ids):
+        raise ValueError('Promotion job slot FIFO missing from plan')
+    for slot_id in sorted(set(plan.promotion_slot_ids)):
+        await session.execute(text('SELECT slot_id FROM promotion_jobs WHERE slot_id=:slot FOR UPDATE'),{'slot':slot_id})
     for doctor_id, local_date in sorted(set(plan.queue_days)):
         await session.execute(select(m.queue_counters).where(
             m.queue_counters.c.doctor_id == doctor_id,
@@ -158,7 +169,8 @@ async def lock_context(session, request, actor, plan: LockPlan):
     complete_plan = LockPlan(tuple(sorted(doctor_ids)), tuple(sorted(slot_ids)),
         tuple(sorted(set(plan.appointment_ids))), tuple(sorted(link_ids)),
         tuple(sorted(set(plan.waitlist_slot_ids))), tuple(sorted(set(plan.queue_days))),
-        tuple(sorted(queue_ids)), tuple(sorted(journey_ids)))
+        tuple(sorted(queue_ids)), tuple(sorted(journey_ids)),
+        tuple(sorted(set(plan.waitlist_patient_ids))),tuple(sorted(set(plan.promotion_slot_ids))))
     ctx = Context(str(request.state.request_id), str(request.state.correlation_id),
                   getattr(request.state, 'traceparent', None), actor, op.now(),
                   frozen_rows(bookings,'id'), frozen_rows(workflows,'appointment_id'),

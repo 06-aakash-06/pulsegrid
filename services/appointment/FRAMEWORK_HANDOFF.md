@@ -181,3 +181,21 @@ Records queue eligibility/finalized snapshots; Pharmacy fulfillment snapshots;
 integrator Patient eligibility/Billing snapshots, private scopes/configuration,
 worker lifecycle and real owner/gateway/browser activation checks. No full
 waitlist, QR, queue or journey algorithms are supplied or claimed.
+
+## Additive G1 waitlist interface handoff
+
+The historical G0 evidence above remains unchanged. G1 module scope and gates
+are documented in `appointment_service/features/waitlist/README.md`.
+`LockPlan` now has optional trailing `waitlist_patient_ids` and
+`promotion_slot_ids`, both defaulting to empty tuples. Existing feature plans
+remain compatible. Explicit promotion plans acquire sorted patient status
+advisory scopes/rows and job rows after FIFO, before queue/journey/audit. Jobs
+are queried only when requested; G0 migrations and disabled registration are
+unchanged. G2 must provide the job schema before using those plans.
+
+Legacy `operations.book` and `change` accept an optional owner-validated
+`phase3_context`, so the gated waitlist adapters can reuse one canonical
+context rather than acquiring legacy locks again. Their existing public
+callers still use the original paths. No Agent 2–4 code is imported or wired.
+Promotion episode creation is an explicit G2 dependency and fails closed to
+pending work if absent. See `PHASE_3_1C_VERIFICATION.md` for G1 tests and limits.

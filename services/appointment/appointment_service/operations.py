@@ -249,8 +249,15 @@ async def bump_operational_versions(session,doctor_ids):
         version=m.doctor_schedule_snapshots.c.version+1,updated_at=now()))
 
 
-async def book(session,request,p,body,identity):
-    locked,_,_=await lock_resources(session,[int(body.slot_id)])
+async def book(session,request,p,body,identity,phase3_context=None):
+    if phase3_context is None:
+        locked,_,_=await lock_resources(session,[int(body.slot_id)])
+    else:
+        from .phase3_core import require_context
+        require_context(session,phase3_context)
+        if int(body.slot_id) not in phase3_context.plan.slot_ids:
+            raise ValueError('Booking slot missing from context')
+        locked={int(body.slot_id):await row(session,m.slots,body.slot_id)}
     s=locked[int(body.slot_id)]
     snap=await valid_slot(session,s,body.expected_schedule_revision,identity)
     a=dict((await session.execute(insert(m.appointments).values(id=new_id(),patient_id=int(body.patient_id),
@@ -262,12 +269,21 @@ async def book(session,request,p,body,identity):
     return 201,appointment(a)
 
 
-async def change(session,request,p,aid,body,identity=None):
+async def change(session,request,p,aid,body,identity=None,phase3_context=None):
     preliminary=await row(session,m.appointments,aid)
     slot_ids=[preliminary['slot_id']]
     if identity:
         slot_ids.append(int(body.target_slot_id))
-    locked,a,hold=await lock_resources(session,slot_ids,aid)
+    if phase3_context is None:
+        locked,a,hold=await lock_resources(session,slot_ids,aid)
+    else:
+        from .phase3_core import require_context
+        require_context(session,phase3_context)
+        if int(aid) not in phase3_context.bookings or not set(slot_ids)<=set(phase3_context.plan.slot_ids):
+            raise ValueError('Booking change resources missing from context')
+        locked={sid:await row(session,m.slots,sid) for sid in slot_ids}
+        a=dict(phase3_context.bookings[int(aid)])
+        hold=phase3_context.holds.get(int(aid))
     can_access(p,a,True)
     if a['version']!=precondition(request.headers.get('If-Match')):
         fail('version_conflict',412)

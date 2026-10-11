@@ -96,6 +96,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "slot_occupied", "patient_overlap", "schedule_changed", "revision_gap",
                 "clinical_hold", "cancelled", "appointment_unavailable", "invalid_reference",
                 "workflow_locked", "invalid_transition",
+                "already_waiting", "already_booked", "slot_available", "waitlist_pending",
             } else None,
         )
 
