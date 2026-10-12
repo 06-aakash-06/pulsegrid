@@ -6,6 +6,18 @@ See the [Phase 2 integration verification](docs/phase-2-integration-verification
 
 Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments are simulated; insurance functionality is deferred.
 
+## Phase 4 preparation
+
+Phase 4.0 freezes the seven system-design components and eight disjoint agent
+assignments; component implementation and deployment have not started. See the
+[component contracts](docs/phase-4-component-contracts.md),
+[parallel plan](docs/phase-4-parallel-plan.md),
+[benchmark plan](docs/phase-4-benchmark-plan.md) and
+[preparation verification](docs/phase-4-preparation-verification.md).
+All agents will start from the local preparation commit when separately requested.
+Existing Phase 1–3 behavior remains active; no agents have been launched or code
+changed by this preparation.
+
 ## Architecture
 
 Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. The existing Docker Compose deployment also runs Redis and RabbitMQ, which are not yet business workflow dependencies.

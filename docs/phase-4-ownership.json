@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "status": "preparation_only",
+  "inspected_base": "340909aade79b23a3ffb99ade8d9863bd0a6b928",
+  "implementation_base": "commit containing this file; record full SHA at dispatch",
+  "agents": [
+    {
+      "agent": 1,
+      "assignment": "Distributed rate limiter",
+      "model": "Sol High",
+      "branch": "phase4/rate-limiter",
+      "exclusive_prefixes": [
+        "components/rate_limiter/",
+        "experiments/phase4/rate_limiter/"
+      ]
+    },
+    {
+      "agent": 2,
+      "assignment": "Consistent hashing",
+      "model": "Sol Medium",
+      "branch": "phase4/consistent-hashing",
+      "exclusive_prefixes": [
+        "components/consistent_hashing/",
+        "experiments/phase4/consistent_hashing/"
+      ]
+    },
+    {
+      "agent": 3,
+      "assignment": "Key-value caching",
+      "model": "Sol Medium",
+      "branch": "phase4/key-value-cache",
+      "exclusive_prefixes": [
+        "components/key_value_cache/",
+        "services/doctor/doctor_service/features/directory_cache/",
+        "services/doctor/tests/phase4_directory_cache/",
+        "experiments/phase4/key_value_cache/"
+      ]
+    },
+    {
+      "agent": 4,
+      "assignment": "Unique ID generator",
+      "model": "Sol Medium",
+      "branch": "phase4/unique-id",
+      "exclusive_prefixes": [
+        "components/unique_id/",
+        "experiments/phase4/unique_id/"
+      ]
+    },
+    {
+      "agent": 5,
+      "assignment": "URL shortener",
+      "model": "Luna",
+      "branch": "phase4/short-links",
+      "exclusive_prefixes": [
+        "services/appointment/appointment_service/features/short_links/",
+        "services/appointment/tests/phase4_short_links/",
+        "experiments/phase4/short_links/"
+      ]
+    },
+    {
+      "agent": 6,
+      "assignment": "Insurance crawler",
+      "model": "Luna",
+      "branch": "phase4/insurance-crawler",
+      "exclusive_prefixes": [
+        "services/billing/billing_service/features/insurance/",
+        "services/billing/tests/phase4_insurance/",
+        "experiments/phase4/insurance_crawler/"
+      ]
+    },
+    {
+      "agent": 7,
+      "assignment": "Autocomplete",
+      "model": "Luna",
+      "branch": "phase4/autocomplete",
+      "exclusive_prefixes": [
+        "components/autocomplete/",
+        "services/doctor/doctor_service/features/autocomplete/",
+        "services/doctor/tests/phase4_autocomplete/",
+        "services/pharmacy/pharmacy_service/features/autocomplete/",
+        "services/pharmacy/tests/phase4_autocomplete/",
+        "experiments/phase4/autocomplete/"
+      ]
+    },
+    {
+      "agent": 8,
+      "assignment": "Frontend feature integration",
+      "model": "Sol Medium (coordinator default; user may override)",
+      "branch": "phase4/frontend",
+      "exclusive_prefixes": [
+        "frontend/src/phase4/",
+        "frontend/tests/phase4/"
+      ]
+    }
+  ],
+  "coordinator_rule": "All paths not listed in agent exclusive_prefixes are coordinator-only; no broad frontend/services/components/experiments grant."
+}

@@ -1,5 +1,12 @@
 # Service boundaries
 
+Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
+and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
+scope and supersede older algorithm/phase proposals below where different.
+They do not activate functionality. Phase 2/3 contracts and actual owner code
+remain authoritative for existing hospital workflows; no runtime changes are
+part of preparation.
+
 All models below are proposals. Each service exclusively owns its database, migrations, credentials, API package, tests, and workers. Foreign service IDs are references, not foreign keys or permission grants. Staff identities and roles belong to Patient; staff clinical assignments belong to their respective domain.
 
 | Service / logical DB | Responsibilities and owned entities | Dependencies and projections | Must NOT own |

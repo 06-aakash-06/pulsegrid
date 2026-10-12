@@ -1,5 +1,12 @@
 # Database design
 
+Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
+and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
+scope and supersede older algorithm/phase proposals below where different.
+They do not activate functionality. Phase 2/3 contracts and actual owner code
+remain authoritative for existing hospital workflows; no runtime changes are
+part of preparation.
+
 Phase 1.1 defined this schema. Phase 1.4B implements its initial storage in seven service-owned Alembic histories on one PostgreSQL instance; transactional algorithms and the explicitly deferred overlap exclusions remain later work. See [the infrastructure decisions and runbook](infrastructure.md) for exact tables, privileges and deferrals. Seven separate PostgreSQL logical databases initially share an instance. Each has its own non-superuser migration owner and restricted runtime account, with no access to other databases. A later host split changes connection configuration, not domain foreign keys. No cross-database joins, FDWs, dblink, shared domain tables, or direct reads of another service's outbox.
 
 ## Common conventions

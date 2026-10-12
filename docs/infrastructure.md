@@ -1,5 +1,12 @@
 # Local infrastructure: Phase 1.4B and authentication integration
 
+Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
+and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
+scope and supersede older algorithm/phase proposals below where different.
+They do not activate functionality. Phase 2/3 contracts and actual owner code
+remain authoritative for existing hospital workflows; no runtime changes are
+part of preparation.
+
 Implemented for synthetic development: one PostgreSQL 16 instance, seven owned databases, Redis 7, RabbitMQ 4, Traefik 3 and seven FastAPI processes. Each service has its own SQLAlchemy metadata, connection pool, session dependency, Dockerfile and Alembic history. Patient authentication is implemented using the service-owned auth overlay. Hospital domain commands, event workers and caching algorithms remain deferred. For current launch commands use [README](../README.md) and [authentication integration](authentication-integration.md); the plain Compose commands below describe the unauthenticated infrastructure foundation. The frontend remains an independent Vite application.
 
 ## Start and stop

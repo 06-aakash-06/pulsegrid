@@ -1,5 +1,12 @@
 # API contracts
 
+Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
+and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
+scope and supersede older algorithm/phase proposals below where different.
+They do not activate functionality. Phase 2/3 contracts and actual owner code
+remain authoritative for existing hospital workflows; no runtime changes are
+part of preparation.
+
 Authentication endpoints listed in the Phase 1.4C-C integration runbook are implemented; other domain contracts below remain proposed. Each service will publish its own OpenAPI specification in `contracts/api/<service>/`. Root routing is Traefik; each service performs its own authorization. REST JSON uses `snake_case`. IDs are decimal strings, UTC timestamps RFC 3339, dates `YYYY-MM-DD`, and enums lowercase. Monetary schemas use `{amount_minor: integer, currency: "INR"}`. Examples are synthetic, and abbreviated typed schemas below define required fields unless marked `?`. API changes follow the compatibility policy in AGENTS.md.
 
 ## Common protocol

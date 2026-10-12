@@ -1,5 +1,12 @@
 # Security
 
+Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
+and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
+scope and supersede older algorithm/phase proposals below where different.
+They do not activate functionality. Phase 2/3 contracts and actual owner code
+remain authoritative for existing hospital workflows; no runtime changes are
+part of preparation.
+
 PulseGrid uses synthetic identities, records, prescriptions, provider websites and payments exclusively. It is an educational prototype, not a certified clinical or emergency-response platform. Never import real patient data, send real emergency dispatches, or collect real payment credentials. Authentication controls are implemented and verified in Phase 1.4C-C; future hospital workflow controls remain requirements, not certified guarantees.
 
 ## Authentication and lifecycle
