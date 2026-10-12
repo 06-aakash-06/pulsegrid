@@ -20,7 +20,8 @@ def test_unknown_consultation_does_not_block_healthy_owner(monkeypatch):
         for _ in range(8):
             with pytest.raises(snapshots.SnapshotUnknown):
                 await client.request(request,'records','workflow:records-read','/synthetic')
-        assert client.open_until.get('records',0)==0
+        assert client.breakers['records'].state=='CLOSED'
         assert await client.request(request,'records','workflow:records-read','/synthetic')=={'revision':1}
         assert count==9
+        await client.close()
     asyncio.run(check())

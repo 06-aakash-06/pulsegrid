@@ -33,6 +33,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
+        await application.state.snapshot_client.start()
         from . import event_consumer, phase4
         tasks=[]
         try:
@@ -52,6 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             for task in tasks:task.cancel()
             if tasks:await asyncio.gather(*tasks,return_exceptions=True)
             await phase4.close(application)
+            await application.state.snapshot_client.close()
             from .admission import close as close_admission
             await close_admission(application)
             await database.close()
@@ -85,7 +87,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     if enabled_value not in ('true','false'):raise ValueError('Phase 3 activation must be true or false')
     application.state.phase3_enabled=enabled_value=='true'
     from .features.journey.snapshots import SnapshotClient
-    application.state.snapshot_client=SnapshotClient()
+    application.state.snapshot_client=SnapshotClient(observer=application.state.phase4_observer)
     register_extensions(application, phase3_core, enabled=('waitlist','checkin','queue','journey') if application.state.phase3_enabled else ())
     from . import phase4
     phase4.mount(application)
