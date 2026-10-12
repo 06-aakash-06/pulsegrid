@@ -404,6 +404,11 @@ async def _declare_topology(channel):
     return queues, dead_queues
 
 
+async def _dead_letter_queue_depth(channel, queue_name: str) -> int:
+    queue = await channel.declare_queue(queue_name, passive=True)
+    return int(queue.declaration_result.message_count)
+
+
 async def _consumer_session(app, config: BrokerConfig) -> None:
     factory = app.state.database.session_factory
     connection = await aio_pika.connect(
@@ -432,13 +437,15 @@ async def _consumer_session(app, config: BrokerConfig) -> None:
         try:
             while True:
                 await asyncio.sleep(5)
-                for queue, subscription in dead_queues:
-                    result = await queue.declare(passive=True)
+                for _, subscription in dead_queues:
+                    message_count = await _dead_letter_queue_depth(
+                        channel, subscription.dead_letter_queue
+                    )
                     observer = getattr(app.state, "phase4_observer", None)
                     if observer is not None:
                         observer.gauge(
                             "pulsegrid_dead_letter_queue_depth",
-                            int(result.message_count),
+                            message_count,
                             {"component": "phase5", "owner": subscription.producer},
                         )
         finally:

@@ -186,3 +186,24 @@ def test_envelope_validation_rejects_version_and_amqp_type_mismatch():
             str(boolean_version["event_id"]),
             subscription,
         )
+
+
+def test_dead_letter_depth_uses_passive_channel_declaration():
+    class FakeQueue:
+        declaration_result = type("DeclarationResult", (), {"message_count": 3})()
+
+    class FakeChannel:
+        request = None
+
+        async def declare_queue(self, name, *, passive):
+            self.request = (name, passive)
+            return FakeQueue()
+
+    channel = FakeChannel()
+    depth = asyncio.run(
+        event_consumer._dead_letter_queue_depth(
+            channel, "pulsegrid.dlq.appointment.journey.pharmacy.v1"
+        )
+    )
+    assert channel.request == ("pulsegrid.dlq.appointment.journey.pharmacy.v1", True)
+    assert depth == 3
