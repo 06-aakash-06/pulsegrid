@@ -1,13 +1,15 @@
-# Local infrastructure: Phase 1.4B and authentication integration
+# Local infrastructure: Phase 1.4B, authentication, and Phase 5
 
-Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
-and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
-scope and supersede older algorithm/phase proposals below where different.
-They do not activate functionality. Phase 2/3 contracts and actual owner code
-remain authoritative for existing hospital workflows; no runtime changes are
-part of preparation.
+Phase 4.0 was a documentation-only preparation step. Its
+[component contract freeze](phase-4-component-contracts.md) and
+[parallel plan](phase-4-parallel-plan.md) record the reviewed scope and
+ownership; the preparation itself did not activate components. The separately
+implemented Phase 4 features are summarized in the [README](../README.md) and
+[Phase 4 verification](phase-4-integration-verification.md). Phase 2/3
+contracts and actual owner code remain authoritative for existing hospital
+workflows.
 
-Implemented for synthetic development: one PostgreSQL 16 instance, seven owned databases, Redis 7, RabbitMQ 4, Traefik 3 and seven FastAPI processes. Each service has its own SQLAlchemy metadata, connection pool, session dependency, Dockerfile and Alembic history. Patient authentication is implemented using the service-owned auth overlay. Hospital domain commands, event workers and caching algorithms remain deferred. For current launch commands use [README](../README.md) and [authentication integration](authentication-integration.md); the plain Compose commands below describe the unauthenticated infrastructure foundation. The frontend remains an independent Vite application.
+Implemented for synthetic development: one PostgreSQL 16 instance, seven owned databases, Redis 7, RabbitMQ 4, Traefik 3 and seven FastAPI processes. Each service has its own SQLAlchemy metadata, connection pool, session dependency, Dockerfile and Alembic history. Patient authentication is implemented using the service-owned auth overlay. Phase 5 activates two background outbox publishers and one Appointment consumer in the existing services; no worker container is added. For current launch commands use [README](../README.md) and [authentication integration](authentication-integration.md); the plain Compose commands below describe the unauthenticated infrastructure foundation. The frontend remains an independent Vite application.
 
 ## Start and stop
 
@@ -15,15 +17,16 @@ Prerequisites: Docker with a running daemon and Compose v2 or later, Python 3 fo
 
 ```sh
 python3 infra/scripts/init-env.py
+python3 infra/scripts/configure-rabbitmq-events.py
 docker compose config --quiet
 docker compose up -d --build
 docker compose ps -a
 python3 tests/verify_infrastructure.py
 ```
 
-The generator creates an ignored `.env` with random local passwords and mode 0600. It refuses to overwrite an existing file. Alternatively copy `.env.example` to `.env` and fill every password with a separate random value. Examples contain no credentials. Never attach `.env`, resolved Compose configuration, container environment dumps or raw database errors to reports: they can contain secrets. `docker compose config --quiet` validates without printing the resolved configuration.
+The generator creates an ignored `.env` with random local passwords and mode 0600. It refuses to overwrite an existing file. Alternatively copy `.env.example` to `.env` and fill every password with a separate random value. Examples contain no credentials. Never attach `.env`, resolved Compose configuration, container environment dumps or raw database errors to reports: they can contain secrets. `configure-rabbitmq-events.py` starts the existing RabbitMQ service, waits for its health, creates separate non-administrator publisher and consumer users with resource-scoped permissions, and keeps their credentials in the ignored `.env`. `docker compose config --quiet` validates without printing the resolved configuration.
 
-Startup waits for PostgreSQL health, runs each `*-migrate` job to completion, then starts its API. Migration jobs **exiting with code 0** are expected. Health checks take a few seconds to settle. PostgreSQL, Redis and RabbitMQ persist in named volumes; only Traefik publishes a host port, on loopback.
+Startup waits for PostgreSQL health, runs each `*-migrate` job to completion, then starts its API. Migration jobs **exiting with code 0** are expected. Health checks take a few seconds to settle. PostgreSQL, Redis and RabbitMQ persist in named volumes; only Traefik publishes a host port, on loopback. The event workers reconnect if RabbitMQ is unavailable; the service APIs remain available and business transactions stay in their owner database outboxes.
 
 ```sh
 docker compose logs --tail=100 patient patient-migrate postgres traefik
@@ -116,7 +119,7 @@ Traefik uses the file provider with container DNS discovery, no Docker socket, n
 | `/api/v1/billing` and descendants | Billing |
 | `/api/v1/emergencies` and descendants | Emergency |
 
-Auth routes operate when the auth overlay and keys are configured. Short-link routes remain reserved and return the owning application's safe 404 envelope. Service-local `/health/live` and `/health/ready` remain available inside containers. Additive gateway aliases are `<domain-prefix>/health/live` and `<domain-prefix>/health/ready`. No `/internal/v1`, `/docs`, `/metrics` or dashboard routes are exposed by the gateway. Traefik ping uses a private health entrypoint. Redis/RabbitMQ have no published ports and live on a separate internal backbone network, disconnected from APIs until a later feature requires them.
+Auth routes operate when the auth overlay and keys are configured. Short-link routes remain reserved and return the owning application's safe 404 envelope. Service-local `/health/live` and `/health/ready` remain available inside containers. Additive gateway aliases are `<domain-prefix>/health/live` and `<domain-prefix>/health/ready`. No `/internal/v1`, `/docs`, `/metrics` or dashboard routes are exposed by the gateway. Traefik ping uses a private health entrypoint. Redis/RabbitMQ have no published ports and live on private networks; Appointment, Pharmacy and Billing join the existing RabbitMQ backbone for the selected Phase 5 event paths.
 
 Traefik rejects aliased header names and ignores untrusted incoming forwarded headers, following its [entrypoint configuration](https://doc.traefik.io/traefik/routing/entrypoints/). Uvicorn trusts proxy headers only from Traefik's configured IP (`GATEWAY_IP` inside `EDGE_SUBNET`). Change both together if the subnet conflicts locally. Gateway/API access logs are disabled so future opaque token paths are not automatically logged. This is loopback HTTP development only, with no TLS or production authentication policy.
 
@@ -159,4 +162,4 @@ npm run build
 
 ## Limits
 
-One host and PostgreSQL instance are correlated failure points. Volumes are persistence, not backups; restore/HA/performance have not been evaluated. Redis/broker are healthy infrastructure only, not workflow correctness. Application image bases and infrastructure images are pinned by digest; per-service runtime requirements are pinned to verified versions, without cross-service runtime packages. Updates must be reviewed and retested deliberately. Compose environment credentials are a local convenience, not a production secret manager. Telemetry collectors, production TLS/CORS, rate limiting and all hospital workflows remain outside this phase.
+One host and PostgreSQL instance are correlated failure points. Volumes are persistence, not backups; restore/HA/performance have not been evaluated. Redis and RabbitMQ support selected application workflows but do not own business truth. Application image bases and infrastructure images are pinned by digest; per-service runtime requirements are pinned to verified versions, without cross-service runtime packages. Updates must be reviewed and retested deliberately. Compose environment credentials are a local convenience, not a production secret manager. Telemetry collectors, production TLS/CORS, rate limiting and all other hospital workflows remain outside this phase.

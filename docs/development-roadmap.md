@@ -1,16 +1,17 @@
 # Development roadmap
 
-The user-approved Phase 4.0 scope brings all seven algorithms into one parallel
-implementation phase: rate limiter, consistent hashing, Redis cache, Snowflake
-IDs, short links, synthetic insurance crawler and autocomplete, plus frontend
-integration. [Contracts](phase-4-component-contracts.md),
-[ownership plan](phase-4-parallel-plan.md) and
-[component benchmarks](phase-4-benchmark-plan.md) are prepared only. The historical
-sequence below is superseded for these components; eight implementation agents
-are not launched. Surge Mode remains Phase 6 and full-system load/scalability
-remains Phase 8. Broker business delivery remains separately authorized Phase 5.
+The Phase 4.0 preparation documents froze ownership and interfaces for seven
+components: rate limiter, consistent hashing, Redis cache, Snowflake IDs, short
+links, synthetic insurance crawler and autocomplete, plus frontend integration.
+That documentation-only preparation did not launch agents or activate code;
+the components were later implemented and verified under separate
+authorization. See the [contracts](phase-4-component-contracts.md),
+[ownership plan](phase-4-parallel-plan.md), [benchmark plan](phase-4-benchmark-plan.md),
+and [Phase 4 verification](phase-4-integration-verification.md). Surge Mode
+remains Phase 6 and full-system load/scalability remains Phase 8. The selected
+Phase 5 broker workflows are now implemented and verified.
 
-Nine incremental phases describe the broader system-design target. Phase 1 foundations and authentication are complete. The user-approved Phase 2 scope supersedes the earlier sequencing: hospital management, schedules/booking, records/prescriptions, inventory/fulfillment, billing/payments and emergency requests have been integrated in Phase 2.9. See the [Phase 2 verification record](phase-2-integration-verification.md) for executed gates and remaining limits. Later phases require separate authorization; none is started by this integration.
+Nine incremental phases describe the broader system-design target. Phase 1 foundations and authentication are complete. The user-approved Phase 2 scope supersedes the earlier sequencing: hospital management, schedules/booking, records/prescriptions, inventory/fulfillment, billing/payments and emergency requests have been integrated in Phase 2.9. See the [Phase 2 verification record](phase-2-integration-verification.md) for executed gates and remaining limits. Phase 5 selected event delivery is complete; other future work still requires separate authorization.
 
 | Phase | Deliverables and integration | Acceptance gate |
 |---|---|---|
@@ -18,7 +19,7 @@ Nine incremental phases describe the broader system-design target. Phase 1 found
 | **2. Hospital management integration** | **2.0:** API freeze and disjoint eight-agent preparation. **2.1–2.8:** independent Patient, Doctor, Appointment, Records, Pharmacy, Billing, Emergency and frontend implementations. **2.9:** integrated and verified owner REST workflows, protected bookings, clinical holds, explicit fulfillment/charges and simulated payments; existing authentication preserved. Decimal IDs use local CSPRNG or Records' owned sequence. | Seven migration heads, 453 distinct backend tests, 85 frontend tests plus typecheck/build, real gateway workflows and browser checks. PostgreSQL exclusive booking tests produce one winner. Detailed scope and evidence are in the verification record. Custom Snowflake and performance claims are deferred. |
 | **3. Waitlists, check-in and journey automation** | Extend already implemented schedule acceptance and concurrency-safe book/cancel/reschedule with automatic waitlist promotion, short links/QR verification, live consultation queues and automated patient journeys. | Multi-replica concurrent booking has one active slot owner and no patient overlap; fairness and cancel/promote/reschedule atomicity; QR expiry/replay/ownership; short-link security/latency tests. |
 | **4. Seven system-design components** | **4.0 preparation:** freeze interfaces, exclusive eight-agent ownership, integration/deployment seams and reproducible component benchmarks. Later implementation covers all seven algorithms and frontend hooks without changing existing authority. | Preparation checks source compatibility, links, contracts and ownership. Implementation requires real storage correctness, measured component benchmarks, retained Phase 2/3 regressions and coordinator integration. No broker, Surge Mode or full-system scalability claims. |
-| **5. Event-driven integration and insurance fixtures** | Extend the existing Pharmacy/Billing REST workflows with durable outbox publication, consumer inbox/effects/replay and reconciliation. Add separately authorized fixture-only crawling/insurance estimates and journey/discharge integration. | At-least-once delivery with inbox/effects atomicity, duplicate/out-of-order/outage/replay recovery, explicit pending source versions and reconciliation. Retain stock and charge/payment uniqueness; compare any authorized crawler against synthetic fixture truth. |
+| **5. Event-driven integration and insurance fixtures** | **Selected event delivery complete:** Pharmacy dispense and Billing payment publish transactionally from their existing outboxes to Appointment's durable inbox, which wakes fresh owner-snapshot reconciliation. Phase 4 already implements the synthetic insurance crawler. The wider catalog and event-driven discharge/payment/insurance workflows remain unimplemented. | The [Phase 5 verification report](phase-5-integration-verification.md) records PostgreSQL tests, live cross-service delivery, duplicate handling, broker outage/recovery, poison-message DLQ behavior, and retained-stack checks. No exactly-once, high-availability, or throughput claim. |
 | **6. Surge admission and emergency extensions** | Extend implemented emergency requests/triage/claims with a distributed Redis token bucket in every service, protected emergency budgets, local degraded limiter, aging/fair scheduling and surge mode. | Atomic limiter tests across replicas, protected capacity under mixed load, anonymous quota and staff-only triage, bounded starvation and worker recovery measurements; no claims of clinical priority validation. |
 | **7. Cache distribution and autocomplete performance** | Redis cache-aside/versioned invalidation, consistent hash ring/virtual nodes and node churn experiments, Doctor and Pharmacy trie/radix search with DB prefix fallback. | Cache vs DB lookup results, stale invalidation recovery, placement/remap balance, node failure behavior; trie memory/build/prefix latency vs indexed SQL on the same dataset. |
 | **8. Control room, tracing and controlled chaos** | Restricted monitoring UI, throughput/latency/admission/cache/ring/broker/emergency/resource dashboards, end-to-end traces, graceful shutdown and failure experiments. Select/document a simple trace query backend if bounded collector files cannot support required control-room trace search. | Traces correlate HTTP and events; no sensitive telemetry; instance/cache/broker outage and delay experiments have baselines, stop conditions, measured degradation, backlog replay and recovery. |

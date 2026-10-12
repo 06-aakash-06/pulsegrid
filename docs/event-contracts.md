@@ -5,8 +5,8 @@ producer-to-consumer paths documented in
 [Phase 5 event contracts](phase-5-event-contracts.md); other entries remain
 proposals and must not be treated as active broker subscriptions. The Phase 5
 document records the actual envelope, payloads, topology, and recovery behavior.
-The planned durable topic exchange is `pulsegrid.events`; each consumer purpose
-has its own durable queue, and separate subscribers do not share a queue.
+Phase 5 uses the durable topic exchange `pulsegrid.events`; each active consumer
+purpose has its own durable queue, and separate subscribers do not share a queue.
 
 ## Envelope and field schemas
 
@@ -71,7 +71,7 @@ Definitions:
 | `records.prescription.revoked.v1` | Records | Pharmacy: release remaining reservations, flag dispensed items for review; Appointment: reopen stage | prescription_id, consultation_id, journey_id, patient_id, revision, reason_code |
 | `pharmacy.reservation.created.v1` | Pharmacy | Appointment: pharmacy pending state | ReservationPayload |
 | `pharmacy.reservation.released.v1` | Pharmacy | Appointment: update pharmacy state; Billing: no charge before dispensing | ReservationPayload + reason_code (`expired`, `cancelled`, `prescription_revoked`) |
-| `pharmacy.reservation.dispensed.v1` | Pharmacy | Appointment: request fresh journey reconciliation | resource_id, version, state, journey_id? |
+| `pharmacy.reservation.dispensed.v1` | Pharmacy | Appointment: request fresh journey reconciliation | resource_id, version, state, appointment_id? |
 | `billing.invoice.updated.v1` | Billing | Appointment: billing state and discharge eligibility projection | InvoicePayload |
 | `billing.payment.succeeded.v1` | Billing | Appointment: request fresh journey reconciliation | appointment_id (new messages); historical unpublished rows may have the earlier proposal payload |
 | `billing.payment.reversed.v1` | Billing | Appointment: reopen payment/billing stage | InvoicePayload + payment_id, amount_minor, reason_code |
@@ -107,6 +107,6 @@ Durable projection state stores source aggregate/version and a per-stage resourc
 
 Consumer transient failures: initial attempt plus up to five retries with jittered delays approximately 1 s, 5 s, 30 s, 2 min and 10 min; then DLQ and alert. Non-retryable malformed/unsupported contracts and permanent unknown catalog mappings go directly to quarantine/DLQ with safe reason codes. A dependency outage can resume through an operator-managed replay after repair; DLQ never silently drops work. Use broker headers for attempts and guard against retry cycles. No medical payloads in failure logs.
 
-A replay command preserves original event_id, records operator/reason, and is safe whether the original effect committed or not. Do not change event IDs merely to bypass inbox deduplication. Retention defaults match database-design.md: published outbox >=7 days, inbox >=30 days, business identity uniqueness for aggregate lifetime. Backfills beyond retained messages reconcile against owner state; do not imply arbitrary historical replay availability.
+A replay command preserves original event_id and attaches operator/reason metadata to the confirmed replay. It is safe whether the original effect committed or not. Do not change event IDs merely to bypass inbox deduplication. Retention defaults match database-design.md: published outbox >=7 days, inbox >=30 days, business identity uniqueness for aggregate lifetime. Backfills beyond retained messages reconcile against owner state; do not imply arbitrary historical replay availability.
 
 Payload evolution: optional additive fields keep v1, consumers ignore unknown optional fields. Breaking schema/meaning changes create `.v2` routing keys and separate reviewed schemas, with dual-publish or bridging during a documented migration window. Deduplication uses a stable business effect ID across v1/v2 so dual-publish does not double-charge. Preserve producer and consumer contract tests and sanitized examples for both supported versions. RabbitMQ payloads are sensitive even without clinical text; service queue permissions and retention apply.

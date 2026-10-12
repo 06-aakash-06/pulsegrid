@@ -1,18 +1,18 @@
 # Phase 5 event contracts
 
-Status: selected contracts and implementation plan, recorded before Phase 5 code
-changes. PulseGrid uses synthetic data and remains a single-hospital educational
-prototype.
+Status: selected contracts implemented and checked against the Phase 5
+verification report. PulseGrid uses synthetic data and remains a single-hospital
+educational prototype.
 
 ## Scope and existing infrastructure
 
 PulseGrid already has one `outbox_events` and one `inbox_events` table in each
 service database. Outbox rows are inserted with business mutations in the same
 local transaction. Billing and Pharmacy already write versioned domain events;
-Appointment already writes lifecycle events. RabbitMQ is present in Compose on
-the private `backbone` network, but no business publisher or consumer currently
-uses it. This phase extends the existing outbox and Appointment inbox rather
-than adding a second event store.
+Appointment already writes lifecycle events. RabbitMQ is on the private
+`backbone` network and carries the two selected Phase 5 paths. This phase
+extends the existing outbox and Appointment inbox rather than adding a second
+event store.
 
 Only the two event types below will be published and consumed in Phase 5.
 Other existing outbox event types remain local until a separately reviewed
@@ -70,7 +70,7 @@ convention:
   "request_id": "688ceebc-e089-4908-a519-a3cbdcc18c4e",
   "causation_id": null,
   "traceparent": null,
-  "payload": {"resource_id": "123456789012346", "version": 2, "state": "dispensed", "journey_id": "123456789012347"}
+  "payload": {"resource_id": "123456789012346", "version": 2, "state": "dispensed", "appointment_id": "123456789012347"}
 }
 ```
 
@@ -84,10 +84,11 @@ and `request_id` are inherited from the originating request.
 
 - Producer: Pharmacy, from the existing reservation dispense transaction.
 - Aggregate: reservation ID and post-dispense reservation version.
-- Payload: existing `resource_id`, `version`, and `state`; add `journey_id` when
-  the locally stored prescription snapshot has one. Historical rows without
-  `journey_id` are accepted as legacy signals and acknowledged without a
-  reconciliation effect.
+- Payload: existing `resource_id`, `version`, and `state`; add the owning
+  `appointment_id` from Pharmacy's Records snapshot. Appointment resolves that
+  reference against its own database. Historical rows without `appointment_id`
+  are accepted as legacy signals and acknowledged without a reconciliation
+  effect.
 - The payload carries no medicine name, prescription text, dosage, diagnosis,
   patient name, or stock ledger details.
 
@@ -139,16 +140,20 @@ created for retries or replay.
   A confirmed publish followed by a publisher crash may result in a duplicate;
   the Appointment inbox makes that safe.
 - RabbitMQ remains on the existing internal network and has no host-published
-  port. Service connections use a scoped application account, not the broker
-  administrator account.
+  port. Publishers share a non-administrator account limited to the events
+  exchange; Appointment uses a separate non-administrator consumer account
+  scoped to the exchange and its queues. Neither uses the broker administrator
+  account.
 
 ## Database behavior
 
 Billing and Pharmacy retain their existing outbox tables, including event ID,
 type, envelope, attempt count, next-attempt timestamp, claim owner, and lease.
-The only required outbox schema addition is nullable safe `last_error` metadata
-for publisher diagnostics. Claims commit before network I/O; publishers update
-delivery state only after a broker confirmation. Expired claims are recoverable.
+Forward migrations add nullable `last_error` diagnostics and a partial index for
+selected event types. Pharmacy grants its runtime role updates only to delivery
+metadata columns; the immutable event envelope stays read-only to that role.
+Claims commit before network I/O; publishers update delivery state only after a
+broker confirmation. Expired claims are recoverable.
 
 Appointment reuses its existing inbox primary key `(consumer_name, event_id)`.
 For each delivery, envelope validation happens before processing. The inbox
@@ -168,15 +173,33 @@ cannot overwrite those source versions.
 projection. A successfully consumed signal schedules the existing worker, which
 updates `last_reconciled_at` and source-backed stage state after fresh owner
 reads. Bounded-cardinality `/metrics` counters expose selected pending/outbox
-publishes, publisher failures/retries, consumer processed/duplicate/failure
-counts, dead-letter outcomes, and processing latency. Metrics contain no
+publishes, publisher failures/retries, worker connection state, consumer
+processed/duplicate/failure counts, dead-letter outcomes/depth, and processing
+latency. Metrics contain no
 patient, appointment, invoice, or event IDs.
 
-Operator replay is limited to repaired dead-letter messages. It preserves the
-original envelope and event ID, records an operator and reason, publishes with
-confirmation to the original routing key, and acknowledges the dead-letter
-copy only after confirmation. Consumer inbox deduplication makes a replay safe
-when the original effect had already committed.
+Operator replay is limited to inspected dead-letter messages after the consumer
+or broker cause has been repaired. Inspect the head message's safe metadata:
+
+```sh
+docker compose exec appointment python -m appointment_service.replay_dead_letter \
+  --subscription pharmacy --peek
+```
+
+Replay one event with its decimal ID, an operator identifier, and a reason. The
+command validates the envelope,
+preserves its body and event ID, attaches operator/reason headers, publishes
+with confirmation to the original routing key, and acknowledges the dead-letter
+copy only after confirmation. Keep its confirmation output in the incident
+record. A crash after publish confirmation but before the dead-letter ack may
+create a duplicate; the inbox makes that safe. The command will not rewrite a
+poison payload or replay an envelope that still fails contract validation.
+
+```sh
+docker compose exec appointment python -m appointment_service.replay_dead_letter \
+  --subscription pharmacy --event-id 123456 --operator operator@example \
+  --reason "consumer fix deployed and contract revalidated"
+```
 
 ## Deliberate limits
 

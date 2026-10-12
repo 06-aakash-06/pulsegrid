@@ -1,6 +1,6 @@
 # PulseGrid
 
-PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 3 integrates the advanced hospital workflows on main, preserving the Phase 2 domain/frontend foundation. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests now use real owner APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
+PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 5 adds reliable, asynchronous Pharmacy and Billing signals that wake Appointment's existing journey reconciler. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests continue to use their owning APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
 
 See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the compatible baseline interface. See [Phase 3 contracts](docs/phase-3-api-contracts.md) and [Phase 3 verification](docs/phase-3-integration-verification.md) for activated waitlists and temporary offers, QR check-in, consultation queues, patient journeys and staff/patient UI. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
 
@@ -18,6 +18,26 @@ for executed evidence, limits and the completion verdict. Frozen
 [preparation verification](docs/phase-4-preparation-verification.md) retain the
 reviewed preparation baseline.
 
+## Phase 5 event delivery
+
+Pharmacy reservation dispenses and successful Billing payments publish from
+their existing PostgreSQL outboxes to Appointment. Appointment deduplicates each
+subscription in its inbox and asks its existing worker to fetch fresh owner
+snapshots. No event changes inventory, money, access decisions or discharge
+eligibility. See [Phase 5 contracts](docs/phase-5-event-contracts.md) and the
+[Phase 5 verification report](docs/phase-5-integration-verification.md).
+
+After `python3 infra/scripts/init-env.py`, start RabbitMQ and create its scoped
+accounts before starting the service containers:
+
+```sh
+python3 infra/scripts/configure-rabbitmq-events.py
+```
+
+Then use the regular authenticated/Phase 4 Compose command below. RabbitMQ stays
+private. APIs continue to commit local business transactions if the broker is
+unavailable; the outbox workers retry publication in the background.
+
 Private cache/admission configuration is initialized by
 `python infra/phase4/init_config.py` (existing keys are retained). Add
 `-f compose.phase4.yaml` after the existing Compose and auth files when building
@@ -27,9 +47,9 @@ worker identities are explicitly bound to their owner/replica allocations.
 
 ## Architecture
 
-Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. The existing Docker Compose deployment also runs Redis and RabbitMQ, which are not yet business workflow dependencies.
+Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. Redis supports the existing Phase 4 features. RabbitMQ carries only the selected Phase 5 events and does not gate API transactions.
 
-PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Audit chains and unpublished outbox rows persist locally. Broker publication/consumption, full telemetry deployment and control room remain future work. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
+PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Phase 5 publishes two existing outbox transitions and uses Appointment's existing journey reconciliation as the safe asynchronous effect. Full telemetry deployment and the control room remain future work. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
 
 ## Foundation documents
 
@@ -38,6 +58,8 @@ PostgreSQL transactions and constraints enforce booking, inventory, payment and 
 - [Database design](docs/database-design.md): initial schema, keys, constraints and planned transactions.
 - [API contracts](docs/api-contracts.md): versioned REST routes, schemas, authorization, failure semantics.
 - [Event contracts](docs/event-contracts.md): event catalog, schemas, outbox, replay, dead letters.
+- [Phase 5 event contracts](docs/phase-5-event-contracts.md): active event paths, ownership and delivery/recovery behavior.
+- [Phase 5 integration verification](docs/phase-5-integration-verification.md): reliability and failure-recovery evidence.
 - [Security](docs/security.md): identity, authorization, sensitive operations, privacy.
 - [Local infrastructure](docs/infrastructure.md): startup, database isolation, migrations, gateway, tests and limits.
 - [Roadmap](docs/development-roadmap.md): nine phases and acceptance gates.
@@ -66,6 +88,7 @@ With Docker running, from this directory:
 
 ```sh
 python3 infra/scripts/init-env.py
+python3 infra/scripts/configure-rabbitmq-events.py
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e 'services/patient[test]'
@@ -80,7 +103,7 @@ done
 docker compose -f compose.yaml -f services/patient/compose.auth.yaml up -d --no-build
 ```
 
-The script creates private, ignored credentials; never commit `.env`. All seven migration jobs must exit 0 before their APIs start. Gateway: `http://127.0.0.1:8080`; example readiness: `/api/v1/patients/health/ready`. PostgreSQL is required for readiness; Redis and RabbitMQ are not yet application dependencies.
+The script creates private, ignored credentials; never commit `.env`. Provision the RabbitMQ event users as described above before starting the APIs. All seven migration jobs must exit 0 before their APIs start. Gateway: `http://127.0.0.1:8080`; example readiness: `/api/v1/patients/health/ready`. PostgreSQL is required for readiness. Redis supports existing Phase 4 features; the selected RabbitMQ workers reconnect independently and do not block API readiness or local commits.
 
 ```sh
 cd frontend
@@ -90,7 +113,7 @@ npm run dev -- --strictPort
 
 Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose -f compose.yaml -f services/patient/compose.auth.yaml down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
 
-See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2 business routes are integrated. Shared executable contract artifacts and telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2–5 backend paths are integrated. Shared executable contract artifacts and full telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
 
 ## Hospital workflow verification
 
