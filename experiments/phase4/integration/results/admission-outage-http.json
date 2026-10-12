@@ -1,0 +1,28 @@
+{
+  "requests": 20,
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    429,
+    429,
+    429,
+    429,
+    429,
+    429
+  ],
+  "fallback": "per-process conservative divided quota; approximate",
+  "recovery": 200,
+  "duration_scope": "twenty requests, Redis always restarted in finally"
+}

@@ -143,7 +143,7 @@ export function ShortLinkLanding({
           <div className="phase4-auth-note">
             <p>Sign in as the patient or a receptionist to resolve this link. The alias is held only in this tab’s memory.</p>
             <p>After sign-in, return to this page. If this tab reloads or closes, reopen the original link.</p>
-            <Link className="button button--primary" to="/login" state={{ returnTo: "/short-link" }}>Sign in</Link>
+            <Link className="button button--primary" to="/login" state={{ from: "/short-link" }}>Sign in</Link>
           </div>
         )}
         {alias && authState === "authenticated" && !allowed && (

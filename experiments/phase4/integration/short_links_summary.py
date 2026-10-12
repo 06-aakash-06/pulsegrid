@@ -17,6 +17,6 @@ for label in ['before','after','low','medium','diagnostic']:
     lat=[float(r['latency_ms']) for r in subset];success=[float(r['latency_ms']) for r in subset if int(r['status_code']) in (200,201,303)]
     rows.append({'version':label,'trial':trial['trial'],'operation':op,'attempted':len(lat),'errors':summary['errors'],'mean_all_ms':statistics.mean(lat),'success_p50_ms':statistics.median(success) if success else None,'success_p95_ms':sorted(success)[__import__('math').ceil(.95*len(success))-1] if success else None,'successful_throughput':summary['completed']/trial[mode]['elapsed_seconds'],'error_rate':summary['errors']/len(lat)})
 with (out/'short-links-before-after.csv').open('w') as f:
- writer=csv.DictWriter(f,fieldnames=rows[0]);writer.writeheader();writer.writerows(rows)
+ writer=csv.DictWriter(f,fieldnames=rows[0],lineterminator="\n");writer.writeheader();writer.writerows(rows)
 (out/'short-links-manifest.json').write_text(json.dumps(manifest,indent=2))
 print('raw files preserved; measured rows',len(rows))

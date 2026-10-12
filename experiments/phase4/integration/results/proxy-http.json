@@ -1,0 +1,109 @@
+{
+  "requests": 20,
+  "admitted_invalid_logins": 11,
+  "limited": 9,
+  "elapsed_seconds": 3.4912008329993114,
+  "forwarded_header_spoof_does_not_bypass_source_quota": true,
+  "samples": [
+    {
+      "status": 401,
+      "ms": 350.1360000082059,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 297.61141700146254,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 300.4584589943988,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 299.6247080009198,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 304.5223750086734,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 308.96358299651183,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 295.5995410011383,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 381.66129200544674,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 310.46833300206345,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 307.23183299414814,
+      "retry_after": null
+    },
+    {
+      "status": 401,
+      "ms": 301.4903330040397,
+      "retry_after": null
+    },
+    {
+      "status": 429,
+      "ms": 5.944666001596488,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 3.7697920051869005,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 3.6473329964792356,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 3.7892499967711046,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 2.8655839996645227,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 3.814583003986627,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 2.9001659859204665,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 3.6804160044994205,
+      "retry_after": "1"
+    },
+    {
+      "status": 429,
+      "ms": 2.590749994851649,
+      "retry_after": "1"
+    }
+  ]
+}

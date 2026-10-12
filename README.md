@@ -4,25 +4,32 @@ PulseGrid is a single-hospital management prototype for the System Design Labora
 
 See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the compatible baseline interface. See [Phase 3 contracts](docs/phase-3-api-contracts.md) and [Phase 3 verification](docs/phase-3-integration-verification.md) for activated waitlists and temporary offers, QR check-in, consultation queues, patient journeys and staff/patient UI. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
 
-Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments are simulated; insurance functionality is deferred.
+Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments and insurance fixtures/estimates are simulated; no real insurer integration.
 
-## Phase 4 preparation
+## Phase 4 integration
 
-Phase 4.0 freezes the seven system-design components and eight disjoint agent
-assignments; component implementation and deployment have not started. See the
+All eight agent implementations are integrated locally. The opt-in Phase 4
+configuration activates seven components in the existing owner services and
+hospital pages. See [integration verification](docs/phase-4-integration-verification.md)
+for executed evidence, limits and the completion verdict. Frozen
 [component contracts](docs/phase-4-component-contracts.md),
 [parallel plan](docs/phase-4-parallel-plan.md),
 [benchmark plan](docs/phase-4-benchmark-plan.md) and
-[preparation verification](docs/phase-4-preparation-verification.md).
-All agents will start from the local preparation commit when separately requested.
-Existing Phase 1–3 behavior remains active; no agents have been launched or code
-changed by this preparation.
+[preparation verification](docs/phase-4-preparation-verification.md) retain the
+reviewed preparation baseline.
+
+Private cache/admission configuration is initialized by
+`python infra/phase4/init_config.py` (existing keys are retained). Add
+`-f compose.phase4.yaml` after the existing Compose and auth files when building
+and starting the existing project. Do not create a second retained stack or reset
+volumes. Fixture providers are synthetic4101–4103/policyDEMO. Appointment/Billing
+worker identities are explicitly bound to their owner/replica allocations.
 
 ## Architecture
 
 Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. The existing Docker Compose deployment also runs Redis and RabbitMQ, which are not yet business workflow dependencies.
 
-PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Audit chains and unpublished outbox rows persist locally. Broker publication/consumption, distributed caches, telemetry deployment, control room and Phase 4 algorithm components remain future work. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
+PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Audit chains and unpublished outbox rows persist locally. Broker publication/consumption, full telemetry deployment and control room remain future work. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
 
 ## Foundation documents
 

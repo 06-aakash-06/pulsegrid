@@ -142,3 +142,32 @@ class LifecycleTests(unittest.IsolatedAsyncioTestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class PollCostTests(unittest.IsolatedAsyncioTestCase):
+    async def _poll(self, changed=False, oversized=False):
+        from pulsegrid_autocomplete.lifecycle import refresh_loop
+        stop=asyncio.Event()
+        class Ports:
+            owner='doctor'
+            def __init__(self):
+                self.index_registry=IndexRegistry();self.loads=0;self.reads=0
+                self.index_limits=IndexLimits(100,1024 if oversized else 1024*1024)
+                if not oversized:self.index_registry.publish(build_snapshot(1,[item(1,'Ada Chen')]))
+            @asynccontextmanager
+            async def read_session(self):yield object()
+            async def read_revision(self,session):
+                self.reads+=1
+                if self.reads>= (5 if oversized else 3):stop.set()
+                return 2 if changed and self.reads>=2 else 1
+            async def load_snapshot(self,session):
+                self.loads+=1
+                return (2 if changed else 1),(item(1,'Ada Chen'),)
+        ports=Ports()
+        await asyncio.wait_for(refresh_loop(ports,stop,interval_seconds=.001),1)
+        return ports
+    async def test_unchanged_revision_does_not_rebuild(self):
+        ports=await self._poll();self.assertEqual(0,ports.loads);self.assertEqual(1,ports.index_registry.snapshot.generation)
+    async def test_revision_change_rebuilds_and_publishes(self):
+        ports=await self._poll(changed=True);self.assertEqual(1,ports.loads);self.assertEqual(2,ports.index_registry.snapshot.generation)
+    async def test_unchanged_oversize_catalog_does_not_repeatedly_build(self):
+        ports=await self._poll(oversized=True);self.assertEqual(1,ports.loads);self.assertEqual('memory_limit_exceeded',ports.index_registry.view.reason)

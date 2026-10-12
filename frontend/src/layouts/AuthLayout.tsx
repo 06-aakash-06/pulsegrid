@@ -32,6 +32,7 @@ export function AuthLayout() {
   if (state.status === "checking") return <SessionLoading />;
   if (state.status === "authenticated") {
     const path = intendedPath(location.state);
+    if (path === "/short-link" && (state.roleHints.includes("patient") || state.roleHints.includes("receptionist"))) return <Navigate replace to="/short-link" />;
     const intendedWorkspace = path ? getWorkspaceForPath(path.split(/[?#]/, 1)[0], state.roleHints) : undefined;
     const workspace = intendedWorkspace ?? getWorkspaceForRoleHints(state.roleHints);
     if (!workspace) {

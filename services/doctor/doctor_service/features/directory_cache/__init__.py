@@ -63,6 +63,7 @@ def validate_projection(payload):
             raise InvalidEntry('projection bounds')
         if value['next_cursor'] is not None and (not isinstance(value['next_cursor'], str) or len(value['next_cursor']) > 1024):
             raise InvalidEntry('cursor bounds')
+        if len({item['id'] for item in value['items']})!=len(value['items']):raise InvalidEntry('duplicate source entity')
         for item in value['items']:
             if set(item) != {'id', 'display_name', 'specialties'}:
                 raise InvalidEntry('sensitive or unexpected field')

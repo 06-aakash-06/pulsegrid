@@ -679,3 +679,39 @@ Expose Retry-After in existing CORS allowlists at integration; do not weaken ori
 or add actor headers. Dedicated ID connections and cache-miss DB fallback need
 explicit connection budgets, resource limits and deadlines; max-replica bound
 must be enforced before scaling. Minimal preparation infrastructure changes: none.
+
+
+## Coordinator integration amendments (2026-10-12)
+
+Provider-list items add optional `version:Version`, preserving existing fields and
+list ETag semantics. This supplies the provider aggregate If-Match for refresh;
+clients cannot use a list ETag as a provider mutation version. No discovery of real
+patient policies is added; frontend configuration names only reviewed synthetic
+providers4101–4103 and policyDEMO.
+
+Verified internal-worker pre-auth source/aggregate gates use120/20s and1200/200s
+(capacity/refill), with distinct pre-auth partitions; post-verification budgets
+remain the frozen internal-worker budgets. Signature and exact endpoint scope
+validation remain mandatory. This avoids the generic30/2s source gate preventing
+normal owner reconciliation. Ordinary traffic cannot consume these or Emergency
+partitions.
+
+Autocomplete background polling reads owner revision every5s and rebuilds only
+on a changed revision or recoverable degraded state. Oversized unchanged catalogs
+remain on DB fallback until revision changes; explicit refresh_index retains its
+reviewed rebuild behavior. Limits remain100k entries/64MiB, with optional lower
+limits for bounded fallback verification.
+
+Infrastructure uses cache nodesa/b, dedicated admission Redis, three internal
+fixture hosts and two Doctor API processes behind Traefik. Max processes4;
+Appointment worker256/Billing640 are service-code/replica0 bindings, not global
+cross-database locking. New corrective forward heads are documented in the
+verification report. Durable history migrations deliberately refuse destructive
+downgrades; a disposable test confirms refusal preserves the applied head.
+
+Insurance estimate audit/outbox effects identify the newly created estimate as
+aggregate (`insurance_estimate`, estimate_id, version1), rather than reusing its
+source run/version as the estimate effect identity. Source run provenance remains
+in the payload. Early locally persisted Phase4 effects are retained as historical
+unpublished records; no consumer or broker workflow is introduced. This corrects
+the composition boundary before event consumers are activated.

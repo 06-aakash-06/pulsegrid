@@ -152,3 +152,26 @@ async def test_actual_owner_database_outage_does_not_serve_warm_cache():
             assert await read() == expected
         finally:
             await cache.close(); await engine.dispose()
+
+async def test_fresh_wire_batch_preserves_order_and_uses_one_postgres_query():
+    from sqlalchemy import event
+    from doctor_service.repository import get_doctors_by_ids,get_doctor
+    with fixtures.storage() as (dsn,_,_):
+        engine=create_async_engine(dsn);sessions=async_sessionmaker(engine)
+        try:
+            await fixtures.seed(engine,50)
+            async with sessions() as session:
+                expected=[await get_doctor(session,value) for value in ['20','1','40']]
+                queries=[]
+                def count(*args):queries.append(args[2])
+                event.listen(engine.sync_engine,'before_cursor_execute',count)
+                actual=await get_doctors_by_ids(session,['20','1','40'])
+                event.remove(engine.sync_engine,'before_cursor_execute',count)
+                assert actual==expected and len(queries)==1
+                assert await get_doctors_by_ids(session,['99999'])==[None]
+                assert await get_doctors_by_ids(session,[])==[]
+        finally:await engine.dispose()
+
+def test_duplicate_cached_source_entities_are_rejected():
+    entry={'id':'1','display_name':'Synthetic','specialties':[]}
+    with pytest.raises(InvalidEntry):validate_projection(canonical_json({'schema_version':1,'items':[entry,entry],'next_cursor':None}))

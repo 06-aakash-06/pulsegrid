@@ -25,7 +25,7 @@ function requestErrorMessage(error: unknown, action: "login" | "register"): stri
     if (action === "register" && error.status === 409) {
       return "An account with this email address may already exist. Try signing in or use a different email address.";
     }
-    return error.message;
+    return error.message + ((error.status === 429 || error.status === 503) && error.retryAfterSeconds !== undefined ? ` Wait ${error.retryAfterSeconds} seconds before retrying.` : "");
   }
   return "The request could not be completed. Please try again later.";
 }
@@ -83,6 +83,10 @@ export function LoginPage() {
     try {
       const roleHints = await login({ email: normalizedEmail, password }, controller.signal);
       const intended = readIntendedLocation(location.state);
+      if (intended?.pathname === "/short-link" && (roleHints.includes("patient") || roleHints.includes("receptionist"))) {
+        navigate("/short-link", { replace: true });
+        return;
+      }
       const intendedWorkspace = intended
         ? getWorkspaceForPath(intended.pathname, roleHints)
         : undefined;

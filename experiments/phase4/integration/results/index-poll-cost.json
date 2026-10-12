@@ -1,0 +1,20 @@
+{
+  "observed_seconds": 16,
+  "before": {
+    "doctor": {
+      "pulsegrid_autocomplete_index_rebuild_seconds_count{outcome=\"success\",owner=\"doctor\"}": 2.0
+    },
+    "pharmacy": {
+      "pulsegrid_autocomplete_index_rebuild_seconds_count{outcome=\"success\",owner=\"pharmacy\"}": 1.0
+    }
+  },
+  "after": {
+    "doctor": {
+      "pulsegrid_autocomplete_index_rebuild_seconds_count{outcome=\"success\",owner=\"doctor\"}": 2.0
+    },
+    "pharmacy": {
+      "pulsegrid_autocomplete_index_rebuild_seconds_count{outcome=\"success\",owner=\"pharmacy\"}": 1.0
+    }
+  },
+  "unchanged_index_rebuilds": 0
+}

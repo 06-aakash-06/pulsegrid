@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="260">
+<rect width="100%" height="100%" fill="white"/>
+<text x="10" y="20">Mean (blue) and p95 (orange) adapter latency, milliseconds</text>
+<text x="10" y="55">uncached</text>
+<rect x="160" y="40" width="204.93429021285675" height="12" fill="#2563eb"/>
+<rect x="160" y="54" width="258.38215952838186" height="12" fill="#ea580c"/>
+<text x="630" y="60">1.397 / 1.761 ms</text>
+<text x="10" y="95">cold</text>
+<rect x="160" y="80" width="351.12105273510144" height="12" fill="#2563eb"/>
+<rect x="160" y="94" width="450.0" height="12" fill="#ea580c"/>
+<text x="630" y="100">2.393 / 3.067 ms</text>
+<text x="10" y="135">warm</text>
+<rect x="160" y="120" width="100.64831325777601" height="12" fill="#2563eb"/>
+<rect x="160" y="134" width="148.1544171054947" height="12" fill="#ea580c"/>
+<text x="630" y="140">0.686 / 1.010 ms</text>
+<text x="10" y="175">invalidation</text>
+<rect x="160" y="160" width="106.00314883308371" height="12" fill="#2563eb"/>
+<rect x="160" y="174" width="162.7047301043286" height="12" fill="#ea580c"/>
+<text x="630" y="180">0.722 / 1.109 ms</text>
+<text x="10" y="215">redis_failure</text>
+<rect x="160" y="200" width="105.86280530012924" height="12" fill="#2563eb"/>
+<rect x="160" y="214" width="139.23064900754096" height="12" fill="#ea580c"/>
+<text x="630" y="220">0.722 / 0.949 ms</text>
+</svg>

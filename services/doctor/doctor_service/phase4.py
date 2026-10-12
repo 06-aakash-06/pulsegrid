@@ -75,7 +75,7 @@ def mount_cache(app):
 async def directory_page(app, principal, filters):
     from sqlalchemy import text
     from .features.directory_cache import cache_projection, load_projection, read_revision
-    from .repository import get_doctor, doctor_profile, list_doctors
+    from .repository import get_doctors_by_ids, doctor_profile, list_doctors
     factory=app.state.database.session_factory
     async with factory() as session:
         revision=await read_revision(session)
@@ -87,7 +87,7 @@ async def directory_page(app, principal, filters):
         await session.execute(text('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY'))
         current=await read_revision(session)
         if current==revision:
-            rows=[await get_doctor(session,item['id']) for item in projection['items']]
+            rows=await get_doctors_by_ids(session,[item['id'] for item in projection['items']])
             if all(row and row['active'] for row in rows):
                 return {'items':[doctor_profile(row) for row in rows],'next_cursor':projection['next_cursor']}
         rows=await list_doctors(session,active=True,specialty_id=filters.specialty_id,query=filters.query,cursor=filters.cursor,limit=filters.limit+1)

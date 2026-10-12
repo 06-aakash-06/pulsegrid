@@ -242,8 +242,24 @@ async def refresh_loop(
     """Poll the owner revision every five seconds until the app lifespan stops."""
     if interval_seconds <= 0:
         raise ValueError("refresh interval must be positive")
+    oversized_revision = None
     while not stop_event.is_set():
-        await refresh_index(ports)
+        try:
+            async with ports.read_session() as session:
+                revision = _valid_revision(await ports.read_revision(session))
+            view = ports.index_registry.view
+            unchanged = view.state == "ok" and view.snapshot is not None and view.snapshot.generation == revision
+            if not unchanged and revision != oversized_revision:
+                await refresh_index(ports)
+                if ports.index_registry.view.reason in ("entry_limit_exceeded", "memory_limit_exceeded"):
+                    oversized_revision = revision
+                else:
+                    oversized_revision = None
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            ports.index_registry.mark_degraded("owner_unavailable")
+            oversized_revision = None
         try:
             await asyncio.wait_for(stop_event.wait(), timeout=interval_seconds)
         except TimeoutError:

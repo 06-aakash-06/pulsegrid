@@ -4,8 +4,8 @@ WORKDIR /app
 COPY services/pharmacy/pyproject.toml services/pharmacy/README.md services/pharmacy/requirements.lock ./
 COPY services/pharmacy/pharmacy_service ./pharmacy_service
 COPY components/rate_limiter /components/rate_limiter
-COPY components/autocomplete /components/autocomplete
 RUN pip install --no-cache-dir -r requirements.lock && pip install --no-cache-dir --no-deps .
+COPY components/autocomplete /components/autocomplete
 RUN pip install --no-cache-dir --no-deps /components/rate_limiter /components/autocomplete
 COPY services/pharmacy/alembic.ini ./
 COPY services/pharmacy/migrations ./migrations

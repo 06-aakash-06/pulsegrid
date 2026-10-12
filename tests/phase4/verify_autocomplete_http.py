@@ -17,8 +17,8 @@ def measure(mode):
    assert body['items']==expected[owner]
   results.append({'owner':owner,'source':mode,'requests':len(samples),'errors':0,'mean_ms':statistics.mean(samples),'p50_ms':statistics.median(samples),'p95_ms':sorted(samples)[-1],'items':len(expected[owner]),'samples_ms':samples})
 def deploy(cmd):
- subprocess.run(cmd+['up','-d','--no-deps','--no-build','--force-recreate','doctor','doctor_replica','pharmacy'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
- time.sleep(12)
+ subprocess.run(cmd+['up','-d','--no-deps','--no-build','--force-recreate','--wait','--wait-timeout','60','doctor','doctor_replica','pharmacy'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+ time.sleep(2)
 measure('trie')
 overlay=Path('/tmp/pulsegrid-phase4-index-fallback.yaml');overlay.write_text('services:\n  doctor:\n    environment:\n      PULSEGRID_DOCTOR_PHASE4_AUTOCOMPLETE_MAX_BYTES: "1024"\n  doctor_replica:\n    environment:\n      PULSEGRID_DOCTOR_PHASE4_AUTOCOMPLETE_MAX_BYTES: "1024"\n  pharmacy:\n    environment:\n      PULSEGRID_PHARMACY_PHASE4_AUTOCOMPLETE_MAX_BYTES: "1024"\n')
 try:

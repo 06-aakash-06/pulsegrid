@@ -33,6 +33,17 @@ async def get_doctor(
     return dict(row) if row is not None else None
 
 
+async def get_doctors_by_ids(session: AsyncSession, doctor_ids: list[str]) -> list[dict[str, Any] | None]:
+    """Bounded fresh wire reconstruction in one owner query, preserving page order."""
+    from sqlalchemy import bindparam
+    if len(doctor_ids)>100:raise ValueError("Directory page bound exceeded")
+    if not doctor_ids:return []
+    statement=text(DOCTOR_SELECT+" WHERE d.id IN :doctor_ids").bindparams(bindparam("doctor_ids",expanding=True))
+    rows=(await session.execute(statement,{"doctor_ids":[int(value) for value in doctor_ids]})).mappings().all()
+    by_id={str(row['id']):dict(row) for row in rows}
+    return [by_id.get(value) for value in doctor_ids]
+
+
 def doctor_profile(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": str(row["id"]),

@@ -84,6 +84,8 @@ class Ports:
         return dict(row) if row else None
     async def claim_runs(self,session,now,limit):return await self.repository.claim_runs(session,now,limit)
     async def audit_outbox(self,session,*,action,aggregate_type,aggregate_id,aggregate_version,payload):
+        if action=='insurance.estimate_created':
+            aggregate_type='insurance_estimate';aggregate_id=int(payload['estimate_id']);aggregate_version=1
         context=_context.get()
         request,principal=context if context else (SimpleNamespace(state=SimpleNamespace(request_id=uuid4(),correlation_id=uuid4(),traceparent=None)),None)
         metadata={'action':action,'result':'success','resource_id':str(aggregate_id),'request_id':str(request.state.request_id),'correlation_id':str(request.state.correlation_id),'occurred_at':self.now().isoformat().replace('+00:00','Z')}

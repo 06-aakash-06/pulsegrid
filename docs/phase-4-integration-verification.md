@@ -64,3 +64,44 @@ Remaining: final schema/isolation/audit verification, final regression, endpoint
 Final service suites after claim-order repair: broad **588 passed,52 skipped**; isolated Records **77 passed**; 26 duplicate Records pure cases means **639 distinct service tests passed**. Frontend typecheck,126 tests and production build pass (304.15kB initial chunk; no size warning). Real trie endpoint forced-memory fallback/recovery passes both owners with identical suggestions at1024-byte temporary budget; normal64MiB budget restored. Real synthetic same-revision content conflict is quarantined, new estimate409, configured source restored, subsequent refresh complete/revision2 and invoice unchanged. Agent pool diagnostic rerun recorded240 exceptions, all TimeoutError; low/medium proposed workload reruns have zero errors. Retained five raw sample sets and45 comparison rows.
 
 All17 current containers healthy after lighter fixture HTTP health probe (socket instead of costly urllib import) and5s process deadline under0.1CPU. No API/request timeout increased. A fresh hospital regression fixture is now running independently of old recorded successful groups. Private credentials and aliases stay ignored.
+
+### Activation verification and measured refinements
+
+Fresh hospital fixture completed all10 real gateway groups: booking/schedules,
+QR single-use, queue, prescription fulfillment, invoice/payment/discharge,
+concurrent waitlist offer acceptance, durable offer expiry/FIFO successor, owner
+outage recovery and gateway auth/isolation. Expected429 during the separate
+admission outage interrupted polling; bounded Retry-After handling resumed the
+same fixture without replaying completed business effects. Real Emergency
+submission/ownership/triage/claim/processing/resolution also passes. Spoofed20
+forwarding headers cannot expand authentication source quota. Real admission
+Redis outage triggers conservative local429 and recovers after restart.
+
+All36 ID correctness cases pass on disposable PostgreSQL16.15 matching the
+retained image, in addition to the PostgreSQL14 component suite. Temporary
+container/tmpfs removed; no persistent volume touched.
+
+Autocomplete investigation found5s polling rebuilt an unchanged index.
+Revision-first background polling now skips unchanged snapshots and unchanged
+oversized catalogs; explicit refresh API behavior and64MiB cap retained. Three
+new lifecycle cases pass; live16s interval observes zero unnecessary rebuilds.
+Complete component suite now151 passes. Live Doctor/Pharmacy forced-budget
+fallback/recovery passes with health-waited rollouts. Frontend now129 tests,
+typecheck/build pass, after fixed literal short-link login return and safe
+Retry-After text on identity errors. Browser verified booking, alias creation,
+authenticated landing, fragment clearing, navigation and anonymous-to-login
+handoff. Real expiry is currently awaiting the ordinary wall-clock deadline.
+
+Full-duration indexed real-ring cache low/medium runs pass with zero errors;
+high remains running. Authenticated5-doctor directory comparison5s/30s x3 shows
+warm-cache overhead relative to the simpler baseline. This revealed N+1 fresh
+wire reconstruction; batching preserves current PostgreSQL fields/order in one
+query (actual PostgreSQL test passes). Duplicate cached source IDs are rejected.
+A fresh equivalent endpoint comparison of the batching fix is running; no
+endpoint speedup is claimed. Actual storage-adapter benefits are a separate layer.
+
+Estimate effects now identify insurance_estimate/estimate_id/version1, with
+source-run provenance retained. Early local unpublished run-keyed effects are
+preserved as history, not rewritten. Contract amendment records this before any
+consumer exists; broker business workflows remain deferred. Final effect/schema,
+regression and documentation verification remain pending.

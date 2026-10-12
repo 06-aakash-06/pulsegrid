@@ -139,3 +139,22 @@ describe("application routes", () => {
     }
   });
 });
+
+describe("Phase 4 authentication handoff", () => {
+  it.each(["patient", "receptionist"] as Role[])("returns %s to the fixed short-link route", async role => {
+    render(<AuthProvider client={authClientFor(role)}><MemoryRouter initialEntries={[{pathname:"/login",state:{from:"/short-link"}}]}><PulseGridRoutes /></MemoryRouter></AuthProvider>);
+    fireEvent.change(await screen.findByLabelText("Email address"),{target:{value:"synthetic@example.test"}});
+    fireEvent.change(screen.getByLabelText("Password"),{target:{value:"test-only-password"}});
+    fireEvent.click(screen.getByRole("button",{name:"Sign in"}));
+    expect(await screen.findByRole("heading",{name:"Secure appointment link"})).toBeInTheDocument();
+    expect(screen.queryByRole("heading",{name:"Dashboard"})).not.toBeInTheDocument();
+  });
+  it("shows Retry-After on identity admission rejection", async () => {
+    const client={...authClientFor("patient"),login:async()=>{throw new ApiError("Rate limited.",429,"rate_limited",undefined,7)}};
+    render(<AuthProvider client={client}><MemoryRouter initialEntries={["/login"]}><PulseGridRoutes /></MemoryRouter></AuthProvider>);
+    fireEvent.change(await screen.findByLabelText("Email address"),{target:{value:"synthetic@example.test"}});
+    fireEvent.change(screen.getByLabelText("Password"),{target:{value:"test-only-password"}});
+    fireEvent.click(screen.getByRole("button",{name:"Sign in"}));
+    expect(await screen.findByText(/Wait 7 seconds before retrying/)).toBeInTheDocument();
+  });
+});
