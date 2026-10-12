@@ -1,0 +1,76 @@
+# PulseGrid distributed admission
+
+Independent technical package `pulsegrid_rate_limiter`, version 0.1.0. This
+implements the frozen Phase 4.1 component; it is **disabled by default and not
+mounted** in any owner service. Synthetic educational prototype.
+
+Exports: `BucketSpec`, `BucketRequest`, `Admission`, `RateLimiter`, `LimiterConfig`,
+`IdentityDeriver`, `RoutePolicy`, `build_buckets`, `AdmissionAdapter`,
+`VerifiedIdentity`, `rejection_metadata`, `rejection_response`, `Observer`,
+`NoopObserver`, `InvalidConfiguration`, `BUDGETS`.
+
+`await RateLimiter.admit(buckets)` implements the exact frozen dataclass and
+coroutine interface. Supply 1–3 distinct compound buckets with server-owned policy
+partitions and server-generated HMAC digests. `await health()` returns the frozen
+shape; `await close()` closes the Redis pool. Use one instance per API process,
+created after process fork, with the same configuration/secret across replicas.
+A request costs tokens even if subsequent business validation fails or its
+idempotency key replays. Denial debits none.
+
+Redis Lua uses TIME in integer milliseconds, milli-token balances and a 0–999
+refill remainder, keeping sub-milli credit across successful operations. Rejected
+reads need no writes. Elapsed refill is clamped before multiplication; wall-clock
+rollback earns no duplicate interval. Stored state/configuration/type validation
+for all keys precedes any writes. TTL includes full refill time plus >=1000ms
+slack. Unsafe exact-integer arithmetic, zero/negative values, duplicate keys and
+costs above capacity are rejected. Request costs may vary within the validated bucket capacity. A capacity/refill/TTL
+policy change with existing keys returns
+unavailable: use a reviewed new policy/family namespace across **all replicas**,
+never reset buckets on each process restart.
+
+Redis connect/command deadlines default to 50ms each and decision deadline to
+100ms (5ms reserved for bounded fallback work); no transport retry on an ambiguous consumption. Only NOSCRIPT proves
+nonexecution and permits load/retry within the same decision deadline. OOM, BUSY,
+connection error or timeout uses persistent local fallback. Corrupt Redis state, ACL/unsupported-command errors
+or configuration fails closed with 503, never creates permissive fresh local
+quota. Redis scripts cannot roll back allocation/runtime failure after a write;
+such failures may conservatively charge a subset of buckets. They cannot justify
+replaying consumption. Provision noeviction memory headroom and reviewed ACLs.
+
+Fallback partitions integer token capacity and milli-token refill by
+`floor(shared/max_replicas)`. A configuration with capacity below cost or refill
+below one milli-token/s after partitioning fails closed. Existing accepted Redis
+traffic shadows local balances. Local time is monotonic, fractional credit is
+retained, and state is never cleared by an outage/recovery. Denied new identities are not allocated. Key cardinality is
+bounded (default 10000); untracked keys at capacity return unavailable. Eviction
+requires a fully replenished idle key, never an arbitrary LRU victim; at most32
+rotating candidates are probed per decision, keeping saturation work bounded. Every
+policy includes a local aggregate, bounding identity churn. Redis/local transitions,
+process restarts and Redis state loss do **not** guarantee exact cluster quotas.
+They may conservatively reject and Redis restart may grant its normal configured
+capacity once; repeated transport errors never reset local state.
+
+Seed budgets from the contract are available in immutable `BUDGETS`; custom
+server-owned budgets can be passed to `build_buckets`. Route owner and family are
+part of the partition. Emergency public/authenticated/staff partitions and owner
+budgets cannot debit each other. These seed capacities are proposed experiments,
+not clinically validated deployment limits.
+
+Identity derivation uses versioned length framing and HMAC-SHA256, canonical
+positive signed-BIGINT user IDs and normalized ASGI peer IP addresses, including
+IPv4-mapped IPv6. Missing/invalid peer addresses share a conservative unknown
+source. No forwarded, actor, quota, body-role or unverified JWT headers are used.
+The owner supplies normalized account digests and verified user/service identities
+through trusted Python ports; existing owner auth and authorization still run.
+
+Metrics: `pulsegrid_admission_requests_total`,
+`pulsegrid_admission_duration_seconds`, `pulsegrid_admission_mode_transitions_total`.
+Decision labels are bounded configured `policy`, `outcome`, `backend` (first
+bucket policy is the representative label for heterogeneous compound calls); no identities,
+keys, URLs or tokens. Observer exceptions are swallowed. Separate pre/post-auth
+stage counters must not be summed to estimate final request rejection rates.
+Health reflects disabled/last-decision mode without probing or changing readiness.
+
+See [HANDOFF.md](HANDOFF.md) for coordinator registration, route/security ordering,
+configuration and deployment work. Component tests and benchmark commands are in
+[the experiment README](../../experiments/phase4/rate_limiter/README.md).

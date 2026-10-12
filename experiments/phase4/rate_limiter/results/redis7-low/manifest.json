@@ -1,0 +1,143 @@
+{
+  "start_utc": "2026-10-12T03:07:43.173733+00:00",
+  "end_utc": "2026-10-12T03:11:25.332155+00:00",
+  "command": [
+    "experiments/phase4/rate_limiter/run.py",
+    "--seed",
+    "404",
+    "--level",
+    "low",
+    "--output",
+    "experiments/phase4/rate_limiter/results/redis7-low"
+  ],
+  "level": "low",
+  "seeds": [
+    404,
+    405,
+    406
+  ],
+  "warmup_seconds": 5,
+  "measurement_seconds": 30,
+  "full_protocol": true,
+  "processes": 1,
+  "clients": 8,
+  "target_rps": 50,
+  "hardware": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "cpu": "Apple M2 Pro",
+  "cpu_count": 12,
+  "memory_bytes": "17179869184",
+  "python": "3.14.7",
+  "redis": "7.4.11",
+  "postgresql": "not used",
+  "redis_topology": "one owned standalone Redis; loopback Docker VM",
+  "redis_resource_limits": "64 MiB noeviction; Docker 128 MiB and one CPU",
+  "pool_size_per_process": 8,
+  "max_replicas": 4,
+  "identity_count": 100,
+  "hot_identity_share": 0.5,
+  "policies": {
+    "directory_search": {
+      "principal": [
+        60,
+        10000
+      ],
+      "aggregate": [
+        600,
+        100000
+      ]
+    },
+    "auth_login": {
+      "source": [
+        10,
+        500
+      ],
+      "account": [
+        5,
+        100
+      ],
+      "aggregate": [
+        100,
+        10000
+      ]
+    },
+    "emergency_public": {
+      "source": [
+        5,
+        200
+      ],
+      "aggregate": [
+        100,
+        20000
+      ]
+    },
+    "emergency_authenticated": {
+      "principal": [
+        30,
+        5000
+      ],
+      "aggregate": [
+        600,
+        100000
+      ]
+    },
+    "emergency_staff": {
+      "principal": [
+        120,
+        20000
+      ],
+      "aggregate": [
+        1200,
+        200000
+      ]
+    }
+  },
+  "component_commit": "87bd594a397562a7217ec8dfcf815f6fae8ec1e0",
+  "baseline_commit": "87bd594a397562a7217ec8dfcf815f6fae8ec1e0",
+  "source_tree_sha256": "4f5cbc573eb495f710995bbba5a55c76640f6e368c278037071576342d735cf8",
+  "dependency_lock_sha256": "a511245b3fdb4fddbdafb3e386f9aaa0862f0a53bb1145c6c7d471bf537715b4",
+  "fixture_generator_sha256": "8d2dff2d1fa0d5ae9bdbe11c3dbf7f8f8f27c63b7d5fa71cefd712cab13388da",
+  "runner_sha256": "a7445098738f3b33035634fd20b3d3d5069e2b6b7575c17e160711ec23aced4b",
+  "dataset_sha256": "2db080b96a812e484389c37a67dd33a2c9acae62bbdf765d67f6d46eda5ed967",
+  "raw_output_sha256": {
+    "baseline-404.json": "5f5d96f928700aa2303d2ccb35bc58756e7b2aaa833a09ead1cea4d1fa270b1a",
+    "redis-404.json": "d05e6cc38e444c759885ee01b5604885d661f525d66a90c63fc6866b880e91ee",
+    "redis-405.json": "d09934244768a0796d874f8d506719617c45ec88f7403e9024d75b02aba43e8e",
+    "baseline-405.json": "f7373ef1af3c94a44ea1289606484850a196d55ef977c565bd8a6aa1886e96e8",
+    "baseline-406.json": "638ab75b30bb95115aa3cee87f89cd0115547f6eab45216ea69c7eeac11fbc55",
+    "redis-406.json": "c0d3725e739e447a7f85d6e525d618ee9ff9379691d7e6961112fc2196c0da37"
+  },
+  "raw_sample_count": 8976,
+  "timer_resolution_s": 4.166666666666666e-08,
+  "nearest_rank": "ceil(p*n)-1",
+  "pair_comparisons": [
+    {
+      "seed": 404,
+      "p95_difference_ms": 5.609999999999999,
+      "baseline_over_redis_p95": 0.005980066445182725,
+      "accepted_difference": 0
+    },
+    {
+      "seed": 405,
+      "p95_difference_ms": 4.273167,
+      "baseline_over_redis_p95": 0.007826556377884198,
+      "accepted_difference": 0
+    },
+    {
+      "seed": 406,
+      "p95_difference_ms": 3.208583,
+      "baseline_over_redis_p95": 0.010790536268071452,
+      "accepted_difference": 0
+    }
+  ],
+  "cleanup": "passed",
+  "limitations": [
+    "component decisions, no HTTP/auth/business DB timing",
+    "closed-loop decisions paced at target rate; queue delay records scheduler lateness",
+    "burst uses independent limiter objects, service trials use actual decision processes",
+    "CPU-only baseline and network Redis latency reported separately by backend",
+    "dataset hash is seed404 reference trace; worker traces generated with seed+client_id*100003"
+  ],
+  "export_line_endings": "LF normalized after measurement; CSV values unchanged",
+  "export_runner_sha256": "48d403ff1f7e05cccc565fc710a34fc71ccf8630a3dcea6efd0cbdfb39a2244a"
+}

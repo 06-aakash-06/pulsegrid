@@ -1,0 +1,20 @@
+[
+  {
+    "backend": "baseline",
+    "attempted": 160,
+    "accepted": 60,
+    "theoretical_shared_bound": 60.06829915997514,
+    "excess_shared_admissions": 0,
+    "p95_ms": 0.0056249991757795215,
+    "queue_p95_ms": 6.364000000758097
+  },
+  {
+    "backend": "redis",
+    "attempted": 160,
+    "accepted": 60,
+    "theoretical_shared_bound": 60.34454792003089,
+    "excess_shared_admissions": 0,
+    "p95_ms": 6.98333399486728,
+    "queue_p95_ms": 30.312334005429875
+  }
+]

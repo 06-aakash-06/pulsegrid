@@ -1,0 +1,68 @@
+[
+  {
+    "level": "low",
+    "processes": 1,
+    "clients": 8,
+    "decisions_per_second": 49.86666666666667,
+    "p50_ms_range": [
+      1.578625,
+      1.806291
+    ],
+    "p95_ms_range": [
+      3.243583,
+      5.64375
+    ],
+    "completed": 4488,
+    "accepted": 3605,
+    "limited": 883,
+    "unavailable": 0,
+    "fallback_decisions": 0,
+    "burst_baseline_accepted": 60,
+    "burst_redis_accepted": 60,
+    "burst_redis_excess": 0
+  },
+  {
+    "level": "medium",
+    "processes": 2,
+    "clients": 32,
+    "decisions_per_second": 199.46666666666667,
+    "p50_ms_range": [
+      2.764042,
+      2.826625
+    ],
+    "p95_ms_range": [
+      6.725375,
+      7.722083
+    ],
+    "completed": 17952,
+    "accepted": 11248,
+    "limited": 6704,
+    "unavailable": 0,
+    "fallback_decisions": 0,
+    "burst_baseline_accepted": 120,
+    "burst_redis_accepted": 60,
+    "burst_redis_excess": 0
+  },
+  {
+    "level": "high",
+    "processes": 4,
+    "clients": 128,
+    "decisions_per_second": 797.8666666666667,
+    "p50_ms_range": [
+      5.913375,
+      6.9465
+    ],
+    "p95_ms_range": [
+      16.073292,
+      17.293625
+    ],
+    "completed": 71808,
+    "accepted": 27317,
+    "limited": 44491,
+    "unavailable": 0,
+    "fallback_decisions": 0,
+    "burst_baseline_accepted": 160,
+    "burst_redis_accepted": 60,
+    "burst_redis_excess": 0
+  }
+]
