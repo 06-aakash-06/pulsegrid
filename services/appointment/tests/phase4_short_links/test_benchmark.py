@@ -172,6 +172,7 @@ async def _drive(
         sequence = 0
         while time.perf_counter() < deadline:
             sequence += 1
+            error_type = None
             if mode == "baseline":
                 index = read_start + rng.randrange(read_count)
                 aid = FIRST_ID + index
@@ -191,8 +192,9 @@ async def _drive(
                         request, appointment_id=str(aid), p=principal
                     )
                     status = response.status_code
-                except Exception:
+                except Exception as error:
                     status = 0
+                    error_type = type(error).__name__
                 operation_name = "baseline_workflow_lookup"
             elif rng.random() < 0.9:
                 index = read_start + rng.randrange(read_count)
@@ -202,8 +204,9 @@ async def _drive(
                 try:
                     response = await _resolve(app, row["_alias_for_test_only"], principal=principal)
                     status = response.status_code
-                except Exception:
+                except Exception as error:
                     status = 0
+                    error_type = type(error).__name__
                 operation_name = "proposed_authenticated_resolution"
             else:
                 index = base_index + rng.randrange(create_pool)
@@ -220,8 +223,9 @@ async def _drive(
                         ),
                     )
                     status = response.status_code
-                except Exception:
+                except Exception as error:
                     status = 0
+                    error_type = type(error).__name__
                 operation_name = "proposed_creation"
             latency_ms = (time.perf_counter_ns() - started_ns) / 1_000_000
             if record:
@@ -231,6 +235,7 @@ async def _drive(
                     "operation": operation_name,
                     "status_code": status,
                     "latency_ms": latency_ms,
+                    "error_type": error_type,
                 })
 
     await asyncio.gather(*(operation(client) for client in range(clients)))
@@ -318,6 +323,11 @@ def test_run_local_adapter_benchmark(database, current_authority):
     started_at = datetime.now(timezone.utc)
 
     async def work(db):
+        if os.environ.get('PULSEGRID_SHORT_LINKS_LEGACY_DIAGNOSTIC')=='1':
+            # Isolated test process only: retain the exact reviewed pre-fix resolver.
+            from appointment_service.features.short_links import registration
+            source=subprocess.check_output(['git','show','fa071ff8c1a8ba3170700fe2ae1ae0aaf5d44e20:services/appointment/appointment_service/features/short_links/registration.py'],text=True)
+            exec(compile(source,'legacy_short_link_registration','exec'),registration.__dict__)
         await _install_test_table(db)
         rows = await _seed_dataset(db, size, seed)
         ports = ShortLinksTestPorts(db)
@@ -368,7 +378,7 @@ def test_run_local_adapter_benchmark(database, current_authority):
         with raw_path.open("w", newline="") as handle:
             writer = csv.DictWriter(
                 handle,
-                fieldnames=["trial", "mode", "operation", "status_code", "latency_ms"],
+                fieldnames=["trial", "mode", "operation", "status_code", "latency_ms", "error_type"],
             )
             writer.writeheader()
             writer.writerows(sample_rows)

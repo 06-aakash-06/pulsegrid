@@ -244,7 +244,8 @@ def verify_gateway():
     # Auth GET is method-rejected when integrated; short links remain reserved.
     for path in ("/api/v1/auth/login", "/s/reserved"):
         status, body, _ = request(path)
-        assert status == (405 if args.authentication and path == "/api/v1/auth/login" else 404) and "error" in body
+        expected=405 if args.authentication and path == "/api/v1/auth/login" else (401 if getattr(args,"short_links",False) and path.startswith("/s/") else 404)
+        assert status==expected and "error" in body
     for path in (
         "/internal/v1/anything",
         "/dashboard/",

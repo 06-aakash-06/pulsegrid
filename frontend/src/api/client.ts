@@ -110,7 +110,7 @@ async function readResponse<T>(response: Response): Promise<T> {
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("application/json")) {
     if (!response.ok) {
-      throw new ApiError("The service could not complete this request.", response.status);
+      throw new ApiError("The service could not complete this request.", response.status, "request_failed", undefined, retryAfter(response.headers.get("Retry-After")));
     }
     throw new ApiError("The service returned an unsupported response.", response.status, "invalid_response");
   }
@@ -119,7 +119,7 @@ async function readResponse<T>(response: Response): Promise<T> {
   try {
     payload = await response.json();
   } catch {
-    throw new ApiError("The service returned an unreadable response.", response.status, "invalid_response");
+    throw new ApiError("The service returned an unreadable response.", response.status, "invalid_response", undefined, retryAfter(response.headers.get("Retry-After")));
   }
 
   if (!response.ok) {

@@ -40,7 +40,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 from sqlalchemy import text
                 async with database.session_factory() as session:
                     revision=(await session.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()
-                if revision!=('0011_phase4_alias_parent_guard' if phase4.enabled() else '0009_phase3_registration_history'):raise RuntimeError('Phase 3 schema not reviewed at current head')
+                reviewed={'0011_phase4_alias_parent_guard'} if phase4.enabled() else {'0009_phase3_registration_history','0010_phase4_short_links','0011_phase4_alias_parent_guard'}
+                if revision not in reviewed:raise RuntimeError('Appointment schema not reviewed at current head')
                 from .integration_workers import worker_loop
                 tasks=[asyncio.create_task(worker_loop(application))]
             await phase4.start(application)

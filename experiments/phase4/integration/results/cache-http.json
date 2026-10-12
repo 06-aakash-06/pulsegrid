@@ -1,0 +1,45 @@
+{
+  "catalog_size": 3,
+  "final_epoch": 3,
+  "measurements": [
+    {
+      "scenario": "warm_cache",
+      "requests": 6,
+      "errors": 0,
+      "mean_ms": 42.87091683363542,
+      "p95_ms": 106.21420899406075
+    },
+    {
+      "scenario": "cache_outage_owner_fallback",
+      "requests": 3,
+      "errors": 0,
+      "mean_ms": 54.283361004005805,
+      "p95_ms": 96.0988340084441
+    },
+    {
+      "scenario": "restart_cold_refill",
+      "requests": 6,
+      "errors": 0,
+      "mean_ms": 26.62754183256766,
+      "p95_ms": 34.098874995834194
+    },
+    {
+      "scenario": "node_removed_epoch_refill",
+      "requests": 6,
+      "errors": 0,
+      "mean_ms": 27.35739600272306,
+      "p95_ms": 41.29129200009629
+    },
+    {
+      "scenario": "node_added_new_epoch_refill",
+      "requests": 6,
+      "errors": 0,
+      "mean_ms": 50.4424723306632,
+      "p95_ms": 138.75533299869858
+    }
+  ],
+  "limits": [
+    "Six-request endpoint sanity measurements, not frozen-duration performance trials.",
+    "Cache placement provides no replication/HA."
+  ]
+}

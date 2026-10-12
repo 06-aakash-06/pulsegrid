@@ -20,7 +20,10 @@ class Ports:
         self.app=app
         self.observer=app.state.phase4_observer
         self.index_registry=IndexRegistry()
-        self.index_limits=IndexLimits()
+        entries=int(os.environ.get('PULSEGRID_PHARMACY_PHASE4_AUTOCOMPLETE_MAX_ENTRIES','100000'))
+        budget=int(os.environ.get('PULSEGRID_PHARMACY_PHASE4_AUTOCOMPLETE_MAX_BYTES',str(64*1024*1024)))
+        if entries>100000 or budget>64*1024*1024:raise ValueError('Unreviewed index budget increase')
+        self.index_limits=IndexLimits(entries,budget)
     async def authorize(self,request,roles,resource_id,write):
         return await authenticated_user(request)
     @asynccontextmanager

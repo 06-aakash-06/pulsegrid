@@ -206,6 +206,10 @@ services:
     - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
     - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
     - ./secrets/phase4/sources.json:/run/phase4/sources.json:ro
+    extra_hosts:
+    - fixture_1:172.29.44.11
+    - fixture_2:172.29.44.12
+    - fixture_3:172.29.44.13
   billing-migrate:
     build:
       context: .
@@ -251,6 +255,15 @@ services:
     mem_limit: 64m
     cpus: 0.1
     restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import socket; s=socket.create_connection(('127.0.0.1',8000),1); s.sendall(b'GET / HTTP/1.0\r\n\r\n'); assert b'200 OK' in s.recv(128)
+      interval: 5s
+      timeout: 5s
+      retries: 10
   fixture_2:
     image: pulsegrid-synthetic-insurance:local
     build:
@@ -268,6 +281,15 @@ services:
     mem_limit: 64m
     cpus: 0.1
     restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import socket; s=socket.create_connection(('127.0.0.1',8000),1); s.sendall(b'GET / HTTP/1.0\r\n\r\n'); assert b'200 OK' in s.recv(128)
+      interval: 5s
+      timeout: 5s
+      retries: 10
   fixture_3:
     image: pulsegrid-synthetic-insurance:local
     build:
@@ -285,6 +307,15 @@ services:
     mem_limit: 64m
     cpus: 0.1
     restart: unless-stopped
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import socket; s=socket.create_connection(('127.0.0.1',8000),1); s.sendall(b'GET / HTTP/1.0\r\n\r\n'); assert b'200 OK' in s.recv(128)
+      interval: 5s
+      timeout: 5s
+      retries: 10
   doctor_replica:
     image: pulsegrid-auth-doctor:local
     environment:

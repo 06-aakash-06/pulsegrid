@@ -491,6 +491,8 @@ class SQLAlchemyInsuranceRepository:
             "   AND earlier.id<>r.id AND earlier.next_attempt_at<=:now AND earlier.attempt_count<:max_attempts "
             "   AND (earlier.state='pending' OR earlier.state IN ('failed','partial') OR "
             "     (earlier.state='running' AND earlier.lease_until<=:now)) "
+            "   AND NOT EXISTS (SELECT 1 FROM crawler_runs active_earlier WHERE active_earlier.provider_id=earlier.provider_id "
+            "     AND active_earlier.id<>earlier.id AND active_earlier.state IN ('pending','running')) "
             "   AND (earlier.next_attempt_at,earlier.created_at,earlier.id)<(r.next_attempt_at,r.created_at,r.id)) "
             " ORDER BY r.next_attempt_at,r.created_at,r.id FOR UPDATE SKIP LOCKED LIMIT :limit"
             ") UPDATE crawler_runs r SET state='running', lease_owner=:worker_id, "

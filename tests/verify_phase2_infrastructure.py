@@ -132,11 +132,12 @@ def main():
     sql="SELECT count(*) FROM pg_roles r CROSS JOIN pg_database d WHERE r.rolname ~ '^(patient|doctor|appointment|records|pharmacy|billing|emergency)_(app|migration)$' AND d.datname <> split_part(r.rolname,'_',1)||'_db' AND has_database_privilege(r.oid,d.oid,'CONNECT');"
     assert compose('exec','-T','postgres','sh','-c','psql -U "$POSTGRES_USER" -d postgres -Atc "$1"','check',sql)=='0'
     print('PASS all fourteen database roles deny foreign CONNECT',flush=True)
-    foundation.args=SimpleNamespace(authentication=True)
+    phase4=compose("exec","-T","appointment","python","-c","import os; print(os.environ.get('PULSEGRID_APPOINTMENT_PHASE4_SHORT_LINKS_ENABLED','false'))")=="true"
+    foundation.args=SimpleNamespace(authentication=True,short_links=phase4)
     foundation.verify_gateway()
     statuses=[json.loads(x) for x in compose('ps','--format','json').splitlines()]
     assert all(x['State']=='running' and x['Health']=='healthy' for x in statuses)
-    assert len(statuses)==11
+    assert len(statuses)==(17 if phase4 else 11)
     print('PASS seven APIs, PostgreSQL, Redis, RabbitMQ and Traefik healthy',flush=True)
 
 if __name__=='__main__':main()

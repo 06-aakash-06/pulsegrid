@@ -1,6 +1,6 @@
 """Match explicit RESTRICT owner metadata on additive provenance foreign keys."""
 from alembic import op
-revision='0009_phase4_provenance_foreign_keys'
+revision='0009_phase4_provenance_fks'
 down_revision='0008_phase4_source_parent_guard'
 branch_labels=depends_on=None
 

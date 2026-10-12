@@ -1,0 +1,8 @@
+{
+  "conflict_error": "source_revision_conflict",
+  "estimate_rejected": 409,
+  "recovered_run_state": "complete",
+  "recovered_rule_revision": 2,
+  "arbitrary_url_rejected": 422,
+  "invoice_unchanged": true
+}

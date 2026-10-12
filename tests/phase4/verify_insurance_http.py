@@ -24,6 +24,8 @@ e,_,_=call(p,'POST',f'/api/v1/billing/invoices/{invoice}/insurance-estimates',{'
 after,_,_=call(p,'GET',f'/api/v1/billing/invoices/{invoice}')
 history_after,_,_=call(p,'GET',f'/api/v1/billing/invoices/{invoice}/payments')
 assert before==after and history==history_after and e['is_simulated'] and e['estimate_minor']==0
+expected=int(sys.argv[1]) if len(sys.argv)>1 else 1
+assert e['rule_revision']==expected,(e['rule_revision'],expected)
 call(other,'GET',f'/api/v1/billing/invoices/{invoice}/insurance-estimates',codes=(404,))
 call(p,'POST','/api/v1/billing/insurance/providers/4101/refresh',{},'"1"',codes=(403,))
 print('PASS fixture_crawl_complete_estimate_provenance_paid_invoice_and_payments_unchanged_owner_scope')
