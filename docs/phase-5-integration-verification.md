@@ -38,9 +38,10 @@ services and APIs.
   concurrent claims, selected metadata grants, and denied event-envelope
   updates.
 - `.venv/bin/python -m pytest services/appointment/tests/phase5_events -q`:
-  **2 passed** against disposable PostgreSQL. Coverage includes concurrent
+  **3 passed** against disposable PostgreSQL. Coverage includes concurrent
   duplicate delivery, independent subscription inbox keys, atomic rollback on
-  transient failure, permanent invalid references, and envelope validation.
+  transient failure, permanent invalid references, envelope validation, and
+  the passive RabbitMQ queue declaration used by dead-letter depth polling.
 - `tests/run_phase2_regressions.py services/billing/tests/test_billing_api.py`:
   **8 Billing tests and 77 Records tests passed**. Coverage includes the
   minimal payment event payload and atomic payment/outbox persistence.
@@ -63,6 +64,19 @@ services and APIs.
 - RabbitMQ reported both Appointment consumers active. Appointment, Pharmacy,
   and Billing readiness returned HTTP 200, and each event-worker connection
   metric reported `1` after activation.
+- A final steady-state check found that the worker's five-second dead-letter
+  depth poll used an unsupported `Queue.declare(passive=True)` argument. The
+  consumer reconnected repeatedly after registering both queues. This was
+  corrected to use `channel.declare_queue(..., passive=True)` and its returned
+  declaration result. After rebuilding and recreating only Appointment, its
+  connection metric remained `1` beyond multiple polling intervals; both work
+  queues reported one consumer and zero messages, both DLQ depth metrics were
+  zero, and all 17 containers remained running.
+- A second full gateway-fixture run after that repair was attempted with a new
+  synthetic fixture, but registration returned HTTP 429 `rate_limited` before
+  workflow setup. The earlier 10-group end-to-end gateway run remains the
+  completed cross-service workflow check; the repaired consumer's live
+  registration, metrics, and PostgreSQL tests were checked separately.
 - A bounded RabbitMQ outage was exercised with a new synthetic Billing payment.
   With the broker stopped, Billing returned HTTP 201 with `status=success` in
   **0.289 seconds**; the selected outbox event remained unpublished and had no
