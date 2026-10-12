@@ -45,7 +45,8 @@ class AdmissionAdapter:
                            {'NORMAL': 1, 'SURGE': 2, 'RECOVERY': 3, 'UNKNOWN': 0}[mode.state],
                            {'owner': self.owner, 'state': mode.state})
         buckets = build_buckets(route, identities, self.deriver, preauth=preauth,
-                                budgets=budgets, surge_mode=mode.state)
+                                budgets=budgets, surge_mode=mode.state,
+                                max_replicas=self.limiter.config.max_replicas)
         result = await self.limiter.admit(buckets, surge_mode=mode.state,
                                           operation_class=route.operation_class)
         return result

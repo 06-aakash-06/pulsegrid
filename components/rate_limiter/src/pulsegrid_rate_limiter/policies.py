@@ -120,9 +120,11 @@ class RoutePolicy:
 
 
 def build_buckets(route: RoutePolicy, identities: dict[str, str], deriver: IdentityDeriver,
-                  *, preauth=False, budgets=None, surge_mode='NORMAL'):
+                  *, preauth=False, budgets=None, surge_mode='NORMAL', max_replicas=1):
     if surge_mode not in SURGE_MODES:
         raise InvalidConfiguration('Invalid Surge Mode')
+    if type(max_replicas) is not int or not 1 <= max_replicas <= 4:
+        raise InvalidConfiguration('Invalid maximum replica count')
     budget_mode = 'SURGE' if surge_mode == 'UNKNOWN' else surge_mode
     # Preserve the Phase 4 key namespace and shared route quotas in NORMAL.
     # Surge/recovery use reviewed class-and-mode namespaces so policy changes
@@ -136,8 +138,13 @@ def build_buckets(route: RoutePolicy, identities: dict[str, str], deriver: Ident
     capacity_scale, refill_scale = _CLASS_SCALE[surge_mode][route.operation_class]
     result = []
     for kind, (capacity, rate) in values.items():
-        capacity = max(1, int(capacity * capacity_scale))
-        rate = max(1, int(rate * refill_scale))
+        if capacity < max_replicas or rate < max_replicas:
+            raise InvalidConfiguration('Budget cannot be partitioned across max_replicas')
+        # Keep one whole token and one refill unit per configured process for
+        # the existing conservative local fallback. The floor never exceeds
+        # the NORMAL budget, while the shared Redis profile remains bounded.
+        capacity = min(capacity, max(max_replicas, int(capacity * capacity_scale)))
+        rate = min(rate, max(max_replicas, int(rate * refill_scale)))
         if kind == 'aggregate':
             digest = deriver.digest('aggregate', partition)
         else:

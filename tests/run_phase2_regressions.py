@@ -62,7 +62,7 @@ def main():
                 env[variable_names[domain]] = f'postgresql://{user}:{password}@127.0.0.1:{port}/{name}'
             env['PULSEGRID_AUTH_INTEGRATION'] = '1'
             env['PULSEGRID_PATIENT_AUTH_TEST_DATABASE_URL'] = f'postgresql://patient_app:runtime-test@127.0.0.1:{port}/patient_management_test'
-            result = subprocess.run([sys.executable,'-m','pytest',str(ROOT/'services'),'-q','-ra','-o','addopts=','--junitxml=/tmp/pulsegrid-phase29-backend.xml',*sys.argv[1:]],cwd=ROOT,env=env)
+            result = subprocess.run([sys.executable,'-m','pytest',str(ROOT/'services'),'-q','-ra','-o','addopts=','-o','asyncio_mode=auto','--junitxml=/tmp/pulsegrid-phase29-backend.xml',*sys.argv[1:]],cwd=ROOT,env=env)
             # Records requires its service-local path-verified isolated cluster.
             records = subprocess.run([sys.executable,'tests/run_isolated.py','-q','-ra','-o','addopts=','--junitxml=/tmp/pulsegrid-phase29-records.xml'],cwd=ROOT/'services/records',env=env)
             return result.returncode or records.returncode

@@ -147,6 +147,28 @@ async def test_redis_failure_uses_unknown_protective_profile_and_finite_class_a(
         await limiter.close()
 
 
+async def test_small_surge_auth_bucket_uses_bounded_four_replica_fallback():
+    from pulsegrid_rate_limiter import AdmissionAdapter
+    from test_limiter import FailedRedis
+
+    limiter = RateLimiter(config(max_replicas=4), redis_client=FailedRedis(OSError('offline')))
+    adapter = AdmissionAdapter(limiter, 'patient', {})
+    route = RoutePolicy('patient', 'auth_login', 'auth')
+    identities = {
+        'source': adapter.deriver.digest('source', 'synthetic-peer'),
+        'account': adapter.deriver.digest('account', 'synthetic-account'),
+    }
+    try:
+        first = await adapter.admit(route, identities)
+        second = await adapter.admit(route, identities)
+        assert first.allowed and first.mode == 'local' and first.surge_mode == 'UNKNOWN'
+        assert not second.allowed and second.mode == 'local' and second.reason == 'limited'
+        assert all(state.spec.capacity >= 4 for state in limiter.local.states.values())
+        assert all(state.spec.capacity <= 100 for state in limiter.local.states.values())
+    finally:
+        await limiter.close()
+
+
 def test_server_owned_operation_classification():
     from pulsegrid_rate_limiter import operation_class_for
     assert operation_class_for('emergency', 'POST', '/api/v1/emergencies') == 'A'

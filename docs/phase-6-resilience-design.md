@@ -75,9 +75,11 @@ select or raise the class.
 Class A still has finite per-source and aggregate token buckets. Emergency keeps
 its existing isolated policy identities. Route class is included in the bucket
 partition so Class C cannot consume a Class A aggregate bucket. The scale applies
-to both capacity and refill rate, with a minimum of one token for valid frozen
-budgets. Existing unauthenticated source gates remain in front of authenticated
-principal budgets.
+to both capacity and refill rate. Tiny scaled buckets are rounded up only as
+needed to provide one local token/refill share per configured replica, and never
+above the NORMAL budget; this keeps authentication and other small buckets
+available during bounded local fallback. Existing unauthenticated source gates
+remain in front of authenticated principal budgets.
 
 ## Surge Mode policy
 

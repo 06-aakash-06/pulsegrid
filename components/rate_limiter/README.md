@@ -70,6 +70,10 @@ Automatic activation is disabled because owner metrics are process-local and
 cannot reliably distinguish general pressure from a single abusive client.
 When the shared mode cannot be read, B/C use the protective SURGE profile while
 A retains its finite bucket and the existing bounded local limiter fallback.
+The profile builder receives the deployment replica ceiling. Tiny scaled
+capacity/refill values are rounded up only enough to leave one local share per
+replica, and never above the NORMAL budget; this keeps small authentication
+buckets usable during failover without granting a fresh NORMAL-sized burst.
 
 Identity derivation uses versioned length framing and HMAC-SHA256, canonical
 positive signed-BIGINT user IDs and normalized ASGI peer IP addresses, including
