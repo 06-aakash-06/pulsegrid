@@ -1,0 +1,247 @@
+{
+  "start_utc": "2026-10-12T02:39:18.788199+00:00",
+  "end_utc": "2026-10-12T02:39:23.377049+00:00",
+  "level": "low",
+  "seeds": [
+    404,
+    405,
+    406
+  ],
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "cpu": "arm",
+  "logical_cpus": 12,
+  "hardware": [
+    "Apple M2 Pro",
+    "17179869184"
+  ],
+  "base_commit": "45273ea7fd1ea53e335942b6c38f2d81d38856ee",
+  "component_checkout_commit": "45273ea7fd1ea53e335942b6c38f2d81d38856ee",
+  "source_state": "uncommitted source identified by hashes below; final commit in handoff",
+  "dependencies": "Python stdlib; no runtime dependencies",
+  "redis": "not used",
+  "postgresql": "not used",
+  "network": "none",
+  "pool_size": null,
+  "resource_limits": "host process, no imposed CPU/memory limit",
+  "processes": 1,
+  "threads": [
+    1,
+    4,
+    16
+  ],
+  "nodes": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "vnodes": [
+    32,
+    128,
+    512
+  ],
+  "zipf_exponent": 1.1,
+  "warmup_calls": 10000,
+  "timed_calls_per_case": 100000,
+  "timer": {
+    "implementation": "mach_absolute_time()",
+    "monotonic": true,
+    "adjustable": false,
+    "resolution": 4.166666666666666e-08
+  },
+  "peak_rss_bytes": 43073536,
+  "command": "python3 experiments/phase4/consistent_hashing/run.py --seed 404 --level low --output experiments/phase4/consistent_hashing/results/low-final",
+  "source_sha256": {
+    "experiments/phase4/consistent_hashing/run.py": "82188a553b149c6f4caf2273a5e40387d02f699a926ce33f1747b0fc59afa842",
+    "components/consistent_hashing/pulsegrid_consistent_hashing/__init__.py": "4fe95cf1a0246d97dfe3a70fd970753c8146d33a63a74dd7291c4bd1086f57eb"
+  },
+  "raw_sha256": {
+    "experiments/phase4/consistent_hashing/artifacts/low-final/keys-404.txt": {
+      "sha256": "54d8eb4fd0d159416240fb16b7c115156cbdc5270c0620a9d216deacd59b5935",
+      "bytes": 318890
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/zipf-404.json": {
+      "sha256": "55954869c1fa70dc870e801fd7725148227f14ca9597870a8f6c2aeecaff22a1",
+      "bytes": 18124
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-modulo-0-1.json": {
+      "sha256": "fdce129b2131e5177ced60e6c97105c00a032f01750c36713a8271af79e22232",
+      "bytes": 401059
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-modulo-0-4.json": {
+      "sha256": "46063f58b14d8512efa3c676907832df9c418479dc10265f1896f80a0023eb47",
+      "bytes": 400534
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-modulo-0-16.json": {
+      "sha256": "c7af78bfeffe1847aa72a741e1918d99f57c92ace83502ad71eb568f66a72153",
+      "bytes": 400198
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-32-1.json": {
+      "sha256": "e084b03da946aaeb25c53931b7867dd7754e8af9b5cf1e2fec8605c530b7d0ed",
+      "bytes": 403722
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-32-4.json": {
+      "sha256": "b22cbd9d19deca987fb075a2c4ddaafac8906423714a8ef0847807646d3576e6",
+      "bytes": 403700
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-32-16.json": {
+      "sha256": "16342e4ad54291283045bc7e98f19066870ca6726642bf9838a6273798b2f6b0",
+      "bytes": 405163
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-128-1.json": {
+      "sha256": "44ee35dfa551d31f7449242303e63e0b3c075a71cfba76fcf83b50a6c703b966",
+      "bytes": 407319
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-128-4.json": {
+      "sha256": "5308fe1d6a91fda09fe93f467fb12ca5ccf7143cd7b050e7aea10054922c34a6",
+      "bytes": 408064
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-128-16.json": {
+      "sha256": "90d3020d3df635c0cd732c1b2784310092b588a65f449a4a47c51a7aad1803a0",
+      "bytes": 407326
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-512-1.json": {
+      "sha256": "050caaeabc0a286ce037659804670aafdd4765b3267f9666f7cef28c72c3f5d5",
+      "bytes": 415416
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-512-4.json": {
+      "sha256": "6ec34cebd37110f397e4d38a3897eba1d3ffc553c21fb29e784ae0dab45d3c91",
+      "bytes": 417485
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-404-ring-512-16.json": {
+      "sha256": "9133075567505904ef43695e1d9d71cf13ac17aeb9cfe814ddd9d4856bc28dc6",
+      "bytes": 416903
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/keys-405.txt": {
+      "sha256": "35c5ef9e69febcedab766fee9b721b7fbf971550a0aa48e45ee752b6c45e0779",
+      "bytes": 318890
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/zipf-405.json": {
+      "sha256": "da8f26c706624c18d52c286f9e717bebf18dadf3a53c8c87cab7c93613704998",
+      "bytes": 18633
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-512-1.json": {
+      "sha256": "f4a300ef09e390c96b24e01dae5c8ee718b8b053b5fd55ad7c24eeddfae12246",
+      "bytes": 420033
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-512-4.json": {
+      "sha256": "929318328b9d20eea98a2f62189882a7852cf584feaf8cce04a6d07287de0fd6",
+      "bytes": 428920
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-512-16.json": {
+      "sha256": "61300667e2c3b90c20d63c668e6e4478d8aeae9e907c8d3c94234ddab4e51ff9",
+      "bytes": 422123
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-128-1.json": {
+      "sha256": "5686adb909a0487dc0e485e190332ede99742c25b5a1cfcb9c4cf9b9d2b76b00",
+      "bytes": 407957
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-128-4.json": {
+      "sha256": "a7981e9c24c63883b40c37f5836c0275062210b7bb6e80ab2d049240a63ac746",
+      "bytes": 409154
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-128-16.json": {
+      "sha256": "0e3443b7a144006dd6e3e66fcfdeffa6efadc846f22325922648ddc7b9ce27d7",
+      "bytes": 407833
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-32-1.json": {
+      "sha256": "973a8c13a892aa7b7e9a7f9f2eece19ff1831af4e7a99cee023a9730f228b634",
+      "bytes": 404648
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-32-4.json": {
+      "sha256": "6dd7da50f79619130722cdfe341823ae8cd54934f8ceb1e9bad6ad4862d0dc57",
+      "bytes": 404273
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-ring-32-16.json": {
+      "sha256": "2bd3ee1145d1abed0bba11dc0f3d42d486c87c69537343965e4407d9a6b860e9",
+      "bytes": 407906
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-modulo-0-1.json": {
+      "sha256": "1be2dac035f4ac0de0f4b7b47eb47a33cd0f4d87fc6b50e068e2d34682363ba8",
+      "bytes": 400250
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-modulo-0-4.json": {
+      "sha256": "a7e683fad563f6cfad3c9cc69963866558db8ddb25959752e59eb5d098086c51",
+      "bytes": 400720
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-405-modulo-0-16.json": {
+      "sha256": "b64c51aeb2339aa9d6ba5116e616522bba050c944d351e0ad47e3973d4882062",
+      "bytes": 400341
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/keys-406.txt": {
+      "sha256": "837773f089bfca0ad806535d88202aba8d9abc33aa13a4e3910d98dd88db86ef",
+      "bytes": 318890
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/zipf-406.json": {
+      "sha256": "6c3e13baf55c034d2e151003cc8168dff44d73aeeb767af59d20970225994ff3",
+      "bytes": 18926
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-modulo-0-1.json": {
+      "sha256": "1f0cba66c3412244ecfbf8db6518d5595e589624f0e5b3d8ab646d27ac600703",
+      "bytes": 400484
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-modulo-0-4.json": {
+      "sha256": "2e7b004f6480b0c5428978fb91ec043662ab88f3d6472522805489a367a37f08",
+      "bytes": 400357
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-modulo-0-16.json": {
+      "sha256": "3c8b64d9f0f55d3711c0a957612b8c59f2b29efaccc767c7b74e30c4d1aea065",
+      "bytes": 400291
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-32-1.json": {
+      "sha256": "a94a72b442e63d284a292cbff89b76094f6af5c918f04dbd570c6678737788fd",
+      "bytes": 404115
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-32-4.json": {
+      "sha256": "b2c4018dfae80d1f2bb687db4716991329d33a4612632ba2f2d5f6b3fa1e5aaa",
+      "bytes": 404987
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-32-16.json": {
+      "sha256": "791759621ad5527f90a402f76e2bf4c5da1ca4b54fc0b5e65da6ad9cd6ec4872",
+      "bytes": 404526
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-128-1.json": {
+      "sha256": "2742322b7b4c05e955edbd50dc83f7342bb72f49e3d2b23d23e6879d2439de7e",
+      "bytes": 409148
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-128-4.json": {
+      "sha256": "bd1cfbd242fd8bbcf3eed1d27df3d23876b47fd0f98c2758d3f682f06f67c466",
+      "bytes": 407804
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-128-16.json": {
+      "sha256": "18edace64a100603974be773a3457e0c0e956797593669144e486c94e6ef6fca",
+      "bytes": 409676
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-512-1.json": {
+      "sha256": "ac882921e594bf720d56ceff48b7708a03ca82d03654d37c38866aa7f4e7c0b2",
+      "bytes": 420179
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-512-4.json": {
+      "sha256": "152a85f69612aa17ca9eabd83c0f54da910a3ede24619d998a2ad6e95ffaeac8",
+      "bytes": 421546
+    },
+    "experiments/phase4/consistent_hashing/artifacts/low-final/latency-406-ring-512-16.json": {
+      "sha256": "857618787706808f2e737e1689cc3ba82689851b32c5415dada228c83d2b76b1",
+      "bytes": 417727
+    }
+  },
+  "output_sha256": {
+    "build.csv": "53f3902dc0a7410c6cc8fa62d395b4f4c64e572203a413545fca3a3ac6886834",
+    "distribution.csv": "e10838301d1edd0412ca13a39f4b21351cee1cc8ed8c1101b4f1910c9331d634",
+    "distribution.svg": "36e4da11c8111c2522d1c26630653359b7f19e014deb3d12fbd8ebf4f93ec55c",
+    "latency.svg": "0aa575ad4790f7d1c4fc4e158a007acb2d08d6ab53c673229e0644331fe82bbe",
+    "movement.csv": "87c5b9a52c5ea1f88b4e12cfd6f96d3c652d33ff6fe57a3bc9c4498e2119bf48",
+    "remapping.svg": "90e508f2aec522621b9775ea84dc0b8ab74f6c75e755cf113e866f5663f22aa2",
+    "report.md": "393d6e6be6578d4cf3a6f75b9d8bcdf895dab153d0d4660ab8c7341011c69a3e",
+    "summary.csv": "9ad22f3440a40cad30e7a22b623673d99dc3f1245c0a9a650a4274caa77c50f4",
+    "vnode_balance.svg": "e4c518e4dd098c085a4db68f9ba916f6243a47f00577cec9b3fb82d214e2cc3c"
+  },
+  "csv_original_sha256": {
+    "summary.csv": "608db7fe25f9f0ad07c77d3fb87136d882e573d891401852287375dcbed99ec5",
+    "distribution.csv": "75b20685b0794193c535ec258c2f15c750e00c002d96ac1bec81eba753ea3f69",
+    "movement.csv": "bd77f64757cadc60c7fec5e783fb12e2f6596e5efc1478507929acba4ab5933a",
+    "build.csv": "c8b98f29813a19d8faff32b4d4abef7340c59e0fca45149b1e2c409a99ea17b2"
+  },
+  "output_normalization": "CRLF CSV records normalized to LF after measurement; numeric values and raw samples unchanged. Final runner changes only CSV lineterminator to LF."
+}

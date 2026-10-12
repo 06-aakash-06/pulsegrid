@@ -1,0 +1,290 @@
+[
+  {
+    "vnodes": 1,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "",
+    "owner": "a"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "a"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "00ff",
+    "owner": "a"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "a"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "00ff",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 1,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "",
+    "owner": "a"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "a"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "00ff",
+    "owner": "a"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "a"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "00ff",
+    "owner": "redis_a"
+  },
+  {
+    "vnodes": 32,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "redis_a"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "",
+    "owner": "a"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "a"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "00ff",
+    "owner": "a"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "a"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "redis_a"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "00ff",
+    "owner": "redis_b"
+  },
+  {
+    "vnodes": 128,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "redis_a"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "",
+    "owner": "a"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "a"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "00ff",
+    "owner": "a"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "a"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "a"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "70617469656e742d6469726563746f7279",
+    "owner": "redis_a"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "00ff",
+    "owner": "redis_c"
+  },
+  {
+    "vnodes": 512,
+    "nodes": [
+      "redis_a",
+      "redis_b",
+      "redis_c"
+    ],
+    "key_hex": "73796e7468657469632de69db1e4baac",
+    "owner": "redis_c"
+  }
+]
