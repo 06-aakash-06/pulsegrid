@@ -84,7 +84,7 @@
     "typing_extensions==4.16.0",
     "uvicorn==0.54.0"
   ],
-  "topology": "one adapter process, two cache objects, two real Redis nodes, actual immutable HashRing",
+  "topology": "one adapter process, two cache objects, two real Redis nodes, actual HashRing128 vnodes",
   "pool_size": 32,
   "max_overflow": 0,
   "level": "medium",
@@ -136,5 +136,7 @@
     "CREATE INDEX ix_doctors_active_created_id ON doctors(active,created_at,id)",
     "CREATE INDEX ix_doctors_lower_display_name_prefix ON doctors(lower(display_name) text_pattern_ops)",
     "CREATE INDEX ix_doctor_specialties_specialty_id_doctor_id ON doctor_specialties(specialty_id,doctor_id)"
-  ]
+  ],
+  "timed_projection_source_git": "804dd52:services/doctor/doctor_service/features/directory_cache/__init__.py",
+  "source_hash_note": "Projection module was imported before the coordinator duplicate-ID validation addition; the exact timed source is retained in Git."
 }

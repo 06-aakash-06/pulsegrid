@@ -1,0 +1,12 @@
+{
+  "broad_passed": 590,
+  "broad_skipped": 52,
+  "records_isolated_passed": 77,
+  "records_pure_duplicates": 26,
+  "unique_service_tests_passed": 641,
+  "component_tests_passed": 151,
+  "integration_config_tests_passed": 4,
+  "frontend_tests_passed": 129,
+  "postgres16_id_tests_passed": 36,
+  "postgres16_id_tests_note": "repeat component correctness on deployment PG version, not added to distinct total"
+}

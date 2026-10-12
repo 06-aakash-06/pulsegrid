@@ -1,0 +1,7 @@
+{
+  "created_estimates": 2,
+  "distinct_aggregate_identities": 2,
+  "type": "insurance_estimate",
+  "version": 1,
+  "verification": "gateway commands and Billing-owned outbox"
+}

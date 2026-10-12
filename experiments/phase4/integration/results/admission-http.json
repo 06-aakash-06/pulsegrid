@@ -1,13 +1,25 @@
 {
+  "replica_final_http_metric_deltas": {
+    "pulsegrid-doctor-1": {
+      "accepted": 31.0,
+      "limited": 19.0,
+      "unavailable": 0
+    },
+    "pulsegrid-doctor_replica-1": {
+      "accepted": 32.0,
+      "limited": 18.0,
+      "unavailable": 0
+    }
+  },
   "attempted": 100,
-  "admitted": 64,
-  "limited": 36,
+  "admitted": 63,
+  "limited": 37,
   "errors": 0,
-  "elapsed_seconds": 1.1561457920033718,
-  "attempted_throughput": 86.4942818558547,
-  "successful_throughput": 55.35634038774701,
-  "all_mean_ms": 35.647419989836635,
-  "all_p95_ms": 112.3944919963833,
+  "elapsed_seconds": 0.8046198749943869,
+  "attempted_throughput": 124.28228919985055,
+  "successful_throughput": 78.29784219590586,
+  "all_mean_ms": 28.68622317968402,
+  "all_p95_ms": 135.069972006022,
   "emergency_business_validation_after_search_overload": 422,
   "spoofed_x_forwarded_for_cannot_expand_principal_quota": true
 }

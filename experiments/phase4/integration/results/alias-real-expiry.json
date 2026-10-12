@@ -1,0 +1,6 @@
+{
+  "initial_resolution": 200,
+  "expired_resolution": 404,
+  "actual_expires_at": "2026-10-12T13:55:00Z",
+  "verification": "real wall clock; no database expiry/time mutation"
+}

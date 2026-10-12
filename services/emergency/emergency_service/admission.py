@@ -25,6 +25,15 @@ class AdmissionRejected(Exception):
     def __init__(self,decision):self.decision=decision
 
 class Middleware(BaseHTTPMiddleware):
+    def finalize(self,request,response,decision=None):
+        adapter=request.app.state.admission_adapter
+        policy=adapter.classify(request)
+        if policy is not None:
+            outcome=decision.reason if decision is not None and not decision.allowed else getattr(request.state,'phase4_admission_outcome','accepted')
+            labels={'owner':adapter.owner,'policy':getattr(request.state,'phase4_admission_policy',policy.policy_id),'outcome':outcome}
+            try:request.app.state.phase4_observer.increment('pulsegrid_http_admission_requests_total',labels)
+            except Exception:pass
+        return response
     async def dispatch(self,request,call_next):
         adapter=request.app.state.admission_adapter
         for method,regex,template in request.app.state.admission_patterns:
@@ -36,7 +45,7 @@ class Middleware(BaseHTTPMiddleware):
             decision=await adapter.limiter.admit(build_buckets(policy,{'source':adapter.deriver.source(request)},adapter.deriver,preauth=True,budgets={'source':(120,20000),'aggregate':(1200,200000)}))
         else:
             decision=await adapter.pre_auth(request)
-        if not decision.allowed:return rejection_response(request,decision,error_response=request.app.state.admission_error_response)
+        if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
         policy=adapter.classify(request)
         if policy and policy.policy.startswith('auth_'):
             account=None
@@ -48,7 +57,7 @@ class Middleware(BaseHTTPMiddleware):
                 except Exception:
                     account=adapter.deriver.digest('account','invalid-account')
             decision=await adapter.post_auth(request,None,normalized_account_digest=account)
-            if not decision.allowed:return rejection_response(request,decision,error_response=request.app.state.admission_error_response)
+            if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
         if policy and policy.policy=='internal_worker':
             # Read a candidate scope only to invoke the existing signature,
             # issuer/audience/expiry/caller verifier. The endpoint still enforces
@@ -61,11 +70,11 @@ class Middleware(BaseHTTPMiddleware):
                 if not scopes or not isinstance(scopes[0],str):raise ValueError('invalid scoped token')
                 caller=request.app.state.auth_verifier.service(token,scopes[0])
             except Exception:
-                return await call_next(request)  # Existing owner returns its 401/403.
+                return self.finalize(request,await call_next(request))  # Existing owner returns its 401/403.
             async def verified_service(_):return VerifiedIdentity(caller,kind='service')
             decision=await adapter.post_auth(request,verified_service)
-            if not decision.allowed:return rejection_response(request,decision,error_response=request.app.state.admission_error_response)
-        return await call_next(request)
+            if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
+        return self.finalize(request,await call_next(request))
 
 
 def mount(app,owner,error_response):
@@ -121,7 +130,9 @@ async def post_user(request,principal):
         decision=await adapter.limiter.admit(build_buckets(policy,{'principal':adapter.deriver.principal(principal.user_id)},adapter.deriver))
     else:
         decision=await adapter.post_auth(request,verified)
+    if policy is not None:request.state.phase4_admission_policy=policy.policy_id
     if not decision.allowed:
+        request.state.phase4_admission_outcome=decision.reason
         raise AdmissionRejected(decision)
     request.state.admission_principal_checked=True
 

@@ -2,9 +2,10 @@ FROM python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY services/patient/pyproject.toml services/patient/README.md services/patient/requirements.lock ./
-COPY services/patient/patient_service ./patient_service
 COPY components/rate_limiter /components/rate_limiter
-RUN pip install --no-cache-dir -r requirements.lock && pip install --no-cache-dir --no-deps .
+RUN pip install --no-cache-dir -r requirements.lock
+COPY services/patient/patient_service ./patient_service
+RUN pip install --no-cache-dir --no-deps .
 RUN pip install --no-cache-dir --no-deps /components/rate_limiter
 COPY services/patient/alembic.ini ./
 COPY services/patient/migrations ./migrations

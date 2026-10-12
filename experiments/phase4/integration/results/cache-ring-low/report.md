@@ -17,7 +17,7 @@ Test-only DDL, no production migration.
 Cold explicitly deletes selected key before each read; throughput includes deletion, read latency excludes preparation; concurrent readers may repopulate.
 Invalidation uses atomic DB revision mutation; no shared mutation hooks mounted.
 Redis failure pauses both owned nodes for 2 seconds and restores; results include recovery.
-No real consistent ring or HA claim.
+Actual ring placement; no replication/HA.
 No OS/container resource limits imposed.
 
 Coordinator rerun: actual production HashRing placement, existing Doctor query indexes, full5s warmup/30s x3. This remains a storage adapter benchmark; authenticated endpoint samples are separate.

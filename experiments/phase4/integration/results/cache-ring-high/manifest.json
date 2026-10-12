@@ -8,7 +8,7 @@
     "/Users/aakash/Documents/SSN Sem 5/System Design/PulseGrid/experiments/phase4/key_value_cache/run.py": "15685f2c19c2ec5524e97ccaa490f678f7c89c4e65333ab38ca2bee2fd13aa7c",
     "/Users/aakash/Documents/SSN Sem 5/System Design/PulseGrid/experiments/phase4/key_value_cache/fixtures.py": "0412c38c340245ae3d31cf07aa057909f8e8dc660bab6b98daaef9f83fb4e0be",
     "components/key_value_cache/src/pulsegrid_key_value_cache/__init__.py": "85cc46fe6a7b4eb55d5bb951335e03d2563a86bb624181e83a75aec4909c17c5",
-    "services/doctor/doctor_service/features/directory_cache/__init__.py": "aa536eb897fd7ab91a1315af69f4bbbb461fb81608a368851e77e51d144b25d6",
+    "services/doctor/doctor_service/features/directory_cache/__init__.py": "0632c86c4ab6b95f4933af68fc587878e28a92d75f6da0a2f1c25bc88ef4994c",
     "experiments/phase4/integration/cache_ring_benchmark.py": "6e344c63eeed0ced8ed23fcaf8563cea45871feaf18a974e8cc45eda5bd2a551"
   },
   "python": "3.12.11 (main, Jun  3 2025, 15:41:47) [Clang 17.0.0 (clang-1700.0.13.3)]",
@@ -84,7 +84,7 @@
     "typing_extensions==4.16.0",
     "uvicorn==0.54.0"
   ],
-  "topology": "one adapter process, two cache objects, two real Redis nodes, actual immutable HashRing",
+  "topology": "one adapter process, two cache objects, two real Redis nodes, actual HashRing128 vnodes",
   "pool_size": 32,
   "max_overflow": 0,
   "level": "high",
@@ -136,5 +136,7 @@
     "CREATE INDEX ix_doctors_active_created_id ON doctors(active,created_at,id)",
     "CREATE INDEX ix_doctors_lower_display_name_prefix ON doctors(lower(display_name) text_pattern_ops)",
     "CREATE INDEX ix_doctor_specialties_specialty_id_doctor_id ON doctor_specialties(specialty_id,doctor_id)"
-  ]
+  ],
+  "timed_projection_source_git": "804dd52:services/doctor/doctor_service/features/directory_cache/__init__.py",
+  "source_hash_note": "Projection module was imported before the coordinator duplicate-ID validation addition; the exact timed source is retained in Git."
 }
