@@ -37,7 +37,8 @@ server-owned priority class. Appointment's snapshot client has a local failure
 counter and open timer, two immediate fixed-delay GET attempts, no jitter, and
 no concurrency-safe half-open probe limit. Its new HTTP client per attempt also
 prevents connection reuse. There is no explicit outbound bulkhead for these
-optional journey reads.
+optional journey reads. Phase 6 implements the controls below in those existing
+boundaries.
 
 Phase 6 will add only these boundaries:
 
@@ -67,7 +68,7 @@ select or raise the class.
 
 | Class | Initial route families | NORMAL | SURGE | RECOVERY |
 |---|---|---:|---:|---:|
-| A — critical | Emergency request creation and staff claim/lifecycle mutations; Records consultation finalization; Pharmacy dispensing; Appointment clinical-hold finalization | Existing owner budget | 100% of its existing owner budget | 100% |
+| A — critical | Authenticated Emergency request creation and staff priority/claim/release/lifecycle mutations; Appointment check-in, queue start and clinical-hold finalization; Records consultation finalization; Pharmacy dispensing | Existing owner budget | 100% of its existing owner budget | 100% |
 | B — important | Appointment booking, cancellation, rescheduling and schedule decisions; ordinary authorized clinical and prescription operations; Pharmacy reservation/revalidation; Billing invoice/payment operations; authentication and journey reads | Existing owner budget | 60% | 80% |
 | C — deferrable | Doctor directory and autocomplete; Pharmacy catalog browsing and autocomplete; Billing synthetic insurance refresh/estimate operations | Existing owner budget | 15% | 50% |
 
@@ -81,7 +82,10 @@ principal budgets.
 ## Surge Mode policy
 
 The one shared control hash is stored in the existing private admission Redis
-namespace. The limiter reads it for each classified admission. NORMAL uses the
+namespace and retains its version after timed recovery, avoiding a reset to an
+old NORMAL compare-and-set version. State expiry is represented in the hash's
+shared Redis-time fields; the small control record is overwritten by later
+transitions. The limiter reads it for each classified admission. NORMAL uses the
 existing budgets. SURGE and RECOVERY apply the table above. Each state carries a
 monotonic version, UTC transition time, expiry, and a bounded reason code.
 
@@ -102,6 +106,13 @@ stateDiagram-v2
   activation is 15 seconds. A separately audited administrative override can
   bypass either cooldown. Repeated activation while already in SURGE does not
   extend the safety expiry.
+- `POST` requires an idempotency key (16–128 printable ASCII characters). Its
+  audit operation ID is scoped to the current administrator and key; the raw
+  key is not stored. A terminal response is retained in the audit chain so a
+  replay returns the original response, including after later state changes.
+  Reusing a key with another command returns 409. Unique audit indexes serialize
+  equal concurrent commands; a cooldown response leaves its intent retryable
+  with the same key after `Retry-After`.
 - Manual activation lasts at most 30 minutes. If the controller/service stops,
   all replicas derive RECOVERY for two minutes from the shared expiry, then
   return to NORMAL. A manually requested deactivation enters RECOVERY for two
@@ -139,7 +150,7 @@ without claiming they are production SLOs.
 | Read timeout | 500 ms | Bounds a downstream read stall |
 | Whole logical snapshot request | 1 s | Includes pool wait, attempts, response validation, and delay |
 | Attempts | 2 total | One retry for idempotent GET after network/timeout/5xx failure |
-| Retry delay | 50 ms exponential base + 0–25 ms jitter | One bounded delay; cancellation propagates immediately |
+| Retry delay | 50 ms + 0–25 ms jitter | One bounded delay; cancellation propagates immediately |
 | `Retry-After` | Honor only when a single bounded 429 retry fits the 1 s deadline | 429 does not count as breaker failure; no retry loop |
 | Breaker threshold/window | 3 counted failures in 10 s | Failures are logical requests after the bounded retry policy |
 | OPEN cooldown | 5 s | Fast failure during cooldown |
@@ -178,9 +189,11 @@ schedule and is not wrapped in this HTTP policy.
 Appointment owns the manual Surge Mode API and appends its intent and applied
 transition events through the existing Appointment audit hash chain. Events
 contain the actor, action, time, reason code, previous/new state, control
-version, request ID, and correlation ID. Free-form medical or operator text,
-secrets, tokens, patient IDs, and appointment IDs are excluded. Redis outage
-and unauthorized requests cannot change mode. High-frequency decisions remain
+version, request ID, and correlation ID. Terminal events also retain the small
+JSON response for idempotent replay; no raw key is stored. No-op requests have
+an explicit terminal audit event. Free-form medical or operator text, secrets,
+tokens, patient IDs, and appointment IDs are excluded. Redis outage and
+unauthorized requests cannot change mode. High-frequency decisions remain
 metrics, not audit rows.
 
 The existing bounded metrics observer will expose current mode by owner,

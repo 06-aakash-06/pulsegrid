@@ -39,14 +39,24 @@ class AdmissionAdapter:
             return None
         return self.routes.get(key, self.unknown)
 
+    async def admit(self, route, identities, *, preauth=False, budgets=None):
+        mode = await self.limiter.surge_mode()
+        self.limiter._emit('gauge', 'pulsegrid_surge_mode_state',
+                           {'NORMAL': 1, 'SURGE': 2, 'RECOVERY': 3, 'UNKNOWN': 0}[mode.state],
+                           {'owner': self.owner, 'state': mode.state})
+        buckets = build_buckets(route, identities, self.deriver, preauth=preauth,
+                                budgets=budgets, surge_mode=mode.state)
+        result = await self.limiter.admit(buckets, surge_mode=mode.state,
+                                          operation_class=route.operation_class)
+        return result
+
     async def pre_auth(self, request):
         if not self.limiter.config.enabled:
             return Admission(True, None, 0, 'local', 'accepted')
         route = self.classify(request)
         if route is None:
             return Admission(True, None, 0, 'local', 'accepted')
-        return await self.limiter.admit(build_buckets(route, {'source': self.deriver.source(request)},
-                                                     self.deriver, preauth=True))
+        return await self.admit(route, {'source': self.deriver.source(request)}, preauth=True)
 
     async def post_auth(self, request, verify_identity, *, normalized_account_digest=None):
         """verify_identity awaits retained auth and raises existing 401/403 errors.
@@ -76,10 +86,9 @@ class AdmissionAdapter:
                     raise InvalidConfiguration('Current staff authority required')
             if normalized_account_digest is not None:
                 identities['account'] = normalized_account_digest
-            buckets = build_buckets(route, identities, self.deriver)
+            return await self.admit(route, identities)
         except (InvalidConfiguration, ValueError, TypeError):
             return Admission(False, 1000, 0, 'local', 'unavailable')
-        return await self.limiter.admit(buckets)
 
 
 def rejection_metadata(admission):

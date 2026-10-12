@@ -24,6 +24,44 @@ BUDGETS = MappingProxyType({
 # Pre-auth gates use independent source + aggregate keys, not principal budgets.
 BUDGETS = MappingProxyType({key: MappingProxyType(value) for key, value in BUDGETS.items()})
 PREAUTH = MappingProxyType({'source': (30, 2000), 'aggregate': (300, 30000)})
+OPERATION_CLASSES = frozenset({'A', 'B', 'C'})
+SURGE_MODES = frozenset({'NORMAL', 'SURGE', 'RECOVERY', 'UNKNOWN'})
+_CLASS_SCALE = {
+    'NORMAL': {'A': (1.0, 1.0), 'B': (1.0, 1.0), 'C': (1.0, 1.0)},
+    'SURGE': {'A': (1.0, 1.0), 'B': (0.60, 0.60), 'C': (0.15, 0.15)},
+    'RECOVERY': {'A': (1.0, 1.0), 'B': (0.80, 0.80), 'C': (0.50, 0.50)},
+    # Unknown shared state must preserve the protected class while reducing
+    # optional work until Redis can provide the authoritative mode again.
+    'UNKNOWN': {'A': (1.0, 1.0), 'B': (0.60, 0.60), 'C': (0.15, 0.15)},
+}
+
+
+def operation_class_for(owner: str, method: str, path: str) -> str:
+    """Return a server-owned class for one reviewed route template."""
+    method = method.upper()
+    if owner == 'emergency':
+        if method == 'POST' and path == '/api/v1/emergencies':
+            return 'A'
+        if method in ('PATCH', 'POST') and path.endswith(('/priority', '/claim', '/release')):
+            return 'A'
+        if method == 'POST' and path.endswith('/transitions'):
+            return 'A'
+    if owner == 'appointment' and method == 'POST':
+        if path == '/api/v1/appointments/operations/surge-mode':
+            return 'A'
+        if path.endswith(('/check-ins', '/queue-entries/{entry_id}/start',
+                          '/clinical-hold/finalize')):
+            return 'A'
+    if owner == 'records' and method == 'POST' and path.endswith('/consultations/{consultation_id}/finalize'):
+        return 'A'
+    if owner == 'pharmacy' and method == 'POST' and path.endswith('/reservations/{reservation_id}/dispense'):
+        return 'A'
+    if owner in ('doctor', 'pharmacy') and method == 'GET':
+        if 'autocomplete' in path or path.endswith(('/doctors', '/specialties', '/medicines')):
+            return 'C'
+    if owner == 'billing' and ('/insurance/' in path or '/insurance-estimates' in path or '/insurance-refreshes' in path):
+        return 'C'
+    return 'B'
 
 class IdentityDeriver:
     def __init__(self, secret: bytes):
@@ -64,9 +102,11 @@ class RoutePolicy:
     owner: str
     policy: str
     family: str
+    operation_class: str = 'B'
 
     def __post_init__(self):
-        if self.owner not in OWNERS or self.policy not in BUDGETS or not POLICY.fullmatch(self.family):
+        if (self.owner not in OWNERS or self.policy not in BUDGETS or
+                not POLICY.fullmatch(self.family) or self.operation_class not in OPERATION_CLASSES):
             raise InvalidConfiguration('Invalid route policy')
         if self.policy.startswith('emergency_') and self.owner != 'emergency':
             raise InvalidConfiguration('Emergency policies belong to Emergency')
@@ -80,13 +120,24 @@ class RoutePolicy:
 
 
 def build_buckets(route: RoutePolicy, identities: dict[str, str], deriver: IdentityDeriver,
-                  *, preauth=False, budgets=None):
-    partition = route.policy_id + ('_preauth' if preauth else '')
+                  *, preauth=False, budgets=None, surge_mode='NORMAL'):
+    if surge_mode not in SURGE_MODES:
+        raise InvalidConfiguration('Invalid Surge Mode')
+    budget_mode = 'SURGE' if surge_mode == 'UNKNOWN' else surge_mode
+    # Preserve the Phase 4 key namespace and shared route quotas in NORMAL.
+    # Surge/recovery use reviewed class-and-mode namespaces so policy changes
+    # never collide with an existing Redis bucket configuration.
+    mode_partition = '' if budget_mode == 'NORMAL' else (
+        '_class_' + route.operation_class.lower() + '_mode_' + budget_mode.lower())
+    partition = route.policy_id + mode_partition + ('_preauth' if preauth else '')
     values = budgets if budgets is not None else (PREAUTH if preauth else BUDGETS[route.policy])
     if not 1 <= len(values) <= 3 or 'aggregate' not in values:
         raise InvalidConfiguration('Every route needs an aggregate; max three buckets')
+    capacity_scale, refill_scale = _CLASS_SCALE[surge_mode][route.operation_class]
     result = []
     for kind, (capacity, rate) in values.items():
+        capacity = max(1, int(capacity * capacity_scale))
+        rate = max(1, int(rate * refill_scale))
         if kind == 'aggregate':
             digest = deriver.digest('aggregate', partition)
         else:

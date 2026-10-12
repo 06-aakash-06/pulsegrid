@@ -21,9 +21,9 @@ def test_linear_g0_migration_chain():
     config = Config(str(Path(__file__).resolve().parents[2] / 'alembic.ini'))
     config.set_main_option('script_location', str(Path(__file__).resolve().parents[2] / 'migrations'))
     script = ScriptDirectory.from_config(config)
-    assert script.get_heads() == ['0011_phase4_alias_parent_guard']
+    assert script.get_heads() == ['0012_phase6_surge_audit']
     assert [r.revision for r in script.walk_revisions()] == [
-        '0011_phase4_alias_parent_guard','0010_phase4_short_links','0009_phase3_registration_history','0008_phase3_journey','0007_phase3_queue','0006_phase3_checkin','0005_phase3_waitlist',
+        '0012_phase6_surge_audit','0011_phase4_alias_parent_guard','0010_phase4_short_links','0009_phase3_registration_history','0008_phase3_journey','0007_phase3_queue','0006_phase3_checkin','0005_phase3_waitlist',
         '0004_phase3_core','0003_booking','0002_explicit_worker','0001_initial']
     assert all(r.branch_labels == set() and not r.is_merge_point for r in script.walk_revisions())
 
@@ -187,7 +187,7 @@ def test_parent_binding_and_runtime_privileges(database):
                 async with db.session_factory() as s,s.begin():
                     await s.execute(text(sql))
         async with db.session_factory() as s:
-            assert (await s.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()=='0011_phase4_alias_parent_guard'
+            assert (await s.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()=='0012_phase6_surge_audit'
     run(database,work)
 
 

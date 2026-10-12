@@ -7,7 +7,7 @@ class Observer:
     def __init__(self):self.values=defaultdict(float);self.lock=Lock()
     def _key(self,name,labels):
         if not name.startswith('pulsegrid_'):raise ValueError('Invalid metric')
-        allowed={'component','owner','policy','outcome','backend','kind','node_id','worker_id'}
+        allowed={'component','owner','policy','outcome','backend','kind','node_id','worker_id','state','class','dependency'}
         if set(labels)-allowed:raise ValueError('Invalid metric labels')
         return name,tuple(sorted((k,str(v)) for k,v in labels.items()))
     def increment(self,name,labels,value=1):

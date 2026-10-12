@@ -1,6 +1,6 @@
 # PulseGrid Emergency Service
 
-Independent FastAPI service for synthetic emergency-request workflow management. It is an educational prototype, not a real emergency dispatch, medical triage, or clinical service. Requests do not allocate beds or trigger dispatch. Surge Mode is deferred.
+Independent FastAPI service for synthetic emergency-request workflow management. It is an educational prototype, not a real emergency dispatch, medical triage, or clinical service. Requests do not allocate beds or trigger dispatch. Phase 6 assigns Emergency request and staff lifecycle routes a protected finite admission class through the existing limiter; it does not create public priority escalation.
 
 ## API
 
@@ -47,7 +47,7 @@ Emergency owns its request rows and references Patient IDs without a cross-datab
 
 Phase 2 IDs use positive CSPRNG BIGINT candidates with three bounded local collision checks and database primary keys as the final uniqueness backstop. The retained worker-state schema/configuration is unused; custom Snowflake generation is deferred. The 15-minute claim lease, 24-hour idempotency retention, retry limits, and service deadlines are prototype contract settings, not measured operational targets.
 
-Anonymous tracking tokens, rate limiting, clinical triage, dispatch, ambulance coordination, emergency bed management, Surge Mode, telemetry dashboards, and production/clinical validation are not implemented.
+Anonymous tracking tokens, clinical triage, dispatch, ambulance coordination, emergency bed management, telemetry dashboards, and production/clinical validation are not implemented.
 
 ## Local development and tests
 

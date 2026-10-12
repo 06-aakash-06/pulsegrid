@@ -1,5 +1,9 @@
 # API contracts
 
+This file retains the Phase 1.1 baseline and proposed owner APIs. Implemented
+changes through Phase 6 are recorded in the linked phase reports; the
+Appointment Surge Mode route below is an implemented operational extension.
+
 Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
 and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
 scope and supersede older algorithm/phase proposals below where different.
@@ -80,6 +84,15 @@ Only register/login/refresh/logout/csrf and GET me are implemented in this publi
 `Slot {id,doctor_id,starts_at,ends_at,state,revision}`. `Appointment {id,journey_id,patient_id,doctor_id,slot_id,starts_at,ends_at,state,version}`. States: confirmed -> checked_in -> in_consultation -> completed; confirmed/checked_in may cancel. Rescheduling allowed before check-in. Missed visits use a separately audited receptionist transition to `no_show` through POST `/appointments/{id}/no-show` with If-Match; it releases capacity and updates the queue. No automatic cancellation from wall-clock assumptions.
 
 `WaitlistEntry {id,slot_id,patient_id,state,joined_at,version}` with states waiting/promoted/withdrawn/skipped. `QueueEntry {id,appointment_id,token_number,state,position?,version}` with waiting/in_consultation/completed/cancelled/no_show. `Journey {id,appointment_id,state,stages:[{name,state,source_resource_id?,observed_at}],version}`; stage values pending/complete/skipped/reopened. `observed_at` is projection freshness, not clinical completion time.
+
+### Implemented Phase 6 operations route
+
+| Method / route | Request | Response | Access / special outcomes |
+|---|---|---|---|
+| GET `/api/v1/appointments/operations/surge-mode` | None | `{state:"NORMAL"|"SURGE"|"RECOVERY",version,changed_at,expires_at,reason_code}` | Current `hospital_admin`; 503 if shared admission state is unavailable; `Cache-Control: no-store` |
+| POST `/api/v1/appointments/operations/surge-mode` | `{active:boolean,reason_code:"capacity_pressure"|"dependency_degraded"|"planned_recovery"|"incident_override",override?:boolean}` | Same state response | Current `hospital_admin`; mandatory 16–128 printable ASCII `Idempotency-Key`; 409 cooldown/state conflict or same-key/different-command conflict; 503 if Redis/audit cannot confirm |
+
+`active:true` requests SURGE and `active:false` requests RECOVERY; NORMAL follows the shared expiry rules. `override:true` is valid only with `incident_override` and is durably audited. The operation intent precedes the Redis compare-and-set; applied/no-op audit events retain the replay response. Keys are scoped to the current administrator and retained through the audit operation record. The route does not accept a caller-selected class or public priority.
 
 ## Records (`/api/v1/records`)
 

@@ -7,7 +7,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.routing import compile_path
 from pulsegrid_rate_limiter import RateLimiter,LimiterConfig
 from pulsegrid_rate_limiter.adapter import AdmissionAdapter,VerifiedIdentity,rejection_metadata,rejection_response
-from pulsegrid_rate_limiter.policies import RoutePolicy,build_buckets
+from pulsegrid_rate_limiter.policies import RoutePolicy,operation_class_for
 
 
 def policy_for(owner,method,path):
@@ -30,7 +30,7 @@ class Middleware(BaseHTTPMiddleware):
         policy=adapter.classify(request)
         if policy is not None:
             outcome=decision.reason if decision is not None and not decision.allowed else getattr(request.state,'phase4_admission_outcome','accepted')
-            labels={'owner':adapter.owner,'policy':getattr(request.state,'phase4_admission_policy',policy.policy_id),'outcome':outcome}
+            labels={'owner':adapter.owner,'policy':getattr(request.state,'phase4_admission_policy',policy.policy_id),'outcome':outcome,'class':getattr(request.state,'phase6_operation_class',policy.operation_class),'state':getattr(request.state,'phase6_surge_mode','UNKNOWN')}
             try:request.app.state.phase4_observer.increment('pulsegrid_http_admission_requests_total',labels)
             except Exception:pass
         return response
@@ -42,9 +42,11 @@ class Middleware(BaseHTTPMiddleware):
                 break
         policy=adapter.classify(request)
         if policy and policy.policy=='internal_worker':
-            decision=await adapter.limiter.admit(build_buckets(policy,{'source':adapter.deriver.source(request)},adapter.deriver,preauth=True,budgets={'source':(120,20000),'aggregate':(1200,200000)}))
+            decision=await adapter.admit(policy,{'source':adapter.deriver.source(request)},preauth=True,budgets={'source':(120,20000),'aggregate':(1200,200000)})
         else:
             decision=await adapter.pre_auth(request)
+        request.state.phase6_operation_class=policy.operation_class if policy is not None else 'B'
+        request.state.phase6_surge_mode=decision.surge_mode
         if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
         policy=adapter.classify(request)
         if policy and policy.policy.startswith('auth_'):
@@ -57,6 +59,7 @@ class Middleware(BaseHTTPMiddleware):
                 except Exception:
                     account=adapter.deriver.digest('account','invalid-account')
             decision=await adapter.post_auth(request,None,normalized_account_digest=account)
+            request.state.phase6_surge_mode=decision.surge_mode
             if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
         if policy and policy.policy=='internal_worker':
             # Read a candidate scope only to invoke the existing signature,
@@ -73,6 +76,7 @@ class Middleware(BaseHTTPMiddleware):
                 return self.finalize(request,await call_next(request))  # Existing owner returns its 401/403.
             async def verified_service(_):return VerifiedIdentity(caller,kind='service')
             decision=await adapter.post_auth(request,verified_service)
+            request.state.phase6_surge_mode=decision.surge_mode
             if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
         return self.finalize(request,await call_next(request))
 
@@ -104,7 +108,7 @@ def mount(app,owner,error_response):
             if path.endswith(('/health/live','/health/ready')):exempt.append(key)
             else:
                 policy,family=policy_for(owner,*key)
-                inventory[key]=RoutePolicy(owner,policy,family)
+                inventory[key]=RoutePolicy(owner,policy,family,operation_class_for(owner,*key))
             patterns.append((key[0],compile_path(path)[0],path))
     for path in ('/health/live','/health/ready','/ping'):
         exempt.append(('GET',path));patterns.append(('GET',compile_path(path)[0],path))
@@ -125,13 +129,15 @@ async def post_user(request,principal):
     staff_role=next((role for role in ('doctor', 'hospital_admin') if role in principal.roles),None)
     if policy and request.method in ('POST','PATCH','DELETE') and staff_role:
         from .authorization import require_current_role
-        from pulsegrid_rate_limiter.policies import build_buckets
         await require_current_role(staff_role)(request,principal)
-        policy=RoutePolicy('doctor','critical_staff','command')
-        decision=await adapter.limiter.admit(build_buckets(policy,{'principal':adapter.deriver.principal(principal.user_id)},adapter.deriver))
+        policy=RoutePolicy('doctor','critical_staff','command',policy.operation_class)
+        decision=await adapter.admit(policy,{'principal':adapter.deriver.principal(principal.user_id)})
     else:
         decision=await adapter.post_auth(request,verified)
-    if policy is not None:request.state.phase4_admission_policy=policy.policy_id
+    if policy is not None:
+        request.state.phase4_admission_policy=policy.policy_id
+        request.state.phase6_operation_class=policy.operation_class
+        request.state.phase6_surge_mode=decision.surge_mode
     if not decision.allowed:
         request.state.phase4_admission_outcome=decision.reason
         raise AdmissionRejected(decision)

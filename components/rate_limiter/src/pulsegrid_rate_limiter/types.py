@@ -55,6 +55,22 @@ class Admission:
     remaining_milli_tokens: int
     mode: Literal["redis", "local"]
     reason: Literal["accepted", "limited", "unavailable"]
+    surge_mode: Literal["NORMAL", "SURGE", "RECOVERY", "UNKNOWN"] = "NORMAL"
+    operation_class: Literal["A", "B", "C"] = "B"
+
+
+@dataclass(frozen=True)
+class SurgeModeSnapshot:
+    state: Literal["NORMAL", "SURGE", "RECOVERY", "UNKNOWN"]
+    version: int | None = None
+    entered_at_ms: int | None = None
+    expires_at_ms: int | None = None
+    reason_code: str | None = None
+    operation_id: str | None = None
+
+    @property
+    def available(self) -> bool:
+        return self.state != "UNKNOWN"
 
 @dataclass(frozen=True)
 class LimiterConfig:

@@ -1,16 +1,19 @@
 # PulseGrid distributed admission
 
-Independent technical package `pulsegrid_rate_limiter`, version 0.1.0. This
-implements the frozen Phase 4.1 component; it is **disabled by default and not
-mounted** in any owner service. Synthetic educational prototype.
+Independent technical package `pulsegrid_rate_limiter`, version 0.1.0. The
+library remains disabled unless configured; the Phase 4 Compose overlay mounts
+it in the seven owner services. Phase 6 extends this same component with
+Redis-shared Surge Mode state and server-owned operation classes; it does not
+add another limiter. Synthetic educational prototype.
 
 Exports: `BucketSpec`, `BucketRequest`, `Admission`, `RateLimiter`, `LimiterConfig`,
-`IdentityDeriver`, `RoutePolicy`, `build_buckets`, `AdmissionAdapter`,
+`IdentityDeriver`, `RoutePolicy`, `build_buckets`, `operation_class_for`,
+`AdmissionAdapter`, `SurgeModeSnapshot`, `SurgeModeUnavailable`,
 `VerifiedIdentity`, `rejection_metadata`, `rejection_response`, `Observer`,
 `NoopObserver`, `InvalidConfiguration`, `BUDGETS`.
 
-`await RateLimiter.admit(buckets)` implements the exact frozen dataclass and
-coroutine interface. Supply 1–3 distinct compound buckets with server-owned policy
+`await RateLimiter.admit(buckets)` keeps the Phase 4 coroutine interface and
+adds defaulted Surge Mode/class fields to its result. Supply 1–3 distinct compound buckets with server-owned policy
 partitions and server-generated HMAC digests. `await health()` returns the frozen
 shape; `await close()` closes the Redis pool. Use one instance per API process,
 created after process fork, with the same configuration/secret across replicas.
@@ -51,10 +54,22 @@ They may conservatively reject and Redis restart may grant its normal configured
 capacity once; repeated transport errors never reset local state.
 
 Seed budgets from the contract are available in immutable `BUDGETS`; custom
-server-owned budgets can be passed to `build_buckets`. Route owner and family are
-part of the partition. Emergency public/authenticated/staff partitions and owner
-budgets cannot debit each other. These seed capacities are proposed experiments,
-not clinically validated deployment limits.
+server-owned budgets can be passed to `build_buckets`. NORMAL preserves the
+existing Phase 4 route keys and quotas. SURGE/RECOVERY use a separate class and
+mode namespace, so policy changes never reinterpret existing bucket state.
+Operation class is selected from an owner-reviewed method/template inventory;
+request headers, bodies, query values, and token claims cannot select it.
+Emergency-specific policies remain isolated. Seed capacities and 100%/60%/15%
+SURGE scales (A/B/C) and 100%/80%/50% RECOVERY scales are prototype policy
+settings, not clinically validated deployment limits.
+
+The shared control hash lives below `pg:admission:v1:*` and uses only the
+existing admission Redis ACL commands. Authorized manual changes use the
+Appointment `hospital_admin` endpoint and existing Appointment audit chain.
+Automatic activation is disabled because owner metrics are process-local and
+cannot reliably distinguish general pressure from a single abusive client.
+When the shared mode cannot be read, B/C use the protective SURGE profile while
+A retains its finite bucket and the existing bounded local limiter fallback.
 
 Identity derivation uses versioned length framing and HMAC-SHA256, canonical
 positive signed-BIGINT user IDs and normalized ASGI peer IP addresses, including
@@ -64,7 +79,8 @@ The owner supplies normalized account digests and verified user/service identiti
 through trusted Python ports; existing owner auth and authorization still run.
 
 Metrics: `pulsegrid_admission_requests_total`,
-`pulsegrid_admission_duration_seconds`, `pulsegrid_admission_mode_transitions_total`.
+`pulsegrid_admission_duration_seconds`, `pulsegrid_admission_mode_transitions_total`,
+`pulsegrid_surge_mode_state`, and `pulsegrid_surge_mode_transitions_total`.
 Decision labels are bounded configured `policy`, `outcome`, `backend` (first
 bucket policy is the representative label for heterogeneous compound calls); no identities,
 keys, URLs or tokens. Observer exceptions are swallowed. Separate pre/post-auth

@@ -1,6 +1,6 @@
 # PulseGrid
 
-PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 5 adds reliable, asynchronous Pharmacy and Billing signals that wake Appointment's existing journey reconciler. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests continue to use their owning APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
+PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 5 adds reliable, asynchronous Pharmacy and Billing signals that wake Appointment's existing journey reconciler. Phase 6 extends the shared Redis admission component with Surge Mode and adds bounded resilience around optional Appointment journey snapshots. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests continue to use their owning APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
 
 See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the compatible baseline interface. See [Phase 3 contracts](docs/phase-3-api-contracts.md) and [Phase 3 verification](docs/phase-3-integration-verification.md) for activated waitlists and temporary offers, QR check-in, consultation queues, patient journeys and staff/patient UI. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
 
@@ -45,9 +45,20 @@ and starting the existing project. Do not create a second retained stack or rese
 volumes. Fixture providers are synthetic4101–4103/policyDEMO. Appointment/Billing
 worker identities are explicitly bound to their owner/replica allocations.
 
+## Phase 6 resilience
+
+Surge Mode uses the existing shared admission Redis and server-assigned A/B/C
+route classes. Manual control requires current `hospital_admin` authorization and
+is audited by Appointment. Automatic activation remains disabled because current
+metrics are process-local. Appointment's Records, Pharmacy, and Billing journey
+snapshot reads use bounded GET retries, per-owner circuit breakers, pooled HTTP,
+and two-request bulkheads. See the [Phase 6 design](docs/phase-6-resilience-design.md)
+and [verification report](docs/phase-6-integration-verification.md) for actual
+checks and limitations.
+
 ## Architecture
 
-Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. Redis supports the existing Phase 4 features. RabbitMQ carries only the selected Phase 5 events and does not gate API transactions.
+Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. Redis supports existing Phase 4 components and Phase 6 Surge Mode. RabbitMQ carries only the selected Phase 5 events and does not gate API transactions.
 
 PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Phase 5 publishes two existing outbox transitions and uses Appointment's existing journey reconciliation as the safe asynchronous effect. Full telemetry deployment and the control room remain future work. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
 
@@ -113,7 +124,7 @@ npm run dev -- --strictPort
 
 Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose -f compose.yaml -f services/patient/compose.auth.yaml down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
 
-See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2–5 backend paths are integrated. Shared executable contract artifacts and full telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2–6 backend paths are integrated. Shared executable contract artifacts and full telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
 
 ## Hospital workflow verification
 

@@ -10,10 +10,24 @@ from redis.backoff import NoBackoff
 from redis.retry import Retry
 from redis.exceptions import NoScriptError, RedisError, ResponseError, OutOfMemoryError, AuthenticationError
 from .local import LocalBuckets
-from .types import Admission, BucketRequest, InvalidConfiguration, LimiterConfig, NoopObserver
+from .types import Admission, BucketRequest, InvalidConfiguration, LimiterConfig, NoopObserver, SurgeModeSnapshot
 
 SCRIPT = files(__package__).joinpath('bucket.lua').read_text()
 SCRIPT_SHA = hashlib.sha1(SCRIPT.encode()).hexdigest()
+SURGE_KEY = 'pg:admission:v1:surge-mode'
+SURGE_READ_SCRIPT = files(__package__).joinpath('surge_read.lua').read_text()
+SURGE_READ_SHA = hashlib.sha1(SURGE_READ_SCRIPT.encode()).hexdigest()
+SURGE_TRANSITION_SCRIPT = files(__package__).joinpath('surge_transition.lua').read_text()
+SURGE_TRANSITION_SHA = hashlib.sha1(SURGE_TRANSITION_SCRIPT.encode()).hexdigest()
+SURGE_RECOVERY_MS = 120_000
+SURGE_MINIMUM_SURGE_MS = 30_000
+SURGE_MINIMUM_RECOVERY_MS = 15_000
+SURGE_MAXIMUM_TTL_MS = 1_800_000
+SURGE_REASONS = frozenset({'capacity_pressure', 'dependency_degraded', 'planned_recovery', 'incident_override'})
+
+
+class SurgeModeUnavailable(RuntimeError):
+    """The shared Surge Mode control could not be safely updated."""
 
 @dataclass(frozen=True)
 class KeyedBucket:
@@ -78,10 +92,12 @@ class RateLimiter:
         return Admission(bool(allowed), None if allowed else retry, remaining,
                          'redis', 'accepted' if allowed else 'limited')
 
-    async def admit(self, buckets: Sequence[BucketRequest]) -> Admission:
+    async def admit(self, buckets: Sequence[BucketRequest], *, surge_mode='NORMAL', operation_class='B') -> Admission:
         started = perf_counter()
         policy = 'invalid'
         try:
+            if surge_mode not in ('NORMAL', 'SURGE', 'RECOVERY', 'UNKNOWN') or operation_class not in ('A', 'B', 'C'):
+                raise InvalidConfiguration('Invalid admission mode or operation class')
             rows = self._validate(buckets)
             policy = buckets[0].spec.policy_id
             if not self.config.enabled:
@@ -116,7 +132,90 @@ class RateLimiter:
         labels = {'policy': policy, 'outcome': result.reason, 'backend': result.mode}
         self._emit('increment', 'pulsegrid_admission_requests_total', labels)
         self._emit('observe', 'pulsegrid_admission_duration_seconds', perf_counter()-started, labels)
+        return Admission(result.allowed, result.retry_after_ms, result.remaining_milli_tokens,
+                         result.mode, result.reason, surge_mode, operation_class)
+
+    async def _eval_script(self, script, sha, numkeys, *args):
+        if self.redis is None:
+            raise SurgeModeUnavailable('shared_admission_unavailable')
+        try:
+            result = await self.redis.evalsha(sha, numkeys, *args)
+        except NoScriptError:
+            # NOSCRIPT proves that a state-changing script did not execute.
+            await self.redis.script_load(script)
+            result = await self.redis.evalsha(sha, numkeys, *args)
         return result
+
+    @staticmethod
+    def _decode_surge_result(values):
+        if not isinstance(values, (list, tuple)) or len(values) != 6:
+            return SurgeModeSnapshot('UNKNOWN')
+        state, version, entered, expires, reason, operation_id = values
+        try:
+            state = state.decode('ascii') if isinstance(state, bytes) else str(state)
+            version = int(version)
+            entered = int(entered)
+            expires = int(expires)
+            reason = reason.decode('ascii') if isinstance(reason, bytes) else str(reason)
+            operation_id = operation_id.decode('ascii') if isinstance(operation_id, bytes) else str(operation_id)
+        except (UnicodeDecodeError, TypeError, ValueError, OverflowError):
+            return SurgeModeSnapshot('UNKNOWN')
+        if state not in ('NORMAL', 'SURGE', 'RECOVERY') or version < 0 or entered < 0 or expires < 0:
+            return SurgeModeSnapshot('UNKNOWN')
+        return SurgeModeSnapshot(state, version, entered or None, expires or None,
+                                 None if reason == 'none' else reason,
+                                 None if operation_id == 'none' else operation_id)
+
+    async def surge_mode(self) -> SurgeModeSnapshot:
+        """Read one shared, expiring mode snapshot; unknown uses protective budgets."""
+        if not self.config.enabled:
+            return SurgeModeSnapshot('NORMAL', version=0)
+        try:
+            async with asyncio.timeout(self.config.decision_timeout_ms / 1000):
+                values = await self._eval_script(SURGE_READ_SCRIPT, SURGE_READ_SHA, 1,
+                                                 SURGE_KEY, SURGE_RECOVERY_MS)
+            return self._decode_surge_result(values)
+        except (RedisError, TimeoutError, OSError, SurgeModeUnavailable):
+            self._emit('increment', 'pulsegrid_surge_mode_state_errors_total', {'state': 'UNKNOWN'})
+            return SurgeModeSnapshot('UNKNOWN')
+
+    async def transition_surge_mode(self, snapshot: SurgeModeSnapshot, target: str, *,
+                                    reason_code: str, operation_id: str, actor_digest: str,
+                                    override: bool = False):
+        """CAS the shared Redis control after the caller has durably audited intent."""
+        import re
+        operation_pattern = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+        if (not self.config.enabled or snapshot.state not in ('NORMAL', 'SURGE', 'RECOVERY') or
+                snapshot.version is None or target not in ('SURGE', 'RECOVERY') or
+                reason_code not in SURGE_REASONS or
+                override != (reason_code == 'incident_override') or
+                not re.fullmatch(operation_pattern, operation_id) or
+                not re.fullmatch(r'[0-9a-f]{64}', actor_digest) or type(override) is not bool):
+            raise SurgeModeUnavailable('invalid_surge_transition')
+        args = (SURGE_KEY, snapshot.version, snapshot.state, target, reason_code,
+                operation_id, actor_digest, int(override), SURGE_MINIMUM_SURGE_MS,
+                SURGE_MINIMUM_RECOVERY_MS, SURGE_MAXIMUM_TTL_MS,
+                SURGE_RECOVERY_MS, SURGE_RECOVERY_MS)
+        try:
+            async with asyncio.timeout(self.config.decision_timeout_ms / 1000):
+                values = await self._eval_script(SURGE_TRANSITION_SCRIPT, SURGE_TRANSITION_SHA, 1, *args)
+        except (RedisError, TimeoutError, OSError) as exc:
+            raise SurgeModeUnavailable('shared_admission_unavailable') from exc
+        if not isinstance(values, (list, tuple)) or len(values) != 7:
+            raise SurgeModeUnavailable('invalid_surge_transition_result')
+        try:
+            decoded = [v.decode('ascii') if isinstance(v, bytes) else str(v) for v in values]
+            status, previous, state, version, entered, expires, result_reason = decoded
+            result = SurgeModeSnapshot(state, int(version), int(entered) or None,
+                                       int(expires) or None, result_reason,
+                                       operation_id if status == 'applied' else snapshot.operation_id)
+        except (UnicodeDecodeError, TypeError, ValueError, OverflowError) as exc:
+            raise SurgeModeUnavailable('invalid_surge_transition_result') from exc
+        if status not in ('applied', 'noop', 'conflict', 'cooldown') or result.state not in ('NORMAL', 'SURGE', 'RECOVERY'):
+            raise SurgeModeUnavailable('invalid_surge_transition_result')
+        if status == 'applied':
+            self._emit('increment', 'pulsegrid_surge_mode_transitions_total', {'state': state})
+        return status, previous, result
 
     async def health(self):
         if not self.config.enabled:

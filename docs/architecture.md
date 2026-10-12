@@ -1,22 +1,28 @@
 # Architecture
 
-Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
-and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
-scope and supersede older algorithm/phase proposals below where different.
-They do not activate functionality. Phase 2/3 contracts and actual owner code
-remain authoritative for existing hospital workflows; no runtime changes are
-part of preparation.
+This architecture reflects the implemented Phase 2–6 service boundaries and
+selected workflows. The [Phase 4 component contract](phase-4-component-contracts.md)
+and [parallel plan](phase-4-parallel-plan.md) retain their historical preparation
+scope; implementation status and evidence are in the phase verification reports.
 
 ## Scope and decisions
 
-Current Phase 3 uses bounded authenticated owner REST snapshots and durable local
+Appointment uses bounded authenticated owner REST snapshots and durable local
 polling/reconciliation for waitlist offers, check-in, consultation queues and
-journeys. Event-driven diagrams below remain the target architecture; no RabbitMQ
-business publication/consumer is active. Expected charge-source acknowledgments
-and fresh owner versions gate administrative discharge. The current prototype
-does not implement the later algorithms, Control Room, Surge Mode or HA.
+journeys. Selected Phase 5 outbox/inbox event paths wake that reconciliation;
+owner APIs and PostgreSQL remain authoritative. Expected charge-source
+acknowledgments and fresh owner versions gate administrative discharge. Phase 6
+adds shared Surge Mode admission and bounded optional snapshot resilience. The
+Control Room, broad event adoption, and infrastructure HA remain out of scope.
 
-PulseGrid serves one synthetic hospital. It includes patient and staff workflows, emergency request tracking, and a restricted distributed systems control room. Multi-hospital networking, emergency bed management, family health profiles, predictive autoscaling, and forecasting are excluded. Phase 1.1 defined this architecture. Phase 1.4B implements the local database, migration and gateway foundation described in [infrastructure.md](infrastructure.md); Phase 2 and Phase 3 now implement hospital workflows; algorithm components and the control room remain proposed. See [current verification](phase-3-integration-verification.md).
+PulseGrid serves one synthetic hospital. It includes patient and staff workflows
+and emergency request tracking. Multi-hospital networking, emergency bed
+management, family health profiles, predictive autoscaling, forecasting, and a
+restricted distributed systems control room are excluded. Phase 4 components,
+selected Phase 5 event delivery, and Phase 6 resilience controls are implemented
+under separate authorizations. See the [Phase 3](phase-3-integration-verification.md),
+[Phase 4](phase-4-integration-verification.md), [Phase 5](phase-5-integration-verification.md),
+and Phase 6 verification records.
 
 The stack is React/TypeScript, Python/FastAPI, PostgreSQL, Redis, RabbitMQ, Traefik, Docker Compose, Locust, Prometheus/Grafana, and OpenTelemetry. Avoid Kubernetes and additional infrastructure unless a later requirement justifies it through an architecture decision documented here.
 
@@ -147,15 +153,46 @@ Snowflake epoch is planned as `2026-01-01T00:00:00Z`. Assign worker ID `(service
 
 ## Surge mode, fault isolation, and observability
 
-Admission budgets are partitioned by domain and role, with a protected Emergency request budget and reserved Emergency worker concurrency. Enforce per-principal plus global service quotas. Unknown/unauthenticated emergency submissions use a limited public quota; authenticated submissions have a separate budget. Redis-backed decisions are authoritative for shared quotas only while Redis is reachable; conservative local fallback limits total traffic approximately, with configured replica-count bounds. No claims of exact distributed limits during cache failure.
+All seven owner APIs use the existing Redis-backed admission component when its
+Phase 4 flag is enabled. Server-owned route templates assign Class A critical,
+Class B important, or Class C deferrable policy. No caller field, token claim,
+or header selects a class. NORMAL keeps existing route quotas. In SURGE and
+RECOVERY, per-class Redis bucket namespaces preserve a finite Class A budget
+while reducing B/C capacity and refill. Emergency retains isolated source,
+authenticated-principal, and current-staff policy partitions. Redis failure uses bounded local buckets;
+B/C select the SURGE profile and A remains finite. These quotas are safeguards,
+not clinical capacity guarantees.
 
-Emergency scheduling uses severity as assigned by authorized staff, then aging and FIFO within equal priority; user-entered urgency is not trusted clinical triage. Reserve worker opportunities for older lower-priority requests after a configurable maximum wait and measure starvation. Surge policies can defer crawler refresh and costly noncritical search; writes report explicit rejection or persisted `pending`, never silently drop accepted work. Frontend polls queues with bounded backoff initially; real-time push is a later choice, not a new infrastructure dependency.
+Appointment exposes the narrow `hospital_admin` Surge Mode API. State is a
+versioned Redis record shared by replicas and manual transitions append to the
+existing Appointment audit chain. SURGE expires after 30 minutes into a
+two-minute RECOVERY window; operator transitions have cooldowns and an audited
+incident override. Automatic activation is disabled because the available
+metrics are process-local and cannot distinguish aggregate system pressure from
+one abusive client. There is no added dashboard or collector.
 
-Health: `/health/live` only process liveness; `/health/ready` DB and required synchronous dependencies. Broker/Redis outage reports degradation, but does not remove all replicas capable of accepting durable local writes. Readiness must reject new work when outbox backlog exceeds configured storage/age thresholds. Drain traffic, finish bounded in-flight transactions, stop worker claims, flush telemetry within a deadline, then exit on SIGTERM. Circuit breakers isolate optional dependencies; dependency failures return documented 503/504 or pending state.
+Appointment's optional Records, Pharmacy, and Billing journey snapshot GETs use
+one process-local breaker and two-request bulkhead per owner. The breaker opens
+after three counted failures in a 10-second window, permits one half-open probe
+after five seconds, and closes on a valid response. Only these idempotent reads
+retry once within a one-second deadline. A 404, business 4xx, or 429 does not
+count as dependency failure. An unavailable source remains pending and cannot
+authorize discharge. Doctor's existing optional owner reads retain their own
+bounded retry/breaker behavior; critical writes and local PostgreSQL mutations
+are outside these breakers.
 
-Emit W3C trace context, request/correlation IDs, latency histograms, error counts, inflight requests, pool saturation, admission outcomes, cache ring/version/hits, outbox age, inbox duplicates, broker backlog/DLQ, emergency wait time and resource usage. Never use patient IDs, tokens, or record contents as metric labels. OpenTelemetry context continues over events. Telemetry failure must not fail business operations. Control room access is hospital_admin/ops with read-only operational aggregates; admin alone has no general medical-record access.
+Existing `/metrics` endpoints expose bounded process-local counters and gauges;
+they are not a cross-replica aggregation service. No patient IDs, tokens, or
+clinical data are metric labels. Health remains based on the local database and
+required synchronous dependencies. Redis or broker outage does not remove the
+outbox, audit, idempotency, or domain database as business authority. Circuit
+breaker and bulkhead failures leave optional work pending rather than inventing
+success.
 
-Chaos experiments run only against synthetic isolated deployments with an explicit target, stop condition, baseline, expected degraded behavior, and recovery verification. Terminate replicas, disable cache/broker, and inject network delay; do not confuse a chaos injection with clinical resiliency proof. Locust seeds, scenarios, topology, run duration, warmup, resource limits, commit, percentiles, error definitions and repeated trials must be recorded.
+Chaos experiments run only against synthetic isolated deployments with an
+explicit target, stop condition, baseline, expected degraded behavior, and
+recovery verification. Do not confuse an injected fault or synthetic request
+volume with clinical resiliency proof.
 
 ## Distributed transaction trade-offs and deployment limitations
 
