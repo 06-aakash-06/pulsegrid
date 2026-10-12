@@ -1,6 +1,12 @@
 # Event contracts
 
-Proposals only. RabbitMQ is the planned broker, with durable exchange `pulsegrid.events` (type topic). Routing keys are the full event name, e.g. `appointment.booked.v1`. Each consumer purpose has its own durable queue, such as `billing.charges.v1` or `appointment.journey.v1`; replicas compete within that queue. Different subscribers never share one queue. Dead-letter exchange `pulsegrid.dlx` routes to per-consumer dead-letter queues. Consumer retry queues use bounded TTL and dead-letter routing back to the original queue.
+This is the broader event catalog proposal. Phase 5 activates only the two
+producer-to-consumer paths documented in
+[Phase 5 event contracts](phase-5-event-contracts.md); other entries remain
+proposals and must not be treated as active broker subscriptions. The Phase 5
+document records the actual envelope, payloads, topology, and recovery behavior.
+The planned durable topic exchange is `pulsegrid.events`; each consumer purpose
+has its own durable queue, and separate subscribers do not share a queue.
 
 ## Envelope and field schemas
 
@@ -65,9 +71,9 @@ Definitions:
 | `records.prescription.revoked.v1` | Records | Pharmacy: release remaining reservations, flag dispensed items for review; Appointment: reopen stage | prescription_id, consultation_id, journey_id, patient_id, revision, reason_code |
 | `pharmacy.reservation.created.v1` | Pharmacy | Appointment: pharmacy pending state | ReservationPayload |
 | `pharmacy.reservation.released.v1` | Pharmacy | Appointment: update pharmacy state; Billing: no charge before dispensing | ReservationPayload + reason_code (`expired`, `cancelled`, `prescription_revoked`) |
-| `pharmacy.dispensed.v1` | Pharmacy | Billing: add medicine source charges; Appointment: pharmacy stage quantities | dispensing_id, reservation_id, prescription_id, journey_id, patient_id, items:[{dispensing_item_id,prescription_item_id,medicine_id,quantity,charge_code}] |
+| `pharmacy.reservation.dispensed.v1` | Pharmacy | Appointment: request fresh journey reconciliation | resource_id, version, state, journey_id? |
 | `billing.invoice.updated.v1` | Billing | Appointment: billing state and discharge eligibility projection | InvoicePayload |
-| `billing.payment.succeeded.v1` | Billing | Appointment: payment visibility; eligibility still uses invoice projection version | InvoicePayload + payment_id, amount_minor |
+| `billing.payment.succeeded.v1` | Billing | Appointment: request fresh journey reconciliation | appointment_id (new messages); historical unpublished rows may have the earlier proposal payload |
 | `billing.payment.reversed.v1` | Billing | Appointment: reopen payment/billing stage | InvoicePayload + payment_id, amount_minor, reason_code |
 | `billing.insurance.rules.updated.v1` | Billing | Billing estimate worker: recalculate informational estimates | provider_id, rules_id, revision, fetched_at, source_hash |
 | `emergency.request.submitted.v1` | Emergency | Emergency processing worker: eligible work hint | request_id, patient_id? (nullable), state, reported_urgency |
