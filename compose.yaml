@@ -191,6 +191,11 @@ services:
       dockerfile: services/appointment/Dockerfile
     environment:
       PULSEGRID_APPOINTMENT_PHASE3_ENABLED: "true"
+      PULSEGRID_PHASE5_MESSAGING_ENABLED: "true"
+      PULSEGRID_MESSAGING_HOST: rabbitmq
+      PULSEGRID_MESSAGING_PORT: "5672"
+      RABBITMQ_EVENTS_USER: ${RABBITMQ_EVENTS_CONSUMER_USER:-pulsegrid_events_consumer}
+      RABBITMQ_EVENTS_PASSWORD: ${RABBITMQ_EVENTS_CONSUMER_PASSWORD:?Generate .env first}
       PULSEGRID_APPOINTMENT_DB_HOST: "postgres"
       PULSEGRID_APPOINTMENT_DB_NAME: "appointment_db"
       PULSEGRID_APPOINTMENT_DB_USER: "appointment_app"
@@ -207,7 +212,7 @@ services:
         condition: service_healthy
       appointment-migrate:
         condition: service_completed_successfully
-    networks: [edge, database]
+    networks: [edge, database, backbone]
     restart: unless-stopped
     init: true
     stop_grace_period: 15s
@@ -296,6 +301,11 @@ services:
       context: .
       dockerfile: services/pharmacy/Dockerfile
     environment:
+      PULSEGRID_PHASE5_MESSAGING_ENABLED: "true"
+      PULSEGRID_MESSAGING_HOST: rabbitmq
+      PULSEGRID_MESSAGING_PORT: "5672"
+      RABBITMQ_EVENTS_USER: ${RABBITMQ_EVENTS_PUBLISHER_USER:-pulsegrid_events_publisher}
+      RABBITMQ_EVENTS_PASSWORD: ${RABBITMQ_EVENTS_PUBLISHER_PASSWORD:?Generate .env first}
       PULSEGRID_PHARMACY_DB_HOST: "postgres"
       PULSEGRID_PHARMACY_DB_NAME: "pharmacy_db"
       PULSEGRID_PHARMACY_DB_USER: "pharmacy_app"
@@ -312,7 +322,7 @@ services:
         condition: service_healthy
       pharmacy-migrate:
         condition: service_completed_successfully
-    networks: [edge, database]
+    networks: [edge, database, backbone]
     restart: unless-stopped
     init: true
     stop_grace_period: 15s
@@ -348,6 +358,11 @@ services:
       context: .
       dockerfile: services/billing/Dockerfile
     environment:
+      PULSEGRID_PHASE5_MESSAGING_ENABLED: "true"
+      PULSEGRID_MESSAGING_HOST: rabbitmq
+      PULSEGRID_MESSAGING_PORT: "5672"
+      RABBITMQ_EVENTS_USER: ${RABBITMQ_EVENTS_PUBLISHER_USER:-pulsegrid_events_publisher}
+      RABBITMQ_EVENTS_PASSWORD: ${RABBITMQ_EVENTS_PUBLISHER_PASSWORD:?Generate .env first}
       PULSEGRID_BILLING_DB_HOST: "postgres"
       PULSEGRID_BILLING_DB_NAME: "billing_db"
       PULSEGRID_BILLING_DB_USER: "billing_app"
@@ -364,7 +379,7 @@ services:
         condition: service_healthy
       billing-migrate:
         condition: service_completed_successfully
-    networks: [edge, database]
+    networks: [edge, database, backbone]
     restart: unless-stopped
     init: true
     stop_grace_period: 15s

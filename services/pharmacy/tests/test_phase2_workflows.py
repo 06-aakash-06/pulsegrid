@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
+import secrets
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 from alembic import command
@@ -17,8 +20,10 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
-from pharmacy_service import authorization, integrations
+from pharmacy_service import authorization, integrations, event_delivery
+from pharmacy_service import operations as pharmacy_operations
 from pharmacy_service.authorization import Principal, authenticated_user
+from pharmacy_service.database import Database
 from pharmacy_service.main import create_app
 from pharmacy_service.settings import Settings
 
@@ -380,6 +385,14 @@ def test_fulfillment_duplicate_retry_revocation_and_billing_context(pharmacy_cli
         assert tuple(row) == (7, 0)
         assert connection.scalar(text("SELECT count(*) FROM dispensings")) == 1
         assert connection.scalar(text("SELECT count(*) FROM dispensing_items")) == 1
+        event = connection.execute(
+            text(
+                "SELECT envelope->'payload'->>'appointment_id', "
+                "envelope->'payload'->>'state', attempt_count, published_at "
+                "FROM outbox_events WHERE event_type='pharmacy.reservation.dispensed.v1'"
+            )
+        ).one()
+        assert tuple(event) == ("501", "dispensed", 0, None)
 
     charge = client.get(
         f"/internal/v1/dispensings/{first.json()['id']}/charge-context",
@@ -408,6 +421,63 @@ def test_fulfillment_duplicate_retry_revocation_and_billing_context(pharmacy_cli
     assert revalidation.json()["state"] == "dispensed"
 
 
+def test_dispense_and_outbox_roll_back_together(pharmacy_client, monkeypatch):
+    client, engine, app = pharmacy_client
+    medicine = _new_medicine(client)
+    assert _add_stock(client, medicine["id"], 10).status_code == 201
+    _set_prescription_context(app, medicine["id"])
+    reservation = _reserve(client)
+    assert reservation.status_code == 201, reservation.text
+    reservation_id = reservation.json()["id"]
+    key = "dispense-rollback-atomic-key-1"
+    headers = _headers(
+        **{"If-Match": reservation.headers["etag"], "Idempotency-Key": key}
+    )
+    original_append_outbox = pharmacy_operations.append_outbox
+
+    async def append_then_abort(session, request, **kwargs):
+        await original_append_outbox(session, request, **kwargs)
+        if kwargs.get("action") == "reservation.dispensed":
+            raise HTTPException(503, "synthetic transactional rollback")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(pharmacy_operations, "append_outbox", append_then_abort)
+        failed = client.post(
+            f"/api/v1/pharmacy/reservations/{reservation_id}/dispense",
+            json={},
+            headers=headers,
+        )
+    assert failed.status_code == 503
+    with engine.connect() as connection:
+        assert connection.scalar(
+            text("SELECT state FROM reservations WHERE id=:id"),
+            {"id": int(reservation_id)},
+        ) == "reserved"
+        assert connection.scalar(text("SELECT count(*) FROM dispensings")) == 0
+        assert connection.scalar(
+            text(
+                "SELECT count(*) FROM outbox_events "
+                "WHERE event_type='pharmacy.reservation.dispensed.v1'"
+            )
+        ) == 0
+        assert tuple(connection.execute(
+            text("SELECT on_hand, reserved FROM inventory_batches")
+        ).one()) == (10, 3)
+
+    retried = client.post(
+        f"/api/v1/pharmacy/reservations/{reservation_id}/dispense",
+        json={},
+        headers=headers,
+    )
+    assert retried.status_code == 201, retried.text
+    with engine.connect() as connection:
+        assert connection.scalar(text("SELECT count(*) FROM dispensings")) == 1
+        assert connection.scalar(
+            text(
+                "SELECT count(*) FROM outbox_events "
+                "WHERE event_type='pharmacy.reservation.dispensed.v1'"
+            )
+        ) == 1
 def test_revoked_prescription_revalidation_releases_unfilled_stock(pharmacy_client):
     client, engine, app = pharmacy_client
     medicine = _new_medicine(client)
@@ -504,6 +574,33 @@ def test_authorization_current_role_and_database_constraints(pharmacy_client):
                 text("SELECT has_table_privilege(current_user, 'audit_entries', 'UPDATE')")
             )
             assert can_update_audit is False
+            assert connection.scalar(
+                text(
+                    "SELECT has_column_privilege(current_user, 'outbox_events', "
+                    "'claimed_by', 'UPDATE')"
+                )
+            ) is True
+            assert connection.scalar(
+                text(
+                    "SELECT has_column_privilege(current_user, 'outbox_events', "
+                    "'envelope', 'UPDATE')"
+                )
+            ) is False
+            connection.execute(
+                text("SELECT event_id FROM outbox_events ORDER BY event_id LIMIT 1 FOR UPDATE")
+            ).all()
+            connection.execute(
+                text(
+                    "UPDATE outbox_events SET claimed_by='privilege-check' "
+                    "WHERE event_id=(SELECT event_id FROM outbox_events ORDER BY event_id LIMIT 1)"
+                )
+            )
+            connection.execute(
+                text(
+                    "UPDATE outbox_events SET claimed_by=NULL "
+                    "WHERE claimed_by='privilege-check'"
+                )
+            )
             with pytest.raises(DBAPIError):
                 connection.execute(text("UPDATE audit_entries SET entry_hash = entry_hash"))
 
@@ -553,3 +650,151 @@ def test_fulfillment_snapshot_and_patient_scope(pharmacy_client):
     assert client.get(private_url, headers={"Authorization": "Bearer records-service"}).status_code == 403
     assert client.get(private_url.replace("patient_id=201", "patient_id=202"),
                       headers={"Authorization": "Bearer appointment-service"}).status_code == 404
+
+
+def _publisher_test_event(event_id: int, aggregate_id: int) -> dict:
+    return {
+        "event_id": str(event_id),
+        "event_type": "pharmacy.reservation.dispensed.v1",
+        "schema_version": 1,
+        "producer": "pharmacy",
+        "aggregate_type": "reservation",
+        "aggregate_id": str(aggregate_id),
+        "aggregate_version": 1,
+        "occurred_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "correlation_id": str(uuid4()),
+        "request_id": str(uuid4()),
+        "causation_id": None,
+        "traceparent": None,
+        "payload": {
+            "resource_id": str(aggregate_id),
+            "version": 1,
+            "state": "dispensed",
+            "appointment_id": str(aggregate_id + 1),
+        },
+    }
+
+
+def _insert_publisher_test_outbox(engine, rows):
+    now = datetime.now(timezone.utc)
+    with engine.begin() as connection:
+        for event_id, aggregate_id in rows:
+            connection.execute(
+                text(
+                    "INSERT INTO outbox_events "
+                    "(event_id, aggregate_type, aggregate_id, aggregate_version, event_type, "
+                    "envelope, next_attempt_at, claimed_by, lease_expires_at) "
+                    "VALUES (:event_id, 'reservation', :aggregate_id, 1, "
+                    "'pharmacy.reservation.dispensed.v1', CAST(:envelope AS jsonb), "
+                    ":next_attempt_at, :claimed_by, :lease_expires_at)"
+                ),
+                {
+                    "event_id": event_id,
+                    "aggregate_id": aggregate_id,
+                    "envelope": json.dumps(_publisher_test_event(event_id, aggregate_id)),
+                    "next_attempt_at": now,
+                    "claimed_by": "crashed-worker" if event_id == rows[0][0] else None,
+                    "lease_expires_at": now - timedelta(seconds=1) if event_id == rows[0][0] else None,
+                },
+            )
+
+
+class _TimeoutExchange:
+    async def publish(self, *_args, **_kwargs):
+        raise asyncio.TimeoutError
+
+
+class _ConfirmExchange:
+    def __init__(self):
+        self.messages = []
+
+    async def publish(self, message, *, routing_key, mandatory):
+        self.messages.append((message, routing_key, mandatory))
+        return True
+
+
+def test_publisher_recovers_expired_lease_and_retries_after_confirm_timeout(pharmacy_client):
+    _client, engine, app = pharmacy_client
+    event_id = secrets.randbelow(9_000_000_000_000_000_000) + 1
+    aggregate_id = secrets.randbelow(9_000_000_000_000_000_000) + 1
+    _insert_publisher_test_outbox(engine, [(event_id, aggregate_id)])
+
+    async def work():
+        database = Database(app.state.settings)
+        await database.start()
+        try:
+            with pytest.raises(asyncio.TimeoutError):
+                await event_delivery.publish_batch(
+                    database.session_factory,
+                    _TimeoutExchange(),
+                    "publisher-retry-test",
+                    app,
+                )
+            with engine.connect() as connection:
+                failed = connection.execute(
+                    text(
+                        "SELECT attempt_count, published_at, claimed_by, last_error "
+                        "FROM outbox_events WHERE event_id=:id"
+                    ),
+                    {"id": event_id},
+                ).one()
+                assert tuple(failed) == (1, None, None, "confirm_timeout")
+
+            confirmed = _ConfirmExchange()
+            with engine.begin() as connection:
+                connection.execute(
+                    text("UPDATE outbox_events SET next_attempt_at=now() WHERE event_id=:id"),
+                    {"id": event_id},
+                )
+            count = await event_delivery.publish_batch(
+                database.session_factory,
+                confirmed,
+                "publisher-retry-test",
+                app,
+            )
+            assert count == 1
+            assert len(confirmed.messages) == 1
+            message, routing_key, mandatory = confirmed.messages[0]
+            assert message.message_id == str(event_id)
+            assert routing_key == "pharmacy.reservation.dispensed.v1"
+            assert mandatory is True
+        finally:
+            await database.close()
+
+    asyncio.run(work())
+    with engine.connect() as connection:
+        row = connection.execute(
+            text(
+                "SELECT attempt_count, published_at IS NOT NULL, claimed_by, "
+                "lease_expires_at, last_error FROM outbox_events WHERE event_id=:id"
+            ),
+            {"id": event_id},
+        ).one()
+    assert tuple(row) == (2, True, None, None, None)
+
+
+def test_concurrent_publishers_claim_each_event_at_most_once(pharmacy_client):
+    _client, engine, app = pharmacy_client
+    first_id = secrets.randbelow(8_000_000_000_000_000_000) + 1
+    rows = [
+        (first_id + index, secrets.randbelow(8_000_000_000_000_000_000) + index + 1)
+        for index in range(6)
+    ]
+    _insert_publisher_test_outbox(engine, rows)
+
+    async def work():
+        database = Database(app.state.settings)
+        await database.start()
+        try:
+            first, second = await asyncio.gather(
+                event_delivery.claim_batch(database.session_factory, "concurrent-a"),
+                event_delivery.claim_batch(database.session_factory, "concurrent-b"),
+            )
+            first_ids = {int(row["event_id"]) for row in first}
+            second_ids = {int(row["event_id"]) for row in second}
+            assert not first_ids.intersection(second_ids)
+            assert first_ids.union(second_ids) == {event_id for event_id, _ in rows}
+        finally:
+            await database.close()
+
+    asyncio.run(work())

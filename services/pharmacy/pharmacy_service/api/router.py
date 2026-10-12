@@ -1270,6 +1270,11 @@ async def dispense_reservation(
             resource_id=numeric_id,
             aggregate_version=new_reservation_version,
             state="dispensed",
+            event_payload=(
+                {"appointment_id": str(snapshot["appointment_id"])}
+                if snapshot["appointment_id"] is not None
+                else None
+            ),
         )
         full = await _dispensing_full(session, dispensing_id)
         return CommandResult(201, full[3], etag(1))

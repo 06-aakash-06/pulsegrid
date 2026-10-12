@@ -2,10 +2,20 @@
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 from concurrent.futures import ThreadPoolExecutor
+from types import SimpleNamespace
 
 import psycopg
+from fastapi import HTTPException
+from sqlalchemy.engine import make_url
+
+from billing_service.api import billing as billing_api
+from billing_service.database import Database
+from billing_service.ledger import append_outbox as append_billing_outbox
+from billing_service import event_delivery
+from billing_service.settings import Settings
 
 
 def _id() -> str:
@@ -184,6 +194,125 @@ def test_duplicate_source_and_payment_replay_persist_once(billing_env):
     assert _db_scalar(env, "SELECT status FROM invoices WHERE id=%s", (invoice_id_int,)) == "paid"
     assert _db_scalar(env, "SELECT count(*) FROM audit_entries WHERE chain_id='billing'") >= 4
     assert _db_scalar(env, "SELECT count(*) FROM outbox_events WHERE aggregate_id=%s AND published_at IS NULL", (invoice_id_int,)) >= 3
+    assert _db_scalar(
+        env,
+        "SELECT envelope->'payload'->>'appointment_id' FROM outbox_events "
+        "WHERE event_type='billing.payment.succeeded.v1' AND aggregate_id=%s",
+        (invoice_id_int,),
+    ) == appointment_id
+    assert _db_scalar(
+        env,
+        "SELECT envelope->'payload' ? 'payment_id' FROM outbox_events "
+        "WHERE event_type='billing.payment.succeeded.v1' AND aggregate_id=%s",
+        (invoice_id_int,),
+    ) is False
+
+    database_url = make_url(env.database_url)
+    settings = Settings(
+        db_host=database_url.host or "127.0.0.1",
+        db_port=database_url.port or 5432,
+        db_name=database_url.database or "billing_test",
+        db_user=database_url.username or "billing_app",
+        db_password=database_url.password or "app-test",
+    )
+    confirmed_messages = []
+
+    class ConfirmingExchange:
+        async def publish(self, message, *, routing_key, mandatory):
+            confirmed_messages.append((message, routing_key, mandatory))
+            return True
+
+    async def publish_payment_event():
+        database = Database(settings)
+        await database.start()
+        try:
+            count = await event_delivery.publish_batch(
+                database.session_factory,
+                ConfirmingExchange(),
+                "billing-api-test",
+                SimpleNamespace(state=SimpleNamespace()),
+            )
+            assert count == 1
+        finally:
+            await database.close()
+
+    asyncio.run(publish_payment_event())
+    assert len(confirmed_messages) == 1
+    message, routing_key, mandatory = confirmed_messages[0]
+    assert message.type == "billing.payment.succeeded.v1"
+    assert routing_key == "billing.payment.succeeded.v1"
+    assert mandatory is True
+    assert _db_scalar(
+        env,
+        "SELECT published_at IS NOT NULL FROM outbox_events "
+        "WHERE event_type='billing.payment.succeeded.v1' AND aggregate_id=%s",
+        (invoice_id_int,),
+    ) is True
+
+
+def test_payment_and_success_event_roll_back_together(billing_env, monkeypatch):
+    env = billing_env
+    assert _create_tariff(env, "consultation", 100, "tariff-rollback-key-0001").status_code == 201
+    invoice_response, appointment_id, _patient_id = _create_invoice(
+        env, key="invoice-rollback-key-000001"
+    )
+    invoice = invoice_response.json()
+    consultation_id = _id()
+    env.owners.consultations[consultation_id] = {
+        "consultation_id": consultation_id,
+        "appointment_id": appointment_id,
+        "patient_id": invoice["patient_id"],
+        "status": "finalized",
+        "charge_code": "consultation",
+        "quantity": 1,
+        "version": 1,
+    }
+    charged = env.client.post(
+        f"/api/v1/billing/invoices/{invoice['id']}/charges",
+        json={"consultation_id": consultation_id, "dispensing_ids": []},
+        headers=env.headers("billing_staff", key="charge-rollback-key-0001", etag='"1"'),
+    )
+    assert charged.status_code == 200, charged.text
+
+    async def append_then_abort(session, request, **kwargs):
+        result = await append_billing_outbox(session, request, **kwargs)
+        if kwargs.get("event_type") == "billing.payment.succeeded.v1":
+            raise HTTPException(503, "synthetic transactional rollback")
+        return result
+
+    with monkeypatch.context() as patch:
+        patch.setattr(billing_api, "append_outbox", append_then_abort)
+        failed = env.client.post(
+            f"/api/v1/billing/invoices/{invoice['id']}/payments",
+            json={"amount_minor": 100, "currency": "INR", "simulated_outcome": "success"},
+            headers=env.headers("patient", key="payment-rollback-key-0001", etag='"2"'),
+        )
+    assert failed.status_code == 503
+    invoice_id = int(invoice["id"])
+    assert _db_scalar(env, "SELECT paid_minor FROM invoices WHERE id=%s", (invoice_id,)) == 0
+    assert _db_scalar(env, "SELECT status FROM invoices WHERE id=%s", (invoice_id,)) == "open"
+    assert _db_scalar(env, "SELECT count(*) FROM payments WHERE invoice_id=%s", (invoice_id,)) == 0
+    assert _db_scalar(
+        env,
+        "SELECT count(*) FROM outbox_events "
+        "WHERE event_type='billing.payment.succeeded.v1' AND aggregate_id=%s",
+        (invoice_id,),
+    ) == 0
+
+    retried = env.client.post(
+        f"/api/v1/billing/invoices/{invoice['id']}/payments",
+        json={"amount_minor": 100, "currency": "INR", "simulated_outcome": "success"},
+        headers=env.headers("patient", key="payment-rollback-key-0001", etag='"2"'),
+    )
+    assert retried.status_code == 201, retried.text
+    assert _db_scalar(env, "SELECT paid_minor FROM invoices WHERE id=%s", (invoice_id,)) == 100
+    assert _db_scalar(env, "SELECT count(*) FROM payments WHERE invoice_id=%s", (invoice_id,)) == 1
+    assert _db_scalar(
+        env,
+        "SELECT count(*) FROM outbox_events "
+        "WHERE event_type='billing.payment.succeeded.v1' AND aggregate_id=%s",
+        (invoice_id,),
+    ) == 1
 
 
 def test_decline_overpayment_and_later_charge_reopen_invoice(billing_env):

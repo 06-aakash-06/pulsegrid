@@ -37,11 +37,13 @@ def create_app(
         application.state.domain_http_client = httpx.AsyncClient(
             follow_redirects=False, trust_env=False
         )
-        from . import phase4
+        from . import event_delivery, phase4
         try:
             await phase4.start(application)
+            await event_delivery.start(application)
             yield
         finally:
+            await event_delivery.close(application)
             await application.state.domain_http_client.aclose()
             await phase4.close(application)
             from .admission import close as close_admission

@@ -114,6 +114,7 @@ outbox_events = entity(
     timestamp("next_attempt_at", default="CURRENT_TIMESTAMP"),
     value("claimed_by", String(128), nullable=True),
     timestamp("lease_expires_at", nullable=True),
+    value("last_error", String(128), nullable=True),
     check("attempt_count >= 0", "attempt_count_nonnegative"),
     check("aggregate_version > 0", "aggregate_version_positive"),
     with_id=False,

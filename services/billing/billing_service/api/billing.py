@@ -756,8 +756,7 @@ async def simulate_payment(
                         )
                         await invoice_updated_event(session, request, updated_invoice)
                         if payment_status == "success":
-                            payload = await invoice_event_payload(session, updated_invoice)
-                            payload.update({"payment_id": str(payment_id), "amount_minor": body.amount_minor})
+                            payload = {"appointment_id": str(updated_invoice["appointment_id"])}
                             event_type = "billing.payment.succeeded.v1"
                         else:
                             payload = {

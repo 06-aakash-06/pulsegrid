@@ -458,12 +458,15 @@ async def append_outbox(
     aggregate_version: int,
     action: str,
     state: str | None = None,
+    event_payload: dict | None = None,
 ) -> None:
     event_id = await allocate_id(session, outbox_events.c.event_id)
     event_type = f"pharmacy.{action}.v1"
     payload = {"resource_id": str(aggregate_id), "version": aggregate_version}
     if state is not None:
         payload["state"] = state
+    if event_payload is not None:
+        payload.update(event_payload)
     envelope = {
         "event_id": str(event_id),
         "event_type": event_type,
@@ -507,6 +510,7 @@ async def append_mutation_records(
     aggregate_version: int,
     state: str | None = None,
     content_digest: str | None = None,
+    event_payload: dict | None = None,
 ) -> None:
     await append_audit(
         session,
@@ -525,6 +529,7 @@ async def append_mutation_records(
         aggregate_version=aggregate_version,
         action=action,
         state=state,
+        event_payload=event_payload,
     )
 
 

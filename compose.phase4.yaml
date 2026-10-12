@@ -130,6 +130,7 @@ services:
     - edge
     - database
     - admission
+    - backbone
     volumes:
     - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
     - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
@@ -175,6 +176,7 @@ services:
     - edge
     - database
     - admission
+    - backbone
     volumes:
     - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
     - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
@@ -202,6 +204,7 @@ services:
     - database
     - admission
     - synthetic
+    - backbone
     volumes:
     - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
     - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro

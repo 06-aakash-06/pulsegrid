@@ -31,11 +31,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
-        from . import phase4
+        from . import event_delivery, phase4
         await phase4.start(application)
         try:
+            await event_delivery.start(application)
             yield
         finally:
+            await event_delivery.close(application)
             await phase4.close(application)
             from .admission import close as close_admission
             await close_admission(application)
