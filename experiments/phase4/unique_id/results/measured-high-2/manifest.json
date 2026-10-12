@@ -1,0 +1,44 @@
+{
+  "started": "2026-10-12T02:57:50.871421+00:00",
+  "ended": "2026-10-12T03:01:51.946739+00:00",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "cpu_count": 12,
+  "postgres": "14.17 (Homebrew)",
+  "psycopg": "3.2.10",
+  "base": "45273ea7fd1ea53e335942b6c38f2d81d38856ee",
+  "source_sha256": "a528d321f3be21c6c8e3e6158d1d3b2a81c5bd335803bc32d79744380055da4b",
+  "component_sha256": {
+    "components/unique_id/pulsegrid_unique_id/__init__.py": "445d09892adae804662bb38638d3378232a2bb5db5b3b2fb991411bc16a6a9ca",
+    "components/unique_id/pulsegrid_unique_id/postgres.py": "405953343a0c2a1b6c2ef9fdce288ff1a68a92a52dbbc13d94053bd9e22bc89d"
+  },
+  "hardware": "Mac14,10\n17179869184\nApple M2 Pro",
+  "resource_limits": "no explicit CPU/memory cap; max run 600 seconds; no connection pool; max workers+clients dedicated connections",
+  "command": "python experiments/phase4/unique_id/run.py --seed 404 --level high --output experiments/phase4/unique_id/results/measured-high-2 --trial 2",
+  "samples_sha256": {
+    "experiments/phase4/unique_id/artifacts/measured-high-2/snowflake-2.json": "afbebd34e121c5d6d55f67962c6e570b5faa7095f6a334316add05a18f5495bf",
+    "experiments/phase4/unique_id/artifacts/measured-high-2/sequence-2.json": "2be195c242019e4907478a8c8e3f7d5e777bff03245d1157fca9b6b8f1a3b22e",
+    "experiments/phase4/unique_id/artifacts/measured-high-2/csprng-2.json": "7446a41009cfc98e10fb7e65c923a80c93f9da4aab69d3038538e61f0c1366a7"
+  },
+  "topology": "one Python asyncio process, loopback dedicated disposable PostgreSQL 14, one dedicated store session per worker; one insert connection per client",
+  "config": {
+    "epoch_ms": 1767225600000,
+    "bits": [
+      41,
+      10,
+      12
+    ],
+    "span_ms": 100,
+    "wait_ms": 2000
+  },
+  "timer": 4.166666666666666e-08,
+  "seed_role": "repeat label; ID outputs intentionally use real clock/CSPRNG",
+  "limitations": [
+    "PostgreSQL 14 locally available, PostgreSQL 16 deployment validation pending",
+    "temporary per-client PK tables plus whole-trial global set; no existing tables changed",
+    "not hospital endpoint integration",
+    "sequence baseline technical nextval equivalent, not Records endpoint",
+    "single process concurrency; multiprocess correctness separately tested"
+  ]
+}

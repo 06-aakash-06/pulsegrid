@@ -1,0 +1,50 @@
+{
+  "started": "2026-10-12T03:11:59.197484+00:00",
+  "ended": "2026-10-12T03:17:33.861917+00:00",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "cpu_count": 12,
+  "postgres": "14.17 (Homebrew)",
+  "psycopg": "3.2.10",
+  "base": "45273ea7fd1ea53e335942b6c38f2d81d38856ee",
+  "source_sha256": "a528d321f3be21c6c8e3e6158d1d3b2a81c5bd335803bc32d79744380055da4b",
+  "component_sha256": {
+    "components/unique_id/pulsegrid_unique_id/__init__.py": "445d09892adae804662bb38638d3378232a2bb5db5b3b2fb991411bc16a6a9ca",
+    "components/unique_id/pulsegrid_unique_id/postgres.py": "405953343a0c2a1b6c2ef9fdce288ff1a68a92a52dbbc13d94053bd9e22bc89d"
+  },
+  "hardware": "Mac14,10\n17179869184\nApple M2 Pro",
+  "resource_limits": "no explicit CPU/memory cap; max run 600 seconds; no connection pool; max workers+clients dedicated connections",
+  "command": "python experiments/phase4/unique_id/run.py --seed 404 --level medium --output experiments/phase4/unique_id/results/verified-medium",
+  "samples_sha256": {
+    "experiments/phase4/unique_id/artifacts/verified-medium/csprng-1.json": "0d6da7df05a581678ddfd5a4cae7fc5b90e13071c03e6649ff4005c66380bbc9",
+    "experiments/phase4/unique_id/artifacts/verified-medium/sequence-1.json": "5b0d5f875b9e8ce7cdb4a1da40b42886de6f50efd8411e4bd8c12e1ca1d71caa",
+    "experiments/phase4/unique_id/artifacts/verified-medium/snowflake-1.json": "f7dde165e477b79303304a77ebf1e62d43d47bef03bc434c62f7b4cf272fdb1e",
+    "experiments/phase4/unique_id/artifacts/verified-medium/snowflake-2.json": "89d1a431213577c5138b7233122a463e1b04b76767a0d3b318e2e1cc39d1e930",
+    "experiments/phase4/unique_id/artifacts/verified-medium/sequence-2.json": "c7c2bc92f9d0cc0f574f605bedb5c4d0877b648d977f7aa17da5e87e45397687",
+    "experiments/phase4/unique_id/artifacts/verified-medium/csprng-2.json": "f9ac7218a791671ecf86fadb5a863814a9badd1dd282646a375a93c532b4f181",
+    "experiments/phase4/unique_id/artifacts/verified-medium/csprng-3.json": "e3416a88f39f04696a1b05120dfc709b373f7d36e23f5494981c6b52c12c0104",
+    "experiments/phase4/unique_id/artifacts/verified-medium/sequence-3.json": "2c84cc502dbc3e8e376afbf18b2cdc636b347ccd3479942841c07b871dc492c9",
+    "experiments/phase4/unique_id/artifacts/verified-medium/snowflake-3.json": "31e282370d6afb8a5ba0812e24baa07333db134023105c2096100393e9fe04ae"
+  },
+  "topology": "one Python asyncio process, loopback dedicated disposable PostgreSQL 14, one dedicated store session per worker; one insert connection per client",
+  "config": {
+    "epoch_ms": 1767225600000,
+    "bits": [
+      41,
+      10,
+      12
+    ],
+    "span_ms": 100,
+    "wait_ms": 2000
+  },
+  "timer": 4.166666666666666e-08,
+  "seed_role": "repeat label; ID outputs intentionally use real clock/CSPRNG",
+  "limitations": [
+    "PostgreSQL 14 locally available, PostgreSQL 16 deployment validation pending",
+    "temporary per-client PK tables plus whole-trial global set; no existing tables changed",
+    "not hospital endpoint integration",
+    "sequence baseline technical nextval equivalent, not Records endpoint",
+    "single process concurrency; multiprocess correctness separately tested"
+  ]
+}

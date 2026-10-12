@@ -1,0 +1,34 @@
+[
+  {
+    "event": "range_committed",
+    "clock_ms": 1767225610000,
+    "start_ms": 1767225610000,
+    "end_ms": 1767225610099
+  },
+  {
+    "event": "issued",
+    "clock_ms": 1767225610000,
+    "value": "41946316800"
+  },
+  {
+    "event": "rollback_rejected",
+    "clock_ms": 1767225609999,
+    "reason": "clock_rollback"
+  },
+  {
+    "event": "closed",
+    "clock_ms": 1767225609999
+  },
+  {
+    "event": "restart_reserved",
+    "clock_ms": 1767225609999,
+    "start_ms": 1767225610100,
+    "end_ms": 1767225610199
+  },
+  {
+    "event": "restart_issued",
+    "clock_ms": 1767225610100,
+    "value": "42365747200",
+    "restart_wait_ms": 101
+  }
+]
