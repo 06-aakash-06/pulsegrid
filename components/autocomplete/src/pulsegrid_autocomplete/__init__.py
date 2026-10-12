@@ -1,0 +1,60 @@
+"""Standalone PulseGrid autocomplete component."""
+
+from .errors import AutocompleteInputError, IndexTooLarge
+from .lifecycle import (
+    DEFAULT_INDEX_LIMITS,
+    DEFAULT_REFRESH_INTERVAL_SECONDS,
+    IndexLimits,
+    IndexRegistry,
+    build_snapshot,
+    health,
+    rebuild,
+    refresh_index,
+    refresh_loop,
+)
+from .metrics import MetricsObserver, NOOP_METRICS, NoopMetrics
+from .trie import (
+    DEFAULT_RESULT_LIMIT,
+    KINDS,
+    MAX_PREFIX_CODEPOINTS,
+    MAX_RESULT_LIMIT,
+    IndexSnapshot,
+    Suggestion,
+    Trie,
+    normalize_kinds,
+    normalize_label,
+    normalize_prefix,
+    rank_suggestions,
+    suggestion_order,
+    validate_limit,
+)
+
+__all__ = [
+    "AutocompleteInputError",
+    "DEFAULT_INDEX_LIMITS",
+    "DEFAULT_REFRESH_INTERVAL_SECONDS",
+    "DEFAULT_RESULT_LIMIT",
+    "IndexLimits",
+    "IndexRegistry",
+    "IndexSnapshot",
+    "IndexTooLarge",
+    "KINDS",
+    "MAX_PREFIX_CODEPOINTS",
+    "MAX_RESULT_LIMIT",
+    "MetricsObserver",
+    "NOOP_METRICS",
+    "NoopMetrics",
+    "Suggestion",
+    "Trie",
+    "build_snapshot",
+    "health",
+    "normalize_kinds",
+    "normalize_label",
+    "normalize_prefix",
+    "rank_suggestions",
+    "rebuild",
+    "refresh_index",
+    "refresh_loop",
+    "suggestion_order",
+    "validate_limit",
+]

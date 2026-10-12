@@ -1,0 +1,72 @@
+{
+  "architecture": "arm64",
+  "baseline_algorithm": "sorted normalized-label prefix range with identical rank and limit",
+  "baseline_commit": "45273ea7fd1ea53e335942b6c38f2d81d38856ee",
+  "catalog_sha256": "8150b9eb3ac5fab3eaa343befe4fda02bb08df870531eef9b581b25f7cc12120",
+  "clients": [
+    1,
+    8,
+    32
+  ],
+  "command": "experiments/phase4/autocomplete/run.py --seed 405 --level low --output experiments/phase4/autocomplete/results/2026-10-12-low-seed405",
+  "component": "autocomplete",
+  "component_base_commit": "45273ea7fd1ea53e335942b6c38f2d81d38856ee",
+  "component_source_script_sha256": "be9e5eebf56bfb63996e0bf98a6e796d1a9f41b1815e0a9a0bb5cd89247fac71",
+  "component_source_sha256": {
+    "lifecycle.py": "87aa29f6e2cf6a06ed5e464bc2b8016304d7b96f2fcd0ae74fe3a91e6b2f814a",
+    "metrics.py": "1a6b788abaec17c8dbaea804d554fe5003eb3ad3fb73dca109f99a5c866b3d55",
+    "trie.py": "53eedce4671b18d1e8b1d7929ac4277dbe8071add5fa9b99b3908459380fcf2c"
+  },
+  "cpu_count": 12,
+  "cpu_model": "arm",
+  "dataset_seed": 405,
+  "default_index_limits": {
+    "max_entries": 100000,
+    "max_estimated_bytes": 67108864
+  },
+  "entry_count_per_owner": 1000,
+  "level": "low",
+  "memory_summary": {
+    "process_peak_rss_after_run_bytes": 87474176,
+    "process_peak_rss_before_run_bytes": 35094528,
+    "tracemalloc_peak_bytes_by_owner": {
+      "doctor": 2237728,
+      "pharmacy": 2148557
+    }
+  },
+  "memory_total_bytes": 17179869184,
+  "normalization": "Unicode NFKC, casefold, strip, collapse whitespace",
+  "operations_per_configuration_per_trial": 100000,
+  "output_sha256": {
+    "build.csv": "20f484e66ca9f250bc120330d0326739b0b9ad1b81e23983e1a2273f154755da",
+    "correctness.csv": "64d3350168a789a74d98524af21d18d00e17f522d162daed0361983f2c3789e0",
+    "default_cap.csv": "6976d839ca9b7eaaefa9f7bf9dec2b57e17aef04a7984df222936495a47fcef6",
+    "latency.svg": "125af4fd923e2f0825216bb444c0ba53899822b84180352385a7cff89dd3010c",
+    "report.md": "d0d4dafa202e2ad9626859f9d911c73ae3b6762f9e0aa67eaf81373152b882cc",
+    "summary.csv": "dfe987c69b31b2b19775966862a4c024d227dc4166ffa1fcf4f228b0b8537d29",
+    "workload.csv": "f812a728e1986d43cbc2ea07bf75ef60bf758491bc06c359e52537a501ef0da6"
+  },
+  "p95_method": "nearest-rank ceil(0.95*n)-1",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "raw_samples_or_datasets_retained": false,
+  "result_limits_correctness": [
+    10,
+    20
+  ],
+  "result_limits_timed": [
+    10,
+    20
+  ],
+  "run_finished_utc": "2026-10-12T03:10:51.733289Z",
+  "run_started_utc": "2026-10-12T03:09:19.773825Z",
+  "script_sha256": "be9e5eebf56bfb63996e0bf98a6e796d1a9f41b1815e0a9a0bb5cd89247fac71",
+  "timed_trie_limits": {
+    "max_entries": 100000,
+    "max_estimated_bytes": 536870912
+  },
+  "timer": "time.perf_counter_ns",
+  "timer_resolution_seconds": 4.166666666666666e-08,
+  "topology": "one process with closed-loop ThreadPoolExecutor clients; CPU-only",
+  "trial_count": 3
+}
