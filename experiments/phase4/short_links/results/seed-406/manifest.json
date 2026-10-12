@@ -1,0 +1,95 @@
+{
+  "benchmark": "phase4_short_links_local_adapter",
+  "collection_command": "python experiments/phase4/short_links/collect_results.py --output-dir DIR low=PATH medium=PATH high=PATH",
+  "committed_output_sha256": {
+    "latency.svg": "a33b3acaa972595d20e5bcbda9d69920b17417b8cf306d3886224c7ce134bb51",
+    "report.md": "ccee7e7b9a85d8bc3b0d98e9cdc9a7d4a46dd44ae519135443ff7c9fc60b9dda",
+    "summary.csv": "12e72caaa6869f8ca788378c8b069a73210f653877b231da516e8024c86ffea9"
+  },
+  "diagnostic_samples": null,
+  "environment": {
+    "cpu_architecture": "arm64",
+    "cpu_count": 12,
+    "fastapi": "0.143.0",
+    "memory_bytes": 17179869184,
+    "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "postgresql": "PostgreSQL 14.17 (Homebrew) on aarch64-apple-darwin24.2.0, compiled by Apple clang version 16.0.0 (clang-1600.0.26.6), 64-bit",
+    "psycopg": "3.3.6",
+    "python": "3.14.7",
+    "sqlalchemy": "2.0.54",
+    "timer": "time.perf_counter_ns",
+    "timer_resolution_seconds": 4.166666666666666e-08
+  },
+  "fixture_specs": {
+    "high": {
+      "clients": 32,
+      "dataset_alias_count_per_trial": 50000,
+      "fixture_spec_sha256": "480eff522d1e5fb97544b15e37a8c4a45e800b554fdecb0026ca3588a517748f",
+      "generator_sha256": "daabf41379f229387a304acc6835c5ccff69746072ea69746a9ebf2aa7c10650",
+      "level": "high",
+      "read_create_mix": {
+        "creates_percent": 10,
+        "reads_percent": 90
+      },
+      "seed": 406,
+      "total_fixture_alias_count": 150000
+    },
+    "low": {
+      "clients": 1,
+      "dataset_alias_count_per_trial": 1000,
+      "fixture_spec_sha256": "904d845decbf3beb225c75a0763fc1145eb0d418013389840f939ee3f1912414",
+      "generator_sha256": "daabf41379f229387a304acc6835c5ccff69746072ea69746a9ebf2aa7c10650",
+      "level": "low",
+      "read_create_mix": {
+        "creates_percent": 10,
+        "reads_percent": 90
+      },
+      "seed": 406,
+      "total_fixture_alias_count": 3000
+    },
+    "medium": {
+      "clients": 8,
+      "dataset_alias_count_per_trial": 10000,
+      "fixture_spec_sha256": "b14bbc65a4b922d51657677ef6822ba63c6229a67ee0a21109004ed4993552db",
+      "generator_sha256": "daabf41379f229387a304acc6835c5ccff69746072ea69746a9ebf2aa7c10650",
+      "level": "medium",
+      "read_create_mix": {
+        "creates_percent": 10,
+        "reads_percent": 90
+      },
+      "seed": 406,
+      "total_fixture_alias_count": 30000
+    }
+  },
+  "generation_command": "python experiments/phase4/short_links/run.py --seed SEED --level LEVEL --output PATH",
+  "limitations": [
+    "Coordinator route mounting and migration 0010 are not in this Agent 5 checkout.",
+    "The local port adapter uses synthetic in-process principals and direct route calls, not JWT, ASGI network, Traefik or production middleware.",
+    "Creation effects use a no-op test stage_effect port; integrated audit/outbox transaction cost is not measured.",
+    "The baseline and proposed paths use the same disposable PostgreSQL and synthetic owner rows; no unauthenticated or raw QR path is measured."
+  ],
+  "packaged_at_utc": "2026-10-12T08:24:37.445078Z",
+  "raw_samples": {
+    "high": {
+      "local_gzip_sha256": "83aee09684ebeddcae85c3b2a5babf4aa749634ef9445471facb8e34a51a6bc1",
+      "sample_count": 136682,
+      "source_csv_sha256": "8bf921edd5539fb60f346b5a0358335b58b540e925a2aac1d43d1961a00fe779"
+    },
+    "low": {
+      "local_gzip_sha256": "d4baabac78f0269e47ab02c9593431a7b4a2552822d9902a8b13971fc7286b90",
+      "sample_count": 112995,
+      "source_csv_sha256": "626cef703abc386d74b145709f5573eb58fdd8644e90eb22e771b913a2738044"
+    },
+    "medium": {
+      "local_gzip_sha256": "71852bd41313dd28dbe52206a879cfa340f190ea9228eac05ed21b2bb52cc00c",
+      "sample_count": 169529,
+      "source_csv_sha256": "f3cb720396cdc9074270d3efa654ab22f0c75841db80740815059635a9a41b82"
+    }
+  },
+  "run_id": "seed-406",
+  "source_report_sha256": {
+    "high": "fa2a08d0b59e5a7e84bab4541dd8f44222b8c47131eb98e04bf7a52d685c1d12",
+    "low": "b2fea591aa1ad25bc9786128cd7c0bf9fb2df78ffc22db504980f857cf739048",
+    "medium": "2d0666872d54320f8ee38de1b00d611847775dd87f647fc2aaea0eeb39fde2f0"
+  }
+}

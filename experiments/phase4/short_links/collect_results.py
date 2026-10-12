@@ -158,6 +158,8 @@ def _latency_svg(reports: dict[str, tuple[Path, dict]]) -> str:
 def _report_markdown(reports: dict[str, tuple[Path, dict]], diagnostic_types: dict[str, int] | None = None) -> str:
     first = next(iter(reports.values()))[1]
     environment = first["environment"]
+    seed = first["seed"]
+    sensitivity_seeds = sorted({404, 405, 406} - {seed})
     high_errors = []
     for trial in reports["high"][1]["trials"]:
         proposed = trial["proposed"]["operations"]
@@ -197,7 +199,7 @@ def _report_markdown(reports: dict[str, tuple[Path, dict]], diagnostic_types: di
         "- Throughput is not a like-for-like ratio: the baseline workload is 100% workflow GET, while proposed traffic is a 90/10 resolution/create mix. Compare per-operation latency and report throughput alongside that mix.",
         "- `summary.csv` separates successful latency percentiles from failed-operation percentiles; errors are not omitted from the raw samples.",
         "- Random-alias collisions were zero in measured trials. Forced digest/unique-index collisions and retry bounds are covered by correctness tests.",
-        "- Seeds 405 and 406 are distribution-sensitivity repeats and were not run in this artifact.",
+        f"- Other distribution-sensitivity seeds not included in this per-seed artifact: {', '.join(map(str, sensitivity_seeds))}.",
         "",
         "## Navigation sample",
         "",
@@ -208,7 +210,7 @@ def _report_markdown(reports: dict[str, tuple[Path, dict]], diagnostic_types: di
     ])
     if diagnostic_types:
         diagnostic_count = sum(diagnostic_types.values())
-        lines.insert(lines.index("- Seeds 405 and 406 are distribution-sensitivity repeats and were not run in this artifact."),
+        lines.insert(lines.index(f"- Other distribution-sensitivity seeds not included in this per-seed artifact: {', '.join(map(str, sensitivity_seeds))}."),
                      f"- High-load measured proposed-operation errors were {', '.join(map(str, high_errors))} across trials. A separate same-seed diagnostic run classified {diagnostic_count} exceptions as {', '.join(f'`{name}`={count}' for name, count in sorted(diagnostic_types.items()))}. The test fixture has a 20-connection pool, no overflow and a 2-second pool-acquisition timeout. This is consistent with pool pressure at 32 clients, but the diagnostic captured exception classes rather than the exception module, so the exact timeout source is not confirmed.")
     return "\n".join(lines)
 

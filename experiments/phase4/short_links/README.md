@@ -54,3 +54,11 @@ adapter and repository behavior; they do not measure JWT middleware, ASGI/networ
 Traefik, coordinator migration 0010, production locks, or integrated audit/outbox
 cost. The coordinator must repeat this comparison after route mounting and its
 real lock/effect ports are wired.
+
+## Recorded results
+
+The fixed benchmark plan was run with seeds 404, 405 and 406 at all three
+levels. Each `results/seed-<seed>/` directory contains its manifest, per-trial
+summary CSV, report and latency SVG. Seed 404 also includes a separate
+exception-class diagnostic for the 32-client timeout errors. Raw sample files
+are kept locally in ignored `raw_samples/` directories.
