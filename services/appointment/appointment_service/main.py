@@ -33,7 +33,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
-        from . import phase4
+        from . import event_consumer, phase4
         tasks=[]
         try:
             if application.state.phase3_enabled:
@@ -45,8 +45,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 from .integration_workers import worker_loop
                 tasks=[asyncio.create_task(worker_loop(application))]
             await phase4.start(application)
+            await event_consumer.start(application)
             yield
         finally:
+            await event_consumer.close(application)
             for task in tasks:task.cancel()
             if tasks:await asyncio.gather(*tasks,return_exceptions=True)
             await phase4.close(application)
