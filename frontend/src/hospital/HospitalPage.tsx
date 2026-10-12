@@ -13,7 +13,7 @@ import {
 } from "./patientDoctor";
 import { Consultations, Prescriptions, RecordsPage } from "./records";
 import { MedicineCatalog } from "./pharmacy";
-import { BillingPage, EmergencyPage } from "./billingEmergency";
+import { BillingPage, EmergencyPage, InsurancePage } from "./billingEmergency";
 
 export function HospitalPage({
   workspace,
@@ -68,6 +68,7 @@ export function HospitalPage({
   )
     content = <BillingPage staff />;
   if (role === "/emergency") content = <EmergencyPage staff />;
+  if (role === "/billing" && route === "insurance") content = <InsurancePage />;
   if (role === "/admin") {
     if (route === "dashboard")
       content = (

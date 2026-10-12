@@ -31,9 +31,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
+        from . import phase4
+        await phase4.start(application)
         try:
             yield
         finally:
+            await phase4.close(application)
+            from .admission import close as close_admission
+            await close_admission(application)
             await database.close()
 
     application = FastAPI(
@@ -55,10 +60,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.state.logger = get_service_logger(
         SERVICE_NAME, resolved_settings.log_level
     )
+    from .phase4_metrics import mount as mount_metrics
+    mount_metrics(application)
     application.include_router(health_router)
     application.include_router(
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
+    from . import phase4
+    phase4.mount(application)
     application.include_router(api_router)
     application.include_router(internal_router)
     if auth_config.origins:
@@ -78,8 +87,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "traceparent",
                 "If-Match",
             ],
-            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID"],
+            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID", "Retry-After"],
         )
+    from .admission import mount as mount_admission
+    mount_admission(application,'pharmacy',error_response)
     install_request_context(application)
 
     @application.exception_handler(StarletteHTTPException)

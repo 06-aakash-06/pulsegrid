@@ -37,10 +37,15 @@ def create_app(
         application.state.domain_http_client = httpx.AsyncClient(
             follow_redirects=False, trust_env=False
         )
+        from . import phase4
         try:
+            await phase4.start(application)
             yield
         finally:
             await application.state.domain_http_client.aclose()
+            await phase4.close(application)
+            from .admission import close as close_admission
+            await close_admission(application)
             await database.close()
 
     application = FastAPI(
@@ -60,12 +65,16 @@ def create_app(
     application.state.logger = get_service_logger(
         SERVICE_NAME, resolved_settings.log_level
     )
+    from .phase4_metrics import mount as mount_metrics
+    mount_metrics(application)
     application.include_router(health_router)
     application.include_router(
         health_router, prefix=API_PREFIX, include_in_schema=False
     )
     from .api.workflow import router as workflow_router
     application.include_router(workflow_router)
+    from . import phase4
+    phase4.mount(application)
     application.include_router(api_router)
     if auth_config.origins:
         application.add_middleware(
@@ -84,8 +93,10 @@ def create_app(
                 "traceparent",
                 "If-Match",
             ],
-            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID"],
+            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID", "Retry-After"],
         )
+    from .admission import mount as mount_admission
+    mount_admission(application,'billing',error_response)
     install_request_context(application)
 
     @application.exception_handler(StarletteHTTPException)

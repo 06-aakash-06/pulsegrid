@@ -14,6 +14,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [react()],
+    build: { rollupOptions: { output: { manualChunks(id) {
+      if (id.includes("@zxing")) return "qr-decoder";
+      if (id.includes("node_modules/qrcode")) return "qr-encoder";
+    } } } },
     test: {
       environment: "jsdom",
       setupFiles: ["./src/test/setup.ts"],

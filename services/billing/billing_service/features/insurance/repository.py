@@ -63,11 +63,12 @@ class SQLAlchemyInsuranceRepository:
         return (CrawlSource(source_id=f"provider:{provider_id}", start_path=path),)
 
     async def begin_run(self, provider_id: str) -> Mapping[str, Any]:
+        allocated_id=await self._allocate_id()
         async with self._read_session() as session:
             async with session.begin():
-                return await self.enqueue_run(session, provider_id)
+                return await self.enqueue_run(session, provider_id, allocated_id=allocated_id)
 
-    async def enqueue_run(self, session: Any, provider_id: str) -> Mapping[str, Any]:
+    async def enqueue_run(self, session: Any, provider_id: str, *, allocated_id: int) -> Mapping[str, Any]:
         from sqlalchemy import select
 
         from ...models import crawler_runs, insurance_providers
@@ -95,7 +96,7 @@ class SQLAlchemyInsuranceRepository:
         ).mappings().first()
         if active is not None:
             return dict(active)
-        run_id = int(await self._allocate_id())
+        run_id = int(allocated_id)
         await session.execute(
             crawler_runs.insert().values(
                 id=run_id,
@@ -142,6 +143,7 @@ class SQLAlchemyInsuranceRepository:
 
         from ...models import crawler_runs, insurance_providers
 
+        reserved_rule_ids=iter([int(await self._allocate_id()) for _ in policies])
         accepted = 0
         duplicates = 0
         quarantined = 0
@@ -290,7 +292,7 @@ class SQLAlchemyInsuranceRepository:
                         text(
                             "SELECT content_hash FROM insurance_rules WHERE provider_id=:provider_id "
                             "AND policy_code=:policy_code "
-                            "AND (rule_data->'policy'->>'revision')::bigint=:source_revision FOR UPDATE"
+                            "AND (rule_data->'policy'->>'revision')::bigint=:source_revision"
                         ),
                         {
                             "provider_id": int(outcome.provider_id),
@@ -323,7 +325,7 @@ class SQLAlchemyInsuranceRepository:
                         {"provider_id": int(outcome.provider_id)},
                     )
                     storage_revision = int(storage_revision_result.scalar_one())
-                    rule_id = int(await self._allocate_id())
+                    rule_id = next(reserved_rule_ids)
                     rule_data = {
                         "policy": rule.to_dict(),
                         "source": {
@@ -517,9 +519,9 @@ class SQLAlchemyInsuranceRepository:
             after_id = int(validate_id(cursor, name="cursor"))
         result = await session.execute(
             text(
-                "SELECT p.id,p.synthetic_slug,MAX(r.fetched_at) FILTER (WHERE r.state='complete') AS last_success_at "
+                "SELECT p.id,p.version,p.synthetic_slug,MAX(r.fetched_at) FILTER (WHERE r.state='complete') AS last_success_at "
                 "FROM insurance_providers p LEFT JOIN crawler_runs r ON r.provider_id=p.id "
-                "WHERE p.id>:after_id GROUP BY p.id,p.synthetic_slug ORDER BY p.id LIMIT :limit"
+                "WHERE p.id>:after_id GROUP BY p.id,p.version,p.synthetic_slug ORDER BY p.id LIMIT :limit"
             ),
             {"after_id": after_id, "limit": limit + 1},
         )
@@ -530,6 +532,7 @@ class SQLAlchemyInsuranceRepository:
             {
                 "id": str(row["id"]),
                 "synthetic_slug": row["synthetic_slug"],
+                "version": int(row["version"]),
                 "last_success_at": row["last_success_at"].astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
                 if row["last_success_at"] is not None
                 else None,
@@ -583,6 +586,10 @@ class SQLAlchemyInsuranceRepository:
 
         if not isinstance(policy_code, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", policy_code):
             return None
+        latest=(await session.execute(text("SELECT error_code FROM crawler_runs WHERE provider_id=:provider_id AND fetched_at IS NOT NULL ORDER BY fetched_at DESC,id DESC LIMIT 1"),{'provider_id':int(provider_id)})).scalar_one_or_none()
+        if latest=='source_revision_conflict':
+            from .contracts import InsuranceValidationError
+            raise InsuranceValidationError('source_revision_conflict')
         result = await session.execute(
             text(
                 "SELECT r.id,r.provider_id,r.source_run_id,r.rule_data,r.content_hash,run.fetched_at,CURRENT_TIMESTAMP AS database_now "

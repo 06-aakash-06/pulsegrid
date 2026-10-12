@@ -411,7 +411,9 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
   }
 
   async function requestRefresh(providerId: string) {
-    if (!providerEtag || pendingProvider) {
+    const version=providers.find(provider => provider.id === providerId)?.version;
+    const etag=version ? `"${version}"` : providerEtag;
+    if (!etag || pendingProvider) {
       if (!providerEtag) setRefreshError(new Error("Billing did not provide a version for the provider list. Refresh cannot be requested safely."));
       return;
     }
@@ -429,7 +431,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
         {
           method: "POST",
           body: {},
-          ifMatch: providerEtag,
+          ifMatch: etag,
           idempotencyKey: key,
           referrerPolicy: "no-referrer",
         },
@@ -528,7 +530,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
               <button
                 className="button button--secondary button--small"
                 type="button"
-                disabled={loading || pendingProvider !== null || !providerEtag}
+                disabled={loading || pendingProvider !== null || (!provider.version && !providerEtag)}
                 onClick={() => void requestRefresh(provider.id)}
               >
                 {pendingProvider === provider.id ? "Requesting…" : "Refresh source"}
@@ -568,7 +570,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
           {loadingMore ? "Loading…" : "Load more providers"}
         </button>
       )}
-      {!providerEtag && !loading && !loadError && providers.length > 0 && (
+      {!providerEtag && providers.some(provider => !provider.version) && !loading && !loadError && providers.length > 0 && (
         <p className="phase4-inline-status">Provider refresh is unavailable because Billing did not return an ETag.</p>
       )}
     </section>

@@ -1,0 +1,22 @@
+{
+  "seed": 404,
+  "keys": 10000,
+  "physical_counts": {
+    "cache_a": 5341,
+    "cache_b": 4659
+  },
+  "ring_add_movement": 0.2856,
+  "modulo_add_movement": 0.6731,
+  "epoch_miss": true,
+  "set_mean_ms": 0.0848684657,
+  "set_p95_ms": 0.111916,
+  "added_actual_counts": {
+    "cache_a": 3608,
+    "cache_b": 3536,
+    "cache_c": 2856
+  },
+  "ttl_delete": true,
+  "limitations": [
+    "No replication or HA claim."
+  ]
+}

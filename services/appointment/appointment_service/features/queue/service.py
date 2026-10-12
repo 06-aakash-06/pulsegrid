@@ -270,6 +270,8 @@ async def complete_from_records(session, context, records_snapshot) -> None:
         m.appointment_workflows.c.appointment_id == aid).values(
         state='completed', version=workflow['version']+1, updated_at=context.now))
     await _bump_snapshot(session, entry['doctor_id'], entry['local_date'], context.now)
+    from ..checkin.registration import revoke_for_booking_change
+    await revoke_for_booking_change(session,context,aid)
     core.stage_effect(session, context, 'workflow_completed', aid, workflow['version']+1,
         {'resource_id': str(aid), 'version': workflow['version']+1, 'state': 'completed'})
 

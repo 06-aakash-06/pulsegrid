@@ -64,7 +64,7 @@ def test_retained_upgrade_preserves_all_history(postgres_cluster):
         assert result.returncode==0,result.stderr
         with psycopg.connect(**kwargs) as conn:
             assert snapshot(conn)==before
-            assert conn.execute('SELECT version_num FROM alembic_version').fetchone()==('0009_phase3_registration_history',)
+            assert conn.execute('SELECT version_num FROM alembic_version').fetchone()==('0011_phase4_alias_parent_guard',)
             assert conn.execute('SELECT count(*) FROM appointment_workflows').fetchone()==(0,)
             assert conn.execute("SELECT has_table_privilege('appointment_app','appointment_workflows','INSERT')").fetchone()==(True,)
             constraints=conn.execute("SELECT conname FROM pg_constraint WHERE conrelid='appointments'::regclass").fetchall()

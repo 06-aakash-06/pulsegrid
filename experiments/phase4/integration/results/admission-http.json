@@ -1,0 +1,13 @@
+{
+  "attempted": 100,
+  "admitted": 64,
+  "limited": 36,
+  "errors": 0,
+  "elapsed_seconds": 1.1561457920033718,
+  "attempted_throughput": 86.4942818558547,
+  "successful_throughput": 55.35634038774701,
+  "all_mean_ms": 35.647419989836635,
+  "all_p95_ms": 112.3944919963833,
+  "emergency_business_validation_after_search_overload": 422,
+  "spoofed_x_forwarded_for_cannot_expand_principal_quota": true
+}

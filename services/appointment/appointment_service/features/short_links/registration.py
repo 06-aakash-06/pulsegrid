@@ -578,6 +578,19 @@ def register_routes(app, ports: ShortLinksPorts) -> None:
                 _fail("not_found", 404)
             digest = alias_digest(alias)
 
+            # Release the lookup connection before the owner scope port opens its
+            # own bounded session/current-authority call. Nested acquisition can
+            # deadlock a saturated pool even though each individual query is fast.
+            async with ports.read_session() as session:
+                repository = ShortLinkRepository(session)
+                initial, first_now = await repository.expired_or_revoked_by_digest(digest)
+                if initial is None or initial['revoked_at'] is not None or initial['expires_at'] <= first_now:
+                    _fail('not_found',404)
+                appointment_id=str(initial['appointment_id'])
+            try:
+                principal=await ports.authorize(request,RESOLUTION_ROLES,appointment_id,False)
+            except HTTPException as exc:
+                raise _safe_authorize_error(exc)
             async with ports.read_session() as session:
                 async with session.begin():
                     # Version and fingerprint checks reject mixed snapshots if a
@@ -592,12 +605,8 @@ def register_routes(app, ports: ShortLinksPorts) -> None:
                         _fail("not_found", 404)
                     kind = link["purpose"] if link["purpose"] in PURPOSES else None
                     appointment_id = str(link["appointment_id"])
-                    try:
-                        principal = await ports.authorize(
-                            request, RESOLUTION_ROLES, appointment_id, False
-                        )
-                    except HTTPException as exc:
-                        raise _safe_authorize_error(exc)
+                    if str(link['appointment_id']) != appointment_id:
+                        _fail('not_found',404)
                     booking = await repository.booking(int(appointment_id))
                     workflow = await ports.read_workflow(session, appointment_id)
                     if (

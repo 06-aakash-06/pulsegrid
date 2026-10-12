@@ -1,4 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { ShortLinkLanding } from "../phase4";
+import { useAuth } from "../auth/authContext";
 import { AuthProvider } from "../auth/authContext";
 import { RequireRole, NotFoundPage } from "../components/RouteAccess";
 import { AuthLayout } from "../layouts/AuthLayout";
@@ -7,7 +10,12 @@ import { WorkspaceLayout } from "../layouts/WorkspaceLayout";
 import { workspaces } from "../navigation/workspaces";
 import { LoginPage, RegistrationPage } from "../pages/AuthPages";
 import { HomePage } from "../pages/HomePage";
-import { HospitalPage } from "../hospital/HospitalPage";
+const HospitalPage = lazy(() => import("../hospital/HospitalPage").then(module => ({ default: module.HospitalPage })));
+
+function ShortLinkPage() {
+  const { state, api } = useAuth();
+  return <ShortLinkLanding api={api} authState={state.status} roleHints={state.status === "authenticated" ? state.roleHints : []} />;
+}
 
 export function App() {
   return (
@@ -22,6 +30,7 @@ export function App() {
 export function PulseGridRoutes() {
   return (
     <Routes>
+      <Route path="/short-link" element={<ShortLinkPage />} />
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />
       </Route>
@@ -35,7 +44,7 @@ export function PulseGridRoutes() {
             <Route index element={<Navigate replace to="dashboard" />} />
             {workspace.pages.map((page) => (
               <Route
-                element={<HospitalPage key={`${workspace.basePath}/${page.path}`} page={page} workspace={workspace} />}
+                element={<Suspense fallback={<p role="status">Loading hospital workspace…</p>}><HospitalPage key={`${workspace.basePath}/${page.path}`} page={page} workspace={workspace} /></Suspense>}
                 key={page.path}
                 path={page.path}
               />

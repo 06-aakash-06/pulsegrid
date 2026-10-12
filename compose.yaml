@@ -82,7 +82,9 @@ services:
       retries: 20
   patient:
     image: pulsegrid-patient:local
-    build: ./services/patient
+    build:
+      context: .
+      dockerfile: services/patient/Dockerfile
     environment:
       PULSEGRID_PATIENT_DB_HOST: "postgres"
       PULSEGRID_PATIENT_DB_NAME: "patient_db"
@@ -114,7 +116,9 @@ services:
       start_period: 15s
   patient-migrate:
     image: pulsegrid-patient:local
-    build: ./services/patient
+    build:
+      context: .
+      dockerfile: services/patient/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_PATIENT_DB_HOST: postgres
@@ -130,7 +134,9 @@ services:
     cpus: 0.5
   doctor:
     image: pulsegrid-doctor:local
-    build: ./services/doctor
+    build:
+      context: .
+      dockerfile: services/doctor/Dockerfile
     environment:
       PULSEGRID_DOCTOR_DB_HOST: "postgres"
       PULSEGRID_DOCTOR_DB_NAME: "doctor_db"
@@ -162,7 +168,9 @@ services:
       start_period: 15s
   doctor-migrate:
     image: pulsegrid-doctor:local
-    build: ./services/doctor
+    build:
+      context: .
+      dockerfile: services/doctor/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_DOCTOR_DB_HOST: postgres
@@ -178,7 +186,9 @@ services:
     cpus: 0.5
   appointment:
     image: pulsegrid-appointment:local
-    build: ./services/appointment
+    build:
+      context: .
+      dockerfile: services/appointment/Dockerfile
     environment:
       PULSEGRID_APPOINTMENT_PHASE3_ENABLED: "true"
       PULSEGRID_APPOINTMENT_DB_HOST: "postgres"
@@ -211,7 +221,9 @@ services:
       start_period: 15s
   appointment-migrate:
     image: pulsegrid-appointment:local
-    build: ./services/appointment
+    build:
+      context: .
+      dockerfile: services/appointment/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_APPOINTMENT_DB_HOST: postgres
@@ -227,7 +239,9 @@ services:
     cpus: 0.5
   records:
     image: pulsegrid-records:local
-    build: ./services/records
+    build:
+      context: .
+      dockerfile: services/records/Dockerfile
     environment:
       PULSEGRID_RECORDS_WORKFLOW_GATE: "true"
       PULSEGRID_RECORDS_DB_HOST: "postgres"
@@ -260,7 +274,9 @@ services:
       start_period: 15s
   records-migrate:
     image: pulsegrid-records:local
-    build: ./services/records
+    build:
+      context: .
+      dockerfile: services/records/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_RECORDS_DB_HOST: postgres
@@ -276,7 +292,9 @@ services:
     cpus: 0.5
   pharmacy:
     image: pulsegrid-pharmacy:local
-    build: ./services/pharmacy
+    build:
+      context: .
+      dockerfile: services/pharmacy/Dockerfile
     environment:
       PULSEGRID_PHARMACY_DB_HOST: "postgres"
       PULSEGRID_PHARMACY_DB_NAME: "pharmacy_db"
@@ -308,7 +326,9 @@ services:
       start_period: 15s
   pharmacy-migrate:
     image: pulsegrid-pharmacy:local
-    build: ./services/pharmacy
+    build:
+      context: .
+      dockerfile: services/pharmacy/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_PHARMACY_DB_HOST: postgres
@@ -324,7 +344,9 @@ services:
     cpus: 0.5
   billing:
     image: pulsegrid-billing:local
-    build: ./services/billing
+    build:
+      context: .
+      dockerfile: services/billing/Dockerfile
     environment:
       PULSEGRID_BILLING_DB_HOST: "postgres"
       PULSEGRID_BILLING_DB_NAME: "billing_db"
@@ -356,7 +378,9 @@ services:
       start_period: 15s
   billing-migrate:
     image: pulsegrid-billing:local
-    build: ./services/billing
+    build:
+      context: .
+      dockerfile: services/billing/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_BILLING_DB_HOST: postgres
@@ -372,7 +396,9 @@ services:
     cpus: 0.5
   emergency:
     image: pulsegrid-emergency:local
-    build: ./services/emergency
+    build:
+      context: .
+      dockerfile: services/emergency/Dockerfile
     environment:
       PULSEGRID_EMERGENCY_DB_HOST: "postgres"
       PULSEGRID_EMERGENCY_DB_NAME: "emergency_db"
@@ -404,7 +430,9 @@ services:
       start_period: 15s
   emergency-migrate:
     image: pulsegrid-emergency:local
-    build: ./services/emergency
+    build:
+      context: .
+      dockerfile: services/emergency/Dockerfile
     command: [alembic, upgrade, head]
     environment:
       PULSEGRID_EMERGENCY_DB_HOST: postgres

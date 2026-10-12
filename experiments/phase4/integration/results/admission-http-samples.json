@@ -1,0 +1,602 @@
+[
+  {
+    "status": 200,
+    "ms": 42.95934399124235,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 84.03733499289956,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 105.63688199908938,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 14.978940002038144,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 9.257842000806704,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 71.86379800259601,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 8.76796200464014,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 22.279220997006632,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 59.56604999664705,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 6.954944008612074,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 11.345113001880236,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 9.886307001579553,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 3.946123004425317,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 101.88667899637949,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 12.892753002233803,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 79.33416399464477,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 4.853672988247126,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 9.502136992523447,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 21.81604999350384,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 53.74645101255737,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 6.95377700321842,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 6.391062997863628,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 10.383436005213298,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 8.893088001059368,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 13.435674991342239,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 5.6453479919582605,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 136.4567300042836,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 13.309590998687781,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 13.640468998346478,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 100.00536899315193,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 11.344197002472356,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 70.34994800051209,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 23.27831499860622,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 7.288198001333512,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 8.488084000418894,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 3.8867889961693436,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 51.84859900327865,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 6.064935005269945,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 6.0628520004684106,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 129.10615700820927,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 17.2768799966434,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 16.362328999093734,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 104.83012499753386,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 15.569987997878343,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 8.592710000812076,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 6.309604999842122,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 5.1196749991504475,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 57.77340699569322,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 8.268164994660765,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 7.7926609956193715,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 6.019518012180924,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 58.71808298979886,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 98.23347500059754,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 75.98246399720665,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 112.3944919963833,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 30.61222100222949,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 73.40631300758105,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 7.785244000842795,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 71.48450199747458,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 7.935828005429357,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 27.007851007510908,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 11.425780001445673,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 4.878840001765639,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 5.7725570077309385,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 164.39496600651182,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 36.591697004041635,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 8.600668996223249,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 61.412526993080974,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 16.152786003658548,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 73.7134409864666,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 10.133433999726549,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 4.997715994250029,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 3.2607410103082657,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 2.474066990544088,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 4.865089998929761,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 6.9136929960222915,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 105.31058700871654,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 125.2387439890299,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 76.73601199348923,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 29.984090011566877,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 8.17899800313171,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 90.966194999055,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 16.52495599410031,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 9.8604310041992,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 12.677542996243574,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 5.753432997153141,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 27.043602007324807,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 3.8816220039734617,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 200,
+    "ms": 123.0690560041694,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 13.016003998927772,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 47.01013400335796,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 47.56780598836485,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 73.8174410071224,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 15.082233003340662,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 18.383349000941962,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 200,
+    "ms": 71.65016999351792,
+    "retry_after": null,
+    "code": null
+  },
+  {
+    "status": 429,
+    "ms": 7.760327003779821,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 9.264050997444429,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 3.9441650005755946,
+    "retry_after": "1",
+    "code": "rate_limited"
+  },
+  {
+    "status": 429,
+    "ms": 20.61312200385146,
+    "retry_after": "1",
+    "code": "rate_limited"
+  }
+]

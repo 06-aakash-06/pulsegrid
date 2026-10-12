@@ -1,0 +1,383 @@
+services:
+  redis:
+    command:
+    - sh
+    - -c
+    - cp /run/phase4/admission.acl /tmp/phase4.acl && chown redis:redis /tmp/phase4.acl
+      && chmod 400 /tmp/phase4.acl && exec /usr/local/bin/docker-entrypoint.sh redis-server
+      --appendonly yes --aclfile /tmp/phase4.acl --maxmemory 64mb --maxmemory-policy
+      noeviction
+    volumes:
+    - ./secrets/phase4/admission.acl:/run/phase4/admission.acl:ro
+    networks:
+    - backbone
+    - admission
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - REDISCLI_AUTH=$$(sed -n 's/.* >\([^ ]*\).*/\1/p' /run/phase4/admission.acl)
+        redis-cli --user admission ping | grep -q PONG
+  cache_a:
+    image: redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
+    command:
+    - sh
+    - -c
+    - cp /run/phase4/cache.acl /tmp/phase4.acl && chown redis:redis /tmp/phase4.acl
+      && chmod 400 /tmp/phase4.acl && exec /usr/local/bin/docker-entrypoint.sh redis-server
+      --aclfile /tmp/phase4.acl --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+    - ./secrets/phase4/cache.acl:/run/phase4/cache.acl:ro
+    networks:
+    - cache
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - REDISCLI_AUTH=$$(sed -n 's/.* >\([^ ]*\).*/\1/p' /run/phase4/cache.acl) redis-cli
+        --user doctor ping | grep -q PONG
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  cache_b:
+    image: redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499
+    command:
+    - sh
+    - -c
+    - cp /run/phase4/cache.acl /tmp/phase4.acl && chown redis:redis /tmp/phase4.acl
+      && chmod 400 /tmp/phase4.acl && exec /usr/local/bin/docker-entrypoint.sh redis-server
+      --aclfile /tmp/phase4.acl --maxmemory 64mb --maxmemory-policy allkeys-lru
+    volumes:
+    - ./secrets/phase4/cache.acl:/run/phase4/cache.acl:ro
+    networks:
+    - cache
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - REDISCLI_AUTH=$$(sed -n 's/.* >\([^ ]*\).*/\1/p' /run/phase4/cache.acl) redis-cli
+        --user doctor ping | grep -q PONG
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  patient:
+    build:
+      context: .
+      dockerfile: services/patient/Dockerfile
+    environment:
+      PULSEGRID_PATIENT_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_PATIENT_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_PATIENT_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_PATIENT_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_PATIENT_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_PATIENT_DB_MAX_OVERFLOW: '0'
+    networks:
+    - edge
+    - database
+    - admission
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+  patient-migrate:
+    build:
+      context: .
+      dockerfile: services/patient/Dockerfile
+  doctor:
+    build:
+      context: .
+      dockerfile: services/doctor/Dockerfile
+    environment:
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_DOCTOR_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_DOCTOR_PHASE4_AUTOCOMPLETE_ENABLED: 'true'
+      PULSEGRID_DOCTOR_PHASE4_CACHE_ENABLED: 'true'
+      PULSEGRID_DOCTOR_PHASE4_CACHE_CONFIG_FILE: /run/phase4/cache.json
+      PULSEGRID_DOCTOR_DB_MAX_OVERFLOW: '0'
+    networks: &id001
+    - edge
+    - database
+    - admission
+    - cache
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+    - ./secrets/phase4/cache.json:/run/phase4/cache.json:ro
+  doctor-migrate:
+    build:
+      context: .
+      dockerfile: services/doctor/Dockerfile
+  appointment:
+    build:
+      context: .
+      dockerfile: services/appointment/Dockerfile
+    environment:
+      PULSEGRID_APPOINTMENT_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_APPOINTMENT_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_APPOINTMENT_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_APPOINTMENT_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_APPOINTMENT_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_APPOINTMENT_PHASE4_REPLICA_CODE: '0'
+      PULSEGRID_APPOINTMENT_PHASE4_WORKER_ID: '256'
+      PULSEGRID_APPOINTMENT_PHASE4_SHORT_LINKS_ENABLED: 'true'
+      PULSEGRID_APPOINTMENT_DB_MAX_OVERFLOW: '0'
+    networks:
+    - edge
+    - database
+    - admission
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+  appointment-migrate:
+    build:
+      context: .
+      dockerfile: services/appointment/Dockerfile
+  records:
+    build:
+      context: .
+      dockerfile: services/records/Dockerfile
+    environment:
+      PULSEGRID_RECORDS_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_RECORDS_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_RECORDS_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_RECORDS_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_RECORDS_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_RECORDS_DB_MAX_OVERFLOW: '0'
+    networks:
+    - edge
+    - database
+    - admission
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+  records-migrate:
+    build:
+      context: .
+      dockerfile: services/records/Dockerfile
+  pharmacy:
+    build:
+      context: .
+      dockerfile: services/pharmacy/Dockerfile
+    environment:
+      PULSEGRID_PHARMACY_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_PHARMACY_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_PHARMACY_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_PHARMACY_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_PHARMACY_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_PHARMACY_PHASE4_AUTOCOMPLETE_ENABLED: 'true'
+      PULSEGRID_PHARMACY_DB_MAX_OVERFLOW: '0'
+    networks:
+    - edge
+    - database
+    - admission
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+  pharmacy-migrate:
+    build:
+      context: .
+      dockerfile: services/pharmacy/Dockerfile
+  billing:
+    build:
+      context: .
+      dockerfile: services/billing/Dockerfile
+    environment:
+      PULSEGRID_BILLING_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_BILLING_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_BILLING_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_BILLING_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_BILLING_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_BILLING_PHASE4_REPLICA_CODE: '0'
+      PULSEGRID_BILLING_PHASE4_WORKER_ID: '640'
+      PULSEGRID_BILLING_PHASE4_INSURANCE_ENABLED: 'true'
+      PULSEGRID_BILLING_PHASE4_SOURCES_FILE: /run/phase4/sources.json
+      PULSEGRID_BILLING_DB_MAX_OVERFLOW: '0'
+    networks:
+    - edge
+    - database
+    - admission
+    - synthetic
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+    - ./secrets/phase4/sources.json:/run/phase4/sources.json:ro
+  billing-migrate:
+    build:
+      context: .
+      dockerfile: services/billing/Dockerfile
+  emergency:
+    build:
+      context: .
+      dockerfile: services/emergency/Dockerfile
+    environment:
+      PULSEGRID_EMERGENCY_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_EMERGENCY_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_EMERGENCY_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_EMERGENCY_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_EMERGENCY_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_EMERGENCY_DB_MAX_OVERFLOW: '0'
+    networks:
+    - edge
+    - database
+    - admission
+    volumes:
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+  emergency-migrate:
+    build:
+      context: .
+      dockerfile: services/emergency/Dockerfile
+  fixture_1:
+    image: pulsegrid-synthetic-insurance:local
+    build:
+      context: infra/phase4/fixtures
+    environment:
+      PROVIDER_ID: '4101'
+      POLICY_REVISION: ${PHASE4_FIXTURE_REVISION:-1}
+      COVERAGE_BPS: ${PHASE4_FIXTURE_COVERAGE_BPS:-5000}
+    networks:
+      synthetic:
+        ipv4_address: 172.29.44.11
+    read_only: true
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    mem_limit: 64m
+    cpus: 0.1
+    restart: unless-stopped
+  fixture_2:
+    image: pulsegrid-synthetic-insurance:local
+    build:
+      context: infra/phase4/fixtures
+    environment:
+      PROVIDER_ID: '4102'
+    networks:
+      synthetic:
+        ipv4_address: 172.29.44.12
+    read_only: true
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    mem_limit: 64m
+    cpus: 0.1
+    restart: unless-stopped
+  fixture_3:
+    image: pulsegrid-synthetic-insurance:local
+    build:
+      context: infra/phase4/fixtures
+    environment:
+      PROVIDER_ID: '4103'
+    networks:
+      synthetic:
+        ipv4_address: 172.29.44.13
+    read_only: true
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    mem_limit: 64m
+    cpus: 0.1
+    restart: unless-stopped
+  doctor_replica:
+    image: pulsegrid-auth-doctor:local
+    environment:
+      PULSEGRID_DOCTOR_DB_HOST: postgres
+      PULSEGRID_DOCTOR_DB_NAME: doctor_db
+      PULSEGRID_DOCTOR_DB_USER: doctor_app
+      PULSEGRID_DOCTOR_DB_PASSWORD: ${DOCTOR_DB_PASSWORD:?Generate .env first}
+      FORWARDED_ALLOW_IPS: ${GATEWAY_IP:-172.29.40.2}
+      PULSEGRID_DOCTOR_DB_POOL_SIZE: ${DB_POOL_SIZE:-3}
+      PULSEGRID_DOCTOR_DB_MAX_OVERFLOW: '0'
+      PULSEGRID_DOCTOR_DB_POOL_TIMEOUT: ${DB_POOL_TIMEOUT:-2}
+      PULSEGRID_DOCTOR_DB_CONNECT_TIMEOUT: ${DB_CONNECT_TIMEOUT:-2}
+      PULSEGRID_DOCTOR_DB_STATEMENT_TIMEOUT_MS: ${DB_STATEMENT_TIMEOUT_MS:-2000}
+      PULSEGRID_DOCTOR_DB_HEALTH_TIMEOUT: ${DB_HEALTH_TIMEOUT:-3}
+      PULSEGRID_DOCTOR_ENVIRONMENT: ${APP_ENVIRONMENT:-development}
+      PULSEGRID_DOCTOR_AUTH_JWKS_PATH: /run/auth/user-jwks.json
+      PULSEGRID_DOCTOR_AUTH_SERVICE_JWKS_PATH: /run/auth/service-jwks.json
+      PULSEGRID_DOCTOR_AUTH_SERVICE_PRIVATE_KEY_PATH: /run/auth/service.pem
+      PULSEGRID_DOCTOR_AUTH_SERVICE_KID: doctor-service-1
+      PULSEGRID_DOCTOR_AUTH_ORIGINS: ${AUTH_ORIGINS:?Set explicit browser origins}
+      PULSEGRID_DOCTOR_AUTH_ALLOW_HTTP: ${AUTH_ALLOW_HTTP:-false}
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_ENABLED: 'true'
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_URL: redis://redis:6379/0
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_PASSWORD_FILE: /run/phase4/admission-password
+      PULSEGRID_DOCTOR_PHASE4_ADMISSION_HMAC_FILE: /run/phase4/admission-hmac
+      PULSEGRID_DOCTOR_PHASE4_MAX_REPLICAS: '4'
+      PULSEGRID_DOCTOR_PHASE4_AUTOCOMPLETE_ENABLED: 'true'
+      PULSEGRID_DOCTOR_PHASE4_CACHE_ENABLED: 'true'
+      PULSEGRID_DOCTOR_PHASE4_CACHE_CONFIG_FILE: /run/phase4/cache.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+      doctor-migrate:
+        condition: service_completed_successfully
+    networks: *id001
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    mem_limit: 256m
+    cpus: 0.5
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - -c
+      - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready',
+        timeout=4)
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    user: 0:0
+    entrypoint:
+    - python
+    - -m
+    - doctor_service.secure_entrypoint
+    command:
+    - uvicorn
+    - doctor_service.main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8000'
+    - --proxy-headers
+    - --no-access-log
+    cap_drop:
+    - ALL
+    cap_add:
+    - CHOWN
+    - SETUID
+    - SETGID
+    - DAC_OVERRIDE
+    security_opt:
+    - no-new-privileges:true
+    tmpfs:
+    - /run/credentials:mode=0700
+    volumes:
+    - ${AUTH_KEYS_DIRECTORY}/user-jwks.json:/run/auth/user-jwks.json:ro
+    - ${AUTH_KEYS_DIRECTORY}/service-jwks.json:/run/auth/service-jwks.json:ro
+    - ${AUTH_KEYS_DIRECTORY}/doctor-service.pem:/run/auth/service.pem:ro
+    - ./secrets/phase4/admission-password:/run/phase4/admission-password:ro
+    - ./secrets/phase4/admission-hmac:/run/phase4/admission-hmac:ro
+    - ./secrets/phase4/cache.json:/run/phase4/cache.json:ro
+  traefik:
+    volumes:
+    - ./infra/phase4/routes.yaml:/etc/traefik/routes.yaml:ro
+networks:
+  admission:
+    internal: true
+  cache:
+    internal: true
+  synthetic:
+    internal: true
+    ipam:
+      config:
+      - subnet: 172.29.44.0/24

@@ -26,6 +26,17 @@ for key in ("PRIVATE_KEY_PATH", "SERVICE_PRIVATE_KEY_PATH", "IDEMPOTENCY_SECRET_
         f.write(data)
     os.chown(target, 10001, 10001)
     os.environ[variable] = str(target)
+for suffix in ('ADMISSION_PASSWORD_FILE','ADMISSION_HMAC_FILE','CACHE_CONFIG_FILE','SOURCES_FILE'):
+    variable='PULSEGRID_PHARMACY_PHASE4_'+suffix
+    source=os.environ.get(variable)
+    if not source: continue
+    data=Path(source).read_bytes()
+    if len(data)>16384: raise SystemExit('Phase 4 credential size exceeds bound')
+    target=destination/('phase4_'+suffix.lower())
+    if target.exists(): target.unlink()
+    with os.fdopen(os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o400),'wb') as file: file.write(data)
+    os.chown(target,10001,10001)
+    os.environ[variable]=str(target)
 os.chown(destination, 10001, 10001)
 os.setgroups([])
 os.setgid(10001)

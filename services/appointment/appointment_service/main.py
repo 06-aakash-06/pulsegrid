@@ -33,19 +33,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         await database.start()
+        from . import phase4
         tasks=[]
         try:
             if application.state.phase3_enabled:
                 from sqlalchemy import text
                 async with database.session_factory() as session:
                     revision=(await session.execute(text('SELECT version_num FROM alembic_version'))).scalar_one()
-                if revision!='0009_phase3_registration_history':raise RuntimeError('Phase 3 schema not reviewed at current head')
+                if revision!=('0011_phase4_alias_parent_guard' if phase4.enabled() else '0009_phase3_registration_history'):raise RuntimeError('Phase 3 schema not reviewed at current head')
                 from .integration_workers import worker_loop
                 tasks=[asyncio.create_task(worker_loop(application))]
+            await phase4.start(application)
             yield
         finally:
             for task in tasks:task.cancel()
             if tasks:await asyncio.gather(*tasks,return_exceptions=True)
+            await phase4.close(application)
+            from .admission import close as close_admission
+            await close_admission(application)
             await database.close()
 
     application = FastAPI(
@@ -65,6 +70,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.state.logger = get_service_logger(
         SERVICE_NAME, resolved_settings.log_level
     )
+    from .phase4_metrics import mount as mount_metrics
+    mount_metrics(application)
     application.include_router(health_router)
     application.include_router(
         health_router, prefix=API_PREFIX, include_in_schema=False
@@ -77,6 +84,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     from .features.journey.snapshots import SnapshotClient
     application.state.snapshot_client=SnapshotClient()
     register_extensions(application, phase3_core, enabled=('waitlist','checkin','queue','journey') if application.state.phase3_enabled else ())
+    from . import phase4
+    phase4.mount(application)
     application.include_router(api_router)
     if auth_config.origins:
         application.add_middleware(
@@ -95,8 +104,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "traceparent",
                 "If-Match",
             ],
-            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID"],
+            expose_headers=["ETag", "X-Request-ID", "X-Correlation-ID", "Retry-After"],
         )
+    from .admission import mount as mount_admission
+    mount_admission(application,'appointment',error_response)
     install_request_context(application)
 
     @application.exception_handler(StarletteHTTPException)

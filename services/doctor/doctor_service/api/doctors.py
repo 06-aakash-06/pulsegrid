@@ -366,7 +366,6 @@ async def search_doctors(
     cursor: str | None = None,
     limit: int = Query(default=20, ge=1, le=100),
 ) -> JSONResponse:
-    del principal
     validate_query_keys(
         request, {"specialty_id", "active", "q", "cursor", "limit"}
     )
@@ -384,6 +383,13 @@ async def search_doctors(
         {"active": active, "q": query, "specialty_id": specialty_id}
     )
     position = decode_cursor(cursor, digest)
+    if active and hasattr(request.app.state,'directory_cache'):
+        from ..features.directory_cache import DirectoryFilters
+        from ..phase4 import directory_page
+        await session.commit()
+        filters=DirectoryFilters(tenant='synthetic-hospital',role=sorted(principal.roles)[0],query=query,specialty_id=specialty_id,cursor=position,limit=limit)
+        page=await directory_page(request.app,principal,filters)
+        return _json(Page[DoctorProfile],page)
     rows = await list_doctors(
         session,
         active=active,

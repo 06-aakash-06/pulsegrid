@@ -1,3 +1,4 @@
+import { InsuranceEstimatePanel, InsuranceRefreshPanel } from "../phase4";
 import { useState } from "react";
 import { useAuth } from "../auth/authContext";
 import type {
@@ -26,6 +27,7 @@ import {
   type Field,
 } from "./ui";
 export function BillingPage({ staff = false }: { staff?: boolean }) {
+  const { state: authState, api }=useAuth();
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const [payment, setPayment] = useState<Payment | null>(null);
@@ -107,6 +109,7 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
                   Balance: money(invoice.balance_minor),
                 }}
               />
+              <InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} />
               {invoice.items.length === 0 && (
                 <p>No charges have been imported.</p>
               )}
@@ -490,4 +493,11 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
       </Selected>
     </>
   );
+}
+
+// Matches the explicit coordinator fixture seed; no external insurer discovery.
+const syntheticProviders = [4101,4102,4103].map(id => ({id:String(id),syntheticSlug:`phase4-synthetic-${id}`,policyCodes:["DEMO"]}));
+export function InsurancePage() {
+  const {state,api}=useAuth();
+  return <InsuranceRefreshPanel api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} />;
 }

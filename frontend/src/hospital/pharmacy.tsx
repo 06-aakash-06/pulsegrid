@@ -1,3 +1,5 @@
+import { MedicineAutocomplete } from "../phase4";
+import { useAuth } from "../auth/authContext";
 import { useState } from "react";
 import type {
   Batch,
@@ -31,6 +33,7 @@ export function MedicineCatalog({
   staff?: boolean;
   inventory?: boolean;
 }) {
+  const { state, api }=useAuth();
   const [draft, setDraft] = useState<Values>({});
   const [filters, setFilters] = useState<Values>({});
   const [error, setError] = useState("");
@@ -39,6 +42,7 @@ export function MedicineCatalog({
   const [medicineId, setMedicineId] = useState("");
   return (
     <>
+      <MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => setSelected(item.id)} />
       <Panel title="Medicine search">
         <form
           onSubmit={(e) => {

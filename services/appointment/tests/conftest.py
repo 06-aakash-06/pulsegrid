@@ -35,7 +35,11 @@ def postgres_cluster():
             yield port
         finally:
             subprocess.run([str(bindir/'pg_ctl'),'-D',str(path/'data'),'-m','fast','-w','stop'],check=True,capture_output=True)
-    base.rmdir()
+    # Remove only the empty shared parent; another disposable test may still own a child.
+    try: base.rmdir()
+    except OSError as error:
+        import errno
+        if error.errno not in (errno.ENOTEMPTY,errno.ENOENT): raise
 
 
 @pytest.fixture

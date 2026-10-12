@@ -30,18 +30,21 @@ export class ApiError extends Error {
   readonly status: number;
   readonly code: string;
   readonly requestId?: string;
+  readonly retryAfterSeconds?: number;
 
   constructor(
     message: string,
     status: number,
     code = "request_failed",
     requestId?: string,
+    retryAfterSeconds?: number,
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.code = code;
     this.requestId = requestId;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 
@@ -95,6 +98,12 @@ function isAbortError(error: unknown): boolean {
   return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
 }
 
+function retryAfter(value: string | null): number | undefined {
+  if (value === null) return undefined;
+  const seconds = /^\d+$/.test(value) ? Number(value) : Math.ceil((Date.parse(value) - Date.now()) / 1000);
+  return Number.isFinite(seconds) && seconds >= 0 && seconds <= 86400 ? seconds : undefined;
+}
+
 async function readResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) return undefined as T;
 
@@ -123,6 +132,7 @@ async function readResponse<T>(response: Response): Promise<T> {
       response.status,
       error?.code || "request_failed",
       error?.request_id,
+      retryAfter(response.headers.get("Retry-After")),
     );
   }
 

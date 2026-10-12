@@ -84,7 +84,7 @@ describe("application routes", () => {
   ] as const)("renders the %s workspace shell after an identity response", async (role, workspaceName) => {
     await signInAs(role);
     expect(await screen.findAllByText(workspaceName)).not.toHaveLength(0);
-    expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
     if (role === "ops") expect(screen.getByText("Future workflow unavailable")).toBeInTheDocument();
   });
 

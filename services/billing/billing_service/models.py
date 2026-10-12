@@ -269,6 +269,12 @@ insurance_providers = entity(
 )
 crawler_runs = entity(
     "crawler_runs",
+    *[value(name,Integer,default="0") for name in ("pages_processed","pages_retrieved","pages_failed","pages_invalid","pages_deduplicated","policies_accepted","policies_quarantined")],
+    value("lease_owner",String(128),nullable=True),
+    timestamp("lease_until",nullable=True),
+    value("fencing_version",BigInteger,default="0"),
+    value("attempt_count",Integer,default="0"),
+    timestamp("next_attempt_at",default="CURRENT_TIMESTAMP"),
     ref("provider_id", "insurance_providers.id"),
     timestamp("fetched_at", nullable=True),
     value("state"),
@@ -277,6 +283,9 @@ crawler_runs = entity(
 )
 insurance_rules = entity(
     "insurance_rules",
+    value("policy_code",String(64)),
+    value("content_hash",String(64)),
+    timestamp("effective_to"),
     ref("provider_id", "insurance_providers.id"),
     ref("source_run_id", "crawler_runs.id"),
     value("revision", BigInteger),
@@ -288,6 +297,12 @@ insurance_rules = entity(
 )
 insurance_estimates = entity(
     "insurance_estimates",
+    value("invoice_version",BigInteger),
+    ref("provider_id","insurance_providers.id"),
+    ref("source_run_id","crawler_runs.id"),
+    value("rule_revision",BigInteger),
+    value("currency",String(3)),
+    value("eligible_minor",BigInteger),
     ref("invoice_id", "invoices.id"),
     ref("rules_id", "insurance_rules.id"),
     value("estimate_minor", BigInteger),
@@ -300,3 +315,6 @@ index(invoice_items, "invoice_id", "created_at", "id", suffix="invoice_id_create
 index(payments, "invoice_id", "created_at")
 index(crawler_runs, "provider_id", "created_at")
 index(insurance_estimates, "invoice_id", "calculated_at")
+
+from .features.insurance.schema import register_tables as register_insurance_tables
+register_insurance_tables(metadata)

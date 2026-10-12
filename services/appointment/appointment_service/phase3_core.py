@@ -141,6 +141,10 @@ async def lock_context(session, request, actor, plan: LockPlan):
     links = await _lock(session, m.checkin_links, m.checkin_links.c.id, link_ids)
     if any(r['appointment_id'] not in plan.appointment_ids for r in links):
         raise ValueError('Link parent missing from lock plan')
+    if getattr(getattr(getattr(request,'app',None),'state',None),'short_links_enabled',False):
+        from .features.short_links.schema_spec import table_for
+        aliases=table_for()
+        await _lock(session,aliases,aliases.c.appointment_id,plan.appointment_ids,aliases.c.id)
     await _lock(session, m.waitlist_entries, m.waitlist_entries.c.slot_id, plan.waitlist_slot_ids,
                 m.waitlist_entries.c.joined_at, m.waitlist_entries.c.id)
     await _lock(session, m.waitlist_offers, m.waitlist_offers.c.slot_id, plan.waitlist_slot_ids,
@@ -242,6 +246,8 @@ precondition = op.precondition
 can_access = op.can_access
 
 FEATURE_EVENTS = MappingProxyType({
+    'short_link_created': ('short_link','appointment.short_link.created.v1'),
+    'short_link_revoked': ('short_link','appointment.short_link.revoked.v1'),
     **{f'offer_{state}': ('waitlist_offer', f'appointment.waitlist_offer.{state}.v1')
        for state in ('pending', 'accepted', 'declined', 'expired', 'revoked')},
     'queue_skipped': ('queue', 'appointment.queue.skipped.v1'),

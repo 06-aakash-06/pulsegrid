@@ -14,9 +14,10 @@ def free_port():
 
 
 @contextmanager
-def storage():
+def storage(node_count=2):
+    if not 1 <= node_count <= 4: raise ValueError("bounded disposable topology")
     with tempfile.TemporaryDirectory(prefix='pulsegrid-cache-') as temp:
-        root = Path(temp); port = free_port(); redis_ports = [free_port(), free_port()]
+        root = Path(temp); port = free_port(); redis_ports = [free_port() for _ in range(node_count)]
         subprocess.run(['initdb', '-D', str(root/'db'), '--auth=trust', '--encoding=UTF8', '--no-locale'], check=True, stdout=subprocess.DEVNULL)
         processes = []
         db_started = False

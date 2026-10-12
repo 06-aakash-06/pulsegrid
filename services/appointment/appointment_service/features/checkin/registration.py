@@ -519,6 +519,9 @@ async def revoke_for_booking_change(session, context, appointment_id=None) -> No
     """Revoke every unconsumed QR under the framework's already-held link locks."""
     core = shared_core
     core.require_context(session, context)
+    if 'short_links' in core.metadata.tables:
+        from ..short_links.registration import revoke_for_booking_change as revoke_aliases
+        await revoke_aliases(session,context,appointment_id)
     targets=(int(appointment_id),) if appointment_id is not None else context.plan.appointment_ids
     for appointment_id in targets:
         if appointment_id in context.workflows:

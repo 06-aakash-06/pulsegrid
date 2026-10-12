@@ -13,7 +13,8 @@ export function errorMessage(error: unknown): string {
       error.status === 412
         ? " Reload the resource and review your changes before submitting again."
         : "";
-    return `${error.message}${advice}${error.requestId ? ` Request ID: ${error.requestId}` : ""}`;
+    const retry=error.retryAfterSeconds !== undefined ? ` Wait ${error.retryAfterSeconds} seconds before retrying.` : "";
+    return `${error.message}${retry}${advice}${error.requestId ? ` Request ID: ${error.requestId}` : ""}`;
   }
   return error instanceof Error
     ? error.message

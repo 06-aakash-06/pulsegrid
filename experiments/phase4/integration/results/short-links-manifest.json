@@ -1,0 +1,44 @@
+{
+  "before": {
+    "sha256": "78037406ba56123c5125ed01a61cdecbfa3e372172c8e60f372888d0e509733f",
+    "raw": "artifacts/phase4/short-links/before.csv.gz",
+    "environment": {
+      "os": "macOS-26.6.2-arm64-arm-64bit",
+      "cpu_architecture": "arm64",
+      "cpu_count": 12,
+      "memory_bytes": 17179869184,
+      "python": "3.12.11",
+      "fastapi": "0.143.0",
+      "sqlalchemy": "2.0.54",
+      "psycopg": "3.2.10",
+      "timer": "time.perf_counter_ns",
+      "timer_resolution_seconds": 4.166666666666667e-08,
+      "postgresql": "PostgreSQL 14.17 (Homebrew) on aarch64-apple-darwin24.2.0, compiled by Apple clang version 16.0.0 (clang-1600.0.26.6), 64-bit"
+    },
+    "seed": 404,
+    "clients": 32,
+    "duration": 30.0,
+    "fixture_rows": 150000
+  },
+  "after": {
+    "sha256": "00a1d5638f18741a802676d98ffcc4f1b8afc34bb89cfe1d0f4be5543c2cbbaf",
+    "raw": "artifacts/phase4/short-links/after.csv.gz",
+    "environment": {
+      "os": "macOS-26.6.2-arm64-arm-64bit",
+      "cpu_architecture": "arm64",
+      "cpu_count": 12,
+      "memory_bytes": 17179869184,
+      "python": "3.12.11",
+      "fastapi": "0.143.0",
+      "sqlalchemy": "2.0.54",
+      "psycopg": "3.2.10",
+      "timer": "time.perf_counter_ns",
+      "timer_resolution_seconds": 4.166666666666667e-08,
+      "postgresql": "PostgreSQL 14.17 (Homebrew) on aarch64-apple-darwin24.2.0, compiled by Apple clang version 16.0.0 (clang-1600.0.26.6), 64-bit"
+    },
+    "seed": 404,
+    "clients": 32,
+    "duration": 30.0,
+    "fixture_rows": 150000
+  }
+}

@@ -112,6 +112,7 @@ export interface InsuranceProvider {
   id: ID;
   synthetic_slug: string;
   last_success_at: string | null;
+  version?: number;
 }
 
 export interface InsuranceProviderPage {

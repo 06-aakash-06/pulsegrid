@@ -16,7 +16,7 @@ router = APIRouter()
 _ROUTES = "/api/v1/billing"
 
 
-def _error(status: int, code: str) -> JSONResponse:
+def _error(request: Request, status: int, code: str) -> JSONResponse:
     messages = {
         "invalid_request": "The insurance request is invalid.",
         "provider_not_found": "The configured synthetic provider was not found.",
@@ -26,7 +26,7 @@ def _error(status: int, code: str) -> JSONResponse:
     }
     return JSONResponse(
         status_code=status,
-        content={"error": {"code": code, "message": messages.get(code, "The insurance operation could not be completed.")}},
+        content={"error": {"code": code, "message": messages.get(code, "The insurance operation could not be completed."), "request_id": str(request.state.request_id)}},
         headers={"Cache-Control": "no-store"},
     )
 
@@ -49,6 +49,7 @@ def _stored_response(result: Any) -> Response:
 
 
 async def _request_json(request: Request) -> dict[str, Any]:
+    if request.query_params:raise HTTPException(422,detail={"code":"invalid_request"})
     try:
         body = await request.json()
     except Exception as exc:
@@ -107,8 +108,9 @@ async def list_providers(request: Request):
         return JSONResponse(status_code=200, content=page, headers={"Cache-Control": "no-store"})
     except HTTPException:
         raise
-    except InsuranceValidationError:
-        return _error(422, "invalid_request")
+    except InsuranceValidationError as error:
+        if error.code=="source_revision_conflict":return _error(request,409,error.code)
+        return _error(request, 422, "invalid_request")
 
 
 @router.post(f"{_ROUTES}/insurance/providers/{{provider_id}}/refresh")
@@ -123,8 +125,10 @@ async def refresh_provider(provider_id: str, request: Request):
         if body:
             raise HTTPException(422, detail={"code": "invalid_request"})
 
+        reserved_run_id=await ports.allocate_id()
+
         async def operation(session: Any, context: Any):
-            run = await ports.repository.enqueue_run(session, provider_id)
+            run = await ports.repository.enqueue_run(session, provider_id, allocated_id=reserved_run_id)
             run_id = validate_id(run["id"], name="run_id")
             version = int(run.get("version", 1))
             return 202, {
@@ -145,27 +149,30 @@ async def refresh_provider(provider_id: str, request: Request):
         return _stored_response(result)
     except HTTPException:
         raise
-    except InsuranceValidationError:
-        return _error(422, "invalid_request")
+    except InsuranceValidationError as error:
+        if error.code=="source_revision_conflict":return _error(request,409,error.code)
+        return _error(request, 422, "invalid_request")
     except KeyError:
-        return _error(404, "provider_not_found")
+        return _error(request, 404, "provider_not_found")
 
 
 @router.get(f"{_ROUTES}/insurance/runs/{{run_id}}")
 async def get_run(run_id: str, request: Request):
     ports = request.app.state.insurance_ports
     try:
+        _query(request,set())
         run_id = validate_id(run_id, name="run_id")
         await ports.authorize(request, ("billing_staff", "hospital_admin"), run_id, False)
         async with ports.read_session() as session:
             run = await ports.repository.get_run(session, run_id)
         if run is None:
-            return _error(404, "run_not_found")
+            return _error(request, 404, "run_not_found")
         return JSONResponse(status_code=200, content=run, headers={"Cache-Control": "no-store"})
     except HTTPException:
         raise
-    except InsuranceValidationError:
-        return _error(422, "invalid_request")
+    except InsuranceValidationError as error:
+        if error.code=="source_revision_conflict":return _error(request,409,error.code)
+        return _error(request, 422, "invalid_request")
 
 
 @router.post(f"{_ROUTES}/invoices/{{invoice_id}}/insurance-estimates")
@@ -179,6 +186,7 @@ async def create_estimate(invoice_id: str, request: Request):
             raise HTTPException(422, detail={"code": "invalid_request"})
         provider_id = validate_id(body["provider_id"], name="provider_id")
         now = _current_time(ports)
+        estimate_id = await ports.allocate_id()
 
         async def operation(session: Any, context: Any):
             started_ns = time.perf_counter_ns()
@@ -191,7 +199,6 @@ async def create_estimate(invoice_id: str, request: Request):
                 )
                 if stored is None:
                     raise HTTPException(409, detail={"code": "insurance_rules_unavailable"})
-                estimate_id = await ports.allocate_id()
                 policy_export = stored["policy_export"]
                 snapshot = {
                     "id": invoice["id"],
@@ -232,8 +239,9 @@ async def create_estimate(invoice_id: str, request: Request):
         return _stored_response(command_result)
     except HTTPException:
         raise
-    except InsuranceValidationError:
-        return _error(422, "invalid_request")
+    except InsuranceValidationError as error:
+        if error.code=="source_revision_conflict":return _error(request,409,error.code)
+        return _error(request, 422, "invalid_request")
 
 
 @router.get(f"{_ROUTES}/invoices/{{invoice_id}}/insurance-estimates")
@@ -248,8 +256,9 @@ async def list_estimates(invoice_id: str, request: Request):
         return JSONResponse(status_code=200, content=page, headers={"Cache-Control": "no-store"})
     except HTTPException:
         raise
-    except InsuranceValidationError:
-        return _error(422, "invalid_request")
+    except InsuranceValidationError as error:
+        if error.code=="source_revision_conflict":return _error(request,409,error.code)
+        return _error(request, 422, "invalid_request")
 
 
 def register_routes(app: Any, ports: Any) -> None:

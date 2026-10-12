@@ -293,7 +293,10 @@ def bearer(request, header="Authorization"):
 
 
 async def authenticated_user(request: Request):
-    return request.app.state.auth_verifier.user(bearer(request))
+    principal=request.app.state.auth_verifier.user(bearer(request))
+    from .admission import post_user
+    await post_user(request,principal)
+    return principal
 
 
 def require_roles(*roles):

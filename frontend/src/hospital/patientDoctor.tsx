@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DoctorAutocomplete, AppointmentShortLinkPanel } from "../phase4";
 import { useAuth, roles } from "../auth/authContext";
 import type {
   Appointment,
@@ -421,12 +422,14 @@ export function Booking({
   doctorId?: string;
   onSuccess?: () => void;
 }) {
+  const {state,api}=useAuth();
   const [doctor, setDoctor] = useState(doctorId ?? "");
   const [slot, setSlot] = useState<{ id: string; revision: number } | null>(
     null,
   );
   return (
     <>
+      <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setDoctor(item.id);setSlot(null);}} />
       <Lookup
         label="Doctor ID for availability"
         onSelect={(value) => {
@@ -465,7 +468,7 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
-  const { state } = useAuth();
+  const { state, api } = useAuth();
   const patient =
     state.status === "authenticated" && state.roleHints.includes("patient");
   const fields: Field[] = [
@@ -504,6 +507,8 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
           </>
         )}
       />
+      <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => setSelected(item.id)} />
+      <DoctorAutocomplete kind="specialty" api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => { setDraft({...draft, specialty_id:item.id}); setFilters({...filters, specialty_id:item.id}); }} />
       <Panel title="Directory filters">
         <form
           onSubmit={(e) => {
@@ -661,6 +666,7 @@ export function Appointments({
   reception?: boolean;
   doctor?: boolean;
 }) {
+  const {state,api}=useAuth();
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const [targetDoctor, setTargetDoctor] = useState("");
@@ -727,6 +733,7 @@ export function Appointments({
                 "Ends (UTC)": item.ends_at,
               }}
             />
+            {!doctor && <AppointmentShortLinkPanel api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} appointmentId={item.id} />}
             {!doctor && item.state === "confirmed" && (
               <>
                 <CommandForm
