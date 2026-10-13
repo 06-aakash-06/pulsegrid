@@ -123,6 +123,8 @@ def load_progress(path: Path, run_id: str, starting_commit: str) -> dict[str, An
         progress = json.loads(path.read_text())
         if progress.get("run_id") != run_id or progress.get("starting_commit") != starting_commit:
             raise RuntimeError("existing progress file belongs to a different run or commit")
+        if progress.get("guardrail_stops"):
+            raise RuntimeError("this run stopped on a guardrail and cannot be resumed")
         started = set(progress.get("started_cases", []))
         completed = set(progress.get("completed_cases", []))
         interrupted = sorted(started - completed)

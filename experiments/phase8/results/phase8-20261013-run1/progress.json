@@ -1,0 +1,20 @@
+{
+  "completed_cases": [
+    "l1-c4-t1"
+  ],
+  "completed_stages": [
+    "two_upstream_probe"
+  ],
+  "guardrail_stops": [
+    {
+      "case_id": "l1-c4-t1",
+      "reason": "a sampled container reached 90% of its memory limit"
+    }
+  ],
+  "interrupted_cases": [],
+  "run_id": "phase8-20261013-run1",
+  "started_cases": [
+    "l1-c4-t1"
+  ],
+  "starting_commit": "2bda6607aad36950f11445fda6c88ae095bd53cd"
+}

@@ -1,0 +1,58 @@
+{
+  "cpu_percent_max": 25.28,
+  "docker_lifecycle_event_query_result": "No matching events returned; sampled restart_count and started_at still recorded one restart.",
+  "docker_lifecycle_events": [],
+  "ended_utc": "2026-10-13T07:19:49.993854+00:00",
+  "final_state": {
+    "exit_code": 0,
+    "memory_limit_bytes": 268435456,
+    "oom_killed": false,
+    "restart_count": 23,
+    "started_at": "2026-10-13T07:19:20.980037258Z",
+    "status": "running"
+  },
+  "initial_state": {
+    "exit_code": 0,
+    "memory_limit_bytes": 268435456,
+    "oom_killed": false,
+    "restart_count": 22,
+    "started_at": "2026-10-13T07:13:48.258785187Z",
+    "status": "running"
+  },
+  "load_generated": false,
+  "log_capture_corrected_utc": "2026-10-13T07:21:12.369168+00:00",
+  "log_capture_correction": "The Docker CLI emitted container logs on stderr; the bounded window was re-read from both output streams.",
+  "log_inspection_scope": "Tempo container logs emitted during the observation window",
+  "logs": {
+    "error_lines": 3,
+    "incomplete_wal_meta_warnings": 0,
+    "scheduler_no_jobs_error_lines": 3,
+    "scheduler_no_jobs_warning_lines": 3,
+    "unowned_wal_entry_warnings": 1,
+    "warning_lines": 7
+  },
+  "memory_bytes_max": 236663603,
+  "memory_bytes_min": 86633349,
+  "memory_percent_max": 88.16,
+  "observed_sample_interval_median_seconds": 3.18,
+  "oom_killed_at_end": false,
+  "readiness_failures": 0,
+  "readiness_successes": 39,
+  "requested_duration_seconds": 120,
+  "restart_delta": 1,
+  "sample_interval_seconds": 2.0,
+  "samples": 39,
+  "started_utc": "2026-10-13T07:17:48.634513+00:00",
+  "stored_trace_query_at_end": {
+    "completed_jobs": 1,
+    "inspected_traces": 648,
+    "returned_trace_count": 1,
+    "total_jobs": 3
+  },
+  "stored_trace_query_at_start": {
+    "completed_jobs": 1,
+    "inspected_traces": 648,
+    "returned_trace_count": 1,
+    "total_jobs": 3
+  }
+}

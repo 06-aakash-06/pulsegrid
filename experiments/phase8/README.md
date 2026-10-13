@@ -4,6 +4,9 @@ This directory contains the bounded, authenticated read workload and measured
 Phase 8 artifacts. It does not install packages, reset data volumes, or invoke
 business write endpoints.
 
+See the [Phase 8 performance evaluation](../../docs/phase-8-performance-evaluation.md)
+for results, analysis, and explicit acceptance gaps.
+
 ## Prerequisites
 
 - The existing local PulseGrid Compose project must be running with the
@@ -51,6 +54,13 @@ each. A fixed 20-request autocomplete burst compares NORMAL and SURGE. The
 existing Phase 6 authenticated Emergency scenario supplies the critical Class
 A workflow evidence.
 
+For this captured run, the first two-upstream L1 trial (C=4) reached the
+predeclared 90% container-memory stop threshold in Tempo. The runner recorded
+the trial, restored Traefik and marked the run partial. Do not rerun the matrix
+under the same run ID or continue it after a guardrail stop; the progress file
+now rejects that resume. The remaining L1 levels, one/two-upstream scaling
+comparison and new Phase 8 Surge comparison are explicitly unavailable.
+
 The checked-in Traefik route currently names only `doctor:8000`. For the
 two-upstream cases, the runner temporarily adds the already-running
 `doctor_replica:8000`, waits for Prometheus to confirm both receive requests,
@@ -67,16 +77,28 @@ running again; inspect the partial files and record the gap instead.
 - `resources/*.csv`: 2-second `docker stats` samples for Doctor, PostgreSQL,
   Redis, Traefik, RabbitMQ and observability containers. These are distinct
   from Prometheus metrics because this stack has no container exporter.
-- `metrics/*.json`: Prometheus API-target, HTTP, admission, cache,
-  autocomplete and RabbitMQ snapshots. The Prometheus scrape interval is 15
-  seconds; these snapshots corroborate per-process telemetry and do not replace
-  per-request client samples.
+- `summaries/topology_probe.json`: bounded Prometheus snapshots around the
+  two-upstream routing probe. The stopped L1 trial has no complete per-trial
+  Prometheus counter delta; its request samples come from the client and its
+  resource samples come from Docker stats. The Prometheus scrape interval is
+  15 seconds.
 - `summaries/*.json`: status classification, attempted/admitted/successful
   rates, nearest-rank latency percentiles, resource aggregates, scaling
   counter checks and Surge Mode state transitions.
 - `manifest.json` and `progress.json`: workload seed, hardware/software,
   Compose/container limits, fixture hash prefix, configuration hashes and
   resumable case state. Secrets and fixture contents are not copied.
+- `tempo/stability_samples.csv`, `tempo/stability_summary.json` and
+  `tempo/stability_relevant_logs.txt`: bounded read-only Tempo stability data,
+  restart/memory/readiness samples and warning/error lines.
+- `tempo/finalization_snapshot.json` and `tempo/post_t1_*.json` plus
+  `tempo/post_t1_relevant_logs.txt`: a later read-only finalization snapshot
+  and selected, redacted log lines. These are outside the bounded T1 counts.
+- `summaries/historical_phase6.json`: clearly labeled summary values
+  transcribed from the Phase 6 verification report because its request-level
+  samples are not retained; it is not raw Phase 6 telemetry.
+- `graphs/*.svg` and `graphs/plot_manifest.json`: generated charts and a list
+  of supported versus unavailable requested plots.
 
 Latency includes successful and rejected HTTP responses. HTTP 429,
 HTTP 409/404, HTTP 5xx, timeouts and connection failures are separate
@@ -89,3 +111,29 @@ Phase 4 component baselines remain in their original directories. See
 for the audited summaries and
 [`docs/phase-4-benchmark-plan.md`](../../docs/phase-4-benchmark-plan.md) for
 their original experimental conditions.
+
+## Tempo observation and plots
+
+Run a new bounded idle observation only when the live stack is in the
+predeclared observation state:
+
+```sh
+python3 experiments/phase8/observe_tempo.py --duration-seconds 120
+```
+
+This command generates no load and writes its samples beneath the selected
+run's `tempo/` directory. The retained Phase 8 observation used a nominal
+two-second interval; Docker command overhead produced a measured median sample
+interval of 3.18 seconds. It observed one restart, so no further Phase 8 load
+was run.
+
+Regenerate publication-size SVG plots from retained CSV/JSON evidence with:
+
+```sh
+python3 experiments/phase8/plot_results.py
+```
+
+The plotting runtime uses the already available system Matplotlib; it does
+not install dependencies. Graph 4 (replica comparison) is not generated because
+the equivalent conditions were not measured. Graph 7 only shows historical
+SURGE outcomes and labels the missing NORMAL and Class B samples.

@@ -1,0 +1,67 @@
+{
+  "provenance": {
+    "source_document": "docs/phase-6-integration-verification.md",
+    "source_sections": [
+      "Surge Mode and operation classes",
+      "Circuit breaker, timeout, retry, and bulkhead",
+      "Live failure, recovery, and workflow results"
+    ],
+    "note": "Transcribed from the verified Phase 6 report because no Phase 6 request-level CSV/JSON artifact is retained. This is historical summary evidence, not raw samples."
+  },
+  "surge": {
+    "initial_state": "NORMAL",
+    "class_c_autocomplete_burst": {
+      "mode": "SURGE",
+      "attempted": 20,
+      "accepted_2xx": 4,
+      "rejected_429": 16,
+      "retry_after_min_seconds": 1,
+      "operation": "authenticated Doctor autocomplete"
+    },
+    "class_a_emergency_workflow": {
+      "mode": "SURGE",
+      "synthetic_request_admitted": true,
+      "authorized_priority_claim_resolution_completed": true,
+      "same_window_as_class_c_burst": false
+    },
+    "class_b_comparison": null,
+    "normal_same_workload_comparison": null,
+    "transitions": [
+      {"from": "NORMAL", "to": "SURGE", "version": 1},
+      {"from": "SURGE", "to": "RECOVERY", "version": 2},
+      {"from": "RECOVERY", "to": "NORMAL", "version": 2, "reason": "recovery_elapsed"}
+    ]
+  },
+  "faults": {
+    "rabbitmq_billing_appointment": {
+      "date": "2026-10-12",
+      "event_times_utc": {
+        "billing_outbox_created": "19:47:59",
+        "published_on_attempt_2": "19:48:07",
+        "appointment_inbox_processed": "19:48:09"
+      },
+      "outbox_retained_during_outage": true,
+      "matching_inbox_rows_after_recovery": 1,
+      "rabbitmq_container_restarted": true
+    },
+    "records_circuit_breaker": {
+      "counted_logical_failures_before_open": 3,
+      "open_request_latency_ms": 39,
+      "records_container_restarted": true,
+      "seconds_from_records_restart_to_reconciliation_success": 6,
+      "breaker_closed_after_recovery": true,
+      "journey_state_after_recovery": "ready",
+      "source_error_after_recovery": false
+    },
+    "redis_admission_fallback": {
+      "authenticated_autocomplete_burst_requests": 20,
+      "mix_of_200_and_429_observed": true,
+      "response_counts": null,
+      "event_times_utc": null
+    },
+    "prometheus_outage": {
+      "business_operations_interrupted": false,
+      "repeated_in_phase8": false
+    }
+  }
+}

@@ -108,6 +108,25 @@ class MatrixHelpersTests(unittest.TestCase):
             self.assertEqual(restored["started_cases"], ["l1-c4-t1"])
             self.assertNotIn("l1-c4-t1", restored["completed_cases"])
 
+    def test_guardrail_stopped_matrix_cannot_be_resumed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "progress.json"
+            path.write_text(
+                json.dumps(
+                    {
+                        "run_id": "run",
+                        "starting_commit": "commit",
+                        "started_cases": ["l1-c4-t1"],
+                        "completed_cases": ["l1-c4-t1"],
+                        "guardrail_stops": [
+                            {"case_id": "l1-c4-t1", "reason": "memory threshold"}
+                        ],
+                    }
+                )
+            )
+            with self.assertRaisesRegex(RuntimeError, "stopped on a guardrail"):
+                load_progress(path, "run", "commit")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

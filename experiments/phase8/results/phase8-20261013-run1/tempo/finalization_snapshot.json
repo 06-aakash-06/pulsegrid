@@ -1,0 +1,21 @@
+{
+  "captured_utc": "2026-10-13T07:35:53.500057+00:00",
+  "observation_type": "read-only finalization snapshot after the bounded T1 window",
+  "after_t1_end_utc": "2026-10-13T07:19:49.993854Z",
+  "container": {
+    "name": "pulsegrid-tempo-1",
+    "status": "running",
+    "started_at": "2026-10-13T07:34:37.233360283Z",
+    "exit_code": 0,
+    "oom_killed": false,
+    "restart_count": 27,
+    "memory_limit_bytes": 268435456,
+    "compose_healthcheck_configured": false
+  },
+  "readiness_probe": {
+    "command": "GET http://tempo:3200/ready from the Prometheus container",
+    "http_tool_exit_code": 0,
+    "body": "ready",
+    "stderr_present": false
+  }
+}
