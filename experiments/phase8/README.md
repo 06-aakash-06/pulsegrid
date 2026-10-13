@@ -122,8 +122,11 @@ patient and admin fixtures:
 
 ```sh
 ./.venv/bin/python experiments/phase8/run_phase82_matrix.py \
-  --run-id phase8-2-20261013-run1
+  --run-id phase8-2-20261013-run4
 ```
+
+Use a new unused run ID for each live matrix. The completed Phase 8.2 evidence
+is retained under `phase8-2-20261013-run3`.
 
 The runner uses the Phase 8.1 Doctor admission policy and isolated Redis
 namespace. It temporarily disables application tracing through the
@@ -148,13 +151,17 @@ Regenerate the four Phase 8.2 graphs from retained summaries and raw evidence:
 
 ```sh
 python3 experiments/phase8/plot_results.py \
-  --run-id phase8-2-20261013-run1 \
+  --run-id phase8-2-20261013-run3 \
   --phase8-2-scalability
 ```
 
 The generated plot manifest records input and graph hashes and validates them
 after generation. Phase 8.2 results are labeled tracing-disabled and must not
 be presented as measurements of the fully instrumented deployment.
+
+The measured results, raw evidence, four graphs, and restoration checks are
+summarized in
+[`docs/phase-8-2-scalability-finalization.md`](../../docs/phase-8-2-scalability-finalization.md).
 
 ## Evidence files
 
