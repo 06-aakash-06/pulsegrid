@@ -587,8 +587,6 @@ async def run_phase82_matrix(args: argparse.Namespace) -> None:
             )
             if summary.get("partial_measurement"):
                 raise phase8.ExperimentStopped(f"{case_id} did not complete its full 30-second window")
-            progress.setdefault("completed_cases", []).append(case_id)
-            phase8.write_json(progress_path, progress)
             manifest.setdefault("completed_trials", []).append(
                 {"trial": trial_number, "case_id": case_id, "summary": summary}
             )
