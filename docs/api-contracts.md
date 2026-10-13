@@ -1,8 +1,9 @@
 # API contracts
 
 This file retains the Phase 1.1 baseline and proposed owner APIs. Implemented
-changes through Phase 6 are recorded in the linked phase reports; the
-Appointment Surge Mode route below is an implemented operational extension.
+changes through Phase 7 are recorded in the linked phase reports; the
+Appointment Surge Mode and Control Room routes below are implemented
+operational extensions.
 
 Phase 4.0 preparation: the [component contract freeze](phase-4-component-contracts.md)
 and [parallel plan](phase-4-parallel-plan.md) define the current seven-component
@@ -93,6 +94,16 @@ Only register/login/refresh/logout/csrf and GET me are implemented in this publi
 | POST `/api/v1/appointments/operations/surge-mode` | `{active:boolean,reason_code:"capacity_pressure"|"dependency_degraded"|"planned_recovery"|"incident_override",override?:boolean}` | Same state response | Current `hospital_admin`; mandatory 16–128 printable ASCII `Idempotency-Key`; 409 cooldown/state conflict or same-key/different-command conflict; 503 if Redis/audit cannot confirm |
 
 `active:true` requests SURGE and `active:false` requests RECOVERY; NORMAL follows the shared expiry rules. `override:true` is valid only with `incident_override` and is durably audited. The operation intent precedes the Redis compare-and-set; applied/no-op audit events retain the replay response. Keys are scoped to the current administrator and retained through the audit operation record. The route does not accept a caller-selected class or public priority.
+
+### Implemented Phase 7 Control Room routes
+
+| Method / route | Request | Response | Access / special outcomes |
+|---|---|---|---|
+| GET `/api/v1/appointments/operations/control-room/summary` | No query parameters | Bounded service, alert, component, messaging, trend, Surge Mode and allowlisted operational-event aggregates | Current `ops` or `hospital_admin`; role rechecked through Patient; 503 when Prometheus is unavailable |
+| GET `/api/v1/appointments/operations/control-room/traces` | No query parameters | Up to 50 safe trace summaries from the preceding hour | Current `ops` or `hospital_admin`; role rechecked through Patient; 503 when Tempo is unavailable |
+| GET `/api/v1/appointments/operations/control-room/traces/{trace_id}` | 32 lowercase hexadecimal trace ID | At most 500 spans containing only service, safe operation, start time and duration | Current `ops` or `hospital_admin`; role rechecked through Patient; 422 for malformed IDs; 503 when Tempo is unavailable |
+
+The summary contains `status`, `observed_at`, `system`, seven `services`, two fixed `trends`, `alerts`, bounded `components`, `messaging`, and a limited Appointment Surge Mode `recent_events` projection. `components.consistent_hashing` reports the configured Doctor ring epoch and node count when available; it does not claim that Redis nodes are live. Queries and monitoring hosts are fixed by the service; callers cannot provide PromQL, TraceQL, URLs, queue names or arbitrary trace filters. Missing component observations remain no-data. The API does not expose raw Prometheus/Tempo payloads, patient records or general audit entries. See the [Phase 7 verification](phase-7-integration-verification.md) for live results and limitations.
 
 ## Records (`/api/v1/records`)
 

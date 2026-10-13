@@ -1,10 +1,10 @@
 # Phase 7 observability design
 
-Status: implementation design for the synthetic single-hospital PulseGrid
-prototype. Checkpoints 1 and 2 are complete; tracing, dashboards/alerts, the
-Control Room, and full integration verification remain in progress. This phase
-adds operational visibility; it does not change the authority of any hospital
-service or make telemetry a business dependency.
+Status: Phase 7 implementation is complete for the synthetic single-hospital
+PulseGrid prototype. Live results, test counts, and limitations are recorded in
+the [integration verification report](phase-7-integration-verification.md).
+This phase adds operational visibility; it does not change the authority of
+any hospital service or make telemetry a business dependency.
 
 ## Checkpoint 2 verification — 2026-10-13
 
@@ -35,20 +35,22 @@ database, Redis, or RabbitMQ data volume was reset.
 ## Existing instrumentation and boundaries
 
 The seven FastAPI services already expose a private `/metrics` endpoint backed
-by a bounded, process-local observer. Phase 4 component metrics include rate
-limiting, cache, hashing, IDs, short links, crawler and autocomplete activity.
-Phase 5 adds durable outbox/consumer/retry/dead-letter observations. Phase 6
-adds Surge Mode, dependency breaker, retry, timeout and bulkhead observations.
-Those counters are collected from each process; breaker and bulkhead state is
-not a global service state. The existing event envelope already has an optional
-`traceparent`; this phase will populate it while preserving event, correlation,
-request and causation IDs.
+by a bounded, process-local observer. Phase 4 metrics include rate limiting,
+cache outcomes, ID generation, short links, crawler and autocomplete activity.
+This phase adds Doctor ring topology gauges for the active epoch and configured
+node count; the deterministic HashRing has no node-liveness probe, so no
+placement-health value is claimed. Phase 5 adds durable outbox, consumer,
+retry and dead-letter observations. Phase 6 adds Surge Mode, dependency breaker,
+retry, timeout and bulkhead observations. These counters are collected from
+each process; breaker and bulkhead state is not global service state. The
+existing event envelope already has an optional `traceparent`; this phase
+populates it while preserving event, correlation, request and causation IDs.
 
-The current authenticated Phase 4 Compose stack has seven domain services and a
+The starting authenticated Compose stack had seven domain services and a
 second Doctor instance (`doctor_replica`). PostgreSQL remains seven isolated
 logical databases in one instance. RabbitMQ carries only the two documented
-Pharmacy/Billing-to-Appointment workflows. Prometheus, Grafana and a Control
-Room are not present before this phase. The stack is synthetic and is not a
+Pharmacy/Billing-to-Appointment workflows. Prometheus, Grafana and the Control
+Room were added in this phase. The stack is synthetic and is not a
 clinical or emergency response platform.
 
 ## Architecture
@@ -133,7 +135,11 @@ queries. In particular, outbox pending count and oldest age are read from each
 producer's own committed outbox state; Appointment does not query Billing or
 Pharmacy databases. RabbitMQ queue metrics come from RabbitMQ itself. Phase 6
 breaker/bulkhead observations remain process-local and are displayed as
-instance-aggregated counts, not a single global breaker state.
+instance-aggregated counts, not a single global breaker state. Doctor's hashing
+gauges are `pulsegrid_consistent_hashing_topology_epoch` and
+`pulsegrid_consistent_hashing_configured_nodes`, both with a bounded `owner`
+label. Redis availability is reflected by cache `outcome` values, not by an
+invented ring-node health signal.
 
 ## Distributed tracing
 
@@ -143,9 +149,10 @@ Trace Context; trace context is observability metadata only and is never
 authentication or authorization evidence. The existing correlation ID is
 preserved separately. Traefik exports gateway spans where its current v3
 configuration supports OTLP. The two active RabbitMQ event flows create
-producer/consumer spans and propagate the existing envelope `traceparent`; the
-consumer may link the asynchronous delivery to the originating trace while
-preserving `event_id`, `correlation_id` and `causation_id`.
+producer/consumer spans and propagate W3C context in message headers while
+retaining the existing envelope `traceparent`; consumers continue the
+originating trace when valid context is present. `event_id`, `correlation_id`
+and `causation_id` semantics are preserved.
 
 Application spans export through bounded asynchronous batch processors to a
 small OpenTelemetry Collector, then to Tempo's local persistent storage. The

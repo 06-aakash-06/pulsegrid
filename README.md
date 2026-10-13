@@ -60,7 +60,7 @@ checks and limitations.
 
 Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. Redis supports existing Phase 4 components and Phase 6 Surge Mode. RabbitMQ carries only the selected Phase 5 events and does not gate API transactions.
 
-PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Phase 5 publishes two existing outbox transitions and uses Appointment's existing journey reconciliation as the safe asynchronous effect. Full telemetry deployment and the control room remain future work. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
+PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Phase 5 publishes two existing outbox transitions and uses Appointment's existing journey reconciliation as the safe asynchronous effect. Phase 7 adds private metrics and tracing collection, provisioned Grafana dashboards and alerts, and a role-protected Control Room. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
 
 ## Foundation documents
 
@@ -71,6 +71,8 @@ PostgreSQL transactions and constraints enforce booking, inventory, payment and 
 - [Event contracts](docs/event-contracts.md): event catalog, schemas, outbox, replay, dead letters.
 - [Phase 5 event contracts](docs/phase-5-event-contracts.md): active event paths, ownership and delivery/recovery behavior.
 - [Phase 5 integration verification](docs/phase-5-integration-verification.md): reliability and failure-recovery evidence.
+- [Phase 7 observability design](docs/phase-7-observability-design.md): metrics, tracing, dashboards, alerts, security and resource limits.
+- [Phase 7 integration verification](docs/phase-7-integration-verification.md): live workflow, outage, regression and configuration evidence.
 - [Security](docs/security.md): identity, authorization, sensitive operations, privacy.
 - [Local infrastructure](docs/infrastructure.md): startup, database isolation, migrations, gateway, tests and limits.
 - [Roadmap](docs/development-roadmap.md): nine phases and acceptance gates.
@@ -124,7 +126,7 @@ npm run dev -- --strictPort
 
 Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose -f compose.yaml -f services/patient/compose.auth.yaml down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
 
-See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2–6 backend paths are integrated. Shared executable contract artifacts and full telemetry infrastructure remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2–7 backend paths are integrated. Shared executable contract artifacts remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
 
 ## Hospital workflow verification
 
