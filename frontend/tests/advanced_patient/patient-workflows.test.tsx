@@ -66,7 +66,7 @@ type Handler = (url: URL, init: RequestInit) => Response | Promise<Response> | u
 function setup(component: React.ReactNode, handler: Handler, role: Role = "patient") {
   const fetcher = vi.fn<typeof fetch>(async (input, init = {}) => {
     const url = new URL(String(input), "http://pulsegrid.test");
-    return (await handler(url, init)) ?? failure(404, "not_found", `No fixture for ${url.pathname}.`);
+    return (await handler(url, init)) ?? (url.pathname==="/api/v1/patients/me"?json(patientProfile):failure(404, "not_found", `No fixture for ${url.pathname}.`));
   });
   const access = `header.${btoa(JSON.stringify({ sub: "user-101", roles: [role] }))}.signature`;
   const auth = {

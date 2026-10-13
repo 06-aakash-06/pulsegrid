@@ -13,3 +13,8 @@ GSAP scene introductions use matchMedia, short durations and cleanup. Motion is 
 The local demo manifest is serve-only, development-only and ignored; production contains no fixture identities/credentials/ID mappings. The two corrected architectural WebPs load only when these scenes match; portraits are used only by the local demo mapping. Current production main JavaScript is approximately 420 KB (139 KB gzip), with owner workflows and QR libraries split into deferred chunks. No load-speed or throughput benchmark is claimed.
 
 All 142 frontend tests, typechecking and production build pass. Actual browser search, role navigation, filtering, accepted availability and reviewed booking succeed; read-only owner verification inspected 13 responses. Final viewport captures cover 1536×1024, 1440×900, 1280×800 and 390×844 for both scenes. Remaining fidelity differences and unavailable reference features are explicitly listed in the correction report. Human visual review is pending. No push, deployment, backend business change, database reset or subsequent department redesign is part of this stop point.
+
+
+## 14 October 2026 continuation
+
+See [Phase 9 resume](phase-9-resume.md) for recovered work, the seven department compositions, owner-scoped patient registers, role-specific secondary screens, reused assets, four-size browser evidence and exact validation. Its PARTIAL acceptance verdict supersedes broader historical visual acceptance claims. Architectural layout and department scene extensions remain scoped to the existing design system; no backend domain boundary or API contract changed.

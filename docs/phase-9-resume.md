@@ -57,3 +57,45 @@ Browser booked a new fictional operator visit `407044644299917742`, rescheduled 
 Live multi-role QA exposed that Patient My Appointments inherited the broad receptionist register. The Patient view now explicitly requests its owner patient_id; staff scopes remain unchanged. Tests verify the owner filter. Added real specialty pills and bounded doctor-rail cursor pagination. Selected management uses a full-width reschedule desk rather than squeezing a calendar into the small receipt column. Short-link tools and full IDs stay in secondary disclosures; no short-link secret was issued or captured during this continuation.
 
 The first walk-in screenshot showed a giant demographic register. It was replaced with compact owner Patient search and selection feeding the existing booking command directly. Searching Anika returned the actual fictional Anika Shah profile; selecting it loaded clinician/date/receipt controls for that patient ID. No guest registration or separate queue is invented. Existing demographic management remains on Reception. Existing receptionist check-in/journey tools remain in an accessible disclosure. Walk-in captures at all four sizes reported no page overflow.
+
+## Final route coverage and evidence
+
+| Department | Implemented and inspected routes/states | Final comparison |
+|---|---|---|
+| Appointments | `/patient/appointments` book, My Appointments, selected detail, frozen review, confirmation, reschedule/cancel; `/receptionist/appointments` booking, existing-patient walk-in, check-in/journey disclosure | [Comparison](verification/phase9-resume/comparisons/appointments.jpg) |
+| Waiting Room | `/patient/queue`, `/patient/check-in`, `/patient/waitlist`; real own queue, scanner request/cancellation, manual fallback, owner-filtered waitlists/offers; shared `/doctor/queue` and receptionist workflows retained | [Comparison](verification/phase9-resume/comparisons/waiting.jpg) |
+| Pharmacy | `/patient/pharmacy`, `/patient/prescriptions`; `/pharmacist/dashboard`, `/pharmacist/inventory`, `/pharmacist/prescriptions`; doctor prescriptions retain existing authority | [Comparison](verification/phase9-resume/comparisons/pharmacy.jpg) |
+| Billing | `/patient/billing`; `/billing/dashboard`, `/billing/invoices`, `/billing/payments`, `/billing/insurance` share cashier/receipt or existing insurance-provider desk | [Comparison](verification/phase9-resume/comparisons/billing.jpg) |
+| Emergency | `/patient/emergency`; `/emergency/dashboard`, `/emergency/requests`; distinct patient intake and staff claim/priority actions | [Comparison](verification/phase9-resume/comparisons/emergency.jpg) |
+| Medical Records | `/patient/records`, `/patient/journey`; `/doctor/consultations` document/authoring desk; patient grants/history and prescriptions retained | [Comparison](verification/phase9-resume/comparisons/records.jpg) |
+| Control Room | `/admin/control-room`, `/admin/traces`; `/ops/dashboard`, `/ops/traces` reuse the technical monitor/trace components with role gating | [Comparison](verification/phase9-resume/comparisons/control-room.jpg) |
+
+Route coverage distinguishes inherited shared components from new browser captures; not every alias or mutation was separately exercised live. The complete 35-route inventory remains in phase-9-frontend-audit.md. Auth, access and public routes remain unchanged. Application/auth/role-routing tests passed as part of the final frontend suite.
+
+The exact before/after captures, all four primary sizes, patient/staff alternatives, new transaction receipts and approved Reception/Consultation regression captures are indexed by `screenshot-manifest.json` (90 real browser screenshots; seven additional side-by-side composites). `review.html` shows the comparisons. The composites resize exact approved references and actual captures without changing their content; they are evidence only, never application assets. Some earlier captures show loading/before-correction states; use the comparison mappings and files marked final/corrected for the final layouts.
+
+Asset-manifest.json records dimensions, byte size and SHA-256 for all thirteen reused environment/portrait files. Six recovered corrected department assets are integrated; the existing pharmacy counter, Reception, Consultation and portrait assets were reused. No assets were generated in this continuation. The original six generation calls cannot be independently reconstructed from the asset files; provenance is recorded as recovered, not newly generated.
+
+The final appointment comparison also uses actual read-only patient name/contact fields, filling the reference's Patient Details area. Unprovided contact is explicitly marked Not provided. Full data remains authoritative and no unsupported fields enter booking requests. My Appointments shows actual returned doctor names/specialties alongside development-only illustrative portraits.
+
+Secondary waitlist QA exposed the same multi-role broad-register issue as My Appointments. Waitlists and temporary offers now use supported owner patient_id filters. The empty own-patient state is preserved rather than displaying the operator's broader staff register. Journey options and waitlist references use short display labels with full IDs in secondary details. Advanced Patient tests passed (11 tests). Camera cancellation was exercised in the actual browser: the pending permission request stops and the interface states that manual appointment ID/token entry is available.
+
+## Exact final validation
+
+- `npm --prefix frontend run typecheck`: PASS.
+- `npm --prefix frontend test -- --reporter=dot`: PASS, 142 tests across 11 files, zero failures, including application routes/auth, owner scoping, frozen command/idempotency/ETag semantics, record/prescription/stock/billing/emergency, camera lifecycle and Surge role controls.
+- `npm --prefix frontend run build`: PASS, TypeScript and Vite production build.
+- Production JavaScript scan: no `/__demo/hospital.json` endpoint or mapped development doctor/patient/appointment IDs found.
+- `.venv/bin/python frontend/scripts/phase9_verify_owner_state.py --output docs/verification/phase9-resume/live-owner-verification.json`: PASS, 15 current persisted owner-state and authorization checks; this is read-only persistence verification of the earlier fixture.
+- New browser writes: real booking → reschedule → cancel; separate fictional emergency create → cancel. Both new objects reached their expected final cancelled state. No older fixture/audit chain was edited or deleted.
+- Browser primary layouts: four requested sizes, no document horizontal overflow observed. Patient, receptionist, pharmacist, Billing staff, Emergency staff, doctor and administrator were authenticated. An ops-only account was not available; its restrictions are covered by unit/route tests.
+- Approved Reception/Consultation component sources and original hospital/reference styles have no diff from `5eb2ec0`. Recovered scaling work is retained; current 1536/390 browser regression captures have no page overflow.
+- `git diff --check`: PASS. All commits local on main; no push, worktree, backend code change, dependency install, database reset or volume deletion.
+
+## Remaining limits and verdict
+
+**PARTIAL under the full acceptance checklist.** All seven supported department implementations were extended and browser-inspected, but physical camera decoding and every role-specific secondary mutation were not fully exercised live. Ops-only browser authentication was unavailable. No global Surge transition, stock/clinical mutation or simulated payment was repeated merely to improve a screenshot; existing focused frontend tests and owner-state verification cover those preserved paths.
+
+The reference compositions are adapted to actual contracts. Waiting Room cannot expose other patients or invent wait estimates; Pharmacy cannot create a retail upload/cart; Billing has manual authoritative consultation/dispensing imports rather than unsupported category shopping, drafts or discounts; Emergency cannot create clinical treatment/vitals/admission controls; Records has summary/assessment/plan rather than unsupported labs/imaging/vitals; Control Room shows software telemetry rather than hospital beds/staff. These omissions are intentional. Remaining visual differences include simpler physical paper/carton geometry, outlined icons, smaller live datasets, less dense cashier/clinical content and different architectural people/objects. Strict reference fidelity is not asserted as pixel-identical or as a user visual sign-off.
+
+No backend regression suite, load test, chaos test, production deployment or clinical validation was performed. Vite remains available on loopback port 5173 for local inspection; the browser viewport override was reset after QA.

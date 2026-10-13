@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PatientGate, usePagedItems, usePatientAccess } from "./hooks";
+import { PatientGate, useLoad, usePagedItems, usePatientAccess } from "./hooks";
 import { formatTime, getErrorMessage, idempotencyRecovery, newIdempotencyKey, sendCommand } from "./api";
 
 interface Offer {
@@ -11,7 +11,8 @@ interface Attempt { offer: Offer; action: "accept" | "decline"; key: string }
 
 export function WaitlistOffers() {
   const { api, gate } = usePatientAccess();
-  const list = usePagedItems<Offer>(api, "/api/v1/appointments/waitlist-offers?limit=100", gate === "ready");
+  const profile = useLoad<{id:string}>(api,gate === "ready"?"/api/v1/patients/me":null,gate === "ready");
+  const list = usePagedItems<Offer>(api,profile.data?`/api/v1/appointments/waitlist-offers?patient_id=${encodeURIComponent(profile.data.id)}&limit=100`:null,gate === "ready"&&!!profile.data);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<string | null>(null), [clock, setClock] = useState(Date.now());
@@ -38,10 +39,11 @@ export function WaitlistOffers() {
   if (gate !== "ready") return <PatientGate state={gate} />;
   return <section className="patient-workflow__panel">
     <h2>Temporary slot offers</h2><p>An offer holds a slot until the expiry shown. The service confirms acceptance and releases declined or expired offers.</p>
+    {profile.error&&<p role="alert">{profile.error}<button onClick={profile.reload}>Retry patient profile</button></p>}
     {list.error && <p role="alert">{list.error}</p>}{error && <p role="alert">{error}</p>}
     {receipt && <p role="status">{receipt}</p>}
     {list.items.map(offer => <article key={offer.id}>
-      <p>Slot {offer.slot_id} — {offer.state}. Expires {formatTime(offer.expires_at)}.</p>
+      <p>Slot …{offer.slot_id.slice(-4)} — {offer.state}. Expires {formatTime(offer.expires_at)}.</p>
       {offer.state === "pending" && Date.parse(offer.expires_at) > clock && <>
         <button disabled={busy || !!attempt} onClick={() => void submit({ offer, action: "accept", key: newIdempotencyKey() })}>Accept slot offer</button>
         <button disabled={busy || !!attempt} onClick={() => void submit({ offer, action: "decline", key: newIdempotencyKey() })}>Decline slot offer</button>

@@ -9,3 +9,8 @@ At <=900px directory becomes a focus-managed drawer with Escape and overlay dism
 Preserve existing route titles as accessible navigation names while the directory groups them by their hospital department. Eight actual role groups; server remains authorization authority. Staff JWT provides subject rather than name; header shows that account identifier. Patient reception uses owner profile name.
 
 Architecture images are generated clean environments, compressed to WebP and selected per active department; never full screenshot backgrounds. The shared design stylesheet intentionally overrides old lazy module CSS via scoped specificity, so loading a workflow cannot restore white/blue generic styles.
+
+
+## 14 October 2026 continuation
+
+See [Phase 9 resume](phase-9-resume.md) for recovered work, the seven department compositions, owner-scoped patient registers, role-specific secondary screens, reused assets, four-size browser evidence and exact validation. Its PARTIAL acceptance verdict supersedes broader historical visual acceptance claims. Architectural layout and department scene extensions remain scoped to the existing design system; no backend domain boundary or API contract changed.

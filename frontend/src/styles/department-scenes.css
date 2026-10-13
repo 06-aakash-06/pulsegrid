@@ -442,3 +442,22 @@
  .reference-departments .walkin-entry .booking-composition{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);margin-top:12px;}
  .reference-departments .walkin-entry .booking-receipt{grid-column:1/-1;}
 }
+.appointment-slip-entry .reference-portrait{width:35px;height:50px;}
+.appointment-slip-entry small{display:block;font-size:10px;margin-top:5px;}
+@media(min-width:901px){.appointment-slip-entry{grid-template-columns:minmax(130px,1.1fr) 40px minmax(0,1.5fr) minmax(70px,.7fr) auto;}}
+@media(max-width:900px){.appointment-slip-entry{grid-template-columns:40px minmax(0,1fr) auto;}.appointment-slip-entry>time{grid-column:1/-1;}.appointment-slip-entry>.owner-state{grid-column:2;justify-self:start;}}
+@media(min-width:901px){
+ .reference-departments .waitlist-register{display:grid!important;grid-template-columns:minmax(260px,1fr) minmax(0,1.7fr);gap:16px!important;align-items:start;}
+ .reference-departments .waitlist-register>.patient-workflow__panel{padding:18px;background:#f3e7d5;}
+ .reference-departments .waitlist-register form{display:grid;gap:8px;}
+ .reference-departments .waitlist-register p{font-size:12px;line-height:1.5;}
+ .reference-departments .waitlist-register .patient-workflow__item{padding:12px;border:0;border-left:3px solid #16787c;border-bottom:1px solid #cfb99c;border-radius:0;}
+ .reference-departments .waitlist-register .patient-workflow__item h3{font-size:14px;}
+ .reference-departments .waitlist-register .patient-workflow__facts{grid-template-columns:1fr 1fr;gap:10px;font-size:12px;}
+ .reference-departments .department-page--waiting.route-waitlist>.page-heading{background:#f3e8d6;padding-left:22px;}
+}
+.booking-patient-details{padding:16px 0 0;margin-top:16px;border-top:1px solid #cfbaa0;}
+.booking-patient-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.booking-patient-details small{display:block;font-size:10px;margin-top:8px;}
+.booking-patient-details label{font-size:11px;}
+@media(max-width:580px){.booking-patient-fields{grid-template-columns:1fr;}}

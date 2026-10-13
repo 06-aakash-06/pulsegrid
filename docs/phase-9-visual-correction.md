@@ -1,6 +1,6 @@
 # Phase 9 — Reception and Consultation correction
 
-The user's visual review rejected the first Phase 9 design. This supersedes its visual acceptance claims. Work after that review is limited to Reception/Homepage and Consultation/Doctor Directory; the remaining departments await review and are not being extended. Previously completed and pending Phase 9 work is preserved in the local history.
+The user's visual review rejected the first Phase 9 design. This supersedes its visual acceptance claims. That correction checkpoint was limited to Reception/Homepage and Consultation/Doctor Directory. The seven remaining departments are now continued in [the Phase 9 resume report](phase-9-resume.md), which records their implementation and remaining acceptance limits. Previously completed and pending Phase 9 work is preserved in the local history.
 
 ## Reference and rendered evidence
 

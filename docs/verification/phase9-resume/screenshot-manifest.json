@@ -1,0 +1,542 @@
+[
+  {
+    "file": "appointments-1280.jpg",
+    "width": 1280,
+    "height": 1179,
+    "sha256": "e867dca495c1bb6ffd7cca0dc31b6fee90d530911e7923f99f55ec1edfa127e3"
+  },
+  {
+    "file": "appointments-1440.jpg",
+    "width": 1440,
+    "height": 900,
+    "sha256": "0274ff29f9dab224d58d1d4503b580beda1a1a62cb92fd282c20065ab32129c9"
+  },
+  {
+    "file": "appointments-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "1f995dffd2ba6181780f8974332365aba02e969a7e1266ba9eacd24a64590fb9"
+  },
+  {
+    "file": "appointments-390.jpg",
+    "width": 390,
+    "height": 2088,
+    "sha256": "ffeafac8d738d7080a6547281a514a0a08c814765996a12b41679bede6dcb858"
+  },
+  {
+    "file": "appointments-cancelled-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "00b34466c4feada69c2703eda08ee173d08ddc5f9a9bdb489d12fd7e903f36b4"
+  },
+  {
+    "file": "appointments-confirmed-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "b329a9769941ca8e2181d8f92320c5875afaf2b28e811df033f4dfe1a9ab2eb5"
+  },
+  {
+    "file": "appointments-final-1280.jpg",
+    "width": 1280,
+    "height": 1336,
+    "sha256": "0c54760edcb55b4d5a02fbdb33fb3cd393153239b8a418f579589c1e0af5ffa1"
+  },
+  {
+    "file": "appointments-final-1440.jpg",
+    "width": 1440,
+    "height": 1048,
+    "sha256": "16cd2d10e2df44e77d30143acc662f9e1d972f37b3ae5c947066c7ac8c108ae1"
+  },
+  {
+    "file": "appointments-final-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "454276bfeec69bd3579d67759a534bc5052801f17cadd6f57ca62f3f461c453a"
+  },
+  {
+    "file": "appointments-final-390.jpg",
+    "width": 390,
+    "height": 2417,
+    "sha256": "164a1c092ede141d8a383ed0b9af50f9a48d012b6f278d9200e577303ac96f0c"
+  },
+  {
+    "file": "appointments-reschedule-review-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "cbb362c14a036a908fb9066636bb41e32663f838236eb8c3fbe77b0e5a822eb7"
+  },
+  {
+    "file": "appointments-rescheduled-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "77feeabdb24d0c616a9347766aad590eed8965dd69ebd330b5c10ac3603bae41"
+  },
+  {
+    "file": "appointments-review-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "845b967c4f2f1a529641e99c093fd8524f2ff346609586450a3fd0565840328c"
+  },
+  {
+    "file": "appointments-selected-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "f48489c6ccbfa1343dd45a49e757b219e6f1bd7351d3295a416bb9ab1abdd7a3"
+  },
+  {
+    "file": "appointments-walk-in-1280.jpg",
+    "width": 1280,
+    "height": 1715,
+    "sha256": "6ae5063308869d7cfeb875b2a01e8b69c10f550c4c95b286efe8e704b413ffc7"
+  },
+  {
+    "file": "appointments-walk-in-1440.jpg",
+    "width": 1440,
+    "height": 1598,
+    "sha256": "343cb6d9d3f39df78a7277431e64ad4d42c0b6657d218bb9a9f1ddf63c22418d"
+  },
+  {
+    "file": "appointments-walk-in-1536.jpg",
+    "width": 1536,
+    "height": 3362,
+    "sha256": "e804dad1d13cd170b8fc2df962f85c7a7b704ebf021e7f8f5cf4fb9102bc0ef5"
+  },
+  {
+    "file": "appointments-walk-in-390.jpg",
+    "width": 390,
+    "height": 2426,
+    "sha256": "b4b3a1cb16d5e190c21d005e91f5e5a4d3363fe5307356fdfc503b9ac5f52ae0"
+  },
+  {
+    "file": "appointments-walk-in-corrected-1536.jpg",
+    "width": 1536,
+    "height": 1598,
+    "sha256": "1df3978b2905b2c116abf61fa18d85866bf83bfea2f8cd5fa0d75a12f5840cc8"
+  },
+  {
+    "file": "billing-insurance-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "be53b18da2cca121e86e6ce8d6024abc0a23cae9cf22beba1fdad39c0ffbd0f1"
+  },
+  {
+    "file": "billing-patient-1280.jpg",
+    "width": 1280,
+    "height": 993,
+    "sha256": "8b784897b9afecb48c3a640e18f644ab9bb30007bbf0183dd1ec00a82730ce98"
+  },
+  {
+    "file": "billing-patient-1440.jpg",
+    "width": 1440,
+    "height": 998,
+    "sha256": "6ae9df9214c8df8cedc64341a82711902538e7f85e4d6f070acfb85dca81b80e"
+  },
+  {
+    "file": "billing-patient-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "6ca2dada4b2b277b2b1adb93f27d3e52753f746e9658ba93296f543cb49a0be6"
+  },
+  {
+    "file": "billing-patient-390.jpg",
+    "width": 390,
+    "height": 1754,
+    "sha256": "4429ca0765696d3b970aa5a5c83d9e048ac2a7df35e56ef32356e2b36a605be9"
+  },
+  {
+    "file": "billing-staff-1280.jpg",
+    "width": 1280,
+    "height": 1132,
+    "sha256": "2585e92e46bf59340d1184d1fc3cb7f81c6a2509d4326a92b391a378af6a475f"
+  },
+  {
+    "file": "billing-staff-1440.jpg",
+    "width": 1440,
+    "height": 1117,
+    "sha256": "64d4ca3075d9f811044cc654165e46bbd12c95b4bffb19b81431d127e1ecdb1e"
+  },
+  {
+    "file": "billing-staff-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "4faeae4f1151a18d79387f82562d0c6d409d57a4f317fb900563123299e5d9f8"
+  },
+  {
+    "file": "billing-staff-390.jpg",
+    "width": 390,
+    "height": 2159,
+    "sha256": "e54cd254989410f2be0c50bc3fb22e358c481747dfd34db9f5fc725bdc57ac9d"
+  },
+  {
+    "file": "billing-staff-before-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "58db963df494b2b67e9b6fb3c28e3fdaf17a79a455de5443b4d3df03b9259b2b"
+  },
+  {
+    "file": "check-in-camera-390.jpg",
+    "width": 390,
+    "height": 1229,
+    "sha256": "206a8e1892bce39df92befd69a357cc3d5bf525949c0e06770ec2ed8201c072e"
+  },
+  {
+    "file": "check-in-camera-cancelled-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "28608a59cf802881fc3d6e6abce413e8e4bccfd6cb0046dbfcb673b0b73b436e"
+  },
+  {
+    "file": "check-in-camera-cancelled-390.jpg",
+    "width": 390,
+    "height": 1212,
+    "sha256": "822307220e95ed29c17d8d488f5764ad19e520b04df50b11face440e193f3a37"
+  },
+  {
+    "file": "check-in-camera-result-390.jpg",
+    "width": 390,
+    "height": 1229,
+    "sha256": "206a8e1892bce39df92befd69a357cc3d5bf525949c0e06770ec2ed8201c072e"
+  },
+  {
+    "file": "consultation-regression-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "1c9e69e404fedb3007d4fb52e2b77e8d741da25c9ad43486118b483db5485813"
+  },
+  {
+    "file": "consultation-regression-390.jpg",
+    "width": 390,
+    "height": 1869,
+    "sha256": "f6860259574f0326fc49ca30d8fc76628f78c96dcd60cfa5077b646fbab5214e"
+  },
+  {
+    "file": "control-room-1280.jpg",
+    "width": 1280,
+    "height": 1855,
+    "sha256": "13e6de8707c26e4189358a5975cd44cea048ad18728c008988ab95aaab8b18d6"
+  },
+  {
+    "file": "control-room-1440.jpg",
+    "width": 1440,
+    "height": 1855,
+    "sha256": "b58affa18b5e619902b573f6f405e5425e3792a71faf74d0491137033ccd6301"
+  },
+  {
+    "file": "control-room-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "96a13a94bb5184dec8f8196b4a9618bfa6d3dab7cad9543f0d3abbf0e2f85725"
+  },
+  {
+    "file": "control-room-390.jpg",
+    "width": 390,
+    "height": 3495,
+    "sha256": "059f52df5ded37b0afe6e612f2c9a898d1bad424681c3899aba7861df262663b"
+  },
+  {
+    "file": "control-room-before-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "11d6f5a90786a14c9c5358616478f5e586696cdbb849376d544dc5628fc8aee8"
+  },
+  {
+    "file": "control-room-surge-admin-1536.jpg",
+    "width": 1536,
+    "height": 2498,
+    "sha256": "67e679b1754485b7700d33eca2d5cfaf21ae42b0b390660d0928aef7f6cd86d4"
+  },
+  {
+    "file": "emergency-patient-1280.jpg",
+    "width": 1280,
+    "height": 1427,
+    "sha256": "4756d685d693cb1d9ff160fe603009915c0116663929fc3a49c254de40638a59"
+  },
+  {
+    "file": "emergency-patient-1440.jpg",
+    "width": 1440,
+    "height": 1432,
+    "sha256": "541f143413bafd86ea6e90bd457f5ab2346bd8d6b76df6c1dd12824832396d3b"
+  },
+  {
+    "file": "emergency-patient-390.jpg",
+    "width": 390,
+    "height": 2324,
+    "sha256": "c95872e1591f6ad8686d49e4df386c654586b3e48806369ace09b703d7af6d85"
+  },
+  {
+    "file": "emergency-patient-cancelled-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "784355b3216d308a974e65fcc69eba62488d9fc689b7fac99b564503e0080ddb"
+  },
+  {
+    "file": "emergency-patient-created-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "ab5afd0b20a3df23a0b82303111647503f05db04cf3f01d022969e93740d8638"
+  },
+  {
+    "file": "emergency-staff-1280.jpg",
+    "width": 1280,
+    "height": 1331,
+    "sha256": "c212b219f34194e763f3aca6c2049473a101e1c97da293d13cd7713bd4d053d4"
+  },
+  {
+    "file": "emergency-staff-1440.jpg",
+    "width": 1440,
+    "height": 1099,
+    "sha256": "4aa215cf1ff818927e701da6106387ea69dedfb5390e5025dc23746edd64808c"
+  },
+  {
+    "file": "emergency-staff-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "637a342016f41f36e5014cb59c9ae0a4f5bb0d1fe394ec70d921a6fd3a3dc744"
+  },
+  {
+    "file": "emergency-staff-390.jpg",
+    "width": 390,
+    "height": 2344,
+    "sha256": "de330d88bccc928b6bfaa2fce49f880fd3d54904c33903302eb19b20d8f73c92"
+  },
+  {
+    "file": "emergency-staff-before-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "7c47299043bc74f367550b5884b66282122b15fef5c7796541574b59808f86a1"
+  },
+  {
+    "file": "journey-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "6cd0ef257b8792ed7556540febf48ed86740ae48abe5808ba5f517e558ca183c"
+  },
+  {
+    "file": "journey-390.jpg",
+    "width": 390,
+    "height": 1796,
+    "sha256": "d685b86ca63193f178ad64d8179caeb665cf90cf3217b78997f481e37ec607fc"
+  },
+  {
+    "file": "my-appointments-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "2db1d6ccf890d540a1ea96181e07c460ff92eefc56a302249934d1aded865ff4"
+  },
+  {
+    "file": "pharmacy-fulfillment-1536.jpg",
+    "width": 1536,
+    "height": 2036,
+    "sha256": "de51ead154ceafc4dfaf92dd7892f73c1deb27cdbbdbe3f89704c462197e9522"
+  },
+  {
+    "file": "pharmacy-fulfillment-corrected-1536.jpg",
+    "width": 1536,
+    "height": 1451,
+    "sha256": "b3d6c321ba1bee881c3526e9ff38849255de10b60a330e1080bf860c71d70a80"
+  },
+  {
+    "file": "pharmacy-patient-1280.jpg",
+    "width": 1280,
+    "height": 1168,
+    "sha256": "e28b0910dca3a0a650ecdcf64cd0f5a990a757ddeb2427b3d54eea825f39a4d8"
+  },
+  {
+    "file": "pharmacy-patient-1440.jpg",
+    "width": 1440,
+    "height": 1168,
+    "sha256": "ed9cb91e027bf52f5f9fc98461dc4602fcf7325bbe50fdef0e7c4ff749f3e033"
+  },
+  {
+    "file": "pharmacy-patient-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "3fbc24edf5ae4e8b8a2c9ac1f3782ef2470f6737c02292bb3086f99d5970f249"
+  },
+  {
+    "file": "pharmacy-patient-390.jpg",
+    "width": 390,
+    "height": 1532,
+    "sha256": "e9146cd4df5a221113c9fc8f29a30b8d448c2dbe1ef9c12aca16c65c9082d4ba"
+  },
+  {
+    "file": "pharmacy-patient-final-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "4d03a29d3dae60633efae9c5f1faab757eb2edbcf06d9564eaa6ba9382956260"
+  },
+  {
+    "file": "pharmacy-staff-1280.jpg",
+    "width": 1280,
+    "height": 2076,
+    "sha256": "0ec8983b60e61adaec221c6a772870e90b214ca4b48a7f912b61333d16e8c210"
+  },
+  {
+    "file": "pharmacy-staff-1440.jpg",
+    "width": 1440,
+    "height": 2076,
+    "sha256": "38c524eac047556370b44d151e0908d6491a28b333c6b0ed1b326fb337a12c03"
+  },
+  {
+    "file": "pharmacy-staff-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "ace7a838dbec6b8040763525da01a21fd7092268dc7beefe93a4c4338a9908ab"
+  },
+  {
+    "file": "pharmacy-staff-390.jpg",
+    "width": 390,
+    "height": 3441,
+    "sha256": "c142b4963bfda6c0d099b94254bf674cfc25003cb3d9c4345c7fbba1223c0c91"
+  },
+  {
+    "file": "reception-regression-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "9aea2efa6aa6ad665bca4c378e63ec5b23559fd1fc8fde378364a42e02fa24ee"
+  },
+  {
+    "file": "reception-regression-390.jpg",
+    "width": 390,
+    "height": 1417,
+    "sha256": "147bb1ace22ae26ff93d65b80ebd1d83197a65e7f14d45a29f9deb85135e86c9"
+  },
+  {
+    "file": "records-doctor-1280.jpg",
+    "width": 1280,
+    "height": 1069,
+    "sha256": "63d370c31c3f9c7a8449876b31af05ef02be228e17bc9ec9a68a90e97ac29027"
+  },
+  {
+    "file": "records-doctor-1440.jpg",
+    "width": 1440,
+    "height": 1060,
+    "sha256": "3d9e4e4c2fe19ef681daf0a026ac549b117b11d1c9fa67c3a152349c4246fa74"
+  },
+  {
+    "file": "records-doctor-1536.jpg",
+    "width": 1536,
+    "height": 1866,
+    "sha256": "fec8aa94dc09096b39a315e38a2706105c45725ff669b8a337591d4ef5b5a72e"
+  },
+  {
+    "file": "records-doctor-390.jpg",
+    "width": 390,
+    "height": 1672,
+    "sha256": "9c2dd028008b34c2f10ea37028ea659d8b9e6e36e9272db71a4f9f190766a644"
+  },
+  {
+    "file": "records-doctor-corrected-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "45998c519ff0b00e3b316313446df900ea6f6382373695af0cf22c6972458260"
+  },
+  {
+    "file": "records-patient-1280.jpg",
+    "width": 1280,
+    "height": 1351,
+    "sha256": "da1f82c26984b90d6d0d3b125588d62621728c7b6d91be06facd3fefb4898ea2"
+  },
+  {
+    "file": "records-patient-1440.jpg",
+    "width": 1440,
+    "height": 1342,
+    "sha256": "103a8507d7dd421f21ddc6ee3719e1bc31fdba3546c67278e5c38e522ca05a99"
+  },
+  {
+    "file": "records-patient-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "379d39afac97c54cce6cd5a8da4f1ff4d997698a8199684bb71493689781782e"
+  },
+  {
+    "file": "records-patient-390.jpg",
+    "width": 390,
+    "height": 2456,
+    "sha256": "d626446f344aee15160b20f81fdd64dd7ee424641b93f2880eb8866a8ecdf68a"
+  },
+  {
+    "file": "records-patient-before-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "9e773cb094401aa1dc9d8ed889b603ff58556448d6b38fcf993f8dcb310c42a1"
+  },
+  {
+    "file": "traces-admin-1280.jpg",
+    "width": 1280,
+    "height": 994,
+    "sha256": "68996bcb2934ddbbe74c809693af8af3b8951d675386e41c729a23c10754e8e8"
+  },
+  {
+    "file": "traces-admin-1440.jpg",
+    "width": 1440,
+    "height": 994,
+    "sha256": "79509dadb89c871df3ce79aa2d63473124e653792f81235b9d20e24585455418"
+  },
+  {
+    "file": "traces-admin-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "657f0f8f5d1585fa7b78c7e3eb2cd0ce8db8ad20d1a62e23e1bf16cf10d003d0"
+  },
+  {
+    "file": "traces-admin-390.jpg",
+    "width": 390,
+    "height": 1601,
+    "sha256": "8fba2902afe5f236ae49ab20478b56b97ac9b8fb31df5109050f635f86dfc517"
+  },
+  {
+    "file": "traces-admin-selected-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "f37f2817123dd266030bd00c2a1988922d00033639b75d99dcac75bed0b50834"
+  },
+  {
+    "file": "waiting-1280.jpg",
+    "width": 1280,
+    "height": 874,
+    "sha256": "33e39f606bf13c5ba3dc781a419989cf774bd781f07f3d58c1a5eeff632a3ddc"
+  },
+  {
+    "file": "waiting-1440.jpg",
+    "width": 1440,
+    "height": 900,
+    "sha256": "67d63dba0eddd87bd53ee4004f9174ce334308ba0bd88d6ef8d09c366f0a376a"
+  },
+  {
+    "file": "waiting-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "b5c35c0a29252bc6caa18031b013f778ce68f02a8b2d39309832fa4ff573fadb"
+  },
+  {
+    "file": "waiting-390.jpg",
+    "width": 390,
+    "height": 1538,
+    "sha256": "4e66e01bf777908f5ea062ca5674c3bd694b4772c2bfde0ea5ca0fe8d20125a8"
+  },
+  {
+    "file": "waitlist-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "4d6d5e8636e681e4e3d9d0a5c86367dac335ed13c4d999bc1a7abed329b96ba1"
+  },
+  {
+    "file": "waitlist-390.jpg",
+    "width": 390,
+    "height": 5098,
+    "sha256": "fd7b5ad8bb69c40e7a775f21e84cb2ad3abe79215a0e44481b40beffe5e90ffa"
+  },
+  {
+    "file": "waitlist-corrected-1536.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "0351315cdcd89f7c5f0a094eaca32960131adf51caaca35ef0f0b5f651bd1369"
+  },
+  {
+    "file": "waitlist-corrected-390.jpg",
+    "width": 390,
+    "height": 979,
+    "sha256": "78a150f87dcf7e2562c67cce6d478abb26ae8dad6e7aa67bc6230e8a97493406"
+  }
+]

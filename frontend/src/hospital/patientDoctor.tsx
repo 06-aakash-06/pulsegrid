@@ -1,5 +1,5 @@
 import { AppointmentDoctorRail } from "../design/AppointmentDoctorRail";
-import { useLocalDemo } from "../design/localDemo";
+import { DoctorPortrait, useLocalDemo } from "../design/localDemo";
 import { ReceptionVisit } from "../design/ReceptionVisit";
 import { ReferenceConsultation } from "../design/ReferenceConsultation";
 import { m } from "motion/react";
@@ -16,6 +16,7 @@ import type {
   Doctor,
   DoctorSelf,
   PatientProfile,
+  Page,
   Proposal,
   UserView,
 } from "./models";
@@ -428,6 +429,7 @@ export function Booking({
   doctorId,
   doctorName,
   patientName,
+  patientProfile,
   onSuccess,
   onLockChange,
 }: {
@@ -435,6 +437,7 @@ export function Booking({
   doctorId?: string;
   doctorName?: string;
   patientName?: string;
+  patientProfile?: PatientProfile;
   onSuccess?: () => void;
   onLockChange?: (locked:boolean)=>void;
 }) {
@@ -469,7 +472,7 @@ export function Booking({
           onSlot={(id, revision, startsAt, endsAt) => setSlot({ id, revision, startsAt, endsAt })}
         />
       )}
-      </fieldset></section><aside className="booking-receipt"><h3>Appointment Summary</h3><div className="receipt-rule"/><Facts values={{"Doctor":doctorLabel||(doctor?`Doctor …${doctor.slice(-4)}`:"Select doctor"),"Patient":patientName||(patientId?`Patient …${patientId.slice(-4)}`:"Enter patient below"),"Starts (UTC)":slot?.startsAt??"Choose a time","Ends (UTC)":slot?.endsAt??"—"}}/>
+      </fieldset>{patientProfile&&<section className="booking-patient-details"><h3><span className="step-number">3</span>Patient Details</h3><div className="booking-patient-fields"><label>Full name<input readOnly value={patientProfile.display_name}/></label>{patientProfile.date_of_birth&&<label>Date of birth<input readOnly value={patientProfile.date_of_birth}/></label>}<label>Contact<input readOnly value={patientProfile.synthetic_contact??"Not provided"}/></label></div><small>Details from your selected patient profile.</small></section>}</section><aside className="booking-receipt"><h3>Appointment Summary</h3><div className="receipt-rule"/><Facts values={{"Doctor":doctorLabel||(doctor?`Doctor …${doctor.slice(-4)}`:"Select doctor"),"Patient":patientName||(patientId?`Patient …${patientId.slice(-4)}`:"Enter patient below"),"Starts (UTC)":slot?.startsAt??"Choose a time","Ends (UTC)":slot?.endsAt??"—"}}/>
       {slot && (
         <CommandForm<Appointment>
           key={slot.id}
@@ -568,7 +571,7 @@ function WalkinRegistration({onSuccess,onLockChange}:{onSuccess:()=>void;onLockC
   const [error,setError]=useState("");
   return <div className="walkin-workspace"><aside className="walkin-steps"><p><span className="step-number">1</span>Choose existing patient</p><p><span className="step-number">2</span>Select doctor & time</p><p><span className="step-number">3</span>Review & confirm</p></aside><div className="walkin-entry"><h2>Walk-in Registration</h2><form className="walkin-patient-search" onSubmit={e=>{e.preventDefault();if(draft.trim().length<2||draft.trim().length>100){setError("Search must contain 2 to 100 characters.");return;}setSearch(draft.trim());setPatient(null);setError("");}}><label>Find existing patient<input disabled={locked} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Patient name…"/></label><button disabled={locked}>Search patients</button>{error&&<p role="alert">{error}</p>}</form>
   {search&&!patient&&<Collection<PatientProfile> title="Matching patients" path={query("/api/v1/patients",{q:search})} renderItem={item=><><strong>{item.display_name}</strong><button disabled={locked} onClick={()=>setPatient(item)}>Use this patient</button><details className="owner-identifiers"><summary>Patient reference</summary>{item.id}</details></>}/>}
-  {patient?<><div className="walkin-patient-strip"><strong>{patient.display_name}</strong><button disabled={locked} onClick={()=>setPatient(null)}>Change patient</button><details className="owner-identifiers"><summary>Patient reference</summary>{patient.id}</details></div><Booking key={patient.id} patientId={patient.id} patientName={patient.display_name} onSuccess={onSuccess} onLockChange={value=>{setLocked(value);onLockChange(value);}}/></>:<p className="walkin-intake-note">Find a patient to begin their appointment registration.</p>}
+  {patient?<><div className="walkin-patient-strip"><strong>{patient.display_name}</strong><button disabled={locked} onClick={()=>setPatient(null)}>Change patient</button><details className="owner-identifiers"><summary>Patient reference</summary>{patient.id}</details></div><Booking key={patient.id} patientId={patient.id} patientProfile={patient} patientName={patient.display_name} onSuccess={onSuccess} onLockChange={value=>{setLocked(value);onLockChange(value);}}/></>:<p className="walkin-intake-note">Find a patient to begin their appointment registration.</p>}
   </div><aside className="walkin-guidance"><h3>Walk-in information</h3><p>Registration uses an existing patient profile and an accepted appointment slot.</p><p>New patients can create an account through patient registration.</p><p>Availability and check-in eligibility are confirmed by Appointment.</p></aside></div>;
 }
 export function Appointments({
@@ -581,6 +584,7 @@ export function Appointments({
   const {state,api}=useAuth();
   const demo=useLocalDemo();
   const ownProfile=useResource<PatientProfile>(!reception&&!doctor?"/api/v1/patients/me":null);
+  const doctorRoster=useResource<Page<Doctor>>(demo?"/api/v1/doctors?limit=20&q=Dr.":"/api/v1/doctors?limit=20");
   const [params,setParams]=useSearchParams();
   const view=params.get('view')==='upcoming'?'manage':params.get('view')==='walk-in'?'walk-in':'book';
   const setView=(value:string)=>setParams(value==='book'?{}:{view:value==='manage'?'upcoming':'walk-in'},{replace:true});
@@ -613,6 +617,7 @@ export function Appointments({
                   onLockChange={setBookingLocked}
                   patientId={profile.id}
                   patientName={profile.display_name}
+                  patientProfile={profile}
                   onSuccess={() => setRevision((v) => v + 1)}
                 />
               </Panel>
@@ -626,7 +631,7 @@ export function Appointments({
         revision={revision}
         renderItem={(item) => (
           <>
-            <div className="appointment-slip-entry"><time>{new Date(item.starts_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`}</strong><span>{demo?.patients[item.patient_id]?.name??(!reception&&!doctor?'Your visit':`Patient …${item.patient_id.slice(-4)}`)}</span><span className="owner-state">{item.state}</span></div>
+            <div className="appointment-slip-entry"><time>{new Date(item.starts_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><DoctorPortrait name={doctorRoster.response?.data.items.find(d=>d.id===item.doctor_id)?.display_name??"Clinician"} index={demo?.doctors[item.doctor_id]?.portrait}/><div><strong>{doctorRoster.response?.data.items.find(d=>d.id===item.doctor_id)?.display_name??`Clinician …${item.doctor_id.slice(-4)}`}</strong><small>{doctorRoster.response?.data.items.find(d=>d.id===item.doctor_id)?.specialties.map(s=>s.name).join(", ")}</small>{(reception||doctor)&&<small>{demo?.patients[item.patient_id]?.name??`Patient …${item.patient_id.slice(-4)}`}</small>}</div><span>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`}</span><span className="owner-state">{item.state}</span></div>
             <details className="owner-identifiers"><summary>Reference identifiers</summary><Facts values={{"Appointment ID":item.id,"Patient ID":item.patient_id,"Doctor ID":item.doctor_id}}/></details>
             <button
               disabled={managementLocked}

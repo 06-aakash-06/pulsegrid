@@ -69,6 +69,7 @@ function WaitlistCount({
 
 export function PatientWaitlistPage() {
   const { api, gate } = usePatientAccess();
+  const profile = useLoad<PatientProfile>(api, gate === "ready" ? "/api/v1/patients/me" : null, gate === "ready");
   const [joinError, setJoinError] = useState<string | null>(null);
   const [joinPending, setJoinPending] = useState(false);
   const [joinNotice, setJoinNotice] = useState<string | null>(null);
@@ -78,8 +79,8 @@ export function PatientWaitlistPage() {
   const [pageLoading, setPageLoading] = useState(false);
   const list = usePagedItems<Waitlist>(
     api,
-    gate === "ready" ? "/api/v1/appointments/waitlists?limit=20" : null,
-    gate === "ready",
+    profile.data ? buildQuery("/api/v1/appointments/waitlists",{patient_id:profile.data.id,limit:"20"}) : null,
+    gate === "ready" && !!profile.data,
   );
 
   async function join(event: FormEvent<HTMLFormElement>) {
@@ -147,7 +148,7 @@ export function PatientWaitlistPage() {
 
   if (gate !== "ready") return <PatientGate state={gate} />;
   return (
-    <div className="patient-workflow">
+    <div className="patient-workflow waitlist-register">
       <section className="patient-workflow__panel" aria-labelledby="waitlist-join-title">
         <h2 id="waitlist-join-title">Join a waitlist</h2>
         <p>Waitlists accept an occupied future slot. Free slots return an availability conflict; use <Link to="/patient/appointments">Appointments</Link> to book those.</p>
@@ -166,17 +167,19 @@ export function PatientWaitlistPage() {
 
       <section className="patient-workflow__panel" aria-labelledby="waitlist-list-title">
         <h2 id="waitlist-list-title">Your waitlist entries</h2>
+        {profile.loading&&<p role="status">Loading your patient profile…</p>}
+        {profile.error&&<div role="alert">{profile.error}<RetryButton onClick={profile.reload}/></div>}
         {list.loading && <p role="status">Loading your waitlist entries…</p>}
         {list.error && <div role="alert"><p>{list.error}</p><RetryButton onClick={list.reload} /></div>}
-        {!list.loading && !list.error && list.items.length === 0 && <p>No waitlist entries were returned for this patient.</p>}
+        {!!profile.data && !list.loading && !list.error && list.items.length === 0 && <p>No waitlist entries were returned for this patient.</p>}
         {list.items.map((entry) => (
           <article className="patient-workflow__item" key={entry.id}>
-            <h3>Entry {entry.id}</h3>
+            <h3>Waitlist entry …{entry.id.slice(-4)}</h3><details className="owner-identifiers"><summary>Entry and slot references</summary>Entry {entry.id} · Slot {entry.slot_id}</details>
             <dl className="patient-workflow__facts">
-              <div><dt>Slot</dt><dd>{entry.slot_id}</dd></div>
+              <div><dt>Slot</dt><dd>…{entry.slot_id.slice(-4)}</dd></div>
               <div><dt>State</dt><dd>{entry.state}</dd></div>
               <div><dt>Joined</dt><dd><time dateTime={entry.joined_at}>{formatTime(entry.joined_at)}</time></dd></div>
-              {entry.promoted_appointment_id && <div><dt>Promoted appointment</dt><dd>{entry.promoted_appointment_id}</dd></div>}
+              {entry.promoted_appointment_id && <div><dt>Promoted appointment</dt><dd>…{entry.promoted_appointment_id.slice(-4)}</dd></div>}
               {entry.skip_reason && <div><dt>Skip reason</dt><dd>{entry.skip_reason}</dd></div>}
             </dl>
             {entry.state === "waiting" && <>
@@ -581,6 +584,7 @@ function JourneyTimeline({ journey }: { journey: Journey }) {
 }
 
 export function PatientJourneyPage() {
+  const demo=useLocalDemo();
   const { api, gate } = usePatientAccess();
   const profile = useLoad<PatientProfile>(api, gate === "ready" ? "/api/v1/patients/me" : null, gate === "ready");
   const listPath = profile.data
@@ -635,7 +639,7 @@ export function PatientJourneyPage() {
       {journeys.length > 0 && <>
         <label htmlFor="patient-journey-select">Journey</label>
         <select id="patient-journey-select" value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
-          {journeys.map((journey) => <option key={journey.id} value={journey.id}>Journey {journey.id} — appointment {journey.appointment_id} — {journey.state}</option>)}
+          {journeys.map((journey) => <option key={journey.id} value={journey.id}>Journey …{journey.id.slice(-4)} — {demo?.appointments[journey.appointment_id]?.label??`Visit …${journey.appointment_id.slice(-4)}`} — {journey.state}</option>)}
         </select>
       </>}
       {detail.loading && <p role="status">Loading current journey details…</p>}
@@ -643,10 +647,11 @@ export function PatientJourneyPage() {
       {detail.data && <>
         <dl className="patient-workflow__facts">
           <div><dt>Journey status</dt><dd>{detail.data.state}</dd></div>
-          <div><dt>Appointment</dt><dd>{detail.data.appointment_id}</dd></div>
+          <div><dt>Appointment</dt><dd>{demo?.appointments[detail.data.appointment_id]?.label??`Visit …${detail.data.appointment_id.slice(-4)}`}</dd></div>
           <div><dt>Last reconciled</dt><dd>{formatTime(detail.data.last_reconciled_at)}</dd></div>
           <div><dt>Review required</dt><dd>{detail.data.review_required ? "Yes" : "No"}</dd></div>
         </dl>
+        <details className="owner-identifiers"><summary>Journey source references</summary>Journey {detail.data.id} · Appointment {detail.data.appointment_id}</details>
         <JourneyTimeline journey={detail.data} />
         <WorkflowHistory path={`/api/v1/appointments/journeys/${detail.data.id}/history`} />
         <button type="button" onClick={() => void reconcile()} disabled={reconcilePending || detail.loading || !detail.etag}>{reconcilePending ? "Refreshing journey…" : "Refresh journey from current owner snapshots"}</button>

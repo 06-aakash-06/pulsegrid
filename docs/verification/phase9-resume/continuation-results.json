@@ -1,0 +1,56 @@
+{
+  "verdict": "PARTIAL",
+  "date": "2026-10-14",
+  "baseline": "5eb2ec0",
+  "branch": "main",
+  "single_agent": true,
+  "worktree_created": false,
+  "backend_code_changed": false,
+  "push_performed": false,
+  "data_reset": false,
+  "typecheck": "PASS",
+  "frontend_tests": {
+    "passed": 142,
+    "failed": 0,
+    "files": 11
+  },
+  "production_build": "PASS",
+  "owner_verification": {
+    "passed": 15,
+    "new_browser_transactions": false
+  },
+  "browser_screenshots": 90,
+  "reference_comparisons": 7,
+  "main_viewports": [
+    [
+      1536,
+      1024
+    ],
+    [
+      1440,
+      900
+    ],
+    [
+      1280,
+      800
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "main_page_overflow_observed": false,
+  "new_browser_transactions": {
+    "appointment_id": "407044644299917742",
+    "appointment_final_state": "cancelled",
+    "reschedule_persisted": true,
+    "emergency_id": "6672847218833974154",
+    "emergency_final_state": "cancelled"
+  },
+  "limitations": [
+    "Physical QR camera decoding not verified; pending camera request cancellation and manual fallback verified.",
+    "No existing ops-only credential was available; admin operations browser and ops RBAC unit checks were used.",
+    "Not every secondary mutation was repeated live.",
+    "Reference density and photographic objects differ where owner APIs do not supply the reference features."
+  ]
+}
