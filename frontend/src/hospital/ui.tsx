@@ -70,7 +70,7 @@ export function Panel({
   children: ReactNode;
 }) {
   return (
-    <section className="hospital-panel">
+    <section className="hospital-panel" data-panel={title.toLowerCase().replaceAll(" ", "-")}>
       <h2>{title}</h2>
       {children}
     </section>
@@ -147,17 +147,17 @@ function CollectionPage<T extends { id: string }>({
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}
       {resource.error && <p role="alert">{resource.error}</p>}
-      <button
+      <div className="resource-toolbar"><span>Owner service data</span><button
         type="button"
         onClick={resource.refresh}
         disabled={!path || resource.loading}
       >
         Refresh {title.toLowerCase()}
-      </button>
+      </button></div>
       {resource.response && (
         <>
           {resource.response.data.items.length === 0 && (
-            <p>No {title.toLowerCase()} found.</p>
+            <div className="resource-empty"><strong>No {title.toLowerCase()} found.</strong><p>Nothing to display for the current filters.</p></div>
           )}
           <div className="hospital-items">
             {resource.response.data.items.map((item) => (
@@ -562,7 +562,7 @@ export function Selected<T extends Versioned>({
   children: (item: T, etag: string | null, refresh: () => void) => ReactNode;
 }) {
   return path ? (
-    <Panel title="Selected resource">
+    <Panel title={path.includes("/doctors/") ? "Doctor profile" : path.includes("/billing/invoices/") ? "Current invoice" : path.includes("/emergencies/") ? "Active request" : path.includes("/pharmacy/medicines/") ? "Medicine details" : path.includes("/appointments/") ? "Appointment details" : path.includes("/records/prescriptions/") ? "Prescription details" : path.includes("/records/") ? "Clinical dossier" : "Selected resource"}>
       <Resource<T> path={path} revision={revision}>
         {(item, etag, refresh) => (
           <div key={`${item.id}:${item.version}`}>

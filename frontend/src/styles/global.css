@@ -1019,6 +1019,7 @@
   }
 }
 
+@layer components {
 /* Phase 2 functional controls reuse the existing workspace palette and spacing. */
 .hospital-panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
 .hospital-panel h2 { margin-top: 0; font-size: 21px; }
@@ -1042,3 +1043,5 @@
 @media (max-width: 600px) { .hospital-panel { padding: 15px; } .hospital-facts > div { grid-template-columns: 1fr; gap: 3px; } }
 .hospital-command-inputs:empty { display: none; }
 .workspace-switcher { display: grid; gap: 8px; margin-bottom: 14px; font-size: 13px; }
+
+}

@@ -1,3 +1,4 @@
+import { DepartmentIcon, departmentFor, departmentDescriptions } from "../design/DepartmentIcon";
 import { PatientWaitlistPage, PatientCheckinPage, PatientQueuePage, PatientJourneyPage, PatientFulfillmentPanel } from "../advanced/patient";
 import { WaitlistOffers } from "../advanced/patient/WaitlistOffers";
 import { DoctorQueuePage, ReceptionWorkflowPanel, StaffFulfillmentPanel } from "./staffAdvanced";
@@ -95,18 +96,18 @@ export function HospitalPage({
   if (role === "/ops" || (role === "/admin" && ["control-room", "traces"].includes(route)))
     return content;
   return (
-    <div className="page-stack">
+    <div className={`page-stack department-page department-page--${departmentFor(role,route)} route-${route}`}>
       <div className="page-heading">
+        <DepartmentIcon department={departmentFor(role,route)}/>
         <div>
           <p className="eyebrow">{workspace.name}</p>
           <h1>{page.title}</h1>
           <p className="page-description">
-            Synthetic hospital workspace. Data and actions are authorized by
-            each owning service.
+            {departmentDescriptions[departmentFor(role,route)]}
           </p>
         </div>
       </div>
-      {content}
+      <div className={`department-workspace workspace-${departmentFor(role,route)}`}>{content}</div>
     </div>
   );
 }

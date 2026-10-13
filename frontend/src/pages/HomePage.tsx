@@ -1,54 +1,6 @@
-import { Link } from "react-router-dom";
-
-const audiences = [
-  { title: "Patients", detail: "Appointments, records, billing, and care updates." },
-  { title: "Care teams", detail: "Consultation, queue, and prescription workspaces." },
-  { title: "Hospital staff", detail: "Pharmacy, billing, emergency, and administration." },
-];
-
-export function HomePage() {
-  return (
-    <main>
-      <section className="hero-section">
-          <div className="hero-copy">
-            <p className="eyebrow">Hospital management foundation</p>
-            <h1>One place for care and hospital operations.</h1>
-            <p className="hero-description">
-              PulseGrid is preparing connected workspaces for patients and hospital teams.
-              Sign in to access service-backed synthetic hospital workflows. No activity is fabricated.
-            </p>
-            <div className="hero-actions">
-              <Link className="button" to="/login">Sign in to PulseGrid <span aria-hidden="true">→</span></Link>
-              <Link className="button button--secondary" to="/register">Patient registration</Link>
-            </div>
-            <div className="foundation-note">
-              <span className="foundation-note-dot" aria-hidden="true" />
-              <span>Prototype foundation · Synthetic data only</span>
-            </div>
-          </div>
-          <div className="hero-panel" aria-label="PulseGrid workspace preview">
-            <div className="hero-panel-top">
-              <div>
-                <p className="eyebrow">PulseGrid workspaces</p>
-                <h2>Designed around clear ownership</h2>
-              </div>
-              <span className="panel-index" aria-hidden="true">01</span>
-            </div>
-            <div className="workspace-preview-list">
-              {audiences.map((audience, index) => (
-                <div className="workspace-preview" key={audience.title}>
-                  <span className="preview-number">0{index + 1}</span>
-                  <div>
-                    <h3>{audience.title}</h3>
-                    <p>{audience.detail}</p>
-                  </div>
-                  <span className="preview-arrow" aria-hidden="true">↗</span>
-                </div>
-              ))}
-            </div>
-            <p className="hero-panel-footnote">Each service will provide its own authorized information.</p>
-          </div>
-      </section>
-    </main>
-  );
-}
+import { Link } from 'react-router-dom';
+import { ReceptionScene } from '../design/ReceptionScene';
+import { DepartmentIcon, departmentNames, departmentDescriptions, type Department } from '../design/DepartmentIcon';
+const departments: Department[]=['reception','consultation','waiting','pharmacy','billing','emergency','records','control'];
+const routes=['/login','/patient/doctors','/patient/queue','/patient/pharmacy','/patient/billing','/patient/emergency','/patient/records','/ops/dashboard'];
+export function HomePage(){return <main className="public-reception"><aside className="entrance-directory"><div className="directory-heading"><strong>PULSEGRID</strong><span>GENERAL HOSPITAL</span></div><nav aria-label="Hospital departments">{departments.map((d,i)=><Link className="workspace-nav-link" key={d} to={routes[i]}><span className="directory-number">{String(i+1).padStart(2,'0')}</span><DepartmentIcon department={d}/><span className="directory-copy"><strong>{departmentNames[d]}</strong><small>{departmentDescriptions[d]}</small></span><span aria-hidden="true">→</span></Link>)}</nav><div className="directory-help"><span>ⓘ</span><div><strong>Need help?</strong><small>Sign in for your permitted workspace.</small></div></div></aside><div className="entrance-main"><h1 className="sr-only">One place for care and hospital operations.</h1><ReceptionScene publicView/><div className="entrance-notice"><span>Care starts here.</span><Link to="/register">Patient registration →</Link><p>Sign in to access service-backed synthetic hospital workflows. No activity is fabricated.</p></div></div></main>;}

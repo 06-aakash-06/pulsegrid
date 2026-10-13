@@ -1,3 +1,6 @@
+import { ReceptionScene } from "../design/ReceptionScene";
+import { Link } from "react-router-dom";
+import { DepartmentIcon } from "../design/DepartmentIcon";
 import { useState } from "react";
 import { DoctorAutocomplete, AppointmentShortLinkPanel } from "../phase4";
 import { useAuth, roles } from "../auth/authContext";
@@ -110,21 +113,11 @@ export function ProfileEditor({
   );
 }
 export function PatientDashboard() {
-  return (
-    <Panel title="Your profile">
-      <Resource<PatientProfile> path="/api/v1/patients/me">
-        {(profile, etag, refresh) => (
-          <ProfileEditor
-            key={profile.version}
-            profile={profile}
-            etag={etag}
-            path="/api/v1/patients/me"
-            refresh={refresh}
-          />
-        )}
-      </Resource>
-    </Panel>
-  );
+  return <Resource<PatientProfile> path="/api/v1/patients/me">{(profile,etag,refresh)=><>
+    <ReceptionScene name={profile.display_name}/>
+    <div className="reception-activity"><Panel title="Your next step"><p>Appointments, check-in and records stay connected through your care journey.</p><div className="hospital-actions"><Link className="button" to="/patient/journey">Follow your journey →</Link><Link className="button button--secondary" to="/patient/waitlist">Your waitlist</Link></div></Panel><Panel title="Hospital updates"><p>Open your appointment or queue to see the latest owner-confirmed status. A separate announcement feed is not available.</p></Panel></div>
+    <details className="profile-desk" open><summary>Your profile</summary><ProfileEditor key={profile.version} profile={profile} etag={etag} path="/api/v1/patients/me" refresh={refresh}/></details>
+  </>}</Resource>;
 }
 export function Demographics({ admin = false }: { admin?: boolean }) {
   const [search, setSearch] = useState("");
@@ -486,7 +479,8 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
       : []),
   ];
   return (
-    <>
+    <div className="consultation-directory">
+      <aside className="specialty-rail">
       <Collection<Specialty>
         title="Specialties"
         revision={revision}
@@ -507,9 +501,11 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
           </>
         )}
       />
+      </aside>
+      <div className="doctor-selection">
       <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => setSelected(item.id)} />
       <DoctorAutocomplete kind="specialty" api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => { setDraft({...draft, specialty_id:item.id}); setFilters({...filters, specialty_id:item.id}); }} />
-      <Panel title="Directory filters">
+      <details className="directory-filters"><summary>Directory filters</summary><Panel title="Directory filters">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -541,23 +537,25 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
           {error && <p role="alert">{error}</p>}
         </form>
       </Panel>
+      </details>
       <Collection<Doctor>
         title="Doctors"
         revision={revision}
         path={query("/api/v1/doctors", filters)}
         renderItem={(doctor) => (
           <>
-            <strong>{doctor.display_name}</strong>
+            <strong><span className="doctor-initials" aria-hidden="true">{doctor.display_name.split(" ").slice(-2).map(n=>n[0]).join("")}</span>{doctor.display_name}</strong>
             <p>
               {doctor.specialties.map((s) => s.name).join(", ")} •{" "}
               {doctor.active ? "Active" : "Inactive"}
             </p>
-            <button onClick={() => setSelected(doctor.id)}>
-              View doctor {doctor.id}
-            </button>
+            <button aria-label={`View doctor ${doctor.id}`} onClick={() => setSelected(doctor.id)}>View profile →</button>
           </>
         )}
       />
+      </div>
+      <aside className="doctor-dossier">
+      {!selected && <Panel title="Doctor profile"><div className="resource-empty"><DepartmentIcon department="consultation"/><strong>Select your doctor</strong><p>Choose a doctor to view their specialties and accepted schedule.</p></div></Panel>}
       <Selected<Doctor> path={selected ? `/api/v1/doctors/${selected}` : null}>
         {(doctor, etag, refresh) => (
           <>
@@ -591,6 +589,7 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
           </>
         )}
       </Selected>
+      </aside>
       {admin && (
         <Panel title="Create directory entries">
           <CommandForm
@@ -656,7 +655,7 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
           />
         </Panel>
       )}
-    </>
+    </div>
   );
 }
 export function Appointments({
