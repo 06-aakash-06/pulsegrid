@@ -352,3 +352,53 @@
  .reference-departments .emergency-workbench--patient .emergency-register .hospital-items {max-height:210px;}
  .reference-departments .emergency-workbench--patient .emergency-register>.hospital-panel {margin-bottom:18px;}
 }
+.consultation-slip { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; }
+@media(min-width:901px){
+ .reference-departments .consultation-clinical {display:grid;grid-template-columns:minmax(230px,1fr) minmax(0,2.6fr);gap:14px;align-items:start;}
+ .reference-departments .consultation-clinical .clinical-tools {grid-column:1/-1;}
+ .reference-departments .consultation-clinical .consultation-register .hospital-items {display:block;max-height:350px;overflow:auto;}
+ .reference-departments .consultation-clinical .hospital-item{border:0;border-bottom:1px solid #d1bea3;border-radius:0;}
+ .reference-departments .consultation-clinical .clinical-editor .hospital-panel {padding:18px;background:#f5ebdc;}
+ .reference-departments .consultation-clinical .clinical-content {padding:0;border:0;background:none;min-height:0;}
+ .reference-departments .consultation-clinical .clinical-content .hospital-facts {grid-template-columns:1fr;gap:0;}
+ .reference-departments .consultation-clinical .clinical-content .hospital-facts>div {padding:16px;border:0;border-bottom:1px solid #cfb99e;background:#fcf7ed;border-radius:0;}
+}
+.ops-runtime-signals { border-top:1px solid #d3bfa2; margin-top:16px; padding-top:14px; }
+.ops-runtime-signals h3 { font-size:14px; }
+.ops-runtime-signals dl>div { display:flex; justify-content:space-between;gap:15px;border-bottom:1px solid #d7c5ac;padding:9px 0;font-size:11px; }
+.ops-runtime-signals dd { margin:0;text-align:right; }
+.ops-runtime-signals nav { display:flex;gap:18px;margin-block:14px;font-size:12px; }
+.ops-runtime-signals small { font-size:10px; }
+@media(min-width:901px){
+ .reference-operations .ops-page-header {background:#f1e5d3;min-height:110px;}
+ .reference-operations .ops-service-map {background:#f1e5d3;}
+ .reference-operations .ops-map-rooms {gap:12px;padding:14px;border-width:5px;}
+ .reference-operations .ops-map-room {text-align:left;min-height:88px;padding:12px;gap:6px;font-weight:400;border-radius:0;}
+ .reference-operations .ops-map-room:last-child {grid-column:1/-1;grid-template-columns:1fr 1fr 1fr;align-items:center;min-height:58px;}
+ .reference-operations .ops-map-room:last-child small {grid-column:3;}
+ .reference-operations .ops-component-and-alerts>.ops-panel:last-child {grid-row:3;align-self:start;background:#f5eadd;}
+ .reference-operations .ops-trend-grid {gap:10px;}
+ .reference-operations .ops-trend-card {padding:12px;background:#f4e9dc;}
+ .reference-operations .ops-component-and-alerts>.ops-panel:first-child {grid-row:5;}
+ .reference-operations .ops-service-details {grid-row:4;}
+ .reference-operations .surge-console {grid-column:1/-1;}
+ .reference-operations .ops-footnote {margin:0;font-size:10px;}
+}
+/* Override the older attribute-scoped monitor grid; keep trends out of the component panel. */
+@media(min-width:901px){
+ .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]{grid-template-columns:minmax(0,2.1fr) minmax(0,1fr);}
+ .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]>.ops-trend-grid{grid-column:1;grid-row:4;}
+ .workspace-content .reference-operations .ops-trend-panel{background:#f4e9da;padding:14px;}
+ .workspace-content .reference-operations .ops-trend-chart{height:105px;}
+ .workspace-content .reference-operations .ops-component-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+@media(max-width:900px){
+ .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]{grid-template-columns:minmax(0,1fr);}
+ .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]>*{grid-column:1;grid-row:auto;}
+ .workspace-content .reference-operations .ops-component-and-alerts>.ops-panel{grid-column:1;grid-row:auto;}
+ .workspace-content .reference-operations .ops-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+.reference-departments .ops-trace-desk>.ops-page-header{padding:18px;background:#f0e3d1;border-radius:4px;}
+.reference-departments .ops-trace-desk .ops-panel{background:#f4e9da;border-radius:3px;padding:18px;}
+.reference-departments .ops-trace-desk .ops-trace-list{max-height:440px;overflow:auto;}
+.reference-departments .ops-trace-desk .ops-trace-row{padding:12px;border-bottom:1px solid #cdbb9f;border-radius:0;}

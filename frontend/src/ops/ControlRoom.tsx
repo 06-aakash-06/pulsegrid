@@ -185,6 +185,7 @@ function EmptyRows({ children }: { children: string }) {
 export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" | "/admin" }) {
   const { api } = useAuth();
   const [summary, setSummary] = useState<ControlRoomSummary | null>(null);
+  const [serviceDetailsOpen,setServiceDetailsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -251,13 +252,13 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             <MetricCard label="Surge Mode" value={system?.surge_mode.state ?? "UNKNOWN"} detail={system?.surge_mode.changed_at ? `Since ${time(system.surge_mode.changed_at)}` : "Shared admission state"} tone={toneForHealth(system?.surge_mode.state ?? "unknown")} />
           </div>
 
-          <section className="ops-service-map" aria-labelledby="service-map-title"><header><h2 id="service-map-title">Hospital Service Map</h2><small>Live service topology · Not a bed census</small></header><div className="ops-map-rooms">{summary.services.map(service=><a href="#detailed-service-health" className={`ops-map-room ops-map-room--${service.health}`} key={service.name}><strong>{service.name}</strong><StatusBadge tone={toneForHealth(service.health)}>{service.health.replaceAll('_',' ')}</StatusBadge><span>{service.healthy_instances} / {service.instance_count} ready</span><small>{number(service.request_rate_per_second,2)} requests / sec</small></a>)}</div><footer>Readiness and measurements from each owning service.</footer></section>
+          <section className="ops-service-map" aria-labelledby="service-map-title"><header><h2 id="service-map-title">Hospital Service Map</h2><small>Live service topology · Not a bed census</small></header><div className="ops-map-rooms">{summary.services.map(service=><button type="button" aria-label={`Inspect ${service.name} service`} aria-controls="detailed-service-health" onClick={()=>setServiceDetailsOpen(true)} className={`ops-map-room ops-map-room--${service.health}`} key={service.name}><strong>{service.name}</strong><StatusBadge tone={toneForHealth(service.health)}>{service.health.replaceAll('_',' ')}</StatusBadge><span>{service.healthy_instances} / {service.instance_count} ready</span><small>{number(service.request_rate_per_second,2)} requests / sec</small></button>)}</div><footer>Readiness and measurements from each owning service.</footer></section>
           <div className="ops-trend-grid">
             <TrendChart title="Request throughput" unit="requests / sec" points={trendRates} description="Collected from service request counters." />
             <TrendChart title="HTTP 5xx rate" unit="percent" points={trendErrors} description="Computed from observed HTTP status classes." />
           </div>
 
-          <details className="ops-service-details" id="detailed-service-health"><summary>Detailed service health and replica measurements</summary><section className="ops-panel">
+          <details className="ops-service-details" id="detailed-service-health" open={serviceDetailsOpen} onToggle={e=>setServiceDetailsOpen(e.currentTarget.open)}><summary>Detailed service health and replica measurements</summary><section className="ops-panel">
             <div className="ops-panel-heading">
               <div><h2>Service health</h2><p>Readiness is probed per running instance; service values aggregate replicas.</p></div>
             </div>
@@ -300,6 +301,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
                   {summary.alerts.map((alert, index) => <li key={`${alert.name}-${alert.service ?? "all"}-${index}`}><StatusBadge tone={alert.severity === "critical" ? "danger" : "warning"}>{alert.severity}</StatusBadge><span><strong>{alert.name}</strong><small>{alert.service ?? "System"}</small></span></li>)}
                 </ul>
               ) : <EmptyRows>There are no firing alerts.</EmptyRows>}
+              <section className="ops-runtime-signals"><h3>Infrastructure signals</h3><dl><div><dt>RabbitMQ queues observed</dt><dd>{summary.messaging.queues.length||"No data"}</dd></div><div><dt>Messages ready</dt><dd>{summary.messaging.queues.length?summary.messaging.queues.reduce((total,q)=>total+q.ready,0):"No data"}</dd></div><div><dt>Redis cache observations</dt><dd>{summary.components.cache.length?summary.components.cache.map(m=>`${m.outcome??"sample"}: ${number(m.value,2)}`).join(" · "):"No data"}</dd></div></dl><nav aria-label="Monitoring tools"><Link to={`${workspaceBasePath}/traces`}>Distributed traces →</Link>{import.meta.env.DEV&&<a href="http://127.0.0.1:3000" target="_blank" rel="noreferrer">Local Grafana →</a>}</nav><small>Prometheus metrics · Missing samples remain unavailable.</small></section>
             </section>
           </div>
 
@@ -396,7 +398,7 @@ export function TraceExplorer() {
   }, [api]);
 
   return (
-    <section className="ops-dashboard" aria-labelledby="trace-explorer-title">
+    <section className="ops-dashboard ops-trace-desk" aria-labelledby="trace-explorer-title">
       <header className="ops-page-header">
         <div><p className="eyebrow">Operations · Distributed traces</p><h1 id="trace-explorer-title">Trace Explorer</h1><p className="ops-page-description">Recent trace summaries from the last hour. Sensitive span attributes are not returned.</p></div>
         <button className="ops-refresh-button" type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}>Refresh traces</button>

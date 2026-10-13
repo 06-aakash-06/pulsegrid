@@ -98,8 +98,11 @@ describe("hospital design integration", () => {
     await screen.findByText("Account …21");
     act(() => publishHospitalIdentity("999", "Another account"));
     expect(screen.queryByText("Another account")).not.toBeInTheDocument();
-    act(() => publishHospitalIdentity("21", "Synthetic Confirmed Name"));
-    expect(screen.getByText("Synthetic Confirmed Name")).toBeInTheDocument();
+    act(() => publishHospitalIdentity("21", "Anika Shah"));
+    expect(screen.getByText("Anika Shah")).toBeInTheDocument();
+    act(() => publishHospitalIdentity("21", "Synthetic Phase29 Patient"));
+    expect(screen.getByText("Patient account")).toBeInTheDocument();
+    expect(screen.queryByText("Synthetic Phase29 Patient")).not.toBeInTheDocument();
     expect(fetcher).not.toHaveBeenCalled();
   });
   it("date selection sets a UTC interval without making a booking or fetching prematurely", async () => {

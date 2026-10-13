@@ -146,7 +146,7 @@ function ConsultationEditor({
   const [finalized, setFinalized] = useState<FinalizeResult | null>(null);
   return (
     <>
-      <Facts
+      <header className="record-document-heading"><DepartmentIcon department="records"/><div><h3>Consultation …{item.id.slice(-4)}</h3><p>{item.status} · Revision {item.revision}</p></div></header><details className="owner-identifiers"><summary>Clinical visit references</summary>      <Facts
         values={{
           "Consultation ID": item.id,
           "Appointment ID": item.appointment_id,
@@ -155,6 +155,7 @@ function ConsultationEditor({
           Revision: item.revision,
         }}
       />
+</details>
       <ClinicalFacts value={item.clinical_content} />
       {item.status === "draft" && !finalized && (
         <>
@@ -227,14 +228,12 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
         title="Consultations"
         path="/api/v1/records/consultations"
         revision={revision}
+        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
-            <p>
-              Consultation {item.id} • Appointment {item.appointment_id} •{" "}
-              {item.status}
-            </p>
+            <div className="consultation-slip"><strong>Consultation …{item.id.slice(-4)}</strong><span className="owner-state">{item.status}</span></div><details className="owner-identifiers"><summary>Visit references</summary><Facts values={{"Consultation ID":item.id,"Appointment ID":item.appointment_id}}/></details>
             <button aria-label={`View consultation ${item.id}`} onClick={() => setSelected(item.id)}>
-              View consultation {item.id}
+              Open clinical visit →
             </button>
           </>
         )}
