@@ -1,0 +1,12 @@
+{
+  "case_id": "r1-c4-t1",
+  "completed_http_responses": 7737,
+  "evidence_directory": "setup_attempts/invalid-trial-r1-c4-t1",
+  "http_429": 7606,
+  "raw_status_counts": {
+    "admission_rejected:429": 7606,
+    "success:200": 131
+  },
+  "reason": "The completed window used the normal Doctor admission policy because phase8-one.localhost was missing from the app image host allowlist.",
+  "rejection_percent": 98.30683727542976
+}

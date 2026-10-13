@@ -1,0 +1,10 @@
+{
+  "completed_cases": [],
+  "completed_stages": [],
+  "guardrail_stops": [],
+  "interrupted_cases": [],
+  "last_error": "ExperimentStopped: admission preflight remained materially dominated by HTTP 429",
+  "run_id": "phase8-1-20261013-run1",
+  "started_cases": [],
+  "starting_commit": "c1763d9dbdaf778600046167f3132264082e1064"
+}

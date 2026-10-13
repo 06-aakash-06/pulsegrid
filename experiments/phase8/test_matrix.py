@@ -8,6 +8,7 @@ import unittest
 from run_matrix import (
     DoctorRoute,
     DockerStatsSampler,
+    benchmark_route_upstream_counts,
     guardrail_reason,
     load_progress,
     mark_case_started,
@@ -16,17 +17,42 @@ from run_matrix import (
 
 
 class MatrixHelpersTests(unittest.TestCase):
-    def test_doctor_route_two_upstream_toggle_restores_exact_bytes(self):
+    def test_active_phase4_traefik_route_supports_one_and_two_benchmark_upstreams(self):
+        source = Path(__file__).resolve().parents[2] / "infra/phase4/routes.yaml"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "routes.yaml"
+            path.write_bytes(source.read_bytes())
+            route = DoctorRoute(path)
+            try:
+                route.activate()
+                self.assertEqual(route.set_replicas(1), "phase8-one.localhost")
+                self.assertEqual(benchmark_route_upstream_counts(path.read_bytes(), 1), (1, 0))
+                self.assertEqual(route.set_replicas(2), "phase8-two.localhost")
+                self.assertEqual(benchmark_route_upstream_counts(path.read_bytes(), 2), (1, 1))
+            finally:
+                route.restore()
+
+    def test_doctor_route_adds_isolated_one_and_two_upstream_hosts_then_restores(self):
         original = (
-            b"http:\n  services:\n    doctor:\n      loadBalancer:\n"
+            b"http:\n  routers:\n    doctor:\n      rule: Path(`/api/v1/doctors`)\n"
+            b"      service: doctor\n    appointment:\n      rule: Path(`/api/v1/appointments`)\n"
+            b"      service: appointment\n  services:\n    doctor:\n      loadBalancer:\n"
             b"        servers:\n          - url: http://doctor:8000\n"
+            b"    appointment:\n      loadBalancer:\n        servers:\n"
+            b"          - url: http://appointment:8000\n"
         )
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "routes.yaml"
             path.write_bytes(original)
             route = DoctorRoute(path)
-            route.set_replicas(2)
+            route.activate()
+            self.assertIn(b"Host(`phase8-one.localhost`)", path.read_bytes())
+            self.assertIn(b"Host(`phase8-two.localhost`)", path.read_bytes())
+            self.assertEqual(route.set_replicas(1), "phase8-one.localhost")
+            self.assertEqual(benchmark_route_upstream_counts(path.read_bytes(), 1), (1, 0))
             self.assertIn(b"http://doctor_replica:8000", path.read_bytes())
+            self.assertEqual(route.set_replicas(2), "phase8-two.localhost")
+            self.assertEqual(benchmark_route_upstream_counts(path.read_bytes(), 2), (1, 1))
             restored_hash = route.restore()
             self.assertEqual(path.read_bytes(), original)
             self.assertEqual(restored_hash, route.original_hash)

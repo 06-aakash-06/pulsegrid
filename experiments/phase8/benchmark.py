@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 import csv
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -114,6 +115,7 @@ def summarize_samples(
         raise ValueError("measurement_seconds must be positive")
     counts: dict[str, int] = {}
     http_latencies: list[float] = []
+    admitted_latencies: list[float] = []
     success_latencies: list[float] = []
     latency_by_class: dict[str, list[float]] = {}
     for sample in samples:
@@ -122,6 +124,8 @@ def summarize_samples(
         latency_by_class.setdefault(classification, []).append(float(sample["latency_ms"]))
         if sample.get("status_code") is not None:
             http_latencies.append(float(sample["latency_ms"]))
+            if int(sample["status_code"]) != 429:
+                admitted_latencies.append(float(sample["latency_ms"]))
             if classification == "success":
                 success_latencies.append(float(sample["latency_ms"]))
 
@@ -141,6 +145,13 @@ def summarize_samples(
             for sample in samples
             if sample.get("status_code") is not None
             and 400 <= int(sample["status_code"]) < 500
+        ),
+        "http_4xx_excluding_429": sum(
+            1
+            for sample in samples
+            if sample.get("status_code") is not None
+            and 400 <= int(sample["status_code"]) < 500
+            and int(sample["status_code"]) != 429
         ),
         "http_409": counts.get("business_conflict", 0),
         "http_404": counts.get("missing_resource", 0),
@@ -167,6 +178,7 @@ def summarize_samples(
             float(sample["latency_ms"]) for sample in samples
         ),
         "all_http_latency_ms": statistics(http_latencies),
+        "admitted_http_latency_ms": statistics(admitted_latencies),
         "success_latency_ms": statistics(success_latencies),
         "latency_by_class_ms": {
             name: statistics(values) for name, values in sorted(latency_by_class.items())
@@ -232,6 +244,36 @@ class AuthenticatedActor:
         self.access_token: str | None = None
         self.csrf_token: str | None = None
 
+    @staticmethod
+    def _access_token_expiry(token: str) -> int:
+        try:
+            payload = token.split(".")[1]
+            decoded = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4))
+            expiry = json.loads(decoded).get("exp")
+        except (IndexError, ValueError, TypeError, json.JSONDecodeError) as error:
+            raise RuntimeError("access token did not contain a readable expiry") from error
+        if not isinstance(expiry, int):
+            raise RuntimeError("access token expiry was missing")
+        return expiry
+
+    def refresh_if_expiring(self, *, window_seconds: int = 90) -> str:
+        """Rotate the normal authenticated session before a bounded trial expires."""
+        if self.access_token is None or self.csrf_token is None:
+            return self.login()
+        if self._access_token_expiry(self.access_token) > int(time.time()) + window_seconds:
+            return self.access_token
+        response = self.client.post(
+            "/api/v1/auth/refresh",
+            headers={"X-CSRF-Token": self.csrf_token},
+        )
+        response.raise_for_status()
+        token = response.json().get("access_token")
+        if not isinstance(token, str) or not token:
+            raise RuntimeError("authenticated refresh did not return an access token")
+        self.access_token = token
+        self.client.headers["Authorization"] = f"Bearer {token}"
+        return token
+
     def login(self) -> str:
         csrf_response = self.client.get("/api/v1/auth/csrf")
         csrf_response.raise_for_status()
@@ -279,6 +321,7 @@ async def run_fixed_window(
     replicas: int,
     seed: int,
     capture_samples: bool = True,
+    stop_event: asyncio.Event | None = None,
 ) -> list[dict[str, Any]]:
     if concurrency < 1 or window_seconds <= 0:
         raise ValueError("concurrency and window_seconds must be positive")
@@ -293,7 +336,7 @@ async def run_fixed_window(
 
     async def worker(worker_id: int) -> None:
         sequence = 0
-        while loop.time() < stop_at:
+        while loop.time() < stop_at and not (stop_event and stop_event.is_set()):
             if scenario == "profile_read":
                 endpoint = "profile"
             elif scenario == "autocomplete_burst":
@@ -413,6 +456,7 @@ async def warm_up(
     seconds: float,
     scenario: str,
     seed: int,
+    stop_event: asyncio.Event | None = None,
 ) -> dict[str, int]:
     samples = await run_fixed_window(
         client,
@@ -426,6 +470,7 @@ async def warm_up(
         replicas=0,
         seed=seed,
         capture_samples=True,
+        stop_event=stop_event,
     )
     return {
         "attempted": len(samples),
@@ -437,7 +482,9 @@ async def warm_up(
 def write_samples(path: Path, samples: Sequence[Mapping[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as output:
-        writer = csv.DictWriter(output, fieldnames=SAMPLE_FIELDS, extrasaction="ignore")
+        writer = csv.DictWriter(
+            output, fieldnames=SAMPLE_FIELDS, extrasaction="ignore", lineterminator="\n"
+        )
         writer.writeheader()
         writer.writerows(samples)
 

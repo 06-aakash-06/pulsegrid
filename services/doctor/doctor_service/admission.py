@@ -1,6 +1,7 @@
 """Coordinator-owned HTTP admission composition; identity remains owner verified."""
 import os
 from pathlib import Path
+import re
 from types import SimpleNamespace
 from fastapi import HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -8,6 +9,24 @@ from starlette.routing import compile_path
 from pulsegrid_rate_limiter import RateLimiter,LimiterConfig
 from pulsegrid_rate_limiter.adapter import AdmissionAdapter,VerifiedIdentity,rejection_metadata,rejection_response
 from pulsegrid_rate_limiter.policies import RoutePolicy,operation_class_for
+
+PHASE8_BENCHMARK_HOSTS = frozenset({
+    'phase8-one.localhost',
+    'phase8-two.localhost',
+})
+PHASE8_BENCHMARK_TEMPLATES = frozenset({
+    '/api/v1/doctors',
+    '/api/v1/doctors/autocomplete',
+    '/api/v1/doctors/{doctor_id}',
+})
+PHASE8_BENCHMARK_AUTH_BUDGETS = {
+    'principal': (10000, 2000000),
+    'aggregate': (20000, 2000000),
+}
+PHASE8_BENCHMARK_PREAUTH_BUDGETS = {
+    'source': (10000, 2000000),
+    'aggregate': (20000, 2000000),
+}
 
 
 def policy_for(owner,method,path):
@@ -20,6 +39,29 @@ def policy_for(owner,method,path):
     if owner=='emergency':return 'emergency_authenticated' if method=='POST' and path.endswith('/emergencies') else 'owner_read','emergency'
     if owner=='appointment' and method=='POST':return 'appointment_command','command'
     return 'owner_read','read' if method=='GET' else 'command'
+
+
+def phase8_benchmark_policy(request, policy, *, enabled):
+    """Return an isolated read-only budget only on the temporary benchmark host."""
+    if (
+        not enabled
+        or policy is None
+        or request.method != 'GET'
+        or request.url.hostname not in PHASE8_BENCHMARK_HOSTS
+        or getattr(request.scope.get('route'), 'path', None) not in PHASE8_BENCHMARK_TEMPLATES
+    ):
+        return None
+    return RoutePolicy('doctor', 'directory_search', 'phase8_benchmark', policy.operation_class)
+
+
+def phase8_benchmark_identity_allowed(principal_user_id, configured_user_id):
+    return (
+        isinstance(principal_user_id, str)
+        and re.fullmatch(r'[1-9][0-9]{0,18}', principal_user_id) is not None
+        and int(principal_user_id) < 2**63
+        and principal_user_id == configured_user_id
+    )
+
 
 class AdmissionRejected(Exception):
     def __init__(self,decision):self.decision=decision
@@ -41,14 +83,27 @@ class Middleware(BaseHTTPMiddleware):
                 request.scope['route']=SimpleNamespace(path=template)
                 break
         policy=adapter.classify(request)
-        if policy and policy.policy=='internal_worker':
+        benchmark_policy=phase8_benchmark_policy(
+            request, policy, enabled=request.app.state.phase8_benchmark_enabled
+        )
+        request.state.phase8_benchmark_policy=benchmark_policy
+        if benchmark_policy is not None:
+            policy=benchmark_policy
+            request.state.phase4_admission_policy=policy.policy_id
+            decision=await adapter.admit(
+                policy,
+                {'source':adapter.deriver.source(request)},
+                preauth=True,
+                budgets=PHASE8_BENCHMARK_PREAUTH_BUDGETS,
+            )
+        elif policy and policy.policy=='internal_worker':
             decision=await adapter.admit(policy,{'source':adapter.deriver.source(request)},preauth=True,budgets={'source':(120,20000),'aggregate':(1200,200000)})
         else:
             decision=await adapter.pre_auth(request)
         request.state.phase6_operation_class=policy.operation_class if policy is not None else 'B'
         request.state.phase6_surge_mode=decision.surge_mode
         if not decision.allowed:return self.finalize(request,rejection_response(request,decision,error_response=request.app.state.admission_error_response),decision)
-        policy=adapter.classify(request)
+        policy=benchmark_policy or adapter.classify(request)
         if policy and policy.policy.startswith('auth_'):
             account=None
             if policy.policy=='auth_login':
@@ -82,6 +137,16 @@ class Middleware(BaseHTTPMiddleware):
 
 
 def mount(app,owner,error_response):
+    benchmark_flag=os.environ.get('PULSEGRID_DOCTOR_PHASE8_BENCHMARK_ENABLED','false') if owner=='doctor' else 'false'
+    if benchmark_flag not in ('true','false'):raise ValueError('Invalid Phase 8 benchmark admission flag')
+    app.state.phase8_benchmark_enabled=benchmark_flag=='true'
+    benchmark_principal=os.environ.get('PULSEGRID_DOCTOR_PHASE8_BENCHMARK_PRINCIPAL_ID','') if owner=='doctor' else ''
+    if app.state.phase8_benchmark_enabled and (
+        re.fullmatch(r'[1-9][0-9]{0,18}',benchmark_principal) is None
+        or int(benchmark_principal) >= 2**63
+    ):
+        raise ValueError('Enabled Phase 8 benchmark admission requires a canonical synthetic principal ID')
+    app.state.phase8_benchmark_principal_id=benchmark_principal
     prefix=f'PULSEGRID_{owner.upper()}_PHASE4_'
     flag=os.environ.get(prefix+'ADMISSION_ENABLED','false')
     if flag not in ('true','false'):raise ValueError('Invalid admission flag')
@@ -125,9 +190,20 @@ async def post_user(request,principal):
     adapter=getattr(request.app.state,'admission_adapter',None)
     if adapter is None or getattr(request.state,'admission_principal_checked',False):return
     async def verified(_):return VerifiedIdentity(principal.user_id)
-    policy=adapter.classify(request)
+    benchmark_policy=getattr(request.state,'phase8_benchmark_policy',None)
+    policy=benchmark_policy or adapter.classify(request)
     staff_role=next((role for role in ('doctor', 'hospital_admin') if role in principal.roles),None)
-    if policy and request.method in ('POST','PATCH','DELETE') and staff_role:
+    if benchmark_policy is not None:
+        if not phase8_benchmark_identity_allowed(
+            principal.user_id, request.app.state.phase8_benchmark_principal_id
+        ):
+            raise HTTPException(403)
+        decision=await adapter.admit(
+            benchmark_policy,
+            {'principal':adapter.deriver.principal(principal.user_id)},
+            budgets=PHASE8_BENCHMARK_AUTH_BUDGETS,
+        )
+    elif policy and request.method in ('POST','PATCH','DELETE') and staff_role:
         from .authorization import require_current_role
         await require_current_role(staff_role)(request,principal)
         policy=RoutePolicy('doctor','critical_staff','command',policy.operation_class)

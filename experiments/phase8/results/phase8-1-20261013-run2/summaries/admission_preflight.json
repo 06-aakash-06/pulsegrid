@@ -1,0 +1,517 @@
+{
+  "admitted_http_latency_ms": {
+    "max": 98.00275,
+    "mean": 36.59408145454545,
+    "median": 31.435833,
+    "min": 7.219667,
+    "p95": 96.865792,
+    "p99": 98.00275,
+    "samples": 22
+  },
+  "admitted_http_responses": 22,
+  "admitted_rps": 4.4,
+  "all_attempt_latency_ms": {
+    "max": 104.541166,
+    "mean": 8.434340108869272,
+    "median": 4.973208,
+    "min": 2.488708,
+    "p95": 26.495208,
+    "p99": 81.145917,
+    "samples": 2379
+  },
+  "all_http_latency_ms": {
+    "max": 104.541166,
+    "mean": 8.434340108869272,
+    "median": 4.973208,
+    "min": 2.488708,
+    "p95": 26.495208,
+    "p99": 81.145917,
+    "samples": 2379
+  },
+  "attempted": 2379,
+  "attempted_rps": 475.8,
+  "case_id": "admission_preflight",
+  "classification_counts": {
+    "admission_rejected": 2357,
+    "success": 22
+  },
+  "completed_http_responses": 2379,
+  "concurrency": 4,
+  "connection_failures": 0,
+  "docker_after": {
+    "pulsegrid-appointment-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-appointment:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-appointment-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T06:04:39.749487166Z",
+      "status": "running"
+    },
+    "pulsegrid-billing-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-billing:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-billing-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.274579757Z",
+      "status": "running"
+    },
+    "pulsegrid-doctor-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-doctor:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-doctor-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T08:41:00.490481677Z",
+      "status": "running"
+    },
+    "pulsegrid-doctor_replica-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-doctor:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-doctor_replica-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T08:41:00.489490638Z",
+      "status": "running"
+    },
+    "pulsegrid-emergency-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-emergency:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-emergency-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.281309393Z",
+      "status": "running"
+    },
+    "pulsegrid-patient-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-patient:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-patient-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.279937233Z",
+      "status": "running"
+    },
+    "pulsegrid-pharmacy-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-pharmacy:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-pharmacy-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.280007606Z",
+      "status": "running"
+    },
+    "pulsegrid-postgres-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+      "memory_limit_bytes": 536870912,
+      "name": "pulsegrid-postgres-1",
+      "nano_cpus": 1000000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-10T20:59:28.527664777Z",
+      "status": "running"
+    },
+    "pulsegrid-rabbitmq-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "rabbitmq:4-alpine@sha256:2cb43283d8bbd3caa6c0f0dc00e96c8de772df33df7fd8af6aee4d605aeb8ada",
+      "memory_limit_bytes": 536870912,
+      "name": "pulsegrid-rabbitmq-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T00:28:24.113652081Z",
+      "status": "running"
+    },
+    "pulsegrid-records-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-records:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-records-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.279942608Z",
+      "status": "running"
+    },
+    "pulsegrid-redis-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "memory_limit_bytes": 134217728,
+      "name": "pulsegrid-redis-1",
+      "nano_cpus": 250000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-12T19:44:58.471686761Z",
+      "status": "running"
+    },
+    "pulsegrid-tempo-1": {
+      "exit_code": 0,
+      "health": null,
+      "image": "grafana/tempo:3.1.0@sha256:3076b8dcdfb32fd6bc5ccef85e7b7313e6199b9cb84366257fc17ecb696db5fd",
+      "memory_limit_bytes": 536870912,
+      "name": "pulsegrid-tempo-1",
+      "nano_cpus": 250000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T08:14:38.826649956Z",
+      "status": "running"
+    },
+    "pulsegrid-traefik-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "traefik:v3@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c",
+      "memory_limit_bytes": 134217728,
+      "name": "pulsegrid-traefik-1",
+      "nano_cpus": 250000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T00:19:44.244605829Z",
+      "status": "running"
+    }
+  },
+  "docker_before": {
+    "pulsegrid-appointment-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-appointment:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-appointment-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T06:04:39.749487166Z",
+      "status": "running"
+    },
+    "pulsegrid-billing-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-billing:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-billing-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.274579757Z",
+      "status": "running"
+    },
+    "pulsegrid-doctor-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-doctor:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-doctor-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T08:41:00.490481677Z",
+      "status": "running"
+    },
+    "pulsegrid-doctor_replica-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-doctor:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-doctor_replica-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T08:41:00.489490638Z",
+      "status": "running"
+    },
+    "pulsegrid-emergency-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-emergency:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-emergency-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.281309393Z",
+      "status": "running"
+    },
+    "pulsegrid-patient-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-patient:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-patient-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.279937233Z",
+      "status": "running"
+    },
+    "pulsegrid-pharmacy-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-pharmacy:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-pharmacy-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.280007606Z",
+      "status": "running"
+    },
+    "pulsegrid-postgres-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+      "memory_limit_bytes": 536870912,
+      "name": "pulsegrid-postgres-1",
+      "nano_cpus": 1000000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-10T20:59:28.527664777Z",
+      "status": "running"
+    },
+    "pulsegrid-rabbitmq-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "rabbitmq:4-alpine@sha256:2cb43283d8bbd3caa6c0f0dc00e96c8de772df33df7fd8af6aee4d605aeb8ada",
+      "memory_limit_bytes": 536870912,
+      "name": "pulsegrid-rabbitmq-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T00:28:24.113652081Z",
+      "status": "running"
+    },
+    "pulsegrid-records-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "pulsegrid-auth-records:local",
+      "memory_limit_bytes": 268435456,
+      "name": "pulsegrid-records-1",
+      "nano_cpus": 500000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T02:08:24.279942608Z",
+      "status": "running"
+    },
+    "pulsegrid-redis-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "redis:7-alpine@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "memory_limit_bytes": 134217728,
+      "name": "pulsegrid-redis-1",
+      "nano_cpus": 250000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-12T19:44:58.471686761Z",
+      "status": "running"
+    },
+    "pulsegrid-tempo-1": {
+      "exit_code": 0,
+      "health": null,
+      "image": "grafana/tempo:3.1.0@sha256:3076b8dcdfb32fd6bc5ccef85e7b7313e6199b9cb84366257fc17ecb696db5fd",
+      "memory_limit_bytes": 536870912,
+      "name": "pulsegrid-tempo-1",
+      "nano_cpus": 250000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T08:14:38.826649956Z",
+      "status": "running"
+    },
+    "pulsegrid-traefik-1": {
+      "exit_code": 0,
+      "health": "healthy",
+      "image": "traefik:v3@sha256:575fa15b135078fe5e50aa847987d96dbddd7b093c172429618404df73f3fa7c",
+      "memory_limit_bytes": 134217728,
+      "name": "pulsegrid-traefik-1",
+      "nano_cpus": 250000000,
+      "oom_killed": false,
+      "restart_count": 0,
+      "started_at": "2026-10-13T00:19:44.244605829Z",
+      "status": "running"
+    }
+  },
+  "http_404": 0,
+  "http_409": 0,
+  "http_429": 2357,
+  "http_4xx": 2357,
+  "http_4xx_excluding_429": 0,
+  "http_5xx": 0,
+  "latency_by_class_ms": {
+    "admission_rejected": {
+      "max": 104.541166,
+      "mean": 8.171499926601612,
+      "median": 4.957375,
+      "min": 2.488708,
+      "p95": 25.334584,
+      "p99": 78.731875,
+      "samples": 2357
+    },
+    "success": {
+      "max": 98.00275,
+      "mean": 36.59408145454545,
+      "median": 31.435833,
+      "min": 7.219667,
+      "p95": 96.865792,
+      "p99": 98.00275,
+      "samples": 22
+    }
+  },
+  "measurement_seconds": 5.0,
+  "monitor_errors": [],
+  "other_exceptions": 0,
+  "prometheus_backend": {
+    "counter_values_by_backend": {},
+    "policy_series": [],
+    "redis_observed": false
+  },
+  "rejection_percent": 99.07524169819251,
+  "replicas": 1,
+  "request_failures": 0,
+  "resource_summary": {
+    "docker-vm": {
+      "cpu_percent_max": 251.33,
+      "cpu_percent_mean": 202.34,
+      "memory_bytes_max": 1971026123,
+      "memory_bytes_mean": 1931801690.0,
+      "memory_limit_bytes": 6198358016,
+      "memory_percent_max": 31.79916548724894,
+      "samples": 3
+    },
+    "pulsegrid-blackbox-1": {
+      "cpu_percent_max": 0.77,
+      "cpu_percent_mean": 0.26,
+      "memory_bytes_max": 16368271,
+      "memory_bytes_mean": 16368271.0,
+      "memory_limit_bytes": 33554432,
+      "memory_percent_max": 48.79,
+      "samples": 3
+    },
+    "pulsegrid-doctor-1": {
+      "cpu_percent_max": 51.36,
+      "cpu_percent_mean": 43.71,
+      "memory_bytes_max": 87797268,
+      "memory_bytes_mean": 86678787.0,
+      "memory_limit_bytes": 268435456,
+      "memory_percent_max": 32.71,
+      "samples": 3
+    },
+    "pulsegrid-doctor_replica-1": {
+      "cpu_percent_max": 49.89,
+      "cpu_percent_mean": 42.76333333333334,
+      "memory_bytes_max": 87189094,
+      "memory_bytes_mean": 86465576.66666667,
+      "memory_limit_bytes": 268435456,
+      "memory_percent_max": 32.48,
+      "samples": 3
+    },
+    "pulsegrid-grafana-1": {
+      "cpu_percent_max": 0.58,
+      "cpu_percent_mean": 0.5366666666666666,
+      "memory_bytes_max": 234147020,
+      "memory_bytes_mean": 234147020.0,
+      "memory_limit_bytes": 268435456,
+      "memory_percent_max": 87.21,
+      "samples": 3
+    },
+    "pulsegrid-otel-collector-1": {
+      "cpu_percent_max": 9.57,
+      "cpu_percent_mean": 5.543333333333333,
+      "memory_bytes_max": 74165780,
+      "memory_bytes_mean": 72288829.0,
+      "memory_limit_bytes": 134217728,
+      "memory_percent_max": 55.26,
+      "samples": 3
+    },
+    "pulsegrid-postgres-1": {
+      "cpu_percent_max": 5.69,
+      "cpu_percent_mean": 3.6966666666666668,
+      "memory_bytes_max": 219991244,
+      "memory_bytes_mean": 219152383.66666666,
+      "memory_limit_bytes": 536870912,
+      "memory_percent_max": 40.97,
+      "samples": 3
+    },
+    "pulsegrid-prometheus-1": {
+      "cpu_percent_max": 0.32,
+      "cpu_percent_mean": 0.2733333333333334,
+      "memory_bytes_max": 66762833,
+      "memory_bytes_mean": 66759338.0,
+      "memory_limit_bytes": 268435456,
+      "memory_percent_max": 24.87,
+      "samples": 3
+    },
+    "pulsegrid-rabbitmq-1": {
+      "cpu_percent_max": 48.6,
+      "cpu_percent_mean": 16.356666666666666,
+      "memory_bytes_max": 154664960,
+      "memory_bytes_mean": 109037922.66666667,
+      "memory_limit_bytes": 536870912,
+      "memory_percent_max": 28.81,
+      "samples": 3
+    },
+    "pulsegrid-redis-1": {
+      "cpu_percent_max": 6.85,
+      "cpu_percent_mean": 5.2299999999999995,
+      "memory_bytes_max": 9736028,
+      "memory_bytes_mean": 9731833.333333334,
+      "memory_limit_bytes": 134217728,
+      "memory_percent_max": 7.25,
+      "samples": 3
+    },
+    "pulsegrid-tempo-1": {
+      "cpu_percent_max": 6.24,
+      "cpu_percent_mean": 4.303333333333334,
+      "memory_bytes_max": 297271296,
+      "memory_bytes_mean": 289406975.6666667,
+      "memory_limit_bytes": 536870912,
+      "memory_percent_max": 55.37,
+      "samples": 3
+    },
+    "pulsegrid-traefik-1": {
+      "cpu_percent_max": 18.64,
+      "cpu_percent_mean": 15.803333333333333,
+      "memory_bytes_max": 54001664,
+      "memory_bytes_mean": 52977554.333333336,
+      "memory_limit_bytes": 134217728,
+      "memory_percent_max": 40.24,
+      "samples": 3
+    }
+  },
+  "success_latency_ms": {
+    "max": 98.00275,
+    "mean": 36.59408145454545,
+    "median": 31.435833,
+    "min": 7.219667,
+    "p95": 96.865792,
+    "p99": 98.00275,
+    "samples": 22
+  },
+  "successful": 22,
+  "successful_rps": 4.4,
+  "timeouts": 0,
+  "warmup_seconds": 2
+}

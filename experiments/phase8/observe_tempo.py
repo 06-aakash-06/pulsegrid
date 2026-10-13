@@ -408,11 +408,11 @@ def main() -> int:
         for index in range(1, len(rows))
     ]
     with output_paths[0].open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=SAMPLE_FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=SAMPLE_FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     with output_paths[1].open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=WORKLOAD_FIELDS)
+        writer = csv.DictWriter(handle, fieldnames=WORKLOAD_FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(workload_rows)
 

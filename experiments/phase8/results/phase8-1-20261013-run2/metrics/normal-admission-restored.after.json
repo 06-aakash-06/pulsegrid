@@ -1,0 +1,344 @@
+{
+  "captured_utc": "2026-10-13T08:42:22.981727+00:00",
+  "queries": {
+    "api_targets": {
+      "data": {
+        "result": [
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "billing",
+              "service": "billing"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "billing",
+              "service": "billing"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "patient",
+              "service": "patient"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "patient",
+              "service": "patient"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "emergency",
+              "service": "emergency"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "records",
+              "service": "records"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "emergency",
+              "service": "emergency"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "doctor_replica",
+              "service": "doctor"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "pharmacy",
+              "service": "pharmacy"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "doctor_replica",
+              "service": "doctor"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "pharmacy",
+              "service": "pharmacy"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "records",
+              "service": "records"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "doctor",
+              "service": "doctor"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_api",
+              "replica_source": "appointment",
+              "service": "appointment"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "doctor",
+              "service": "doctor"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "job": "pulsegrid_readiness",
+              "replica_source": "appointment",
+              "service": "appointment"
+            },
+            "value": [
+              1791880943.059,
+              "1"
+            ]
+          }
+        ],
+        "resultType": "vector"
+      },
+      "expression": "sum by (job, service, replica_source) (up{job=~\"pulsegrid_api|pulsegrid_readiness\"})"
+    },
+    "doctor_admission": {
+      "data": {
+        "result": [
+          {
+            "metric": {
+              "class": "B",
+              "outcome": "accepted",
+              "policy": "doctor_internal_worker_internal",
+              "replica_source": "doctor_replica",
+              "state": "NORMAL"
+            },
+            "value": [
+              1791880943.165,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "class": "B",
+              "outcome": "accepted",
+              "policy": "doctor_internal_worker_internal",
+              "replica_source": "doctor",
+              "state": "NORMAL"
+            },
+            "value": [
+              1791880943.165,
+              "2"
+            ]
+          },
+          {
+            "metric": {
+              "class": "C",
+              "outcome": "accepted",
+              "policy": "doctor_directory_search_directory",
+              "replica_source": "doctor",
+              "state": "NORMAL"
+            },
+            "value": [
+              1791880943.165,
+              "1"
+            ]
+          }
+        ],
+        "resultType": "vector"
+      },
+      "expression": "sum by (replica_source, policy, class, state, outcome) (pulsegrid_http_admission_requests_total{owner=\"doctor\"})"
+    },
+    "doctor_admission_backend": {
+      "data": {
+        "result": [
+          {
+            "metric": {
+              "backend": "redis",
+              "outcome": "accepted",
+              "policy": "doctor_internal_worker_internal_preauth",
+              "replica_source": "doctor_replica"
+            },
+            "value": [
+              1791880943.214,
+              "2"
+            ]
+          },
+          {
+            "metric": {
+              "backend": "redis",
+              "outcome": "accepted",
+              "policy": "doctor_internal_worker_internal_preauth",
+              "replica_source": "doctor"
+            },
+            "value": [
+              1791880943.214,
+              "3"
+            ]
+          },
+          {
+            "metric": {
+              "backend": "redis",
+              "outcome": "accepted",
+              "policy": "doctor_directory_search_directory",
+              "replica_source": "doctor"
+            },
+            "value": [
+              1791880943.214,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "backend": "redis",
+              "outcome": "accepted",
+              "policy": "doctor_directory_search_directory_preauth",
+              "replica_source": "doctor"
+            },
+            "value": [
+              1791880943.214,
+              "1"
+            ]
+          }
+        ],
+        "resultType": "vector"
+      },
+      "expression": "sum by (replica_source, policy, backend, outcome) (pulsegrid_admission_requests_total{service=\"doctor\"})"
+    },
+    "doctor_autocomplete": {
+      "data": {
+        "result": [],
+        "resultType": "vector"
+      },
+      "expression": "sum by (replica_source, backend, outcome) (pulsegrid_autocomplete_queries_total{service=\"doctor\"})"
+    },
+    "doctor_cache": {
+      "data": {
+        "result": [
+          {
+            "metric": {
+              "outcome": "miss",
+              "replica_source": "doctor"
+            },
+            "value": [
+              1791880943.272,
+              "1"
+            ]
+          }
+        ],
+        "resultType": "vector"
+      },
+      "expression": "sum by (replica_source, outcome) (pulsegrid_cache_requests_total{service=\"doctor\"})"
+    },
+    "doctor_http": {
+      "data": {
+        "result": [
+          {
+            "metric": {
+              "replica_source": "doctor",
+              "route": "/api/v1/doctors",
+              "status_class": "2xx"
+            },
+            "value": [
+              1791880943.113,
+              "1"
+            ]
+          }
+        ],
+        "resultType": "vector"
+      },
+      "expression": "sum by (replica_source, route, status_class) (pulsegrid_http_requests_total{service=\"doctor\"})"
+    },
+    "rabbitmq_queues": {
+      "data": {
+        "result": [],
+        "resultType": "vector"
+      },
+      "expression": "sum by (queue) (rabbitmq_queue_messages_ready)"
+    }
+  },
+  "stage": "normal-admission-restored"
+}

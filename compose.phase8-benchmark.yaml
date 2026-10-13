@@ -1,0 +1,10 @@
+services:
+  doctor:
+    environment:
+      PULSEGRID_DOCTOR_PHASE8_BENCHMARK_ENABLED: "true"
+      PULSEGRID_DOCTOR_PHASE8_BENCHMARK_PRINCIPAL_ID: ${PHASE8_BENCHMARK_PRINCIPAL_ID:?set the synthetic benchmark principal ID}
+
+  doctor_replica:
+    environment:
+      PULSEGRID_DOCTOR_PHASE8_BENCHMARK_ENABLED: "true"
+      PULSEGRID_DOCTOR_PHASE8_BENCHMARK_PRINCIPAL_ID: ${PHASE8_BENCHMARK_PRINCIPAL_ID:?set the synthetic benchmark principal ID}
