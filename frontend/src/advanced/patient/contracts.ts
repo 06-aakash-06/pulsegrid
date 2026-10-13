@@ -8,6 +8,7 @@ export interface Page<T> {
 
 export interface PatientProfile {
   id: ID;
+  display_name?: string;
 }
 
 export interface Appointment {

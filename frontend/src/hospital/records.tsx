@@ -233,7 +233,7 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
               Consultation {item.id} • Appointment {item.appointment_id} •{" "}
               {item.status}
             </p>
-            <button onClick={() => setSelected(item.id)}>
+            <button aria-label={`View consultation ${item.id}`} onClick={() => setSelected(item.id)}>
               View consultation {item.id}
             </button>
           </>
@@ -286,11 +286,12 @@ function History({
         title="Medical history"
         path={`/api/v1/records/patients/${patientId}`}
         revision={revision}
+        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
-            <time dateTime={item.created_at}>{new Date(item.created_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>Clinical record</strong><p>Record {item.id} · Consultation {item.consultation_id} · Revision {item.revision}</p>
-            <button onClick={() => setSelected(item.id)}>
-              View record {item.id}
+            <time dateTime={item.created_at}>{new Date(item.created_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>Clinical record</strong><p>Revision {item.revision}</p>
+            <button aria-label={`View record ${item.id}`} onClick={() => setSelected(item.id)}>
+              Open clinical document →
             </button>
           </>
         )}
@@ -418,13 +419,15 @@ export function RecordsPage({ doctor = false }: { doctor?: boolean }) {
         <Resource<PatientProfile> path="/api/v1/patients/me">
           {(profile) => (
             <>
+              <div className="record-patient-strip"><DepartmentIcon department="reception"/><strong>{profile.display_name}</strong><span>Authorized medical history</span><small>Synthetic hospital data</small></div>
+              <nav className="record-document-tabs" aria-label="Clinical documents"><span>Visit History</span><a href="/patient/prescriptions">Prescriptions</a><a href="/patient/journey">Care Journey</a></nav>
               <History patientId={profile.id} doctor={false} />
-              <Grants patientId={profile.id} />
+              <details className="record-grants"><summary>Record access permissions</summary><Grants patientId={profile.id} /></details>
             </>
           )}
         </Resource>
       )}
-      <Consultations doctor={false} />
+      <details className="record-consultations"><summary>Consultation register</summary><Consultations doctor={false} /></details>
     </>
   );
 }
@@ -483,7 +486,7 @@ export function Prescriptions({
                 Prescription {item.id} • {item.state} • Consultation{" "}
                 {item.consultation_id}
               </p>
-              <button onClick={() => setSelected(item.id)}>
+              <button aria-label={`View prescription ${item.id}`} onClick={() => setSelected(item.id)}>
                 View prescription {item.id}
               </button>
             </>

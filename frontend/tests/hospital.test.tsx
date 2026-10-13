@@ -426,6 +426,8 @@ describe("patient profiles and appointment commands", () => {
     fireEvent.submit(
       screen.getByLabelText("Doctor ID for availability").closest("form")!,
     );
+    await waitFor(() => expect(fetcher.mock.calls.some(([url]) => String(url).includes("/availability"))).toBe(true));
+    const availabilityCalls = fetcher.mock.calls.filter(([url]) => String(url).includes("/availability")).length;
     fill("From (UTC)", "2027-01-01T00:00:00+05:30");
     fill("To (UTC)", "2027-03-02T00:00:00Z");
     fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
@@ -436,8 +438,8 @@ describe("patient profiles and appointment commands", () => {
       "at most 31 days",
     );
     expect(
-      fetcher.mock.calls.some(([url]) => String(url).includes("/availability")),
-    ).toBe(false);
+      fetcher.mock.calls.filter(([url]) => String(url).includes("/availability")).length,
+    ).toBe(availabilityCalls);
   });
   it("cancels an appointment with reason and resource ETag", async () => {
     const { fetcher } = setup(
@@ -453,6 +455,7 @@ describe("patient profiles and appointment commands", () => {
         return undefined;
       },
     );
+    fireEvent.click(await screen.findByRole("button", { name: "My Appointments / Reschedule / Cancel" }));
     fireEvent.click(
       await screen.findByRole("button", { name: "View appointment 51" }),
     );
@@ -477,6 +480,7 @@ describe("patient profiles and appointment commands", () => {
         return undefined;
       },
     );
+    fireEvent.click(await screen.findByRole("button", { name: "My Appointments / Reschedule / Cancel" }));
     fireEvent.click(
       await screen.findByRole("button", { name: "View appointment 51" }),
     );

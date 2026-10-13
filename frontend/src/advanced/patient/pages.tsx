@@ -1,3 +1,4 @@
+import { useLocalDemo } from "../../design/localDemo";
 import { lazy, Suspense } from "react";
 import { DepartmentIcon } from "../../design/DepartmentIcon";
 const PatientScanner = lazy(() => import("../../hospital/staffAdvanced/CheckinScanner").then(m=>({default:m.CheckinScanner})));
@@ -233,6 +234,7 @@ export function PatientCheckinPage({
 }: {
   renderQr?: (sameOriginUrl: string) => ReactNode;
 } = {}) {
+  const demo = useLocalDemo();
   const { api, gate } = usePatientAccess();
   const [landing, setLanding] = useState<LandingToken | null>(null);
   const [invalidLanding, setInvalidLanding] = useState(false);
@@ -402,7 +404,7 @@ export function PatientCheckinPage({
           setConfirmationKey(null);
         }}>
           <option value="">Select an appointment</option>
-          {ownAppointments.map((item) => <option key={item.id} value={item.id}>Appointment {item.id} — {formatTime(item.starts_at)}</option>)}
+          {ownAppointments.map((item) => <option key={item.id} value={item.id}>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`} — {formatTime(item.starts_at)}</option>)}
         </select>}
         {appointments.nextCursor && <button type="button" disabled={appointments.loadingMore} onClick={() => void appointments.loadMore()}>{appointments.loadingMore ? "Loading appointments…" : "Load more appointments"}</button>}
         {appointments.loadMoreError && <div role="alert"><p>{appointments.loadMoreError}</p><button type="button" onClick={() => void appointments.loadMore()}>Retry loading appointments</button></div>}
@@ -492,6 +494,7 @@ function mergeQueueSnapshot(current: QueueSnapshot | null, incoming: QueueSnapsh
 }
 
 export function PatientQueuePage() {
+  const demo=useLocalDemo();
   const { api, gate, sessionKey } = usePatientAccess();
   const profile = useLoad<PatientProfile>(api, gate === "ready" ? "/api/v1/patients/me" : null, gate === "ready");
   const appointmentsPath = profile.data
@@ -508,7 +511,7 @@ export function PatientQueuePage() {
   const live = usePolling<QueueSnapshot>(api, `${sessionKey}:${selectedId}`, gate === "ready" && isId(selectedId), poll, 5000, mergeQueueSnapshot);
 
   if (gate !== "ready") return <PatientGate state={gate} />;
-  return <div className="patient-workflow waiting-station queue-station"><aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Waiting Room</h2><p>Check in, then follow your queue status.</p><div className="kiosk-display"><DepartmentIcon department="appointments"/><span>Your place in the queue is confirmed by the service.</span></div><Link className="button" to="/patient/check-in">Scan QR / Check In →</Link><Link className="text-link" to="/patient/waitlist">View waitlist →</Link></aside>
+  return <div className="patient-workflow waiting-station queue-station"><aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Check In Here</h2><p>Check in, then follow your queue status.</p><div className="kiosk-display"><DepartmentIcon department="appointments"/><span>Your place in the queue is confirmed by the service.</span></div><Link className="button" to="/patient/check-in">Scan QR / Check In →</Link><Link className="text-link" to="/patient/waitlist">View waitlist →</Link></aside>
     <section className="patient-workflow__panel" aria-labelledby="patient-queue-title">
       <h2 id="patient-queue-title">Your consultation queue</h2>
       {appointments.loading && <p role="status">Loading your appointments…</p>}
@@ -516,7 +519,7 @@ export function PatientQueuePage() {
       {confirmed.length > 0 && <>
         <label htmlFor="patient-queue-appointment">Appointment</label>
         <select id="patient-queue-appointment" value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
-          {confirmed.map((item) => <option key={item.id} value={item.id}>Appointment {item.id} — {formatTime(item.starts_at)}</option>)}
+          {confirmed.map((item) => <option key={item.id} value={item.id}>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`} — {formatTime(item.starts_at)}</option>)}
         </select>
       </>}
       {appointments.nextCursor && <button type="button" disabled={appointments.loadingMore} onClick={() => void appointments.loadMore()}>{appointments.loadingMore ? "Loading appointments…" : "Load more appointments"}</button>}
@@ -527,6 +530,9 @@ export function PatientQueuePage() {
       {live.error && <div role="alert"><p>{live.error}</p>{live.stopped ? <p>Polling stopped because the service denied access. Check the signed-in account and reload this page after access is corrected.</p> : <button type="button" onClick={live.retryNow}>Reconnect now</button>}</div>}
       {live.stale && live.data && <p className="patient-workflow__stale" role="status">Queue data is stale. Reconnecting; last successful refresh was {live.lastSuccessAt ? formatTime(new Date(live.lastSuccessAt).toISOString()) : "not reported"}.</p>}
       {live.data?.queue && <>
+        <div className="queue-wall-table"><table><caption>Live Queue · Your consultation</caption><thead><tr><th>Token No.</th><th>Patient</th><th>Position</th><th>Status</th></tr></thead><tbody><tr><td><strong>{live.data.queue.entry.token_number}</strong></td><td>{profile.data?.display_name??'Your appointment'}</td><td>{live.data.queue.entry.position??'—'}</td><td><span className="owner-state">{live.data.queue.entry.state.replaceAll('_',' ')}</span></td></tr></tbody></table></div>
+        <div className="queue-count-strip"><span><strong>{live.data.queue.waiting_count}</strong> Waiting</span><span><strong>{live.data.queue.in_consultation_count}</strong> In consultation</span></div>
+        <details className="queue-source-details"><summary>Queue details and freshness</summary>
         <dl className="patient-workflow__facts">
           <div><dt>Queue token</dt><dd>{live.data.queue.entry.token_number}</dd></div>
           <div><dt>Your position</dt><dd>{live.data.queue.entry.position ?? "Not currently waiting"}</dd></div>
@@ -536,13 +542,14 @@ export function PatientQueuePage() {
           <div><dt>Queue snapshot version</dt><dd>{live.data.queue.queue_version}</dd></div>
           <div><dt>Backend observed at</dt><dd><time dateTime={live.data.queue.observed_at}>{formatTime(live.data.queue.observed_at)}</time></dd></div>
         </dl>
-        <p>Queue status updates are polled every five seconds while this page is visible. Other patients’ identities are never requested or shown.</p>
+        <p>Queue status updates are polled every five seconds while this page is visible. Other patients’ identities are never requested or shown.</p></details>
       </>}
       {live.data && !live.data.queue && <p role="status">The service has not returned a queue entry for this appointment. Check-in may still be pending, or the appointment may not be enrolled in Phase 3.</p>}
       {live.data?.workflow && <p>Consultation status: <strong>{live.data.workflow.state}</strong> (workflow version {live.data.workflow.version}).</p>}
       {live.data && !live.data.workflow && <p className="patient-workflow__muted">No workflow was returned for this appointment.</p>}
       {!live.error && selectedId && <button type="button" onClick={live.retryNow}>Refresh queue now</button>}
     </section>
+    <aside className="queue-wait-sign"><DepartmentIcon department="waiting"/><h2>Your Turn</h2><strong>{live.data?.queue?.entry.position??'—'}</strong><p>{live.data?.queue?.entry.position?'Your current queue position':'Check in for your position'}</p><hr/><p>Wait estimates are not supplied by the service.</p><p>Please keep this page open to see your current status.</p><small>Synthetic hospital · Owner queue data</small></aside>
   </div>;
 }
 

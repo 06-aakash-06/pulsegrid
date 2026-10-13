@@ -86,6 +86,7 @@ export function MedicineCatalog({
         title="Medicines"
         path={query("/api/v1/pharmacy/medicines", filters)}
         revision={revision}
+        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
             <span className="medicine-box" aria-hidden="true"><DepartmentIcon department="pharmacy"/><span>{item.sku}</span></span><strong>{item.name}</strong>

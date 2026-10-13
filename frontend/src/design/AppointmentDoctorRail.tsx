@@ -1,0 +1,21 @@
+import { useEffect, useState } from "react";
+import { useResource } from "../hospital/ui";
+import type { Doctor, Page } from "../hospital/models";
+import { DoctorPortrait, useLocalDemo } from "./localDemo";
+
+export function AppointmentDoctorRail({selected,onSelect}:{selected:string;onSelect:(doctor:Doctor)=>void}) {
+  const demo=useLocalDemo();
+  const [search,setSearch]=useState("");
+  const [all,setAll]=useState(false);
+  const roster=useResource<Page<Doctor>>(`/api/v1/doctors?limit=20${demo&&!all?'&q=Dr.':''}`);
+  const rows=(roster.response?.data.items??[]).filter(d=>!demo||all||demo.doctors[d.id]);
+  useEffect(()=>{if(!selected&&rows[0])onSelect(rows[0]);},[selected,roster.response,demo,onSelect]);
+  return <div className="appointment-doctor-rail">
+    <label>Find a doctor<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Name or specialty…"/></label>
+    {roster.error&&<p role="alert">{roster.error}</p>}
+    {roster.loading&&<p role="status">Loading doctors…</p>}
+    <div className="appointment-doctor-rows">{rows.filter(d=>`${d.display_name} ${d.specialties.map(s=>s.name).join(' ')}`.toLowerCase().includes(search.toLowerCase())).map(d=><button type="button" key={d.id} aria-label={`Select doctor ${d.id}`} aria-pressed={selected===d.id} onClick={()=>onSelect(d)}><DoctorPortrait name={d.display_name} index={demo?.doctors[d.id]?.portrait}/><span><strong>{d.display_name}</strong><small>{d.specialties.map(s=>s.name).join(', ')}</small></span><b aria-hidden="true">›</b></button>)}</div>
+    {demo&&<label className="demo-footnote"><input type="checkbox" checked={all} onChange={e=>setAll(e.target.checked)}/>Show all owner records · Fictional demo</label>}
+    {roster.response?.data.next_cursor&&<p>More clinicians are available through directory search above.</p>}
+  </div>;
+}

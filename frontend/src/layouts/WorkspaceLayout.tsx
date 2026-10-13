@@ -51,7 +51,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
       : [];
   const referenceMode =
     (workspace.basePath === "/patient" && route === "dashboard") ||
-    route === "doctors";
+    route === "doctors" || ["appointments","waiting","pharmacy","billing","emergency","records","control"].includes(department);
   const patientWorkspace = allowed.find((w) => w.basePath === "/patient");
   const referenceItems =
     referenceMode && patientWorkspace
@@ -155,7 +155,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
     return () => document.removeEventListener("keydown", handler);
   }, [menuOpen]);
   return (
-    <div className={`workspace-shell environment-${department}`}>
+    <div className={`workspace-shell environment-${department}${referenceMode ? ' reference-departments' : ''}`}>
       <a className="skip-link" href="#hospital-main">
         Skip to workspace
       </a>

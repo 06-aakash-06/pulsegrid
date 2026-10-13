@@ -61,24 +61,19 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
         title="Invoices"
         path="/api/v1/billing/invoices"
         revision={revision}
+        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
-            <Facts
-              values={{
-                "Invoice ID": item.id,
-                "Appointment ID": item.appointment_id,
-                Status: item.status,
-                Total: money(item.total_minor),
-                Balance: money(item.balance_minor),
-              }}
-            />
+            <div className="billing-ledger-row"><span>Invoice …{item.id.slice(-4)}</span><strong>{money(item.total_minor)}</strong><span className="owner-state">{item.status}</span><small>Balance {money(item.balance_minor)}</small></div>
+            <details className="owner-identifiers"><summary>Reference identifiers</summary><Facts values={{"Invoice ID":item.id,"Appointment ID":item.appointment_id}}/></details>
             <button
+              aria-label={`View invoice ${item.id}`}
               onClick={() => {
                 setSelected(item.id);
                 setPayment(null);
               }}
             >
-              View invoice {item.id}
+              Open invoice →
             </button>
           </>
         )}
@@ -347,19 +342,12 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
         title="Emergency requests"
         path="/api/v1/emergencies"
         revision={revision}
+        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
-            <Facts
-              values={{
-                "Request ID": item.id,
-                State: item.state,
-                "Reported urgency": item.reported_urgency,
-                "Assigned priority": item.assigned_priority,
-                "Updated (UTC)": item.updated_at,
-              }}
-            />
-            <button onClick={() => setSelected(item.id)}>
-              Track request {item.id}
+            <div className="emergency-triage-row"><DepartmentIcon department="reception"/><strong>Request …{item.id.slice(-4)}</strong><span className="owner-state">{item.state}</span><span>{item.assigned_priority?`Priority ${item.assigned_priority}`:item.reported_urgency}</span><time>{new Date(item.updated_at).toLocaleTimeString('en',{timeZone:'UTC',hour:'2-digit',minute:'2-digit'})} UTC</time></div>
+            <button aria-label={`Track request ${item.id}`} onClick={() => setSelected(item.id)}>
+              Review request →
             </button>
           </>
         )}

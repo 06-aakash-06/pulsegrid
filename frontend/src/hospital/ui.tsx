@@ -125,11 +125,13 @@ export function Collection<T extends { id: string }>({
   title,
   renderItem,
   revision = 0,
+  onFirstItem,
 }: {
   path: string | null;
   title: string;
   renderItem: (item: T) => ReactNode;
   revision?: number;
+  onFirstItem?: (item: T) => void;
 }) {
   return (
     <CollectionPage<T>
@@ -137,6 +139,7 @@ export function Collection<T extends { id: string }>({
       path={path}
       title={title}
       renderItem={renderItem}
+      onFirstItem={onFirstItem}
     />
   );
 }
@@ -144,10 +147,12 @@ function CollectionPage<T extends { id: string }>({
   path,
   title,
   renderItem,
+  onFirstItem,
 }: {
   path: string | null;
   title: string;
   renderItem: (item: T) => ReactNode;
+  onFirstItem?: (item: T) => void;
 }) {
   const [cursor, setCursor] = useState<string | undefined>();
   const [history, setHistory] = useState<(string | undefined)[]>([]);
@@ -155,6 +160,10 @@ function CollectionPage<T extends { id: string }>({
     ? `${path}${path.includes("?") ? "&" : "?"}limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`
     : null;
   const resource = useResource<Page<T>>(pagedPath);
+  useEffect(() => {
+    const first = resource.response?.data.items[0];
+    if (first) onFirstItem?.(first);
+  }, [resource.response, onFirstItem]);
   return (
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}

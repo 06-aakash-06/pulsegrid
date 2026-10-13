@@ -216,7 +216,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
   const trendErrors = summary?.trends.error_rate ?? [];
 
   return (
-    <section className="ops-dashboard" aria-labelledby="control-room-title">
+    <section className="ops-dashboard reference-operations" aria-labelledby="control-room-title">
       <header className="ops-page-header">
         <div>
           <p className="eyebrow">Operations · Live telemetry</p>
@@ -251,12 +251,13 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             <MetricCard label="Surge Mode" value={system?.surge_mode.state ?? "UNKNOWN"} detail={system?.surge_mode.changed_at ? `Since ${time(system.surge_mode.changed_at)}` : "Shared admission state"} tone={toneForHealth(system?.surge_mode.state ?? "unknown")} />
           </div>
 
+          <section className="ops-service-map" aria-labelledby="service-map-title"><header><h2 id="service-map-title">Hospital Service Map</h2><small>Live service topology · Not a bed census</small></header><div className="ops-map-rooms">{summary.services.map(service=><a href="#detailed-service-health" className={`ops-map-room ops-map-room--${service.health}`} key={service.name}><strong>{service.name}</strong><StatusBadge tone={toneForHealth(service.health)}>{service.health.replaceAll('_',' ')}</StatusBadge><span>{service.healthy_instances} / {service.instance_count} ready</span><small>{number(service.request_rate_per_second,2)} requests / sec</small></a>)}</div><footer>Readiness and measurements from each owning service.</footer></section>
           <div className="ops-trend-grid">
             <TrendChart title="Request throughput" unit="requests / sec" points={trendRates} description="Collected from service request counters." />
             <TrendChart title="HTTP 5xx rate" unit="percent" points={trendErrors} description="Computed from observed HTTP status classes." />
           </div>
 
-          <section className="ops-panel">
+          <details className="ops-service-details" id="detailed-service-health"><summary>Detailed service health and replica measurements</summary><section className="ops-panel">
             <div className="ops-panel-heading">
               <div><h2>Service health</h2><p>Readiness is probed per running instance; service values aggregate replicas.</p></div>
             </div>
@@ -280,7 +281,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             </div>
           </section>
 
-          <div className="ops-two-column ops-component-and-alerts">
+          </details><div className="ops-two-column ops-component-and-alerts">
             <section className="ops-panel">
               <div className="ops-panel-heading"><div><h2>Distributed components</h2><p>Only recorded component metrics are shown.</p></div></div>
               <div className="ops-component-grid">
@@ -302,7 +303,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             </section>
           </div>
 
-          <div className="ops-two-column ops-messaging-and-events">
+          <details className="ops-delivery-details"><summary>Event delivery and operational audit</summary><div className="ops-two-column ops-messaging-and-events">
             <section className="ops-panel">
               <div className="ops-panel-heading"><div><h2>Event delivery</h2><p>RabbitMQ queue state and producer-owned outbox measurements.</p></div></div>
               <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Event delivery table">
@@ -327,7 +328,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
               <Link className="ops-text-link" to={`${workspaceBasePath}/traces`}>Explore recent traces <span aria-hidden="true">→</span></Link>
             </section>
           </div>
-          <p className="ops-footnote">Metrics update every 30 seconds. Missing measurements remain marked as no data.</p>
+          </details><p className="ops-footnote">Metrics update every 30 seconds. Missing measurements remain marked as no data.</p>
         </>
       ) : null}
       <SurgeModeControls onChange={()=>void refresh()}/>

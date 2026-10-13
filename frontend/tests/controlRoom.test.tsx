@@ -72,7 +72,7 @@ describe("PulseGrid Control Room", () => {
 
     expect(await screen.findByRole("heading", { name: "Control Room" })).toBeInTheDocument();
     expect(screen.queryByText("Surge Mode controls · Administrator")).not.toBeInTheDocument();
-    expect(await screen.findByText("healthy", { selector: "span" })).toBeInTheDocument();
+    expect((await screen.findAllByText("healthy", { selector: "span" })).length).toBeGreaterThan(0);
     expect(screen.getAllByText("1.25").length).toBeGreaterThan(0);
     expect(screen.getByText("Hash topology epoch")).toBeInTheDocument();
     expect(screen.getByText("17.00")).toBeInTheDocument();

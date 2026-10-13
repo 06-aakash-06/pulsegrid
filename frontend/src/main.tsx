@@ -12,3 +12,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 
 import "./styles/reference-scenes.css";
+import "./styles/architectural-layout.css";
+import "./styles/department-scenes.css";

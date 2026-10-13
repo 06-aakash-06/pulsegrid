@@ -1,10 +1,12 @@
+import { AppointmentDoctorRail } from "../design/AppointmentDoctorRail";
+import { useLocalDemo } from "../design/localDemo";
 import { ReceptionVisit } from "../design/ReceptionVisit";
 import { ReferenceConsultation } from "../design/ReferenceConsultation";
 import { m } from "motion/react";
 import { ReceptionScene } from "../design/ReceptionScene";
 import { useSearchParams } from "react-router-dom";
 import { DepartmentIcon } from "../design/DepartmentIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DoctorAutocomplete, AppointmentShortLinkPanel } from "../phase4";
 import { useAuth, roles } from "../auth/authContext";
 import type {
@@ -332,8 +334,12 @@ export function StaffManagement() {
 export function AvailabilityPicker({
   doctorId,
   onSlot,
+  autoLoad = false,
+  onClear,
 }: {
   doctorId: string;
+  autoLoad?: boolean;
+  onClear?: () => void;
   onSlot?: (slotId: string, revision: number, startsAt: string, endsAt: string) => void;
 }) {
   const [values, setValues] = useState<Values>(()=>{const start=new Date().toISOString().slice(0,10)+"T00:00:00Z";return {from:start,to:new Date(Date.parse(start)+86400000).toISOString()};});
@@ -342,11 +348,17 @@ export function AvailabilityPicker({
   const days = Array.from({length:7},(_,i)=>new Date(Date.parse(`${day}T00:00:00Z`)+i*86400000));
   const [path, setPath] = useState<string | null>(null);
   const [error, setError] = useState("");
+  useEffect(() => {
+    setSelectedSlot(null);
+    const span = Date.parse(values.to ?? "") - Date.parse(values.from ?? "");
+    const valid = values.from?.endsWith("Z") && values.to?.endsWith("Z") && span > 0 && span <= 31 * 86400000;
+    setPath(autoLoad && valid ? query("/api/v1/appointments/availability", {doctor_id:doctorId,from:values.from,to:values.to}) : null);
+  }, [doctorId, values.from, values.to, autoLoad]);
   return (
     <Panel title="Accepted availability">
       <p className="availability-note">Choose a date, then load the accepted schedule. Times are in UTC; the service confirms availability when booking.</p>
-      <label className="availability-date">Choose date (UTC)<input type="date" value={day} onChange={e=>{if(e.target.value){setDay(e.target.value);setValues({from:`${e.target.value}T00:00:00Z`,to:new Date(Date.parse(`${e.target.value}T00:00:00Z`)+86400000).toISOString()});setSelectedSlot(null);}}}/></label>
-      <div className="calendar-strip" aria-label="Available date selection">{days.map(d=><button type="button" key={d.toISOString()} aria-pressed={values.from?.slice(0,10)===d.toISOString().slice(0,10)} onClick={()=>{setValues({from:d.toISOString(),to:new Date(d.getTime()+86400000).toISOString()});setSelectedSlot(null);}}><small>{d.toLocaleDateString('en',{weekday:'short',timeZone:'UTC'})}</small><strong>{d.getUTCDate()}</strong><small>{d.toLocaleDateString('en',{month:'short',timeZone:'UTC'})}</small></button>)}</div>
+      <label className="availability-date">Choose date (UTC)<input type="date" value={values.from?.slice(0,10)??day} onChange={e=>{if(e.target.value){setDay(e.target.value);setValues({from:`${e.target.value}T00:00:00Z`,to:new Date(Date.parse(`${e.target.value}T00:00:00Z`)+86400000).toISOString()});setSelectedSlot(null);onClear?.();}}}/></label>
+      <div className="calendar-strip" aria-label="Available date selection">{days.map(d=><button type="button" key={d.toISOString()} aria-pressed={values.from?.slice(0,10)===d.toISOString().slice(0,10)} onClick={()=>{setValues({from:d.toISOString(),to:new Date(d.getTime()+86400000).toISOString()});setSelectedSlot(null);onClear?.();}}><small>{d.toLocaleDateString('en',{weekday:'short',timeZone:'UTC'})}</small><strong>{d.getUTCDate()}</strong><small>{d.toLocaleDateString('en',{month:'short',timeZone:'UTC'})}</small></button>)}</div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -435,8 +447,8 @@ export function Booking({
   const [confirmed,setConfirmed] = useState<Appointment|null>(null);
   return (
     <div className="booking-composition"><section className="booking-doctor"><fieldset disabled={locked}><h3><span className="step-number">1</span>Select Doctor</h3>
-      <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setDoctor(item.id);setDoctorLabel(item.label);setSlot(null);}} />
-      {!doctorId && <div className="booking-doctor-directory"><Collection<Doctor> title="Doctor directory" path="/api/v1/doctors" renderItem={item=><button type="button" aria-label={`Select doctor ${item.id}`} aria-pressed={doctor===item.id} onClick={()=>{setDoctor(item.id);setDoctorLabel(item.display_name);setSlot(null);}}><span className="doctor-initials" aria-hidden="true">{item.display_name.split(' ').slice(-2).map(n=>n[0]).join('')}</span><strong>{item.display_name}</strong><small>{item.specialties.map(s=>s.name).join(', ')}</small><span aria-hidden="true">›</span></button>}/></div>}
+      <details className="advanced-doctor-search"><summary>Search the complete directory</summary><DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setDoctor(item.id);setDoctorLabel(item.label);setSlot(null);}} /></details>
+      {!doctorId && <AppointmentDoctorRail selected={doctor} onSelect={item=>{if(!locked){setDoctor(item.id);setDoctorLabel(item.display_name);setSlot(null);}}}/>}
       <details className="manual-doctor-lookup"><summary>Use a doctor ID</summary><Lookup
         label="Doctor ID for availability"
         onSelect={(value) => {
@@ -451,6 +463,8 @@ export function Booking({
         <AvailabilityPicker
           key={doctor}
           doctorId={doctor}
+          autoLoad={!doctorId}
+          onClear={()=>setSlot(null)}
           onSlot={(id, revision, startsAt, endsAt) => setSlot({ id, revision, startsAt, endsAt })}
         />
       )}
@@ -553,6 +567,7 @@ export function Appointments({
   doctor?: boolean;
 }) {
   const {state,api}=useAuth();
+  const demo=useLocalDemo();
   const [params,setParams]=useSearchParams();
   const view=params.get('view')==='upcoming'?'manage':params.get('view')==='walk-in'?'walk-in':'book';
   const setView=(value:string)=>setParams(value==='book'?{}:{view:value==='manage'?'upcoming':'walk-in'},{replace:true});
@@ -586,23 +601,17 @@ export function Appointments({
             )}
           </Resource>
         ))}
-      </section><div className="appointment-management" hidden={view==='walk-in'}>
+      </section><div className="appointment-management" hidden={!doctor&&view!=='manage'}>
       <Collection<Appointment>
         title="Appointments"
         path="/api/v1/appointments"
         revision={revision}
         renderItem={(item) => (
           <>
-            <Facts
-              values={{
-                "Appointment ID": item.id,
-                "Patient ID": item.patient_id,
-                "Doctor ID": item.doctor_id,
-                "Starts (UTC)": item.starts_at,
-                State: item.state,
-              }}
-            />
+            <div className="appointment-slip-entry"><time>{new Date(item.starts_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`}</strong><span>{demo?.patients[item.patient_id]?.name??'Authorized patient'}</span><span className="owner-state">{item.state}</span></div>
+            <details className="owner-identifiers"><summary>Reference identifiers</summary><Facts values={{"Appointment ID":item.id,"Patient ID":item.patient_id,"Doctor ID":item.doctor_id}}/></details>
             <button
+              aria-label={`View appointment ${item.id}`}
               onClick={() => {
                 setSelected(item.id);
                 if(!doctor)setView('manage');
@@ -610,7 +619,7 @@ export function Appointments({
                 setTargetDoctor("");
               }}
             >
-              View appointment {item.id}
+              Review appointment →
             </button>
           </>
         )}
