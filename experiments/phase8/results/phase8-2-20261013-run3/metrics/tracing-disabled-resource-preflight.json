@@ -1,0 +1,131 @@
+{
+  "captured_utc": "2026-10-13T10:57:40.082499+00:00",
+  "docker_container_cpu_percent_sum": 18.829999999999995,
+  "docker_vm_cpu_count": 4,
+  "docker_vm_memory_limit_bytes": 6198358016,
+  "docker_vm_memory_percent": 23.016216251423447,
+  "docker_vm_memory_used_bytes": 1426627485,
+  "pulsegrid_container_samples": [
+    {
+      "cpu_percent": 0.31,
+      "memory_percent_of_limit": 27.89,
+      "memory_used_bytes": 74878812,
+      "service": "patient"
+    },
+    {
+      "cpu_percent": 0.36,
+      "memory_percent_of_limit": 27.85,
+      "memory_used_bytes": 74752983,
+      "service": "doctor_replica"
+    },
+    {
+      "cpu_percent": 0.34,
+      "memory_percent_of_limit": 27.8,
+      "memory_used_bytes": 74637639,
+      "service": "doctor"
+    },
+    {
+      "cpu_percent": 3.57,
+      "memory_percent_of_limit": 30.41,
+      "memory_used_bytes": 81621155,
+      "service": "billing"
+    },
+    {
+      "cpu_percent": 0.32,
+      "memory_percent_of_limit": 31.37,
+      "memory_used_bytes": 84221624,
+      "service": "appointment"
+    },
+    {
+      "cpu_percent": 2.75,
+      "memory_percent_of_limit": 29.68,
+      "memory_used_bytes": 79660318,
+      "service": "pharmacy"
+    },
+    {
+      "cpu_percent": 0.29,
+      "memory_percent_of_limit": 27.67,
+      "memory_used_bytes": 74281123,
+      "service": "emergency"
+    },
+    {
+      "cpu_percent": 0.32,
+      "memory_percent_of_limit": 28.09,
+      "memory_used_bytes": 75403100,
+      "service": "records"
+    },
+    {
+      "cpu_percent": 1.31,
+      "memory_percent_of_limit": 58.86,
+      "memory_used_bytes": 236978176,
+      "service": "grafana"
+    },
+    {
+      "cpu_percent": 0.0,
+      "memory_percent_of_limit": 13.01,
+      "memory_used_bytes": 17469276,
+      "service": "traefik"
+    },
+    {
+      "cpu_percent": 0.86,
+      "memory_percent_of_limit": 25.93,
+      "memory_used_bytes": 69614960,
+      "service": "prometheus"
+    },
+    {
+      "cpu_percent": 0.69,
+      "memory_percent_of_limit": 16.04,
+      "memory_used_bytes": 86109061,
+      "service": "rabbitmq"
+    },
+    {
+      "cpu_percent": 0.02,
+      "memory_percent_of_limit": 75.88,
+      "memory_used_bytes": 50918850,
+      "service": "fixture_2"
+    },
+    {
+      "cpu_percent": 0.02,
+      "memory_percent_of_limit": 74.27,
+      "memory_used_bytes": 49849303,
+      "service": "fixture_3"
+    },
+    {
+      "cpu_percent": 0.02,
+      "memory_percent_of_limit": 75.16,
+      "memory_used_bytes": 50436505,
+      "service": "fixture_1"
+    },
+    {
+      "cpu_percent": 1.7,
+      "memory_percent_of_limit": 48.35,
+      "memory_used_bytes": 16221470,
+      "service": "blackbox"
+    },
+    {
+      "cpu_percent": 0.7,
+      "memory_percent_of_limit": 2.95,
+      "memory_used_bytes": 3964665,
+      "service": "cache_a"
+    },
+    {
+      "cpu_percent": 1.11,
+      "memory_percent_of_limit": 7.24,
+      "memory_used_bytes": 9723445,
+      "service": "redis"
+    },
+    {
+      "cpu_percent": 0.85,
+      "memory_percent_of_limit": 3.11,
+      "memory_used_bytes": 4177526,
+      "service": "cache_b"
+    },
+    {
+      "cpu_percent": 3.29,
+      "memory_percent_of_limit": 39.44,
+      "memory_used_bytes": 211707494,
+      "service": "postgres"
+    }
+  ],
+  "running_container_count": 20
+}

@@ -1,0 +1,10 @@
+{
+  "completed_cases": [],
+  "completed_stages": [],
+  "guardrail_stops": [],
+  "interrupted_cases": [],
+  "last_error": "RuntimeError: docker compose: Container pulsegrid-pharmacy-1 Recreate \n Container pulsegrid-doctor-1 Recreate \n Container pulsegrid-traefik-1 Recreate \n Container pulsegrid-records-1 Recreate \n Container pulsegrid-emergency-1 Recreate \n Container pulsegrid-grafana-1 Recreate \n Container pulsegrid-doctor_replica-1 Recreate \n Container pulsegrid-patient-1 Recreate \n Container pulsegrid-billing-1 Recreate \n Container pulsegrid-appointment-1 Recreate \n Container pulsegrid-records-1 Recreated \n Container pulsegrid-traefik-1 Recre",
+  "run_id": "phase8-2-20261013-run1",
+  "started_cases": [],
+  "starting_commit": "ea012c30450aaf3b32cf74b903f12c3b086e35e0"
+}
