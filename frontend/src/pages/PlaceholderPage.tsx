@@ -1,24 +1,6 @@
-import { EmptyState } from "../components/EmptyState";
-import { StatusBadge } from "../components/StatusBadge";
+import { Link } from "react-router-dom";
+import { DepartmentIcon } from "../design/DepartmentIcon";
 import type { WorkspacePage } from "../navigation/workspaces";
-
-interface PlaceholderPageProps {
-  page: WorkspacePage;
-  workspaceName: string;
-}
-
-export function PlaceholderPage({ page, workspaceName }: PlaceholderPageProps) {
-  return (
-    <div className="page-stack">
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">{workspaceName}</p>
-          <h1>{page.title}</h1>
-          <p className="page-description">{page.description}</p>
-        </div>
-        <StatusBadge>Unavailable in Phase 2</StatusBadge>
-      </div>
-      <EmptyState title="Future workflow unavailable" message="This workflow is deferred. Phase 2 does not implement automatic waitlists, QR check-in, live queues, patient journey automation, insurance, monitoring or administrative settings." />
-    </div>
-  );
+export function PlaceholderPage({page,workspaceName}:{page:WorkspacePage;workspaceName:string}) {
+ return <div className="page-stack department-page department-page--reception"><div className="page-heading"><DepartmentIcon department="reception"/><div><p className="eyebrow">{workspaceName}</p><h1>{page.title}</h1><p className="page-description">Hospital administration & access</p></div></div><section className="administration-directory"><h2>Administration desk</h2><p>Manage the hospital through its existing owner interfaces.</p><Link to="/admin/staff"><DepartmentIcon department="reception"/><span><strong>Staff & account access</strong><small>Review identities, roles and account status.</small></span><span>→</span></Link><Link to="/admin/doctors"><DepartmentIcon department="consultation"/><span><strong>Doctor directory & schedules</strong><small>Maintain profiles and accepted schedule proposals.</small></span><span>→</span></Link><Link to="/admin/control-room"><DepartmentIcon department="control"/><span><strong>System operations</strong><small>Service health, infrastructure metrics and Surge Mode.</small></span><span>→</span></Link><p className="configuration-note">A separate hospital-settings API is not available. No configuration changes are submitted from this page.</p></section></div>;
 }

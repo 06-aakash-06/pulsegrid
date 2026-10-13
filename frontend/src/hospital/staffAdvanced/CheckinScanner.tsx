@@ -152,6 +152,7 @@ export function CheckinScanner({
       </p>
       {active && <video aria-label="Check-in QR camera" autoPlay muted playsInline ref={videoRef} />}
       {scannerMessage && <p role="status">{scannerMessage}</p>}
+      {starting && <button type="button" onClick={()=>{stopCamera();setScannerMessage("Camera request cancelled. Enter the appointment ID and token below.");}}>Cancel camera request</button>}
       {active ? (
         <button type="button" disabled={disabled} onClick={stopCamera}>Stop QR scanner</button>
       ) : (

@@ -1,3 +1,4 @@
+import { Brand } from "./Brand";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth, type Role } from "../auth/authContext";
 import { getWorkspaceForRoleHints } from "../navigation/workspaces";
@@ -49,9 +50,10 @@ export function RequireRole({ roles }: RequireRoleProps) {
 export function NotFoundPage() {
   return (
     <main className="access-page">
+      <Brand/>
       <EmptyState
         title="Page not found"
-        message="The address may be incorrect or this page may not be part of the current application foundation."
+        message="The address may be incorrect. Use the hospital directory or return to Reception to continue."
       />
     </main>
   );

@@ -471,7 +471,7 @@ export function Prescriptions({
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   return (
-    <>
+    <div className="prescription-workspace">
       {!pharmacist && (
         <Collection<Prescription>
           title="Prescriptions"
@@ -520,6 +520,6 @@ export function Prescriptions({
         )}
       </Selected>
       {doctor && <RecordsPage doctor />}
-    </>
+    </div>
   );
 }

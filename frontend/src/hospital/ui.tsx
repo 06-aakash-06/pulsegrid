@@ -4,6 +4,7 @@ import {
   type ApiResponse,
   type ApiRequestOptions,
 } from "../api/client";
+import { publishHospitalIdentity } from "../design/hospitalIdentity";
 import { useAuth } from "../auth/authContext";
 import type { Page, Versioned } from "./models";
 
@@ -31,7 +32,7 @@ export function query(
   return params.size ? `${path}?${params}` : path;
 }
 export function useResource<T>(path: string | null, revision = 0) {
-  const { api } = useAuth();
+  const { api, state } = useAuth();
   const [response, setResponse] = useState<ApiResponse<T> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,14 @@ export function useResource<T>(path: string | null, revision = 0) {
     void api
       .requestWithMetadata<T>(path, { signal: controller.signal })
       .then((result) => {
-        if (!controller.signal.aborted) setResponse(result);
+        if (!controller.signal.aborted) {
+          setResponse(result);
+          if(state.status==='authenticated' && state.user.id){
+            const owner=result.data as {display_name?:string;user_id?:string;staff_user_id?:string;doctor?:{display_name?:string}};
+            if(path==='/api/v1/patients/me' && owner.user_id===state.user.id && typeof owner.display_name==='string')publishHospitalIdentity(state.user.id,owner.display_name);
+            if(path==='/api/v1/doctors/me' && owner.staff_user_id===state.user.id && typeof owner.doctor?.display_name==='string')publishHospitalIdentity(state.user.id,owner.doctor.display_name);
+          }
+        }
       })
       .catch((err: unknown) => {
         if (!controller.signal.aborted) setError(errorMessage(err));

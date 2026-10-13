@@ -279,7 +279,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             </div>
           </section>
 
-          <div className="ops-two-column">
+          <div className="ops-two-column ops-component-and-alerts">
             <section className="ops-panel">
               <div className="ops-panel-heading"><div><h2>Distributed components</h2><p>Only recorded component metrics are shown.</p></div></div>
               <div className="ops-component-grid">
@@ -301,7 +301,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             </section>
           </div>
 
-          <div className="ops-two-column">
+          <div className="ops-two-column ops-messaging-and-events">
             <section className="ops-panel">
               <div className="ops-panel-heading"><div><h2>Event delivery</h2><p>RabbitMQ queue state and producer-owned outbox measurements.</p></div></div>
               <div className="ops-table-wrap">

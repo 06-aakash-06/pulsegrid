@@ -1,3 +1,4 @@
+import { HospitalHeader } from "../design/HospitalHeader";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { EmptyState } from "../components/EmptyState";
@@ -50,6 +51,7 @@ export function AuthLayout() {
 
   return (
     <div className="auth-route-layout">
+      <HospitalHeader/>
       <Outlet />
     </div>
   );

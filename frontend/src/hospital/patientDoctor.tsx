@@ -126,7 +126,7 @@ export function Demographics({ admin = false }: { admin?: boolean }) {
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
   return (
-    <>
+    <div className="patient-register">
       <Panel title="Patient demographics">
         <form
           onSubmit={(e) => {
@@ -186,7 +186,7 @@ export function Demographics({ admin = false }: { admin?: boolean }) {
           Demographic edits do not change permissions.
         </p>
       )}
-    </>
+    </div>
   );
 }
 export function StaffManagement() {
@@ -196,7 +196,7 @@ export function StaffManagement() {
   const [draft, setDraft] = useState<Values>({});
   const [error, setError] = useState("");
   return (
-    <>
+    <div className="account-register">
       <Panel title="Filter accounts">
         <form
           onSubmit={(e) => {
@@ -325,7 +325,7 @@ export function StaffManagement() {
           );
         }}
       </Selected>
-    </>
+    </div>
   );
 }
 export function AvailabilityPicker({

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ApiConfigurationError, ApiError } from "../api/client";
 import { createRegistrationAttempt, type RegistrationAttempt, type RegistrationInput } from "../api/authApi";
 import { useAuth } from "../auth/authContext";
-import { Brand } from "../components/Brand";
+
 import {
   getWorkspaceForPath,
   getWorkspaceForRoleHints,
@@ -363,14 +363,14 @@ interface AuthFrameProps {
 function AuthFrame({ title, description, children }: AuthFrameProps) {
   return (
     <main className="auth-page">
-      <div className="auth-topbar"><Brand /></div>
+      <div className="auth-welcome"><p className="eyebrow">RECEPTION / ADMISSIONS</p><h2>Good care begins<br/>with connection.</h2><p>Your hospital, one secure sign-in away.</p></div><div className="auth-workspace">
       <section className="auth-card" aria-labelledby="auth-title">
         <p className="eyebrow">Patient and staff access</p>
         <h1 id="auth-title">{title}</h1>
         <p className="auth-description">{description}</p>
         {children}
       </section>
-      <p className="auth-legal">Synthetic educational prototype · Not for real clinical use</p>
+      <p className="auth-legal">Synthetic educational prototype · Not for real clinical use</p></div>
     </main>
   );
 }

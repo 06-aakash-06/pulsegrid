@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { ApiError } from "../../api/client";
 import { useAuth } from "../../auth/authContext";
 import { CommandForm, Facts, Panel, Resource } from "../ui";
 import type { CheckinResult, Workflow } from "./contracts";
-import { CheckinScanner } from "./CheckinScanner";
+const CheckinScanner=lazy(()=>import("./CheckinScanner").then(m=>({default:m.CheckinScanner})));
 import { StaffJourneyTools } from "./JourneyTools";
 import { StaffRoleGate } from "./StaffRoleGate";
 import {
@@ -153,7 +153,7 @@ function CheckinPanel() {
       <p>
         Scan the patient's same-origin QR link where browser support is available, or enter the appointment ID and token manually. The Appointment service validates the patient, active appointment window, token and current workflow version.
       </p>
-      <CheckinScanner disabled={busy || !!pendingCommand} onScan={acceptScan} />
+      <Suspense fallback={<p role="status">Loading scanner…</p>}><CheckinScanner disabled={busy || !!pendingCommand} onScan={acceptScan} /></Suspense>
       <form className="hospital-form" noValidate onSubmit={(event) => { event.preventDefault(); loadAppointment(); }}>
         <label>
           Appointment ID
