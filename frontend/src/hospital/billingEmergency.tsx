@@ -344,7 +344,7 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
         onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
-            <div className="emergency-triage-row"><DepartmentIcon department="reception"/><strong>Request …{item.id.slice(-4)}</strong><span className="owner-state">{item.state}</span><span>{item.assigned_priority?`Priority ${item.assigned_priority}`:item.reported_urgency}</span><time>{new Date(item.updated_at).toLocaleTimeString('en',{timeZone:'UTC',hour:'2-digit',minute:'2-digit'})} UTC</time></div>
+            <div className="emergency-triage-row" data-priority={item.assigned_priority??"unassigned"} data-state={item.state}><DepartmentIcon department="reception"/><strong>Request …{item.id.slice(-4)}</strong><span className="owner-state">{item.state}</span><span>{item.assigned_priority?`Priority ${item.assigned_priority}`:item.reported_urgency}</span><time>{new Date(item.updated_at).toLocaleTimeString('en',{timeZone:'UTC',hour:'2-digit',minute:'2-digit'})} UTC</time></div>
             <button aria-label={`Track request ${item.id}`} onClick={() => setSelected(item.id)}>
               Review request →
             </button>
@@ -365,27 +365,13 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
           const ownedClaim = !!userId && item.claimed_by_user_id === userId;
           return (
             <div className="emergency-case-layout">
-              <Facts
-                values={{
-                  "Request ID": item.id,
-                  State: item.state,
-                  "Reported urgency": item.reported_urgency,
-                  "Assigned priority": item.assigned_priority,
-                  "Created (UTC)": item.created_at,
-                  "Updated (UTC)": item.updated_at,
-                }}
-              />
-              {staff && (
-                <Facts
-                  values={{
-                    "Patient ID": item.patient_id,
-                    Description: item.description,
-                    "Synthetic contact": item.synthetic_contact,
-                    "Claimed by": item.claimed_by_user_id,
-                    "Claim expiry (UTC)": item.claim_expires_at,
-                  }}
-                />
-              )}
+              <header className="emergency-case-header"><DepartmentIcon department="reception"/><div><strong>Request …{item.id.slice(-4)}</strong><span className="owner-state" data-priority={item.assigned_priority??"unassigned"}>{item.state.replaceAll("_"," ")}</span><p>{item.assigned_priority?`Assigned priority ${item.assigned_priority}`:"Awaiting assigned priority"}</p></div><time>{new Date(item.updated_at).toLocaleString("en",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})} UTC</time></header>
+              <section className="emergency-brief"><h3>Request details</h3>{staff&&<p className="request-description">{item.description}</p>}
+                <Facts values={{"Reported urgency":item.reported_urgency,"Created (UTC)":item.created_at,"Last updated (UTC)":item.updated_at}}/>
+                {staff&&<Facts values={{"Contact":item.synthetic_contact,"Claim expiry (UTC)":item.claim_expires_at}}/>}
+                <details className="owner-identifiers"><summary>Request references</summary><Facts values={{"Request ID":item.id,...(staff?{"Patient ID":item.patient_id,"Claimed by":item.claimed_by_user_id}:{})}}/></details>
+                {terminal&&<p className="terminal-request">This request is {item.state}. No further workflow actions are available.</p>}
+              </section><aside className="emergency-actions"><h3>{staff?"Authorized actions":"Request actions"}</h3>
               {staff && !terminal && (
                 <CommandForm
                   title="Set priority"
@@ -470,6 +456,7 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
                   onSuccess={changed}
                 />
               )}
+              </aside>
             </div>
           );
         }}

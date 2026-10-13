@@ -294,3 +294,33 @@
  .reference-departments .billing-ledger-row .owner-state{justify-self:start;}
  .reference-departments .billing-tariff-desk{grid-column:1/-1;}
 }
+.emergency-case-header { display:flex; align-items:center; gap:15px; padding:14px; background:#efe2d2; border:1px solid #d8c3a9; }
+.emergency-case-header>.department-icon { width:40px;height:40px; }
+.emergency-case-header strong { font-size:20px;margin-right:12px; }
+.emergency-case-header time { margin-left:auto;font-size:11px; }
+.emergency-case-header p { margin:7px 0 0;font-size:12px; }
+.emergency-brief { min-width:0; }
+.request-description { padding:16px;background:#fcf7ed;border:1px solid #d7c4a8;font-size:15px;line-height:1.5; }
+.terminal-request { padding:12px;border-left:3px solid #698477;background:#e7ece0; }
+.emergency-actions { min-width:0; }
+.emergency-actions>.hospital-form { margin-bottom:12px; }
+.emergency-actions>h3,.emergency-brief>h3 { font-size:14px;margin-top:0; }
+.emergency-triage-row[data-priority="1"] .owner-state,.owner-state[data-priority="1"] { background:#f8d1c9;color:#9a160e; }
+.emergency-triage-row[data-priority="2"] .owner-state,.owner-state[data-priority="2"] { background:#f2dab2;color:#7e3b10; }
+@media(min-width:901px){
+ .reference-departments .department-page--emergency>.page-heading{background:#f3e6d2;border-radius:4px;}
+ .reference-departments .emergency-register,.reference-departments .emergency-active{background:#f5eadc;}
+ .reference-departments .emergency-case-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(230px,1fr);gap:16px;align-items:start;}
+ .reference-departments .emergency-case-header{grid-column:1/-1;}
+ .reference-departments .emergency-case-layout .hospital-facts{grid-template-columns:1fr 1fr;margin:10px 0;font-size:11px;}
+ .reference-departments .emergency-actions .hospital-form{padding:12px;background:#ecdfce;}
+ .reference-departments .emergency-register .hospital-item{border-left:0;border-bottom:1px solid #cfbaa1;border-radius:0;}
+ .reference-departments .emergency-register .hospital-item:has([data-state="submitted"]){border-left:3px solid #ac3822;background:#f8e2d8;}
+}
+@media(max-width:900px){.emergency-case-header{flex-wrap:wrap;}.emergency-case-header time{margin-left:0;}.emergency-case-header strong{font-size:17px;}}
+.reference-departments .emergency-actions .hospital-fields { grid-template-columns:1fr; gap:10px; }
+.reference-departments .emergency-actions .hospital-form textarea { min-height:68px; }
+.reference-departments .emergency-actions .hospital-form h3 { font-size:13px; margin-bottom:10px; }
+.reference-departments .emergency-actions .hospital-form button { margin-top:8px; }
+.reference-departments .emergency-actions .hospital-form label { font-size:11px; }
+.reference-departments .emergency-actions .hospital-form input { width:100%; }
