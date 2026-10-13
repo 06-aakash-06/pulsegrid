@@ -15,7 +15,9 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
  const route=location.pathname.split('/').at(-1) ?? 'dashboard';
  const department=departmentFor(workspace.basePath,route);
  const allowed=state.status==='authenticated'?workspaces.filter(w=>w.roles.some(r=>state.roleHints.includes(r))):[];
- const groups=directoryOrder.map(d=>({department:d,items:workspace.navigation.filter(p=>departmentFor(workspace.basePath,p.path)===d)})).filter(g=>g.items.length);
+ const navDepartment=(path:string)=>path==='appointments'?'reception':departmentFor(workspace.basePath,path);
+ const preferred=['dashboard','doctors','queue','pharmacy','billing','emergency','records','control-room'];
+ const groups=directoryOrder.map(d=>({department:d,items:workspace.navigation.filter(p=>navDepartment(p.path)===d).sort((a,b)=>(preferred.includes(a.path)?0:1)-(preferred.includes(b.path)?0:1))})).filter(g=>g.items.length);
  async function handleLogout(){setLogoutError(null);try{await logout();}catch{setLogoutError("The sign-out request could not be confirmed. This browser's access token was cleared, but the identity service did not confirm revocation.");}}
  useEffect(()=>{setMenuOpen(false); if(document.activeElement?.closest('.workspace-nav'))main.current?.focus();},[location.pathname]);
  useEffect(()=>{if(!menuOpen)return;const previous=document.activeElement as HTMLElement|null;sidebar.current?.querySelector<HTMLElement>('a, button')?.focus();const handler=(e:KeyboardEvent)=>{if(e.key==='Escape'){setMenuOpen(false);previous?.focus();} if(e.key==='Tab'){const nodes=Array.from(sidebar.current?.querySelectorAll<HTMLElement>('a,button')??[]);const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}};document.addEventListener('keydown',handler);return()=>document.removeEventListener('keydown',handler);},[menuOpen]);
@@ -25,10 +27,10 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   <aside ref={sidebar} className={`workspace-sidebar${menuOpen?' workspace-sidebar--open':''}`} aria-label="Hospital directory">
    <div className="directory-heading"><strong>PULSEGRID</strong><span>GENERAL HOSPITAL</span></div>
    <nav aria-label={`${workspace.roleLabel} navigation`} className="workspace-nav" id="workspace-navigation">
-    {groups.map((group,index)=><div className="directory-department" key={group.department}>
+    {groups.map((group)=><div className="directory-department" key={group.department}>
      {group.items.map((item,i)=><NavLink aria-label={item.label} end key={item.path} to={`${workspace.basePath}/${item.path}`} onClick={()=>setMenuOpen(false)} className={({isActive})=>`workspace-nav-link${isActive?' workspace-nav-link--active':''}${i?' directory-subroute':''}`}>
-      {!i && <><span className="directory-number">{String(index+1).padStart(2,'0')}</span><DepartmentIcon department={departmentFor(workspace.basePath,item.path)}/></>}
-      <span className="directory-copy"><strong>{i?item.label:departmentNames[departmentFor(workspace.basePath,item.path)]}</strong><small>{i?'':departmentDescriptions[departmentFor(workspace.basePath,item.path)]}</small></span><span className="directory-arrow" aria-hidden="true">→</span>
+      {!i && <><span className="directory-number">{String(directoryOrder.indexOf(group.department)+1).padStart(2,'0')}</span><DepartmentIcon department={navDepartment(item.path)}/></>}
+      <span className="directory-copy"><strong>{i?item.label:departmentNames[navDepartment(item.path)]}</strong><small>{i?'':departmentDescriptions[navDepartment(item.path)]}</small></span><span className="directory-arrow" aria-hidden="true">→</span>
      </NavLink>)}
     </div>)}
    </nav>

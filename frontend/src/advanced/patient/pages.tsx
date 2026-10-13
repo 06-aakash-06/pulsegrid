@@ -1,3 +1,6 @@
+import { lazy, Suspense } from "react";
+import { DepartmentIcon } from "../../design/DepartmentIcon";
+const PatientScanner = lazy(() => import("../../hospital/staffAdvanced/CheckinScanner").then(m=>({default:m.CheckinScanner})));
 import { WorkflowHistory } from "../shared/WorkflowHistory";
 import { CheckinQr } from "../shared/CheckinQr";
 import {
@@ -377,7 +380,8 @@ export function PatientCheckinPage({
   if (gate !== "ready") return <PatientGate state={gate} />;
   const activeIssueUrl = issue ? safeLandingUrl(issue) : null;
   return (
-    <div className="patient-workflow">
+    <div className="patient-workflow waiting-station">
+      <aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Check In Here</h2><p>Scan your secure QR code.</p><div className="scanner-frame"><Suspense fallback={<p role="status">Loading scanner…</p>}><PatientScanner disabled={confirmPending || issuePending} onScan={scan=>{setAppointmentId(scan.appointmentId);setManualToken(scan.token);setLanding(null);setInvalidLanding(false);setIssue(null);setActionError(null);setConfirmationKey(null);setResult(null);}}/></Suspense></div><strong>PulseGrid</strong><p>Review your appointment before confirming check-in.</p></aside>
       <section className="patient-workflow__panel" aria-labelledby="checkin-title">
         <h2 id="checkin-title">Secure QR check-in</h2>
         <p>Opening a QR link never checks you in. Confirm below to send the authenticated check-in command.</p>
@@ -504,7 +508,7 @@ export function PatientQueuePage() {
   const live = usePolling<QueueSnapshot>(api, `${sessionKey}:${selectedId}`, gate === "ready" && isId(selectedId), poll, 5000, mergeQueueSnapshot);
 
   if (gate !== "ready") return <PatientGate state={gate} />;
-  return <div className="patient-workflow">
+  return <div className="patient-workflow waiting-station queue-station"><aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Waiting Room</h2><p>Check in, then follow your queue status.</p><div className="kiosk-display"><DepartmentIcon department="appointments"/><span>Your place in the queue is confirmed by the service.</span></div><Link className="button" to="/patient/check-in">Scan QR / Check In →</Link><Link className="text-link" to="/patient/waitlist">View waitlist →</Link></aside>
     <section className="patient-workflow__panel" aria-labelledby="patient-queue-title">
       <h2 id="patient-queue-title">Your consultation queue</h2>
       {appointments.loading && <p role="status">Loading your appointments…</p>}

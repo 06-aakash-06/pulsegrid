@@ -1,4 +1,4 @@
-import { BrowserQRCodeReader } from "@zxing/browser";
+
 import { useEffect, useRef, useState } from "react";
 import { parseCheckinQr, type ScannedCheckin } from "./utils";
 
@@ -28,12 +28,17 @@ export function CheckinScanner({
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
   const [active, setActive] = useState(false);
+  const [starting,setStarting] = useState(false);
+  const mountedRef = useRef(true);
+  const generationRef = useRef(0);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [scannerMessage, setScannerMessage] = useState("");
 
   onScanRef.current = onScan;
 
   function stopCamera() {
+    generationRef.current += 1;
+    setStarting(false);
     if (timerRef.current !== null) window.clearTimeout(timerRef.current);
     timerRef.current = null;
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -43,13 +48,17 @@ export function CheckinScanner({
   }
 
   async function startCamera() {
+    if(starting || active || disabled)return;
+    const generation=++generationRef.current;
+    setStarting(true);
     const Detector = (window as BarcodeWindow).BarcodeDetector;
     if (!navigator.mediaDevices?.getUserMedia) {
+      setStarting(false);
       setScannerMessage("QR scanning is unavailable in this browser. Enter the appointment ID and token below.");
       return;
     }
     try {
-      const reader = new BrowserQRCodeReader();
+      const reader = Detector ? null : new (await import("@zxing/browser")).BrowserQRCodeReader();
       const scanner: BarcodeDetectorLike = Detector ? new Detector({ formats: ["qr_code"] }) : {
         async detect(video) {
           const canvas = document.createElement("canvas");
@@ -57,7 +66,7 @@ export function CheckinScanner({
           const context = canvas.getContext("2d");
           if (!context || !canvas.width || !canvas.height) return [];
           context.drawImage(video, 0, 0);
-          try { return [{ rawValue: reader.decodeFromCanvas(canvas).getText() }]; }
+          try { return [{ rawValue: reader!.decodeFromCanvas(canvas).getText() }]; }
           catch { return []; } // A frame without a readable code keeps scanning.
         },
       };
@@ -65,12 +74,15 @@ export function CheckinScanner({
         video: { facingMode: { ideal: "environment" } },
         audio: false,
       });
+      if(!mountedRef.current || generation!==generationRef.current){camera.getTracks().forEach(track=>track.stop());return;}
+      setStarting(false);
       streamRef.current = camera;
       setStream(camera);
       setActive(true);
       setScannerMessage("Point the camera at the patient's check-in QR code.");
       detectorRef.current = scanner;
     } catch {
+      if(!mountedRef.current || generation!==generationRef.current)return;
       stopCamera();
       setScannerMessage("Camera access is unavailable. Enter the appointment ID and token below.");
     }
@@ -127,10 +139,11 @@ export function CheckinScanner({
     };
   }, [stream]);
 
-  useEffect(() => () => {
+  useEffect(() => {mountedRef.current=true;return () => {
+    mountedRef.current=false;generationRef.current+=1;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     if (timerRef.current !== null) window.clearTimeout(timerRef.current);
-  }, []);
+  };}, []);
 
   return (
     <div className="staff-advanced-scanner">
@@ -142,7 +155,7 @@ export function CheckinScanner({
       {active ? (
         <button type="button" disabled={disabled} onClick={stopCamera}>Stop QR scanner</button>
       ) : (
-        <button type="button" disabled={disabled} onClick={() => void startCamera()}>Scan check-in QR</button>
+        <button type="button" disabled={disabled || starting} onClick={() => void startCamera()}>{starting ? "Opening camera…" : "Scan check-in QR"}</button>
       )}
     </div>
   );
