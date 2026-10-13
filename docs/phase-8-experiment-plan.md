@@ -19,11 +19,13 @@ volume.
   Traefik 0.25 CPU/128 MiB. Current Doctor, replica, PostgreSQL, Redis,
   RabbitMQ, Traefik, Prometheus and Tempo containers are running. Both Doctor
   containers and the owner data services report healthy.
-- All new HTTP requests are authenticated reads against synthetic Doctor data.
-  No appointment, clinical, inventory, invoice, payment or emergency writes
-  are part of the load matrix. The existing private Phase 3 fixture supplies a
-  synthetic patient account and Doctor ID; the harness reads its credentials
-  without printing or persisting access tokens. It logs out after each run.
+- All new workload HTTP requests are authenticated reads against synthetic
+  Doctor data. No appointment, clinical, inventory, invoice, payment or
+  emergency writes are part of the load matrix. The existing private Phase 3
+  fixture supplies a synthetic patient account and Doctor ID; the separate
+  private Phase 2.9 fixture supplies the existing admin account used only for
+  audited Surge Mode transitions. The harness reads credentials without
+  printing or persisting access tokens and logs out after each run.
 - No database, Redis, RabbitMQ, Prometheus, Tempo or Grafana volume is reset.
   The Doctor scale comparison temporarily changes only the Traefik file
   provider's Doctor upstream list, then restores the original file byte for
