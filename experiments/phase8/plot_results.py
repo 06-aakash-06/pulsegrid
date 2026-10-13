@@ -8,6 +8,7 @@ import csv
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 from pathlib import Path
 import statistics
 from typing import Any, Iterable
@@ -714,19 +715,386 @@ def generate_phase8_1_graphs(run_id: str) -> dict[str, Any]:
     return manifest
 
 
+def phase8_2_observations(run_dir: Path) -> list[dict[str, Any]]:
+    observations: list[dict[str, Any]] = []
+    expected = [f"r{replicas}-c{concurrency}-t1" for replicas, concurrency in ((1, 4), (2, 4), (1, 16), (2, 16), (1, 64), (2, 64))]
+    for case_id in expected:
+        summary = read_json(run_dir / "summaries" / f"{case_id}.json")
+        requests = read_csv(run_dir / "requests" / f"{case_id}.csv")
+        resources = read_csv(run_dir / "resources" / f"{case_id}.csv")
+        classes: dict[str, int] = {}
+        for row in requests:
+            classification = row.get("classification", "")
+            classes[classification] = classes.get(classification, 0) + 1
+        if len(requests) != int(summary.get("attempted", -1)):
+            raise ValueError(f"raw request count does not match summary for {case_id}")
+        if classes != summary.get("classification_counts", {}):
+            raise ValueError(f"raw response classes do not match summary for {case_id}")
+        if len(requests) != sum(classes.values()):
+            raise ValueError(f"attempted request outcomes do not reconcile for {case_id}")
+        try:
+            replica_text, concurrency_text, trial_text = case_id.split("-")
+            expected_replicas = int(replica_text[1:])
+            expected_concurrency = int(concurrency_text[1:])
+            expected_trial = int(trial_text[1:])
+        except (ValueError, IndexError) as error:
+            raise ValueError(f"invalid Phase 8.2 case identifier: {case_id}") from error
+        if (
+            int(summary.get("replicas", -1)) != expected_replicas
+            or int(summary.get("concurrency", -1)) != expected_concurrency
+            or int(summary.get("trial", -1)) != expected_trial
+        ):
+            raise ValueError(f"trial metadata does not match the matrix cell for {case_id}")
+        duration = float(summary.get("measurement_seconds", 0.0))
+        expected_rps = int(summary.get("successful", 0)) / duration if duration > 0 else 0.0
+        if abs(float(summary.get("successful_rps", -1.0)) - expected_rps) > 1e-6:
+            raise ValueError(f"successful RPS does not match measured duration for {case_id}")
+        if (
+            summary.get("partial_measurement")
+            or not summary.get("distributed_tracing_disabled")
+            or abs(duration - 30.0) > 0.1
+        ):
+            raise ValueError(f"trial metadata is incomplete or tracing-enabled for {case_id}")
+        required_containers = {
+            "pulsegrid-doctor-1",
+            "pulsegrid-doctor_replica-1",
+            "pulsegrid-postgres-1",
+            "pulsegrid-redis-1",
+            "pulsegrid-traefik-1",
+            "pulsegrid-prometheus-1",
+            "pulsegrid-grafana-1",
+            "docker-vm",
+        }
+        observed_containers = {row.get("container") for row in resources if row.get("phase") == "measurement"}
+        if not required_containers.issubset(observed_containers):
+            raise ValueError(f"resource measurements are incomplete for {case_id}")
+        observations.append(
+            {
+                "case_id": case_id,
+                "summary": summary,
+                "requests": requests,
+                "resources": resources,
+            }
+        )
+    if len(observations) != 6:
+        raise ValueError("Phase 8.2 requires exactly six completed trial summaries")
+    return observations
+
+
+def phase8_2_scaling(observations: list[dict[str, Any]]) -> dict[str, Any]:
+    by_cell = {
+        (int(item["summary"]["replicas"]), int(item["summary"]["concurrency"])): item["summary"]
+        for item in observations
+    }
+    result: dict[str, Any] = {}
+    for concurrency in (4, 16, 64):
+        t1 = float(by_cell[(1, concurrency)]["successful_rps"])
+        t2 = float(by_cell[(2, concurrency)]["successful_rps"])
+        result[str(concurrency)] = {
+            "concurrency": concurrency,
+            "one_replica_successful_rps": t1,
+            "two_replica_successful_rps": t2,
+            "throughput_ratio_t2_over_t1": t2 / t1 if t1 else None,
+            "scaling_efficiency_percent": 100.0 * t2 / (2.0 * t1) if t1 else None,
+        }
+    return result
+
+
+def plot_phase8_2_throughput(output: Path, observations: list[dict[str, Any]]) -> None:
+    fig, ax = plt.subplots(figsize=(8.6, 5.0))
+    styles = {
+        1: {"color": COLORS["blue"], "marker": "o", "label": "1 Doctor replica"},
+        2: {"color": COLORS["orange"], "marker": "^", "label": "2 Doctor replicas"},
+    }
+    for replicas, style in styles.items():
+        rows = sorted(
+            (item["summary"] for item in observations if int(item["summary"]["replicas"]) == replicas),
+            key=lambda row: int(row["concurrency"]),
+        )
+        ax.plot(
+            [int(row["concurrency"]) for row in rows],
+            [float(row["successful_rps"]) for row in rows],
+            color=style["color"],
+            marker=style["marker"],
+            linewidth=2,
+            markersize=7,
+            label=style["label"],
+        )
+    ax.set_xscale("log", base=2)
+    ax.set_xticks([4, 16, 64], ["4", "16", "64"])
+    ax.set_xlabel("Concurrent authenticated clients")
+    ax.set_ylabel("Successful Doctor responses per second (RPS)")
+    ax.grid(True, alpha=0.25)
+    ax.legend(frameon=False)
+    save(
+        fig,
+        output / "01_phase8_2_successful_throughput.svg",
+        "Phase 8.2 authenticated Doctor throughput; distributed tracing disabled",
+        "One 30-second trial per condition. Limited statistical evidence; tracing-disabled results do not represent the fully instrumented deployment.",
+    )
+
+
+def plot_phase8_2_latency(output: Path, observations: list[dict[str, Any]]) -> None:
+    fig, (mean_ax, p95_ax) = plt.subplots(1, 2, figsize=(11.0, 4.8), sharex=True)
+    styles = {
+        1: {"color": COLORS["blue"], "marker": "o", "label": "1 Doctor replica"},
+        2: {"color": COLORS["orange"], "marker": "^", "label": "2 Doctor replicas"},
+    }
+    for replicas, style in styles.items():
+        rows = sorted(
+            (item["summary"] for item in observations if int(item["summary"]["replicas"]) == replicas),
+            key=lambda row: int(row["concurrency"]),
+        )
+        for axis, key in ((mean_ax, "mean"), (p95_ax, "p95")):
+            values = [row["success_latency_ms"].get(key) for row in rows]
+            axis.plot(
+                [int(row["concurrency"]) for row in rows],
+                [float(value) if value is not None else math.nan for value in values],
+                color=style["color"],
+                marker=style["marker"],
+                linewidth=2,
+                label=style["label"],
+            )
+    for axis, title in ((mean_ax, "Mean successful-request latency"), (p95_ax, "P95 successful-request latency")):
+        axis.set_xscale("log", base=2)
+        axis.set_xticks([4, 16, 64], ["4", "16", "64"])
+        axis.set_xlabel("Concurrent authenticated clients")
+        axis.set_ylabel("Latency (ms)")
+        axis.set_title(title)
+        axis.grid(True, alpha=0.25)
+    p95_ax.legend(frameon=False, fontsize=8)
+    save(
+        fig,
+        output / "02_phase8_2_success_latency.svg",
+        "Phase 8.2 successful Doctor request latency; distributed tracing disabled",
+        "Latency includes only HTTP 2xx responses. One 30-second trial per condition; limited statistical evidence.",
+    )
+
+
+def plot_phase8_2_error_rates(output: Path, observations: list[dict[str, Any]]) -> None:
+    fig, axes = plt.subplots(1, 3, figsize=(13.0, 4.7), sharex=True)
+    outcomes = (
+        ("http_429", "HTTP 429", COLORS["orange"]),
+        ("http_5xx", "HTTP 5xx", COLORS["purple"]),
+        ("timeouts", "Timeouts", COLORS["gray"]),
+    )
+    styles = {
+        1: {"color": COLORS["blue"], "marker": "o", "label": "1 replica"},
+        2: {"color": COLORS["orange"], "marker": "^", "label": "2 replicas"},
+    }
+    for axis, (field, title, color) in zip(axes, outcomes):
+        for replicas, style in styles.items():
+            rows = sorted(
+                (item["summary"] for item in observations if int(item["summary"]["replicas"]) == replicas),
+                key=lambda row: int(row["concurrency"]),
+            )
+            rates = [
+                100.0 * float(row.get(field, 0)) / max(1, int(row["attempted"]))
+                for row in rows
+            ]
+            axis.plot(
+                [int(row["concurrency"]) for row in rows],
+                rates,
+                color=style["color"],
+                marker=style["marker"],
+                linewidth=2,
+                label=style["label"],
+            )
+        axis.set_xscale("log", base=2)
+        axis.set_xticks([4, 16, 64], ["4", "16", "64"])
+        axis.set_xlabel("Concurrent clients")
+        axis.set_ylabel("Attempted requests (%)")
+        axis.set_title(title)
+        axis.grid(True, alpha=0.25)
+    axes[-1].legend(frameon=False, fontsize=8)
+    save(
+        fig,
+        output / "03_phase8_2_rejection_and_failure_rates.svg",
+        "Phase 8.2 HTTP rejection and failure rates; distributed tracing disabled",
+        "Each rate is outcome count divided by attempted requests. Timeout requests have no HTTP response. One 30-second trial per condition.",
+    )
+
+
+def plot_phase8_2_replica_scaling(
+    output: Path,
+    observations: list[dict[str, Any]],
+    scaling: dict[str, Any],
+) -> None:
+    fig, (throughput_ax, efficiency_ax) = plt.subplots(
+        1, 2, figsize=(11.8, 4.8), gridspec_kw={"width_ratios": [1.2, 1]}
+    )
+    concurrency = [4, 16, 64]
+    x_values = list(range(len(concurrency)))
+    width = 0.34
+    by_cell = {
+        (int(item["summary"]["replicas"]), int(item["summary"]["concurrency"])): item["summary"]
+        for item in observations
+    }
+    one_values = [float(by_cell[(1, level)]["successful_rps"]) for level in concurrency]
+    two_values = [float(by_cell[(2, level)]["successful_rps"]) for level in concurrency]
+    throughput_ax.bar(
+        [value - width / 2 for value in x_values], one_values, width,
+        color=COLORS["blue"], label="1 Doctor replica",
+    )
+    throughput_ax.bar(
+        [value + width / 2 for value in x_values], two_values, width,
+        color=COLORS["orange"], label="2 Doctor replicas",
+    )
+    throughput_ax.set_xticks(x_values, [str(value) for value in concurrency])
+    throughput_ax.set_xlabel("Concurrent authenticated clients")
+    throughput_ax.set_ylabel("Successful responses per second (RPS)")
+    throughput_ax.set_title("Successful throughput")
+    throughput_ax.grid(axis="y", alpha=0.25)
+    throughput_ax.legend(frameon=False, fontsize=8)
+    efficiencies = [
+        float(scaling[str(level)]["scaling_efficiency_percent"])
+        if scaling[str(level)]["scaling_efficiency_percent"] is not None
+        else math.nan
+        for level in concurrency
+    ]
+    efficiency_ax.plot(concurrency, efficiencies, color=COLORS["purple"], marker="D", linewidth=2)
+    efficiency_ax.set_xscale("log", base=2)
+    efficiency_ax.set_xticks(concurrency, [str(value) for value in concurrency])
+    efficiency_ax.set_xlabel("Concurrent authenticated clients")
+    efficiency_ax.set_ylabel("Scaling efficiency (%)")
+    efficiency_ax.set_title("T2 / (2 × T1)")
+    efficiency_ax.grid(True, alpha=0.25)
+    save(
+        fig,
+        output / "04_phase8_2_replica_scaling.svg",
+        "Phase 8.2 one-versus-two-Doctor replica comparison; distributed tracing disabled",
+        "Scaling efficiency = two-replica successful RPS / (2 × one-replica successful RPS). Single-trial evidence only.",
+    )
+
+
+def verify_phase8_2_graph_manifest(run_id: str) -> dict[str, Any]:
+    run_dir = ROOT / "experiments/phase8/results" / run_id
+    output = run_dir / "graphs"
+    manifest = read_json(output / "plot_manifest.json")
+    for item in manifest.get("input_hashes", []):
+        path = ROOT / item["file"]
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+            raise ValueError(f"plot input hash verification failed: {item['file']}")
+    for item in manifest.get("graphs", {}).values():
+        for key in ("svg_file", "png_file"):
+            path = output / item[key]
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != item[f"sha256_{key.split('_')[0]}"]:
+                raise ValueError(f"plot output hash verification failed: {item[key]}")
+    if len(manifest.get("graphs", {})) != 4 or manifest.get("status") != "generated":
+        raise ValueError("Phase 8.2 plot manifest does not describe all four generated graphs")
+    return {"valid": True, "graph_count": 4, "input_count": len(manifest.get("input_hashes", []))}
+
+
+def generate_phase8_2_graphs(run_id: str) -> dict[str, Any]:
+    run_dir = ROOT / "experiments/phase8/results" / run_id
+    output = run_dir / "graphs"
+    output.mkdir(parents=True, exist_ok=True)
+    observations = phase8_2_observations(run_dir)
+    scaling = phase8_2_scaling(observations)
+    plot_phase8_2_throughput(output, observations)
+    plot_phase8_2_latency(output, observations)
+    plot_phase8_2_error_rates(output, observations)
+    plot_phase8_2_replica_scaling(output, observations, scaling)
+    normalize_svg_whitespace(output)
+    graph_files = {
+        "1": "01_phase8_2_successful_throughput.svg",
+        "2": "02_phase8_2_success_latency.svg",
+        "3": "03_phase8_2_rejection_and_failure_rates.svg",
+        "4": "04_phase8_2_replica_scaling.svg",
+    }
+    input_paths = [
+        run_dir / "manifest.json",
+        run_dir / "progress.json",
+        run_dir / "summaries/matrix_summary.json",
+    ]
+    for item in observations:
+        case_id = item["case_id"]
+        input_paths.extend(
+            (
+                run_dir / "summaries" / f"{case_id}.json",
+                run_dir / "requests" / f"{case_id}.csv",
+                run_dir / "resources" / f"{case_id}.csv",
+            )
+        )
+    manifest = {
+        "run_id": run_id,
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "generated",
+        "label": "Authenticated HTTP scalability, distributed tracing disabled.",
+        "matrix": {
+            "planned_cases": 6,
+            "completed_cases": [item["case_id"] for item in observations],
+            "single_trial_statistical_limit": True,
+        },
+        "scaling": scaling,
+        "generated_from": [str(path.relative_to(ROOT)) for path in input_paths],
+        "input_hashes": [
+            {
+                "file": str(path.relative_to(ROOT)),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+            for path in input_paths
+        ],
+        "graphs": {
+            key: {
+                "svg_file": value,
+                "png_file": str(Path(value).with_suffix(".png")),
+                "status": "generated",
+                "sha256_svg": hashlib.sha256((output / value).read_bytes()).hexdigest(),
+                "sha256_png": hashlib.sha256((output / Path(value).with_suffix(".png")).read_bytes()).hexdigest(),
+            }
+            for key, value in graph_files.items()
+        },
+        "trial_data_quality": [
+            {
+                "case_id": item["case_id"],
+                "attempted": item["summary"]["attempted"],
+                "classification_counts": item["summary"]["classification_counts"],
+                "successful_rps": item["summary"]["successful_rps"],
+                "measurement_seconds": item["summary"]["measurement_seconds"],
+                "resource_sample_rows": len(item["resources"]),
+            }
+            for item in observations
+        ],
+    }
+    manifest_path = output / "plot_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest["hash_validation"] = verify_phase8_2_graph_manifest(run_id)
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(manifest, indent=2, sort_keys=True))
+    return manifest
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run-id", default=DEFAULT_RUN)
+    parser.add_argument("--run-id")
     parser.add_argument(
         "--phase8-1-finalization",
         action="store_true",
         help="generate only the four Phase 8.1 HTTP matrix graphs for the selected result set",
     )
+    parser.add_argument(
+        "--phase8-2-scalability",
+        action="store_true",
+        help="generate only the four Phase 8.2 tracing-disabled Doctor scalability graphs",
+    )
     args = parser.parse_args()
-    if args.phase8_1_finalization:
-        generate_phase8_1_graphs(args.run_id)
+    if args.phase8_1_finalization and args.phase8_2_scalability:
+        parser.error("Phase 8.1 and Phase 8.2 graph modes are mutually exclusive")
+    run_id = args.run_id or (
+        "phase8-2-20261013-run1"
+        if args.phase8_2_scalability
+        else "phase8-1-20261013-run3"
+        if args.phase8_1_finalization
+        else DEFAULT_RUN
+    )
+    if args.phase8_2_scalability:
+        generate_phase8_2_graphs(run_id)
         return 0
-    run_dir = ROOT / "experiments/phase8/results" / args.run_id
+    if args.phase8_1_finalization:
+        generate_phase8_1_graphs(run_id)
+        return 0
+    run_dir = ROOT / "experiments/phase8/results" / run_id
     output = run_dir / "graphs"
     output.mkdir(parents=True, exist_ok=True)
 
@@ -748,9 +1116,9 @@ def main() -> int:
             "experiments/phase4/rate_limiter/results/redis7-{low,medium,high}/summary.csv",
             "experiments/phase4/key_value_cache/results/{low,medium,high}-final/summary.csv",
             "experiments/phase4/consistent_hashing/results/high-404/movement.csv",
-            f"experiments/phase8/results/{args.run_id}/summaries/l1-c4-t1.json",
-            f"experiments/phase8/results/{args.run_id}/tempo/stability_samples.csv",
-            f"experiments/phase8/results/{args.run_id}/summaries/historical_phase6.json",
+            f"experiments/phase8/results/{run_id}/summaries/l1-c4-t1.json",
+            f"experiments/phase8/results/{run_id}/tempo/stability_samples.csv",
+            f"experiments/phase8/results/{run_id}/summaries/historical_phase6.json",
         ],
         "graphs": {
             "1": {"file": "01_phase4_admission_throughput.svg", "status": "generated", "scope": "Phase 4 rate-limiter component; not hospital HTTP throughput"},

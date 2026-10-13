@@ -11,6 +11,7 @@ from run_matrix import (
     benchmark_route_upstream_counts,
     guardrail_reason,
     load_progress,
+    matrix_summary,
     mark_case_started,
     profile_replica_deltas,
 )
@@ -124,6 +125,77 @@ class MatrixHelpersTests(unittest.TestCase):
         ]
         server_error_stop = guardrail_reason(errors, [], before, after)
         self.assertIn("5xx", server_error_stop or "")
+
+    def test_three_consecutive_high_docker_cpu_samples_stop_safely(self):
+        resources = [
+            {
+                "container": "docker-vm",
+                "phase": "measurement",
+                "sampled_utc": f"2026-10-13T10:00:0{second}+00:00",
+                "cpu_percent": 360.0,
+                "cpu_limit_percent": 400.0,
+            }
+            for second in range(3)
+        ]
+        result = guardrail_reason(
+            [],
+            resources,
+            {},
+            {},
+        )
+        self.assertIn("Docker VM CPU", result or "")
+
+    def test_three_consecutive_high_host_load_samples_stop_safely(self):
+        resources = [
+            {
+                "container": "mac-host",
+                "phase": "measurement",
+                "sampled_utc": f"2026-10-13T10:00:0{second}+00:00",
+                "host_load_1m": 10.8,
+                "host_cpu_count": 12,
+            }
+            for second in range(3)
+        ]
+        result = guardrail_reason([], resources, {}, {})
+        self.assertIn("macOS one-minute load", result or "")
+
+    def test_phase82_matrix_summary_marks_single_trial_as_limited_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            (output / "summaries").mkdir()
+            for replicas in (1, 2):
+                for concurrency, throughput in ((4, 100.0), (16, 80.0), (64, 50.0)):
+                    summary = {
+                        "replicas": replicas,
+                        "concurrency": concurrency,
+                        "successful_rps": throughput * replicas / 2,
+                        "attempted_rps": throughput * replicas / 2,
+                        "admitted_rps": throughput * replicas / 2,
+                        "success_latency_ms": {"mean": 30.0 / replicas, "p95": 80.0 / replicas},
+                        "rejection_percent": 0.0,
+                        "http_5xx": 0,
+                        "completed_http_responses": 1000,
+                    }
+                    (output / "summaries" / f"r{replicas}-c{concurrency}-t1.json").write_text(
+                        json.dumps(summary)
+                    )
+            result = matrix_summary(output, trial_numbers=(1,))
+            self.assertTrue(result["limited_statistical_evidence"])
+            self.assertEqual(result["trial_count"], 1)
+            self.assertAlmostEqual(
+                result["scaling_comparison"]["low"]["throughput_improvement_ratio"], 2.0
+            )
+            self.assertAlmostEqual(
+                result["scaling_comparison"]["low"]["scaling_efficiency_percent"], 100.0
+            )
+
+    def test_tracing_free_static_config_keeps_metrics_and_dynamic_routes(self):
+        root = Path(__file__).resolve().parents[2]
+        config = (root / "infra/traefik/traefik.phase8-benchmark.yaml").read_text()
+        self.assertIn("metrics:", config)
+        self.assertIn("entryPoint: metrics", config)
+        self.assertIn("filename: /etc/traefik/routes.yaml", config)
+        self.assertNotIn("\ntracing:", config)
 
     def test_progress_prevents_repeating_started_trial(self):
         with tempfile.TemporaryDirectory() as directory:

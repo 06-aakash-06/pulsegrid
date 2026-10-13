@@ -64,8 +64,14 @@ REQUIRED_CONTAINERS = (
     "pulsegrid-tempo-1",
 )
 RESOURCE_CONTAINERS = (
+    "patient",
     "doctor",
     "doctor_replica",
+    "appointment",
+    "records",
+    "pharmacy",
+    "billing",
+    "emergency",
     "postgres",
     "redis",
     "rabbitmq",
@@ -76,7 +82,33 @@ RESOURCE_CONTAINERS = (
     "otel-collector",
     "blackbox",
 )
+PHASE82_REQUIRED_CONTAINERS = tuple(
+    name for name in REQUIRED_CONTAINERS if name != "pulsegrid-tempo-1"
+) + (
+    "pulsegrid-prometheus-1",
+    "pulsegrid-grafana-1",
+    "pulsegrid-blackbox-1",
+)
+PHASE82_API_CONTAINERS = {
+    "patient": "pulsegrid-patient-1",
+    "doctor": "pulsegrid-doctor-1",
+    "doctor_replica": "pulsegrid-doctor_replica-1",
+    "appointment": "pulsegrid-appointment-1",
+    "records": "pulsegrid-records-1",
+    "pharmacy": "pulsegrid-pharmacy-1",
+    "billing": "pulsegrid-billing-1",
+    "emergency": "pulsegrid-emergency-1",
+}
+PHASE82_REPLICAS = (1, 2)
+PHASE82_CONCURRENCIES = (4, 16, 64)
+PHASE82_CASES = ((1, 4), (2, 4), (1, 16), (2, 16), (1, 64), (2, 64))
+PHASE82_CPU_STOP_FRACTION = 0.90
+PHASE82_CPU_STOP_CONSECUTIVE_SAMPLES = 3
+PHASE82_HOST_FREE_MEMORY_STOP_PERCENT = 10.0
+PHASE82_COMPOSE_FILE = "compose.phase8-tracing-free.yaml"
+PHASE82_TRAEFIK_CONFIG = ROOT / "infra/traefik/traefik.phase8-benchmark.yaml"
 PROM_QUERIES = {
+    "all_targets": "up",
     "api_targets": 'sum by (job, service, replica_source) (up{job=~"pulsegrid_api|pulsegrid_readiness"})',
     "doctor_http": 'sum by (replica_source, route, status_class) (pulsegrid_http_requests_total{service="doctor"})',
     "doctor_admission": 'sum by (replica_source, policy, class, state, outcome) (pulsegrid_http_admission_requests_total{owner="doctor"})',
@@ -201,6 +233,11 @@ def container_snapshot(names: Sequence[str] = REQUIRED_CONTAINERS) -> dict[str, 
     return {name: inspect_container(name) for name in names}
 
 
+def trial_container_snapshot(tracing_disabled: bool) -> dict[str, dict[str, Any]]:
+    names = PHASE82_REQUIRED_CONTAINERS if tracing_disabled else REQUIRED_CONTAINERS
+    return container_snapshot(names)
+
+
 def assert_core_healthy(snapshot: Mapping[str, Mapping[str, Any]]) -> None:
     unhealthy = [
         name
@@ -240,13 +277,16 @@ def capture_host_context() -> dict[str, Any]:
         "rabbitmq_version": run_command(
             "docker", "exec", "pulsegrid-rabbitmq-1", "rabbitmq-diagnostics", "server_version"
         ),
-        "containers": container_snapshot(),
+        "containers": container_snapshot(
+            (*REQUIRED_CONTAINERS, "pulsegrid-prometheus-1", "pulsegrid-grafana-1", "pulsegrid-otel-collector-1", "pulsegrid-blackbox-1")
+        ),
     }
 
 
 def capture_docker_pressure() -> dict[str, Any]:
     raw = run_command("docker", "stats", "--no-stream", "--format", "{{json .}}")
     docker_vm_memory = int(run_command("docker", "info", "--format", "{{.MemTotal}}"))
+    docker_vm_cpus = int(run_command("docker", "info", "--format", "{{.NCPU}}"))
     pulsegrid: list[dict[str, Any]] = []
     aggregate_memory = 0
     aggregate_cpu = 0.0
@@ -288,6 +328,7 @@ def capture_docker_pressure() -> dict[str, Any]:
         "docker_vm_memory_limit_bytes": docker_vm_memory,
         "docker_vm_memory_used_bytes": aggregate_memory,
         "docker_vm_memory_percent": 100.0 * aggregate_memory / docker_vm_memory,
+        "docker_vm_cpu_count": docker_vm_cpus,
         "docker_container_cpu_percent_sum": aggregate_cpu,
         "pulsegrid_container_samples": pulsegrid,
     }
@@ -395,8 +436,12 @@ class DoctorRoute:
 
 
 class DockerStatsSampler:
-    def __init__(self, interval_seconds: float = 2.0):
+    def __init__(self, interval_seconds: float = 2.0, *, tracing_disabled: bool = False):
         self.interval_seconds = interval_seconds
+        self.tracing_disabled = tracing_disabled
+        self.resource_containers = set(RESOURCE_CONTAINERS)
+        if tracing_disabled:
+            self.resource_containers.difference_update({"tempo", "otel-collector"})
         self.rows: list[dict[str, Any]] = []
         self.phase = "setup"
         self.task: asyncio.Task[None] | None = None
@@ -405,6 +450,11 @@ class DockerStatsSampler:
         self.stop_reason: str | None = None
         self.tempo_restart_baseline: int | None = None
         self.docker_vm_memory_bytes: int | None = None
+        self.docker_vm_cpus: int | None = None
+        self.host_memory_bytes: int | None = None
+        self.host_cpu_count: int | None = None
+        self.high_cpu_samples = 0
+        self.high_host_load_samples = 0
 
     def _request_stop(self, reason: str) -> None:
         if self.stop_reason is None:
@@ -448,11 +498,10 @@ class DockerStatsSampler:
             self._request_stop("Docker resource sampling failed")
             return
         now = utc_now()
-        selected = set(RESOURCE_CONTAINERS)
+        selected = self.resource_containers
         docker_memory = 0
         docker_cpu = 0.0
         docker_memory_samples = 0
-        tempo_row_seen = False
         for line in stdout.decode("utf-8", errors="replace").splitlines():
             try:
                 item = json.loads(line)
@@ -489,12 +538,8 @@ class DockerStatsSampler:
                     "memory_percent": memory_percent,
                 }
             )
-            if service == "tempo":
-                tempo_row_seen = True
             if memory_percent is not None and memory_percent >= 90.0:
                 self._request_stop(f"{name} reached 90% of its container memory limit")
-        if self.phase in ("warmup", "measurement") and not tempo_row_seen:
-            self._request_stop("Tempo was absent from Docker resource samples")
         if docker_memory_samples and self.docker_vm_memory_bytes:
             vm_percent = 100.0 * docker_memory / self.docker_vm_memory_bytes
             self.rows.append(
@@ -503,6 +548,7 @@ class DockerStatsSampler:
                     "phase": self.phase,
                     "container": "docker-vm",
                     "cpu_percent": docker_cpu,
+                    "cpu_limit_percent": (self.docker_vm_cpus or 0) * 100.0,
                     "memory_used_bytes": docker_memory,
                     "memory_limit_bytes": self.docker_vm_memory_bytes,
                     "memory_percent": vm_percent,
@@ -510,7 +556,52 @@ class DockerStatsSampler:
             )
             if vm_percent >= 90.0:
                 self._request_stop("Docker VM reached 90% of configured memory")
-        if self.tempo_restart_baseline is not None:
+            cpu_limit = (self.docker_vm_cpus or 0) * 100.0 * PHASE82_CPU_STOP_FRACTION
+            if (
+                self.tracing_disabled
+                and self.phase in ("warmup", "measurement")
+                and cpu_limit > 0
+                and docker_cpu >= cpu_limit
+            ):
+                self.high_cpu_samples += 1
+            else:
+                self.high_cpu_samples = 0
+            if self.high_cpu_samples >= PHASE82_CPU_STOP_CONSECUTIVE_SAMPLES:
+                self._request_stop("Docker VM CPU remained at or above 90% of its allocated CPUs")
+        host_free_percent = (
+            await asyncio.to_thread(capture_mac_memory_free_percent)
+            if self.tracing_disabled
+            else None
+        )
+        if self.tracing_disabled and host_free_percent is not None and self.host_memory_bytes:
+            host_used_percent = 100.0 - host_free_percent
+            try:
+                host_load_1m = os.getloadavg()[0]
+            except (AttributeError, OSError):
+                host_load_1m = None
+            self.rows.append(
+                {
+                    "sampled_utc": now,
+                    "phase": self.phase,
+                    "container": "mac-host",
+                    "cpu_percent": None,
+                    "host_load_1m": host_load_1m,
+                    "host_cpu_count": self.host_cpu_count,
+                    "memory_used_bytes": int(self.host_memory_bytes * host_used_percent / 100.0),
+                    "memory_limit_bytes": self.host_memory_bytes,
+                    "memory_percent": host_used_percent,
+                }
+            )
+            if host_free_percent < PHASE82_HOST_FREE_MEMORY_STOP_PERCENT:
+                self._request_stop("macOS free memory fell below 10%")
+            load_limit = (self.host_cpu_count or 0) * PHASE82_CPU_STOP_FRACTION
+            if host_load_1m is not None and load_limit > 0 and host_load_1m >= load_limit:
+                self.high_host_load_samples += 1
+            else:
+                self.high_host_load_samples = 0
+            if self.high_host_load_samples >= PHASE82_CPU_STOP_CONSECUTIVE_SAMPLES:
+                self._request_stop("macOS one-minute load remained at or above 90% of host CPUs")
+        if self.tempo_restart_baseline is not None and not self.tracing_disabled:
             try:
                 state_text, restart_text = run_command(
                     "docker", "inspect", "--format", "{{json .State}}|{{.RestartCount}}", "pulsegrid-tempo-1"
@@ -537,10 +628,13 @@ class DockerStatsSampler:
             self.docker_vm_memory_bytes = int(
                 run_command("docker", "info", "--format", "{{.MemTotal}}")
             )
+            self.docker_vm_cpus = int(run_command("docker", "info", "--format", "{{.NCPU}}"))
+            self.host_memory_bytes = int(run_command("sysctl", "-n", "hw.memsize"))
+            self.host_cpu_count = os.cpu_count()
         except Exception as error:
             self.errors.append(f"Docker VM capacity sampling failed: {type(error).__name__}")
             self._request_stop("Docker VM capacity sampling failed")
-        if before is not None:
+        if before is not None and not self.tracing_disabled:
             tempo = before.get("pulsegrid-tempo-1", {})
             self.tempo_restart_baseline = int(tempo.get("restart_count", 0))
         self.task = asyncio.create_task(self._run())
@@ -558,6 +652,9 @@ class DockerStatsSampler:
             "phase",
             "container",
             "cpu_percent",
+            "cpu_limit_percent",
+            "host_load_1m",
+            "host_cpu_count",
             "memory_used_bytes",
             "memory_limit_bytes",
             "memory_percent",
@@ -584,6 +681,10 @@ def resource_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "samples": len(samples),
             "cpu_percent_mean": sum(cpu) / len(cpu) if cpu else None,
             "cpu_percent_max": max(cpu) if cpu else None,
+            "cpu_limit_percent": next(
+                (row.get("cpu_limit_percent") for row in samples if row.get("cpu_limit_percent")),
+                None,
+            ),
             "memory_bytes_mean": sum(memory) / len(memory) if memory else None,
             "memory_bytes_max": max(memory) if memory else None,
             "memory_limit_bytes": next(
@@ -593,6 +694,14 @@ def resource_summary(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             "memory_percent_max": max(
                 (float(row["memory_percent"]) for row in samples if row.get("memory_percent") is not None),
                 default=None,
+            ),
+            "host_load_1m_max": max(
+                (float(row["host_load_1m"]) for row in samples if row.get("host_load_1m") is not None),
+                default=None,
+            ),
+            "host_cpu_count": next(
+                (row.get("host_cpu_count") for row in samples if row.get("host_cpu_count")),
+                None,
             ),
         }
     return result
@@ -609,6 +718,44 @@ def guardrail_reason(
         for item in resources
     ):
         return "a sampled container reached 90% of its memory limit"
+    vm_cpu = sorted(
+        (
+            str(item.get("sampled_utc", "")),
+            float(item["cpu_percent"]),
+            float(item.get("cpu_limit_percent") or 0.0),
+        )
+        for item in resources
+        if item.get("container") == "docker-vm"
+        and item.get("phase") in ("warmup", "measurement")
+        and item.get("cpu_percent") is not None
+    )
+    high_cpu_count = 0
+    for _, cpu_percent, cpu_limit_percent in vm_cpu:
+        if cpu_limit_percent > 0 and cpu_percent >= PHASE82_CPU_STOP_FRACTION * cpu_limit_percent:
+            high_cpu_count += 1
+            if high_cpu_count >= PHASE82_CPU_STOP_CONSECUTIVE_SAMPLES:
+                return "Docker VM CPU remained at or above 90% of its allocated CPUs"
+        else:
+            high_cpu_count = 0
+    host_load = sorted(
+        (
+            str(item.get("sampled_utc", "")),
+            float(item["host_load_1m"]),
+            int(item.get("host_cpu_count") or 0),
+        )
+        for item in resources
+        if item.get("container") == "mac-host"
+        and item.get("phase") in ("warmup", "measurement")
+        and item.get("host_load_1m") is not None
+    )
+    high_host_load_count = 0
+    for _, load_1m, host_cpu_count in host_load:
+        if host_cpu_count > 0 and load_1m >= PHASE82_CPU_STOP_FRACTION * host_cpu_count:
+            high_host_load_count += 1
+            if high_host_load_count >= PHASE82_CPU_STOP_CONSECUTIVE_SAMPLES:
+                return "macOS one-minute load remained at or above 90% of host CPUs"
+        else:
+            high_host_load_count = 0
     unhealthy = [
         name
         for name, item in after.items()
@@ -804,14 +951,15 @@ async def run_trial(
     level: str,
     replicas: int,
     seed: int,
+    tracing_disabled: bool = False,
 ) -> dict[str, Any]:
     if case_id in progress.get("completed_cases", []):
         return json.loads((output / "summaries" / f"{case_id}.json").read_text())
     if case_id in progress.get("started_cases", []):
         raise ExperimentStopped(f"{case_id} was previously interrupted and will not be repeated")
     mark_case_started(progress, progress_path, case_id)
-    sampler = DockerStatsSampler()
-    before = container_snapshot()
+    sampler = DockerStatsSampler(tracing_disabled=tracing_disabled)
+    before = trial_container_snapshot(tracing_disabled)
     sampler.start(before)
     samples: list[dict[str, Any]] = []
     warmup_result: dict[str, Any] = {}
@@ -850,7 +998,7 @@ async def run_trial(
             )
             ended_utc = utc_now()
             measurement_ended = time.monotonic()
-        after = container_snapshot()
+        after = trial_container_snapshot(tracing_disabled)
     finally:
         sampler.phase = "drain"
         await sampler.stop()
@@ -862,6 +1010,12 @@ async def run_trial(
     sampler.write(resource_path)
     measured_seconds = min(30.0, max(0.001, measurement_ended - measurement_started))
     summary = summarize_samples(samples, measured_seconds)
+    if summary["attempted"] != sum(summary["classification_counts"].values()):
+        raise RuntimeError("attempted requests do not reconcile with classified outcomes")
+    if abs(
+        summary["successful_rps"] - summary["successful"] / summary["measurement_seconds"]
+    ) > 1e-9:
+        raise RuntimeError("successful RPS does not match successes divided by measured duration")
     summary.update(
         {
             "case_id": case_id,
@@ -872,6 +1026,8 @@ async def run_trial(
             "replicas": replicas,
             "warmup_seconds": 5,
             "requested_measurement_seconds": 30,
+            "actual_duration_seconds": measured_seconds,
+            "distributed_tracing_disabled": tracing_disabled,
             "partial_measurement": measured_seconds < 29.0,
             "warmup": warmup_result,
             "started_utc": started_utc,
@@ -918,8 +1074,15 @@ def surge_status(client: httpx.Client) -> dict[str, Any]:
     }
 
 
-def compose_command(*args: str, benchmark_enabled: bool = False, timeout: float = 30.0) -> str:
+def compose_command(
+    *args: str,
+    benchmark_enabled: bool = False,
+    tracing_disabled: bool = False,
+    timeout: float = 30.0,
+) -> str:
     files = list(COMPOSE_PREFIX)
+    if tracing_disabled:
+        files.extend(("-f", PHASE82_COMPOSE_FILE))
     if benchmark_enabled:
         files.extend(("-f", BENCHMARK_COMPOSE_FILE))
     return run_command("docker", "compose", *files, *args, timeout=timeout)
@@ -974,6 +1137,23 @@ def mounted_traefik_route_sha256() -> str:
     raw = run_command(
         "docker", "exec", "pulsegrid-traefik-1", "sha256sum", "/etc/traefik/routes.yaml"
     )
+    return raw.split()[0]
+
+
+def mounted_traefik_route_source() -> str:
+    raw = run_command("docker", "inspect", "--format", "{{json .Mounts}}", "pulsegrid-traefik-1")
+    mounts = json.loads(raw)
+    source = next(
+        (item.get("Source") for item in mounts if item.get("Destination") == "/etc/traefik/routes.yaml"),
+        None,
+    )
+    if not source:
+        raise ExperimentStopped("the live Traefik container has no /etc/traefik/routes.yaml mount")
+    return str(Path(source).resolve())
+
+
+def mounted_traefik_static_sha256(path: str) -> str:
+    raw = run_command("docker", "exec", "pulsegrid-traefik-1", "sha256sum", path)
     return raw.split()[0]
 
 
@@ -1157,9 +1337,10 @@ async def admission_preflight(
     run_id: str,
     client: httpx.AsyncClient,
     specs: Mapping[str, RequestSpec],
+    tracing_disabled: bool = False,
 ) -> dict[str, Any]:
-    progress_before = container_snapshot()
-    sampler = DockerStatsSampler()
+    progress_before = trial_container_snapshot(tracing_disabled)
+    sampler = DockerStatsSampler(tracing_disabled=tracing_disabled)
     sampler.start(progress_before)
     try:
         await warm_up(
@@ -1184,7 +1365,7 @@ async def admission_preflight(
             seed=20261013,
             stop_event=sampler.stop_event,
         )
-        progress_after = container_snapshot()
+        progress_after = trial_container_snapshot(tracing_disabled)
     finally:
         await sampler.stop()
     write_samples(output / "requests" / "admission_preflight.csv", samples)
@@ -1225,7 +1406,10 @@ async def admission_preflight(
     return summary
 
 
-def matrix_summary(output: Path) -> dict[str, Any]:
+def matrix_summary(
+    output: Path,
+    trial_numbers: Sequence[int] = (1, 2, 3),
+) -> dict[str, Any]:
     def median_or_none(values: Sequence[float | None]) -> float | None:
         present = [float(value) for value in values if value is not None]
         return statistics.median(present) if present else None
@@ -1235,7 +1419,7 @@ def matrix_summary(output: Path) -> dict[str, Any]:
         for concurrency, level in ((4, "low"), (16, "medium"), (64, "high")):
             trials = [
                 json.loads((output / "summaries" / f"r{replicas}-c{concurrency}-t{trial}.json").read_text())
-                for trial in (1, 2, 3)
+                for trial in trial_numbers
             ]
             if any(item.get("replicas") != replicas or item.get("concurrency") != concurrency for item in trials):
                 raise RuntimeError("trial summary metadata does not match its matrix cell")
@@ -1290,8 +1474,13 @@ def matrix_summary(output: Path) -> dict[str, Any]:
     result = {
         "matrix": combinations,
         "scaling_comparison": scaling,
-        "statistics_method": "median across the three predeclared trial summaries per matrix cell",
-        "trial_count": 3,
+        "statistics_method": (
+            "single observed trial per matrix cell; no population estimate"
+            if len(trial_numbers) == 1
+            else f"median across {len(trial_numbers)} trial summaries per matrix cell"
+        ),
+        "trial_count": len(trial_numbers),
+        "limited_statistical_evidence": len(trial_numbers) == 1,
     }
     write_json(output / "summaries" / "matrix_summary.json", result)
     return result
@@ -1336,11 +1525,113 @@ def verify_prometheus_targets(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     return result
 
 
+def verify_all_prometheus_targets(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    rows = metric_vector(snapshot, "all_targets")
+    targets = [
+        {
+            "labels": row.get("metric", {}),
+            "up": float(row.get("value", [None, "0"])[1]),
+        }
+        for row in rows
+    ]
+    down = [target for target in targets if target["up"] < 1.0]
+    result = {"target_count": len(targets), "down_targets": down, "all_up": bool(targets) and not down}
+    if not result["all_up"]:
+        raise ExperimentStopped("one or more Prometheus scrape or blackbox targets are down")
+    return result
+
+
+def assert_doctor_http_metrics_active() -> dict[str, bool]:
+    probe = (
+        "import urllib.request; text=urllib.request.urlopen('http://127.0.0.1:8000/metrics', timeout=3).read().decode(); "
+        "assert 'pulsegrid_http_requests_total' in text"
+    )
+    result = {}
+    for container in ("pulsegrid-doctor-1", "pulsegrid-doctor_replica-1"):
+        run_command("docker", "exec", container, "python", "-c", probe, timeout=10.0)
+        result[container] = True
+    return result
+
+
 def compose_env_value(container: str, key: str) -> str | None:
     raw = run_command("docker", "inspect", "--format", "{{json .Config.Env}}", container)
     entries = json.loads(raw)
     prefix = key + "="
     return next((entry[len(prefix):] for entry in entries if entry.startswith(prefix)), None)
+
+
+def assert_tracing_disabled(*, require_stopped: bool = True) -> dict[str, Any]:
+    applications: dict[str, dict[str, str | None]] = {}
+    for service, container in PHASE82_API_CONTAINERS.items():
+        enabled = compose_env_value(container, "PULSEGRID_TELEMETRY_ENABLED")
+        endpoint = compose_env_value(container, "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT")
+        applications[service] = {"telemetry_enabled": enabled, "trace_endpoint": endpoint}
+        if enabled != "false" or endpoint not in (None, ""):
+            raise ExperimentStopped(f"distributed tracing remained enabled in {container}")
+    command = json.loads(
+        run_command("docker", "inspect", "--format", "{{json .Config.Cmd}}", "pulsegrid-traefik-1")
+    ) or []
+    expected_command = "--configFile=/etc/traefik/traefik.phase8-benchmark.yaml"
+    if expected_command not in command:
+        raise ExperimentStopped("Traefik is not using the tracing-free benchmark configuration")
+    static_hash = mounted_traefik_static_sha256("/etc/traefik/traefik.phase8-benchmark.yaml")
+    static_bytes = PHASE82_TRAEFIK_CONFIG.read_bytes()
+    if static_hash != sha256(static_bytes) or b"\ntracing:\n" in static_bytes:
+        raise ExperimentStopped("the active Traefik benchmark configuration is not tracing-free")
+    grafana = inspect_container("pulsegrid-grafana-1")
+    expected_grafana_limit = 384 * 1024 * 1024
+    if grafana["memory_limit_bytes"] != expected_grafana_limit:
+        raise ExperimentStopped("Grafana does not have the declared benchmark-only 384 MiB cap")
+    tracing_container_states = {}
+    if require_stopped:
+        for name in ("pulsegrid-tempo-1", "pulsegrid-otel-collector-1"):
+            status = inspect_container(name)["status"]
+            tracing_container_states[name] = status
+            if status != "exited":
+                raise ExperimentStopped(f"{name} was not stopped for the tracing-free experiment")
+    return {
+        "applications": applications,
+        "traefik_command": command,
+        "traefik_static_config_sha256": static_hash,
+        "grafana_memory_limit_bytes": grafana["memory_limit_bytes"],
+        "tracing_container_states": tracing_container_states,
+    }
+
+
+def restored_tracing_snapshot() -> dict[str, Any]:
+    applications: dict[str, dict[str, str | None]] = {}
+    expected_endpoint = "http://otel-collector:4318/v1/traces"
+    for service, container in PHASE82_API_CONTAINERS.items():
+        enabled = compose_env_value(container, "PULSEGRID_TELEMETRY_ENABLED")
+        endpoint = compose_env_value(container, "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT")
+        applications[service] = {"telemetry_enabled": enabled, "trace_endpoint": endpoint}
+        if enabled != "true" or endpoint != expected_endpoint:
+            raise ExperimentStopped(f"normal tracing configuration was not restored in {container}")
+    static_bytes = (ROOT / "infra/traefik/traefik.yaml").read_bytes()
+    static_hash = mounted_traefik_static_sha256("/etc/traefik/traefik.yaml")
+    if static_hash != sha256(static_bytes) or b"\ntracing:\n" not in static_bytes:
+        raise ExperimentStopped("normal Traefik tracing configuration was not restored")
+    command = json.loads(
+        run_command("docker", "inspect", "--format", "{{json .Config.Cmd}}", "pulsegrid-traefik-1")
+    ) or []
+    if any("traefik.phase8-benchmark.yaml" in str(item) for item in command):
+        raise ExperimentStopped("Traefik benchmark configuration remained active after restoration")
+    grafana = inspect_container("pulsegrid-grafana-1")
+    if grafana["memory_limit_bytes"] != 256 * 1024 * 1024:
+        raise ExperimentStopped("normal Grafana memory cap was not restored")
+    tracing_container_states = {}
+    for name in ("pulsegrid-tempo-1", "pulsegrid-otel-collector-1"):
+        status = inspect_container(name)["status"]
+        tracing_container_states[name] = status
+        if status != "running":
+            raise ExperimentStopped(f"{name} did not return to the normal running state")
+    return {
+        "applications": applications,
+        "traefik_static_config_sha256": static_hash,
+        "traefik_command": command,
+        "grafana_memory_limit_bytes": grafana["memory_limit_bytes"],
+        "tracing_container_states": tracing_container_states,
+    }
 
 
 async def run_matrix(args: argparse.Namespace) -> None:

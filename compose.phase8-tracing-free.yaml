@@ -1,0 +1,37 @@
+services:
+  patient:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  doctor:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  doctor_replica:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  appointment:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  records:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  pharmacy:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  billing:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  emergency:
+    environment:
+      PULSEGRID_TELEMETRY_ENABLED: "false"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ""
+  traefik:
+    command: [--configFile=/etc/traefik/traefik.phase8-benchmark.yaml]
+  grafana:
+    mem_limit: 384m

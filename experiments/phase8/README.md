@@ -109,6 +109,53 @@ without credentials, and Surge Mode NORMAL. The original Phase 8 429-dominated
 trial and the invalid first setup attempt are retained in their original
 result directories and excluded from the accepted capacity observation.
 
+## Phase 8.2 tracing-disabled scalability matrix
+
+Phase 8.2 runs exactly six authenticated Doctor read trials: one and two
+upstreams at 4, 16 and 64 clients, in that order. Each trial has a five-second
+warm-up and a 30-second measurement, using the same deterministic 50/30/20
+directory, autocomplete and profile GET mix. There is one trial per condition;
+results have limited repeatability evidence and are not population estimates.
+
+Run the matrix from the repository root after verifying the existing synthetic
+patient and admin fixtures:
+
+```sh
+./.venv/bin/python experiments/phase8/run_phase82_matrix.py \
+  --run-id phase8-2-20261013-run1
+```
+
+The runner uses the Phase 8.1 Doctor admission policy and isolated Redis
+namespace. It temporarily disables application tracing through the
+benchmark-only `compose.phase8-tracing-free.yaml`, uses a Traefik static config
+that keeps Prometheus metrics, and stops only the OpenTelemetry Collector and
+Tempo during the matrix. Prometheus remains active. The same settings apply to
+both replica topologies. Grafana's benchmark-only memory cap is 384 MiB because
+its recorded baseline was 87.44% of the normal 256 MiB cap. The runner restores
+the original API, Traefik, Grafana and tracing configuration in its cleanup
+path, waits for the finite benchmark Redis buckets to expire, and checks the
+live deployment before reporting success.
+
+Each result directory contains one request CSV and timestamped Docker/macOS
+resource CSV per trial, summaries, route probes, preflight results, resource
+snapshots, a progress record and a manifest. A started condition is not
+repeated under the same run ID. The existing 90% container/VM memory limit,
+90% Docker CPU limit for three consecutive samples, 10% macOS free-memory
+floor, 90% host load floor, service-health, restart, sampling and sustained-5xx
+stop conditions apply.
+
+Regenerate the four Phase 8.2 graphs from retained summaries and raw evidence:
+
+```sh
+python3 experiments/phase8/plot_results.py \
+  --run-id phase8-2-20261013-run1 \
+  --phase8-2-scalability
+```
+
+The generated plot manifest records input and graph hashes and validates them
+after generation. Phase 8.2 results are labeled tracing-disabled and must not
+be presented as measurements of the fully instrumented deployment.
+
 ## Evidence files
 
 - `requests/*.csv`: one row per attempted HTTP request; status, latency,
