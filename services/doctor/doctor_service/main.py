@@ -45,6 +45,8 @@ def create_app(
             from .admission import close as close_admission
             await close_admission(application)
             await database.close()
+            from .telemetry import shutdown as shutdown_telemetry
+            shutdown_telemetry(application)
 
     application = FastAPI(
         lifespan=lifespan,
@@ -159,6 +161,8 @@ def create_app(
             message="An unexpected error occurred.",
         )
 
+    from .telemetry import configure as configure_telemetry
+    configure_telemetry(application, SERVICE_NAME)
     return application
 
 

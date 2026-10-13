@@ -16,6 +16,7 @@ from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import SQLAlchemyError
 
+from .event_tracing import consume_span
 from . import models as m
 
 EXCHANGE_NAME = "pulsegrid.events"
@@ -296,7 +297,7 @@ def _retry_count(message) -> int | None:
     return value
 
 
-async def _on_message(message, subscription: Subscription, factory, app) -> None:
+async def _process_message(message, subscription: Subscription, factory, app) -> None:
     started = time.perf_counter()
     try:
         envelope = validate_event(
@@ -363,6 +364,23 @@ async def _on_message(message, subscription: Subscription, factory, app) -> None
             max(0.0, (datetime.now(timezone.utc) - occurred_at).total_seconds()),
             labels,
         )
+
+
+async def _on_message(message, subscription: Subscription, factory, app) -> None:
+    """Continue W3C context around message handling without trusting baggage."""
+    headers = message.headers if isinstance(message.headers, dict) else {}
+    traceparent = headers.get("traceparent")
+    if not isinstance(traceparent, str) and len(message.body) <= MAX_MESSAGE_BYTES:
+        try:
+            envelope = json.loads(message.body)
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            envelope = None
+        if isinstance(envelope, dict):
+            traceparent = envelope.get("traceparent")
+    if not isinstance(traceparent, str) or len(traceparent) > 128:
+        traceparent = None
+    with consume_span(traceparent, subscription.queue_name, subscription.routing_key):
+        await _process_message(message, subscription, factory, app)
 
 
 async def _declare_topology(channel):

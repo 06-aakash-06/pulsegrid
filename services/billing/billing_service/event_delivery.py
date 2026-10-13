@@ -14,6 +14,7 @@ import aio_pika
 from sqlalchemy import and_, exists, func, or_, select, update
 from sqlalchemy.exc import SQLAlchemyError
 
+from .event_tracing import inject_traceparent, publish_span
 from .models import outbox_events
 
 EXCHANGE_NAME = "pulsegrid.events"
@@ -252,17 +253,20 @@ async def publish_batch(factory, exchange, claimed_by: str, app) -> int:
         event_id = int(row["event_id"])
         attempt = await _record_attempt(factory, event_id, claimed_by)
         event_type = str(row["event_type"])
-        body = json.dumps(row["envelope"], separators=(",", ":"), sort_keys=True).encode()
-        message = aio_pika.Message(
-            body=body,
-            message_id=str(event_id),
-            type=event_type,
-            content_type="application/json",
-            delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
-        )
+        envelope = row["envelope"]
+        body = json.dumps(envelope, separators=(",", ":"), sort_keys=True).encode()
         try:
-            async with asyncio.timeout(PUBLISH_TIMEOUT_SECONDS):
-                confirmed = await exchange.publish(message, routing_key=event_type, mandatory=True)
+            with publish_span(envelope, event_type):
+                message = aio_pika.Message(
+                    body=body,
+                    message_id=str(event_id),
+                    type=event_type,
+                    content_type="application/json",
+                    delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                    headers=inject_traceparent(),
+                )
+                async with asyncio.timeout(PUBLISH_TIMEOUT_SECONDS):
+                    confirmed = await exchange.publish(message, routing_key=event_type, mandatory=True)
             if confirmed is False:
                 raise RuntimeError("publisher_nack")
             marked = await _mark_published(factory, event_id, claimed_by)

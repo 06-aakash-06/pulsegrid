@@ -47,6 +47,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 tasks=[asyncio.create_task(worker_loop(application))]
             await phase4.start(application)
             await event_consumer.start(application)
+            from .features.control_room import surge_metrics_loop
+            tasks.append(asyncio.create_task(surge_metrics_loop(application)))
             yield
         finally:
             await event_consumer.close(application)
@@ -57,6 +59,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             from .admission import close as close_admission
             await close_admission(application)
             await database.close()
+            from .telemetry import shutdown as shutdown_telemetry
+            shutdown_telemetry(application)
 
     application = FastAPI(
         lifespan=lifespan,
@@ -94,6 +98,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(api_router)
     from .features.surge_mode import router as surge_mode_router
     application.include_router(surge_mode_router)
+    from .features.control_room import router as control_room_router
+    application.include_router(control_room_router)
     if auth_config.origins:
         application.add_middleware(
             CORSMiddleware,
@@ -178,6 +184,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             message="An unexpected error occurred.",
         )
 
+    from .telemetry import configure as configure_telemetry
+    configure_telemetry(application, SERVICE_NAME)
     return application
 
 

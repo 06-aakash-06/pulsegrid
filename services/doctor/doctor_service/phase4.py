@@ -71,6 +71,17 @@ def mount_cache(app):
         config=json.loads(Path(os.environ['PULSEGRID_DOCTOR_PHASE4_CACHE_CONFIG_FILE']).read_text())
         ring=HashRing(RingSnapshot(config['epoch'],128,tuple(config['nodes'])))
         app.state.directory_cache=Cache(ring,{node:redis_client(url) for node,url in config['nodes'].items()},observer=app.state.phase4_observer)
+        _record_hash_topology(app.state.phase4_observer, config['epoch'], len(config['nodes']))
+
+
+def _record_hash_topology(observer, epoch: int, node_count: int) -> None:
+    """Expose configured ring topology without claiming node liveness."""
+    labels={'owner':'doctor'}
+    try:
+        observer.gauge('pulsegrid_consistent_hashing_topology_epoch', float(epoch), labels)
+        observer.gauge('pulsegrid_consistent_hashing_configured_nodes', float(node_count), labels)
+    except Exception:
+        pass
 
 async def directory_page(app, principal, filters):
     from sqlalchemy import text
