@@ -177,8 +177,8 @@ export function StaffFulfillmentPanel() {
   return (
     <StaffRoleGate role="pharmacist">
       <div className="staff-advanced-page staff-fulfillment">
-        <FulfillmentStatusLookup />
-        <StockVerification />
+        <details className="fulfillment-verification"><summary>Verify prescription authority</summary><FulfillmentStatusLookup /></details>
+        <details className="fulfillment-verification"><summary>Verify available stock</summary><StockVerification /></details>
         <ExistingFulfillment pharmacist />
       </div>
     </StaffRoleGate>

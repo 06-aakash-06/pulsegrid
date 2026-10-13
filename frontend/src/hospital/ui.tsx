@@ -126,12 +126,14 @@ export function Collection<T extends { id: string }>({
   renderItem,
   revision = 0,
   onFirstItem,
+  itemFilter,
 }: {
   path: string | null;
   title: string;
   renderItem: (item: T) => ReactNode;
   revision?: number;
   onFirstItem?: (item: T) => void;
+  itemFilter?: (item: T) => boolean;
 }) {
   return (
     <CollectionPage<T>
@@ -140,6 +142,7 @@ export function Collection<T extends { id: string }>({
       title={title}
       renderItem={renderItem}
       onFirstItem={onFirstItem}
+      itemFilter={itemFilter}
     />
   );
 }
@@ -148,11 +151,13 @@ function CollectionPage<T extends { id: string }>({
   title,
   renderItem,
   onFirstItem,
+  itemFilter,
 }: {
   path: string | null;
   title: string;
   renderItem: (item: T) => ReactNode;
   onFirstItem?: (item: T) => void;
+  itemFilter?: (item: T) => boolean;
 }) {
   const [cursor, setCursor] = useState<string | undefined>();
   const [history, setHistory] = useState<(string | undefined)[]>([]);
@@ -161,9 +166,9 @@ function CollectionPage<T extends { id: string }>({
     : null;
   const resource = useResource<Page<T>>(pagedPath);
   useEffect(() => {
-    const first = resource.response?.data.items[0];
+    const first = resource.response?.data.items.find(item=>!itemFilter || itemFilter(item));
     if (first) onFirstItem?.(first);
-  }, [resource.response, onFirstItem]);
+  }, [resource.response, onFirstItem, itemFilter]);
   return (
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}
@@ -177,11 +182,11 @@ function CollectionPage<T extends { id: string }>({
       </button></div>
       {resource.response && (
         <>
-          {resource.response.data.items.length === 0 && (
+          {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).length === 0 && (
             <div className="resource-empty"><strong>No {title.toLowerCase()} found.</strong><p>Nothing to display for the current filters.</p></div>
           )}
           <div className="hospital-items">
-            {resource.response.data.items.map((item) => (
+            {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).map((item) => (
               <m.article initial={false} layout="position" transition={{duration:0.18}} className="hospital-item" key={item.id}>
                 {renderItem(item)}
               </m.article>

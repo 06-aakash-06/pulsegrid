@@ -226,3 +226,50 @@
 .reference-departments .queue-station > .patient-workflow__panel,
 .reference-departments .queue-wait-sign { background: #f0e2d0f5; }
 .reference-departments .queue-wall-table caption { font-size: 18px; font-weight: 550; }
+.pharmacy-autocomplete { font-size: 12px; }
+.catalog-cohort { font-size: 10px; display: flex; align-items: center; gap: 8px; }
+.catalog-cohort input { width: auto; }
+.selected-medicine-name { font-size: 22px; }
+@media (min-width: 901px) {
+  .reference-departments .pharmacy-search-counter { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; background: #f4eadc; }
+  .reference-departments .pharmacy-search-counter > .hospital-panel { flex: 1; }
+  .reference-departments .pharmacy-autocomplete { width: 100%; }
+  .reference-departments .pharmacy-search-counter .hospital-panel > form { display: flex; align-items: end; gap: 10px; }
+  .reference-departments .pharmacy-search-counter .hospital-fields { flex: 1; }
+  .reference-departments .catalog-cohort { width: 100%; }
+  .reference-departments .medicine-shelves { border-width: 6px; background: #8f6844; min-height: 290px; }
+  .reference-departments .medicine-shelves .hospital-items { display: flex; flex-direction: column; gap: 12px; max-height: 410px; }
+  .reference-departments .medicine-shelves .hospital-item { display: grid; grid-template-columns: 84px minmax(0,1fr) auto; gap: 8px 18px; align-items: center; background: #e9dac4; min-height: 95px; padding: 12px; border-bottom: 7px solid #634325; }
+  .reference-departments .medicine-shelves .medicine-box { grid-row: 1 / 3; width: 80px; height: 65px; background: #f9f3e7; font-size: 8px; }
+  .reference-departments .medicine-shelves .hospital-item > strong { font-size: 15px; font-weight: 550; }
+  .reference-departments .medicine-shelves .hospital-item > p { grid-column: 2; margin: 0; }
+  .reference-departments .medicine-shelves .hospital-item > button { grid-column: 3; grid-row: 1 / 3; }
+  .reference-departments .medicine-shelves .resource-toolbar { border-color: #d4b58c; color: #fff9eb; }
+  .reference-departments .dispensing-counter > .hospital-panel { background: #f6ecdf; min-height: 300px; }
+}
+.reference-departments .workspace-content label.catalog-cohort { display:flex; flex-direction:row; justify-content:flex-start; align-items:center; gap:8px; }
+.reference-departments .workspace-content label.catalog-cohort input { width:16px; height:16px; min-height:0; margin:0; }
+.reference-departments:not(:has(.reference-consultation)):not(:has(.reception-scene)) .directory-department .directory-subroute { display:grid; min-height:34px; grid-template-columns:minmax(0,1fr) 15px; padding-left:36px; }
+.pharmacy-catalog-tools,.pharmacy-stock-tools { padding:15px 18px; background:#f1e4d2; border:1px solid #d7c4a7; }
+.stock-ledger-row { display:grid; grid-template-columns:1fr 1fr repeat(3,auto); align-items:center; gap:14px; font-size:12px; }
+.reference-departments .pharmacy-catalog > [data-panel="inventory-batches"] .hospital-items { display:block; }
+.reference-departments .pharmacy-catalog > [data-panel="inventory-batches"] .hospital-item { border:0; border-bottom:1px solid #cfbda4; border-radius:0; }
+@media(max-width:900px){.stock-ledger-row{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.fulfillment-verification { background:#f0e2ce; padding:12px 16px; border:1px solid #cbb79b; font-size:12px; }
+.fulfillment-verification .hospital-panel { box-shadow:none; border:0; background:none; padding:12px 0; }
+.reservation-slip { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:12px; }
+.reference-departments .staff-fulfillment .fulfillment-workspace { grid-column:1/-1; }
+.reference-departments .staff-fulfillment .hospital-form { padding:12px; }
+.reference-departments .staff-fulfillment .hospital-panel { padding:16px; }
+.reference-departments .staff-fulfillment .reservation-counter .hospital-items { display:block; max-height:300px; overflow:auto; }
+.reference-departments .staff-fulfillment .hospital-item { border:0; border-bottom:1px solid #cebaa0; border-radius:0; }
+.dispensing-register > summary { padding:12px; background:#ece0cf; font-size:12px; cursor:pointer; }
+@media(min-width:901px){
+ .reference-departments .staff-fulfillment .fulfillment-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;align-items:start;}
+ .reference-departments .staff-fulfillment .reservation-counter{display:contents;}
+ .reference-departments .staff-fulfillment .prescription-counter{grid-column:1;grid-row:1;}
+ .reference-departments .staff-fulfillment [data-panel="reservations"]{grid-column:1;grid-row:2;}
+ .reference-departments .staff-fulfillment [data-panel="current-reservation"]{grid-column:2;grid-row:1/4;}
+ .reference-departments .staff-fulfillment .reservation-counter>form{grid-column:1;grid-row:3;background:#f3e7d6;padding:14px;}
+ .reference-departments .staff-fulfillment .dispensing-register{grid-column:1/-1;}
+}

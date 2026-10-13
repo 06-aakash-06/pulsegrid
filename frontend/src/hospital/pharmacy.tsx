@@ -1,3 +1,4 @@
+import { useLocalDemo } from "../design/localDemo";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { MedicineAutocomplete } from "../phase4";
 import { useAuth } from "../auth/authContext";
@@ -35,6 +36,9 @@ export function MedicineCatalog({
   inventory?: boolean;
 }) {
   const { state, api }=useAuth();
+  const demo = useLocalDemo();
+  const [showAll, setShowAll] = useState(false);
+  const [demoSelected, setDemoSelected] = useState(false);
   const [draft, setDraft] = useState<Values>({});
   const [filters, setFilters] = useState<Values>({});
   const [error, setError] = useState("");
@@ -43,7 +47,7 @@ export function MedicineCatalog({
   const [medicineId, setMedicineId] = useState("");
   return (
     <div className="pharmacy-catalog"><div className="pharmacy-search-counter">
-      <MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => setSelected(item.id)} />
+      <details className="pharmacy-autocomplete"><summary>Quick medicine lookup</summary><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setSelected(item.id);setDemoSelected(true);}} /></details>
       <Panel title="Medicine search">
         <form
           onSubmit={(e) => {
@@ -81,19 +85,21 @@ export function MedicineCatalog({
           {error && <p role="alert">{error}</p>}
         </form>
       </Panel>
+      {demo&&<label className="catalog-cohort"><input type="checkbox" checked={showAll} onChange={e=>{setShowAll(e.target.checked);setSelected(null);}}/>Show all owner records · Fictional demo catalog</label>}
       </div><div className="pharmacy-shelf-workspace"><div className="medicine-shelves">
       <Collection<Medicine>
         title="Medicines"
         path={query("/api/v1/pharmacy/medicines", filters)}
         revision={revision}
-        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
+        itemFilter={item=>!demo||showAll||!!filters.q||item.sku.startsWith("DEMO-")}
+        onFirstItem={item=>{if(!selected||(demo&&!showAll&&!demoSelected)){setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(Boolean(demo));}}}
         renderItem={(item) => (
           <>
-            <span className="medicine-box" aria-hidden="true"><DepartmentIcon department="pharmacy"/><span>{item.sku}</span></span><strong>{item.name}</strong>
+            <span className="medicine-box" aria-hidden="true"><DepartmentIcon department="pharmacy"/><span>{item.name}</span></span><strong>{item.name}</strong>
             <p>
-              {item.sku} • {item.availability} (stock hint)
+              {item.availability.replaceAll("_", " ")} · Stock hint
             </p>
-            <button aria-label={`View medicine ${item.id}`} onClick={() => setSelected(item.id)}>Medicine details →</button>
+            <button aria-label={`View medicine ${item.id}`} onClick={() => {setSelected(item.id);if(inventory)setMedicineId(item.id);}}>Medicine details →</button>
           </>
         )}
       />
@@ -103,15 +109,9 @@ export function MedicineCatalog({
       >
         {(item, etag, refresh) => (
           <>
-            <Facts
-              values={{
-                "Medicine ID": item.id,
-                SKU: item.sku,
-                Name: item.name,
-                Active: String(item.active),
-                "Availability hint": item.availability,
-              }}
-            />
+            <h2 className="selected-medicine-name">{item.name}</h2>
+            <Facts values={{"Catalog status":item.active?"Active":"Inactive","Availability hint":item.availability}}/>
+            <details className="owner-identifiers"><summary>Catalog identifiers</summary><Facts values={{"Medicine ID":item.id,SKU:item.sku}}/></details>
             {staff && (
               <CommandForm
                 title="Save medicine"
@@ -155,7 +155,7 @@ export function MedicineCatalog({
       </Selected>
       </aside></div>
       {staff && (
-        <Panel title="New catalog medicine">
+        <details className="pharmacy-catalog-tools"><summary>Add catalog medicine</summary><Panel title="New catalog medicine">
           <CommandForm
             title="Create medicine"
             path="/api/v1/pharmacy/medicines"
@@ -170,7 +170,7 @@ export function MedicineCatalog({
             ]}
             onSuccess={() => setRevision((v) => v + 1)}
           />
-        </Panel>
+        </Panel></details>
       )}
       {inventory && (
         <>
@@ -185,21 +185,10 @@ export function MedicineCatalog({
             })}
             revision={revision}
             renderItem={(batch) => (
-              <Facts
-                values={{
-                  "Batch ID": batch.id,
-                  "Medicine ID": batch.medicine_id,
-                  "Batch code": batch.batch_code,
-                  Expiry: batch.expires_on,
-                  "On hand": batch.on_hand,
-                  Reserved: batch.reserved,
-                  Available: batch.available,
-                  "Batch version": batch.version,
-                }}
-              />
+              <><div className="stock-ledger-row"><strong>{batch.batch_code}</strong><time>{batch.expires_on}</time><span>{batch.on_hand} on hand</span><span>{batch.reserved} reserved</span><strong>{batch.available} available</strong></div><details className="owner-identifiers"><summary>Batch identifiers and version</summary><Facts values={{"Batch ID":batch.id,"Medicine ID":batch.medicine_id,"Batch version":batch.version}}/></details></>
             )}
           />
-          <StockAdjustment onSuccess={() => setRevision((v) => v + 1)} />
+          <details className="pharmacy-stock-tools"><summary>Adjust batch stock</summary><StockAdjustment onSuccess={() => setRevision((v) => v + 1)} /></details>
         </>
       )}
     </div>
@@ -307,15 +296,12 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
         title="Reservations"
         path="/api/v1/pharmacy/reservations"
         revision={revision}
+        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
         renderItem={(item) => (
           <>
-            <p>
-              Reservation {item.id} • Prescription {item.prescription_id} •{" "}
-              {item.state}
-            </p>
-            <button onClick={() => setSelected(item.id)}>
-              View reservation {item.id}
-            </button>
+            <div className="reservation-slip"><strong>Reservation …{item.id.slice(-4)}</strong><span className="owner-state">{item.state}</span></div>
+            <details className="owner-identifiers"><summary>Prescription and reservation references</summary><Facts values={{"Reservation ID":item.id,"Prescription ID":item.prescription_id}}/></details>
+            <button aria-label={`View reservation ${item.id}`} onClick={() => setSelected(item.id)}>Review reservation →</button>
           </>
         )}
       />
@@ -392,7 +378,7 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
           this source ID.
         </p>
       )}
-      </section><section className="dispensing-register">
+      </section><details className="dispensing-register"><summary>Completed dispensing ledger</summary>
       <Collection<Dispensing>
         title="Dispensings"
         path="/api/v1/pharmacy/dispensings"
@@ -411,6 +397,6 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
           />
         )}
       />
-    </section></div>
+    </details></div>
   );
 }
