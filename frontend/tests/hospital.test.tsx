@@ -408,6 +408,11 @@ describe("patient profiles and appointment commands", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "Select slot 41" }),
     );
+    expect(screen.getByRole("button",{name:"Review Book appointment"})).toBeInTheDocument();
+    fill("From (UTC)", "2027-01-02T00:00:00Z");
+    expect(screen.queryByRole("button",{name:"Review Book appointment"})).not.toBeInTheDocument();
+    fill("From (UTC)", "2027-01-01T00:00:00Z");
+    fireEvent.click(await screen.findByRole("button",{name:"Select slot 41"}));
     await command("Book appointment");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expect(lastBody(fetcher)).toEqual({
@@ -459,6 +464,7 @@ describe("patient profiles and appointment commands", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "View appointment 51" }),
     );
+    expect(fetcher.mock.calls.some(([url])=>String(url).includes("patient_id=11"))).toBe(true);
     await screen.findByLabelText("Reason");
     fill("Reason", "Synthetic cancellation");
     await command("Cancel appointment");

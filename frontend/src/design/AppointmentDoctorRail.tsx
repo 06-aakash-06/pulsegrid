@@ -7,15 +7,19 @@ export function AppointmentDoctorRail({selected,onSelect}:{selected:string;onSel
   const demo=useLocalDemo();
   const [search,setSearch]=useState("");
   const [all,setAll]=useState(false);
-  const roster=useResource<Page<Doctor>>(`/api/v1/doctors?limit=20${demo&&!all?'&q=Dr.':''}`);
+  const [specialty,setSpecialty]=useState("");
+  const [cursor,setCursor]=useState<string|undefined>();
+  const [history,setHistory]=useState<(string|undefined)[]>([]);
+  const roster=useResource<Page<Doctor>>(`/api/v1/doctors?limit=20${demo&&!all?'&q=Dr.':''}${cursor?`&cursor=${encodeURIComponent(cursor)}`:''}`);
   const rows=(roster.response?.data.items??[]).filter(d=>!demo||all||demo.doctors[d.id]);
   useEffect(()=>{if(!selected&&rows[0])onSelect(rows[0]);},[selected,roster.response,demo,onSelect]);
   return <div className="appointment-doctor-rail">
     <label>Find a doctor<input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Name or specialty…"/></label>
     {roster.error&&<p role="alert">{roster.error}</p>}
     {roster.loading&&<p role="status">Loading doctors…</p>}
-    <div className="appointment-doctor-rows">{rows.filter(d=>`${d.display_name} ${d.specialties.map(s=>s.name).join(' ')}`.toLowerCase().includes(search.toLowerCase())).map(d=><button type="button" key={d.id} aria-label={`Select doctor ${d.id}`} aria-pressed={selected===d.id} onClick={()=>onSelect(d)}><DoctorPortrait name={d.display_name} index={demo?.doctors[d.id]?.portrait}/><span><strong>{d.display_name}</strong><small>{d.specialties.map(s=>s.name).join(', ')}</small></span><b aria-hidden="true">›</b></button>)}</div>
-    {demo&&<label className="demo-footnote"><input type="checkbox" checked={all} onChange={e=>setAll(e.target.checked)}/>Show all owner records · Fictional demo</label>}
-    {roster.response?.data.next_cursor&&<p>More clinicians are available through directory search above.</p>}
+    <div className="appointment-specialties" aria-label="Doctor specialties"><button type="button" aria-pressed={!specialty} onClick={()=>setSpecialty("")}>All</button>{[...new Set(rows.flatMap(d=>d.specialties.map(s=>s.name)))].map(name=><button type="button" key={name} aria-pressed={specialty===name} onClick={()=>setSpecialty(name)}>{name}</button>)}</div>
+    <div className="appointment-doctor-rows">{rows.filter(d=>(!specialty||d.specialties.some(s=>s.name===specialty))&&`${d.display_name} ${d.specialties.map(s=>s.name).join(' ')}`.toLowerCase().includes(search.toLowerCase())).map(d=><button type="button" key={d.id} aria-label={`Select doctor ${d.id}`} aria-pressed={selected===d.id} onClick={()=>onSelect(d)}><DoctorPortrait name={d.display_name} index={demo?.doctors[d.id]?.portrait}/><span><strong>{d.display_name}</strong><small>{d.specialties.map(s=>s.name).join(', ')}</small></span><b aria-hidden="true">›</b></button>)}</div>
+    {demo&&<label className="demo-footnote"><input type="checkbox" checked={all} onChange={e=>{setAll(e.target.checked);setCursor(undefined);setHistory([]);setSpecialty("");}}/>Show all owner records · Fictional demo</label>}
+    {(roster.response?.data.next_cursor||history.length>0)&&<div className="doctor-rail-pagination"><button type="button" disabled={!history.length||roster.loading} onClick={()=>{setCursor(history.at(-1));setHistory(history.slice(0,-1));}}>Previous doctors</button><button type="button" disabled={!roster.response?.data.next_cursor||roster.loading} onClick={()=>{setHistory([...history,cursor]);setCursor(roster.response!.data.next_cursor!);}}>More doctors</button></div>}
   </div>;
 }

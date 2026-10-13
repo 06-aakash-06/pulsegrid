@@ -90,7 +90,7 @@ export function HospitalPage({
   }
   if (role === "/receptionist")
     content =
-      route === "dashboard" ? <Demographics /> : <><Appointments reception /><ReceptionWorkflowPanel /></>;
+      route === "dashboard" ? <Demographics /> : <><Appointments reception /><details className="receptionist-care"><summary>Check-in and journey operations</summary><ReceptionWorkflowPanel /></details></>;
   if (!content)
     return <PlaceholderPage page={page} workspaceName={workspace.name} />;
   if (role === "/ops" || (role === "/admin" && ["control-room", "traces"].includes(route)))

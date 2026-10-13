@@ -35,6 +35,7 @@ import {
   query,
   reasonField,
   Resource,
+  useResource,
   Selected,
   utc,
   type Field,
@@ -387,7 +388,7 @@ export function AvailabilityPicker({
             { name: "to", label: "To (UTC)" },
           ]}
           values={values}
-          change={(name, value) => setValues({ ...values, [name]: value })}
+          change={(name, value) => {setValues({ ...values, [name]: value });onClear?.();}}
         /></details>
         <button>Load availability</button>
         {error && <p role="alert">{error}</p>}
@@ -468,7 +469,7 @@ export function Booking({
           onSlot={(id, revision, startsAt, endsAt) => setSlot({ id, revision, startsAt, endsAt })}
         />
       )}
-      </fieldset></section><aside className="booking-receipt"><h3>Appointment Summary</h3><div className="receipt-rule"/><Facts values={{"Doctor":doctorLabel||doctor||"Select doctor","Patient":patientName||patientId||"Enter patient below","Starts (UTC)":slot?.startsAt??"Choose a time","Ends (UTC)":slot?.endsAt??"—"}}/>
+      </fieldset></section><aside className="booking-receipt"><h3>Appointment Summary</h3><div className="receipt-rule"/><Facts values={{"Doctor":doctorLabel||(doctor?`Doctor …${doctor.slice(-4)}`:"Select doctor"),"Patient":patientName||(patientId?`Patient …${patientId.slice(-4)}`:"Enter patient below"),"Starts (UTC)":slot?.startsAt??"Choose a time","Ends (UTC)":slot?.endsAt??"—"}}/>
       {slot && (
         <CommandForm<Appointment>
           key={slot.id}
@@ -482,10 +483,10 @@ export function Booking({
             expected_schedule_revision: slot.revision,
           })}
           onSuccess={item=>{setConfirmed(item);onSuccess?.();}}
-          notice={`Selected slot ${slot.id}, accepted revision ${slot.revision}.`}
+          notice={`Accepted schedule revision ${slot.revision}. Review the selected time above.`}
         />
       )}
-      {confirmed && <m.div initial={{opacity:.5,y:6}} animate={{opacity:1,y:0}} transition={{duration:.3}} className="printed-receipt" role="status"><DepartmentIcon department="appointments"/><strong>APPOINTMENT {confirmed.state.toUpperCase()}</strong><Facts values={{"Appointment ID":confirmed.id,"Starts (UTC)":confirmed.starts_at,"Ends (UTC)":confirmed.ends_at,"Doctor ID":confirmed.doctor_id}}/><p>Confirmed by Appointment Service.</p></m.div>}
+      {confirmed && <m.div initial={{opacity:.5,y:6}} animate={{opacity:1,y:0}} transition={{duration:.3}} className="printed-receipt" role="status"><DepartmentIcon department="appointments"/><strong>APPOINTMENT {confirmed.state.toUpperCase()}</strong><Facts values={{"Visit":`…${confirmed.id.slice(-4)}`,"Starts (UTC)":confirmed.starts_at,"Ends (UTC)":confirmed.ends_at}}/><details className="owner-identifiers"><summary>Confirmed owner identifiers</summary><Facts values={{"Appointment ID":confirmed.id,"Doctor ID":confirmed.doctor_id}}/></details><p>Confirmed by Appointment Service.</p></m.div>}
       </aside></div>
   );
 }
@@ -559,6 +560,17 @@ export function DoctorDirectory({admin=false}:{admin?:boolean}) {
           />
         </Panel>:null}/>
 }
+function WalkinRegistration({onSuccess,onLockChange}:{onSuccess:()=>void;onLockChange:(locked:boolean)=>void}) {
+  const [draft,setDraft]=useState("");
+  const [search,setSearch]=useState("");
+  const [patient,setPatient]=useState<PatientProfile|null>(null);
+  const [locked,setLocked]=useState(false);
+  const [error,setError]=useState("");
+  return <div className="walkin-workspace"><aside className="walkin-steps"><p><span className="step-number">1</span>Choose existing patient</p><p><span className="step-number">2</span>Select doctor & time</p><p><span className="step-number">3</span>Review & confirm</p></aside><div className="walkin-entry"><h2>Walk-in Registration</h2><form className="walkin-patient-search" onSubmit={e=>{e.preventDefault();if(draft.trim().length<2||draft.trim().length>100){setError("Search must contain 2 to 100 characters.");return;}setSearch(draft.trim());setPatient(null);setError("");}}><label>Find existing patient<input disabled={locked} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Patient name…"/></label><button disabled={locked}>Search patients</button>{error&&<p role="alert">{error}</p>}</form>
+  {search&&!patient&&<Collection<PatientProfile> title="Matching patients" path={query("/api/v1/patients",{q:search})} renderItem={item=><><strong>{item.display_name}</strong><button disabled={locked} onClick={()=>setPatient(item)}>Use this patient</button><details className="owner-identifiers"><summary>Patient reference</summary>{item.id}</details></>}/>}
+  {patient?<><div className="walkin-patient-strip"><strong>{patient.display_name}</strong><button disabled={locked} onClick={()=>setPatient(null)}>Change patient</button><details className="owner-identifiers"><summary>Patient reference</summary>{patient.id}</details></div><Booking key={patient.id} patientId={patient.id} patientName={patient.display_name} onSuccess={onSuccess} onLockChange={value=>{setLocked(value);onLockChange(value);}}/></>:<p className="walkin-intake-note">Find a patient to begin their appointment registration.</p>}
+  </div><aside className="walkin-guidance"><h3>Walk-in information</h3><p>Registration uses an existing patient profile and an accepted appointment slot.</p><p>New patients can create an account through patient registration.</p><p>Availability and check-in eligibility are confirmed by Appointment.</p></aside></div>;
+}
 export function Appointments({
   reception = false,
   doctor = false,
@@ -568,9 +580,13 @@ export function Appointments({
 }) {
   const {state,api}=useAuth();
   const demo=useLocalDemo();
+  const ownProfile=useResource<PatientProfile>(!reception&&!doctor?"/api/v1/patients/me":null);
   const [params,setParams]=useSearchParams();
   const view=params.get('view')==='upcoming'?'manage':params.get('view')==='walk-in'?'walk-in':'book';
   const setView=(value:string)=>setParams(value==='book'?{}:{view:value==='manage'?'upcoming':'walk-in'},{replace:true});
+  const [managementLocked,setManagementLocked] = useState(false);
+  const [bookingLocked,setBookingLocked] = useState(false);
+  const [walkinLocked,setWalkinLocked] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const [targetDoctor, setTargetDoctor] = useState("");
@@ -580,19 +596,21 @@ export function Appointments({
   } | null>(null);
   return (
     <div className="appointment-workspace">
-      {!doctor && <nav className="department-tabs" aria-label="Appointment views"><button type="button" aria-pressed={view==='book'} onClick={()=>setView('book')}>Book Appointment</button><button type="button" aria-pressed={view==='manage'} onClick={()=>setView('manage')}>My Appointments / Reschedule / Cancel</button>{reception && <button type="button" aria-pressed={view==='walk-in'} onClick={()=>setView('walk-in')}>Walk-in Registration</button>}</nav>}
-      {reception && <section className="walkin-workspace" hidden={view!=='walk-in'}><div className="walkin-steps"><p><span className="step-number">1</span>Find existing patient</p><p><span className="step-number">2</span>Choose doctor & accepted slot</p><p><span className="step-number">3</span>Review & confirm booking</p></div><div><h2>Walk-in Registration</h2><p>Find the patient below, then use their Patient ID in the booking form. Walk-in care uses an accepted appointment slot.</p><Demographics/><Booking onSuccess={()=>setRevision(v=>v+1)}/></div><aside className="walkin-guidance"><h3>Before booking</h3><p>Use an existing synthetic patient profile. New patients can create an account through patient registration.</p><p>The service determines slot availability. No separate walk-in queue or estimated waiting time is available.</p></aside></section>}
+      {ownProfile.error&&<p role="alert">{ownProfile.error}</p>}
+      {!doctor && <nav className="department-tabs" aria-label="Appointment views"><button type="button" disabled={managementLocked||bookingLocked||walkinLocked} aria-pressed={view==='book'} onClick={()=>setView('book')}>Book Appointment</button><button type="button" disabled={managementLocked||bookingLocked||walkinLocked} aria-pressed={view==='manage'} onClick={()=>setView('manage')}>My Appointments / Reschedule / Cancel</button>{reception && <button type="button" disabled={managementLocked||bookingLocked||walkinLocked} aria-pressed={view==='walk-in'} onClick={()=>setView('walk-in')}>Walk-in Registration</button>}</nav>}
+      {reception && <section hidden={view!=="walk-in"}><WalkinRegistration onSuccess={()=>setRevision(v=>v+1)} onLockChange={setWalkinLocked}/></section>}
       <section hidden={view!=='book'} className="appointment-booking">
       {!doctor &&
         (reception ? (
           <Panel title="New booking">
-            <Booking onSuccess={() => setRevision((v) => v + 1)} />
+            <Booking onLockChange={setBookingLocked} onSuccess={() => setRevision((v) => v + 1)} />
           </Panel>
         ) : (
           <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>
             {(profile) => (
               <Panel title="New booking">
                 <Booking
+                  onLockChange={setBookingLocked}
                   patientId={profile.id}
                   patientName={profile.display_name}
                   onSuccess={() => setRevision((v) => v + 1)}
@@ -601,22 +619,23 @@ export function Appointments({
             )}
           </Resource>
         ))}
-      </section><div className="appointment-management" hidden={!doctor&&view!=='manage'}>
+      </section><div className={`appointment-management${selected?" appointment-management--selected":""}`} hidden={!doctor&&view!=='manage'}>
       <Collection<Appointment>
         title="Appointments"
-        path="/api/v1/appointments"
+        path={reception||doctor?"/api/v1/appointments":ownProfile.response?query("/api/v1/appointments",{patient_id:ownProfile.response.data.id}):null}
         revision={revision}
         renderItem={(item) => (
           <>
-            <div className="appointment-slip-entry"><time>{new Date(item.starts_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`}</strong><span>{demo?.patients[item.patient_id]?.name??'Authorized patient'}</span><span className="owner-state">{item.state}</span></div>
+            <div className="appointment-slip-entry"><time>{new Date(item.starts_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`}</strong><span>{demo?.patients[item.patient_id]?.name??(!reception&&!doctor?'Your visit':`Patient …${item.patient_id.slice(-4)}`)}</span><span className="owner-state">{item.state}</span></div>
             <details className="owner-identifiers"><summary>Reference identifiers</summary><Facts values={{"Appointment ID":item.id,"Patient ID":item.patient_id,"Doctor ID":item.doctor_id}}/></details>
             <button
+              disabled={managementLocked}
               aria-label={`View appointment ${item.id}`}
               onClick={() => {
                 setSelected(item.id);
                 if(!doctor)setView('manage');
                 setTargetSlot(null);
-                setTargetDoctor("");
+                setTargetDoctor(item.doctor_id);
               }}
             >
               Review appointment →
@@ -628,19 +647,21 @@ export function Appointments({
         path={selected ? `/api/v1/appointments/${selected}` : null}
       >
         {(item, etag, refresh) => (
-          <>
+          <div className="appointment-edit-desk">
             <Facts
               values={{
-                "Appointment ID": item.id,
+                Visit: `…${item.id.slice(-4)}`,
                 State: item.state,
                 "Starts (UTC)": item.starts_at,
                 "Ends (UTC)": item.ends_at,
               }}
             />
-            {!doctor && <AppointmentShortLinkPanel api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} appointmentId={item.id} />}
+            <details className="owner-identifiers"><summary>Appointment reference</summary>{item.id}</details>
+            {!doctor && <details className="appointment-share"><summary>Secure appointment links</summary><AppointmentShortLinkPanel api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} appointmentId={item.id}/></details>}
             {!doctor && item.state === "confirmed" && (
               <>
                 <CommandForm
+                  onLockChange={setManagementLocked}
                   title="Cancel appointment"
                   path={`/api/v1/appointments/${item.id}/cancel`}
                   fields={[reasonField]}
@@ -651,7 +672,7 @@ export function Appointments({
                     setRevision((v) => v + 1);
                   }}
                 />
-                <Lookup
+                <fieldset className="reschedule-calendar" disabled={managementLocked}><Lookup
                   label="Target doctor ID"
                   onSelect={(value) => {
                     setTargetDoctor(value);
@@ -662,12 +683,15 @@ export function Appointments({
                   <AvailabilityPicker
                     key={targetDoctor}
                     doctorId={targetDoctor}
+                    autoLoad
+                    onClear={()=>setTargetSlot(null)}
                     onSlot={(id, revision) => setTargetSlot({ id, revision })}
                   />
                 )}
-                {targetSlot && (
+                </fieldset>{targetSlot && (
                   <CommandForm
                     key={targetSlot.id}
+                    onLockChange={setManagementLocked}
                     title="Reschedule appointment"
                     path={`/api/v1/appointments/${item.id}/reschedule`}
                     conditional
@@ -686,7 +710,7 @@ export function Appointments({
                 )}
               </>
             )}
-          </>
+          </div>
         )}
       </Selected>
       {!selected && <aside className="appointment-details-empty"><Panel title="Appointment details"><div className="resource-empty"><DepartmentIcon department="appointments"/><strong>Your appointment slip</strong><p>Open an appointment to review its schedule, create a secure short link, or reschedule/cancel where permitted.</p></div></Panel></aside>}

@@ -402,3 +402,43 @@
 .reference-departments .ops-trace-desk .ops-panel{background:#f4e9da;border-radius:3px;padding:18px;}
 .reference-departments .ops-trace-desk .ops-trace-list{max-height:440px;overflow:auto;}
 .reference-departments .ops-trace-desk .ops-trace-row{padding:12px;border-bottom:1px solid #cdbb9f;border-radius:0;}
+.appointment-specialties { display:flex;flex-wrap:wrap;gap:4px;margin-top:8px; }
+.workspace-content .appointment-specialties button { min-height:24px;padding:4px 7px;font-size:9px;background:#e1ddd7;border:0;border-radius:4px; }
+.workspace-content .appointment-specialties button[aria-pressed="true"] { background:#143c43;color:#fff; }
+.doctor-rail-pagination { display:flex;gap:6px; }
+.doctor-rail-pagination button { font-size:10px; }
+.appointment-share{padding:10px;background:#ece1d0;font-size:11px;}
+@media(min-width:901px){
+ .reference-departments .appointment-management--selected{grid-template-columns:minmax(0,1fr);}
+ .reference-departments .appointment-management--selected>[data-panel="appointments"] .hospital-items{max-height:200px;}
+ .reference-departments .appointment-edit-desk{display:grid;grid-template-columns:minmax(200px,1fr) minmax(0,2fr);gap:12px 24px;align-items:start;}
+ .reference-departments .appointment-edit-desk>.hospital-facts{grid-column:1;grid-row:1;grid-template-columns:1fr 1fr;font-size:11px;}
+ .reference-departments .appointment-edit-desk>.owner-identifiers{grid-column:1;grid-row:2;}
+ .reference-departments .appointment-edit-desk>.appointment-share{grid-column:1;grid-row:3;}
+ .reference-departments .appointment-edit-desk>.hospital-form:first-of-type{grid-column:1;grid-row:4/6;padding:12px;}
+ .reference-departments .appointment-edit-desk>.hospital-form:first-of-type textarea{min-height:70px;}
+ .reference-departments .appointment-edit-desk>form:not(.hospital-form){grid-column:2;grid-row:1;}
+ .reference-departments .appointment-edit-desk>[data-panel="accepted-availability"]{grid-column:2;grid-row:2/6;}
+ .reference-departments .appointment-edit-desk>.hospital-form:last-of-type:not(:first-of-type){grid-column:2;grid-row:6;}
+ .reference-departments .appointment-edit-desk .available-slots{grid-template-columns:repeat(4,minmax(0,1fr));}
+ .reference-departments .appointment-edit-desk .available-slot{padding:0;background:none;border:0;}
+ .reference-departments .appointment-edit-desk .available-slot>time{display:none;}
+ .reference-departments .appointment-edit-desk .available-slot>button{width:100%;}
+}
+.workspace-content fieldset.reschedule-calendar{border:0;padding:0;margin:0;min-width:0;}
+@media(min-width:901px){
+ .reference-departments .appointment-edit-desk>fieldset.reschedule-calendar{grid-column:2;grid-row:1/6;}
+ .reference-departments .reschedule-calendar>[data-panel="accepted-availability"]{margin-top:12px;padding:12px;}
+}
+.walkin-patient-search {display:flex;align-items:end;flex-wrap:wrap;gap:12px;padding:14px;background:#efe2d0;}
+.walkin-patient-search>label{flex:1;min-width:180px;}
+.walkin-patient-strip{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px;background:#e1e6db;margin-top:12px;}
+.walkin-intake-note{padding:24px 14px;border-bottom:1px solid #cdbb9f;font-size:13px;}
+.receptionist-care{padding:14px 18px;background:#f2e5d4;font-size:12px;}
+@media(min-width:901px){
+ .reference-departments .walkin-workspace{grid-template-columns:150px minmax(0,1fr) 200px;gap:18px;background:#f4e9da;padding:18px;}
+ .reference-departments .walkin-entry>[data-panel="matching-patients"]{padding:12px;}
+ .reference-departments .walkin-entry>[data-panel="matching-patients"] .hospital-items{display:block;max-height:210px;overflow:auto;}
+ .reference-departments .walkin-entry .booking-composition{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);margin-top:12px;}
+ .reference-departments .walkin-entry .booking-receipt{grid-column:1/-1;}
+}
