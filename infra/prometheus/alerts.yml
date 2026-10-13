@@ -1,0 +1,108 @@
+groups:
+  - name: pulsegrid-service-health
+    rules:
+      - alert: PulseGridPatientUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="patient"}) or min(probe_success{job="pulsegrid_readiness",service="patient"}) < 1
+        for: 2m
+        labels: {severity: critical, service: patient}
+        annotations:
+          summary: Patient service readiness is unavailable
+          description: Patient readiness has failed or its probe target is missing for two minutes.
+      - alert: PulseGridDoctorUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="doctor"}) or min(probe_success{job="pulsegrid_readiness",service="doctor"}) < 1
+        for: 2m
+        labels: {severity: critical, service: doctor}
+        annotations:
+          summary: Doctor service readiness is unavailable
+          description: Doctor readiness has failed or its probe target is missing for two minutes.
+      - alert: PulseGridAppointmentUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="appointment"}) or min(probe_success{job="pulsegrid_readiness",service="appointment"}) < 1
+        for: 2m
+        labels: {severity: critical, service: appointment}
+        annotations:
+          summary: Appointment service readiness is unavailable
+          description: Appointment readiness has failed or its probe target is missing for two minutes.
+      - alert: PulseGridRecordsUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="records"}) or min(probe_success{job="pulsegrid_readiness",service="records"}) < 1
+        for: 2m
+        labels: {severity: critical, service: records}
+        annotations:
+          summary: Records service readiness is unavailable
+          description: Records readiness has failed or its probe target is missing for two minutes.
+      - alert: PulseGridPharmacyUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="pharmacy"}) or min(probe_success{job="pulsegrid_readiness",service="pharmacy"}) < 1
+        for: 2m
+        labels: {severity: critical, service: pharmacy}
+        annotations:
+          summary: Pharmacy service readiness is unavailable
+          description: Pharmacy readiness has failed or its probe target is missing for two minutes.
+      - alert: PulseGridBillingUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="billing"}) or min(probe_success{job="pulsegrid_readiness",service="billing"}) < 1
+        for: 2m
+        labels: {severity: critical, service: billing}
+        annotations:
+          summary: Billing service readiness is unavailable
+          description: Billing readiness has failed or its probe target is missing for two minutes.
+      - alert: PulseGridEmergencyUnavailable
+        expr: absent(probe_success{job="pulsegrid_readiness",service="emergency"}) or min(probe_success{job="pulsegrid_readiness",service="emergency"}) < 1
+        for: 2m
+        labels: {severity: critical, service: emergency}
+        annotations:
+          summary: Emergency service readiness is unavailable
+          description: Emergency readiness has failed or its probe target is missing for two minutes.
+
+      - alert: PulseGridHighHttp5xxRate
+        expr: (sum by (service) (rate(pulsegrid_http_requests_total{job="pulsegrid_api",status_class="5xx"}[5m])) / clamp_min(sum by (service) (rate(pulsegrid_http_requests_total{job="pulsegrid_api"}[5m])), 0.001) > 0.05) and (sum by (service) (rate(pulsegrid_http_requests_total{job="pulsegrid_api"}[5m])) > 0.1)
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Sustained HTTP 5xx rate is elevated
+          description: A service has exceeded a 5 percent 5xx rate with sustained request traffic.
+      - alert: PulseGridHighP95Latency
+        expr: (histogram_quantile(0.95, sum by (service, le) (rate(pulsegrid_http_request_duration_seconds_bucket{job="pulsegrid_api"}[5m]))) > 1) and (sum by (service) (rate(pulsegrid_http_request_duration_seconds_count{job="pulsegrid_api"}[5m])) > 0)
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Sustained service p95 latency is high
+          description: A service p95 request latency has exceeded one second for five minutes.
+
+  - name: pulsegrid-messaging
+    rules:
+      - alert: PulseGridRabbitBacklogGrowing
+        expr: (rabbitmq_detailed_queue_messages_ready{queue=~"pulsegrid\\.appointment\\.journey\\.(pharmacy|billing)\\.v1"} > 100) and (deriv(rabbitmq_detailed_queue_messages_ready{queue=~"pulsegrid\\.appointment\\.journey\\.(pharmacy|billing)\\.v1"}[5m]) > 0)
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Appointment event queue backlog is growing
+          description: A selected durable workflow queue has more than 100 ready messages and is increasing.
+      - alert: PulseGridOutboxPendingTooLong
+        expr: (pulsegrid_outbox_pending{component="phase5"} > 0) and (pulsegrid_outbox_oldest_pending_seconds{component="phase5"} > 60)
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: Outbox event publication is delayed
+          description: A producer-owned outbox has pending events older than 60 seconds.
+      - alert: PulseGridDeadLetterActivity
+        expr: rabbitmq_detailed_queue_messages_ready{queue=~"pulsegrid\\.dlq\\.appointment\\.journey\\.(pharmacy|billing)\\.v1"} > 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: An Appointment event dead-letter queue is nonempty
+          description: Review the affected workflow through its owning service before replaying or discarding messages.
+      - alert: PulseGridDependencyFailures
+        expr: sum by (dependency) (increase(pulsegrid_dependency_failures_total[5m])) >= 3
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: Optional owner dependency failures are recurring
+          description: Appointment observed at least three dependency failures during successive five-minute windows.
+
+  - name: pulsegrid-admission
+    rules:
+      - alert: PulseGridSurgeModeProlonged
+        expr: (pulsegrid_surge_mode_active{owner="appointment"} == 1) and ((time() - pulsegrid_surge_mode_entered_timestamp_seconds{owner="appointment"}) > 1500)
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: Surge Mode has remained active unusually long
+          description: The shared Appointment admission mode has been active for more than 25 minutes.
