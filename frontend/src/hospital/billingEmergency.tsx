@@ -1,3 +1,4 @@
+import { DepartmentIcon } from "../design/DepartmentIcon";
 import { InsuranceEstimatePanel, InsuranceRefreshPanel } from "../phase4";
 import { useState } from "react";
 import { useAuth } from "../auth/authContext";
@@ -32,12 +33,13 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
   const [revision, setRevision] = useState(0);
   const [payment, setPayment] = useState<Payment | null>(null);
   return (
-    <>
-      <p>
+    <div className="billing-workbench">
+      <p className="billing-service-note">
         Payments are simulated. Do not enter card, bank or real payment
         credentials. Invoice balances include only charges explicitly imported
         by billing staff.
       </p>
+      <section className="billing-source-desk">
       {staff && (
         <Panel title="Create invoice">
           <CommandForm<Invoice>
@@ -88,6 +90,7 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
           setPayment(null);
         }}
       />
+      </section><aside className="invoice-receipt">{!selected && <Panel title="Current bill"><div className="resource-empty"><DepartmentIcon department="billing"/><strong>Open an invoice</strong><p>Choose an invoice to review its authoritative line items, insurance estimate and balance.</p></div></Panel>}
       <Selected<Invoice>
         path={selected ? `/api/v1/billing/invoices/${selected}` : null}
       >
@@ -113,18 +116,8 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
               {invoice.items.length === 0 && (
                 <p>No charges have been imported.</p>
               )}
-              {invoice.items.map((item) => (
-                <Facts
-                  key={item.id}
-                  values={{
-                    Charge: item.charge_code,
-                    Source: `${item.source_service} ${item.source_item_id}`,
-                    Quantity: item.quantity,
-                    "Unit price": money(item.unit_amount_minor),
-                    "Tariff revision": item.tariff_revision,
-                  }}
-                />
-              ))}
+              <div className="invoice-line-scroll"><table className="invoice-lines"><caption>Itemized invoice</caption><thead><tr><th scope="col">Charge / source</th><th scope="col">Qty</th><th scope="col">Unit price</th><th scope="col">Tariff</th></tr></thead><tbody>{invoice.items.map(item=><tr key={item.id}><th scope="row">{item.charge_code}<small>{item.source_service} · {item.source_item_id}</small></th><td>{item.quantity}</td><td>{money(item.unit_amount_minor)}</td><td>{item.tariff_revision}</td></tr>)}</tbody></table></div>
+              <div className="invoice-total"><span>Balance due</span><strong>{money(invoice.balance_minor)}</strong></div>
               {staff && (
                 <CommandForm
                   title="Import charges manually"
@@ -226,8 +219,9 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
           . Amount {money(payment.amount_minor)}.
         </p>
       )}
-      {staff && <Tariffs />}
-    </>
+      </aside>
+      {staff && <section className="billing-tariff-desk"><Tariffs /></section>}
+    </div>
   );
 }
 function Tariffs() {
@@ -291,11 +285,12 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
   const { state } = useAuth();
   const userId = state.status === "authenticated" ? state.user.id : undefined;
   return (
-    <>
-      <p>
+    <div className="emergency-workbench">
+      <p className="emergency-service-note">
         Synthetic educational requests only. This prototype does not provide
         emergency dispatch or certified clinical triage.
       </p>
+      <section className="emergency-register">
       {!staff && (
         <Panel title="Submit emergency request">
           <Resource<PatientProfile> path="/api/v1/patients/me">
@@ -370,6 +365,7 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
         )}
       />
       <Lookup label="Emergency request ID" onSelect={setSelected} />
+      </section><section className="emergency-active">{!selected && <Panel title="Active request"><div className="resource-empty"><DepartmentIcon department="emergency"/><strong>Select an emergency request</strong><p>Review a request to see its owner-confirmed priority, claim and allowed next actions.</p></div></Panel>}
       <Selected<Emergency>
         path={selected ? `/api/v1/emergencies/${selected}` : null}
       >
@@ -381,7 +377,7 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
           const terminal = ["resolved", "cancelled"].includes(item.state);
           const ownedClaim = !!userId && item.claimed_by_user_id === userId;
           return (
-            <>
+            <div className="emergency-case-layout">
               <Facts
                 values={{
                   "Request ID": item.id,
@@ -487,11 +483,11 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
                   onSuccess={changed}
                 />
               )}
-            </>
+            </div>
           );
         }}
       </Selected>
-    </>
+    </section></div>
   );
 }
 

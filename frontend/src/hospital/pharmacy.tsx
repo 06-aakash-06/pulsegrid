@@ -1,3 +1,4 @@
+import { DepartmentIcon } from "../design/DepartmentIcon";
 import { MedicineAutocomplete } from "../phase4";
 import { useAuth } from "../auth/authContext";
 import { useState } from "react";
@@ -41,7 +42,7 @@ export function MedicineCatalog({
   const [revision, setRevision] = useState(0);
   const [medicineId, setMedicineId] = useState("");
   return (
-    <>
+    <div className="pharmacy-catalog"><div className="pharmacy-search-counter">
       <MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => setSelected(item.id)} />
       <Panel title="Medicine search">
         <form
@@ -80,22 +81,22 @@ export function MedicineCatalog({
           {error && <p role="alert">{error}</p>}
         </form>
       </Panel>
+      </div><div className="pharmacy-shelf-workspace"><div className="medicine-shelves">
       <Collection<Medicine>
         title="Medicines"
         path={query("/api/v1/pharmacy/medicines", filters)}
         revision={revision}
         renderItem={(item) => (
           <>
-            <strong>{item.name}</strong>
+            <span className="medicine-box" aria-hidden="true"><DepartmentIcon department="pharmacy"/><span>{item.sku}</span></span><strong>{item.name}</strong>
             <p>
               {item.sku} • {item.availability} (stock hint)
             </p>
-            <button onClick={() => setSelected(item.id)}>
-              View medicine {item.id}
-            </button>
+            <button aria-label={`View medicine ${item.id}`} onClick={() => setSelected(item.id)}>Medicine details →</button>
           </>
         )}
       />
+      </div><aside className="dispensing-counter">{!selected && <Panel title="Medicine details"><div className="resource-empty"><DepartmentIcon department="pharmacy"/><strong>Choose a medicine</strong><p>Open a shelf item to review its catalog status. Prescription fulfillment remains a separate authorized workflow.</p></div></Panel>}
       <Selected<Medicine>
         path={selected ? `/api/v1/pharmacy/medicines/${selected}` : null}
       >
@@ -151,6 +152,7 @@ export function MedicineCatalog({
           </>
         )}
       </Selected>
+      </aside></div>
       {staff && (
         <Panel title="New catalog medicine">
           <CommandForm
@@ -199,7 +201,7 @@ export function MedicineCatalog({
           <StockAdjustment onSuccess={() => setRevision((v) => v + 1)} />
         </>
       )}
-    </>
+    </div>
   );
 }
 function StockAdjustment({ onSuccess }: { onSuccess: () => void }) {

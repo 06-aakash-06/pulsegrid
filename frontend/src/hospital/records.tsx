@@ -1,3 +1,4 @@
+import { DepartmentIcon } from "../design/DepartmentIcon";
 import { useState } from "react";
 import type {
   Consultation,
@@ -123,13 +124,13 @@ function prescriptionItems(items: Values[]): PrescriptionItemInput[] {
 }
 export function ClinicalFacts({ value }: { value: Content }) {
   return (
-    <Facts
+    <div className="clinical-content"><Facts
       values={{
         Summary: value.summary,
         Assessment: value.assessment,
         Plan: value.plan,
       }}
-    />
+    /></div>
   );
 }
 function ConsultationEditor({
@@ -197,7 +198,7 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   return (
-    <>
+    <div className="consultation-clinical">
       {doctor && (
         <>
           <Appointments doctor />
@@ -221,6 +222,7 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
           </Panel>
         </>
       )}
+      <section className="consultation-register">
       <Collection<Consultation>
         title="Consultations"
         path="/api/v1/records/consultations"
@@ -238,6 +240,7 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
         )}
       />
       <Lookup label="Consultation ID" onSelect={setSelected} />
+      </section><section className="clinical-editor">{!selected && <Panel title="Consultation room"><div className="resource-empty"><DepartmentIcon department="consultation"/><strong>Open a consultation</strong><p>Select an authorized consultation or create one for an assigned appointment.</p></div></Panel>}
       <Selected<Consultation>
         path={selected ? `/api/v1/records/consultations/${selected}` : null}
       >
@@ -265,7 +268,7 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
           )
         }
       </Selected>
-    </>
+    </section></div>
   );
 }
 function History({
@@ -278,17 +281,14 @@ function History({
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   return (
-    <>
+    <div className="record-history"><aside className="visit-timeline">
       <Collection<RecordSummary>
         title="Medical history"
         path={`/api/v1/records/patients/${patientId}`}
         revision={revision}
         renderItem={(item) => (
           <>
-            <p>
-              Record {item.id} • Consultation {item.consultation_id} • Revision{" "}
-              {item.revision} • {item.created_at}
-            </p>
+            <time dateTime={item.created_at}>{new Date(item.created_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>Clinical record</strong><p>Record {item.id} · Consultation {item.consultation_id} · Revision {item.revision}</p>
             <button onClick={() => setSelected(item.id)}>
               View record {item.id}
             </button>
@@ -296,6 +296,7 @@ function History({
         )}
       />
       <Lookup label="Medical record ID" onSelect={setSelected} />
+      </aside><section className="active-dossier">{!selected && <Panel title="Clinical dossier"><div className="resource-empty"><DepartmentIcon department="records"/><strong>Choose a visit</strong><p>Open a record from your timeline to read its authorized summary, assessment and plan.</p></div></Panel>}
       <Selected<MedicalRecord>
         path={selected ? `/api/v1/records/${selected}` : null}
       >
@@ -336,7 +337,7 @@ function History({
           </>
         )}
       </Selected>
-    </>
+    </section></div>
   );
 }
 function Grants({ patientId }: { patientId: string }) {
