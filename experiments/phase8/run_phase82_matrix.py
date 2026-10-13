@@ -368,6 +368,22 @@ async def run_phase82_matrix(args: argparse.Namespace) -> None:
             )
         manifest["doctor_image_build_performed"] = not image_policy_present
         benchmark_overlay_attempted = True
+        # Traefik reserves the first edge address. Recreate it before API
+        # containers so Docker cannot hand that address to a dynamically
+        # addressed service while the gateway is absent.
+        phase8.compose_command(
+            "up",
+            "-d",
+            "--no-deps",
+            "--no-build",
+            "--force-recreate",
+            "traefik",
+            "grafana",
+            benchmark_enabled=True,
+            tracing_disabled=True,
+            timeout=240.0,
+        )
+        await wait_for_containers(("pulsegrid-traefik-1", "pulsegrid-grafana-1"))
         phase8.compose_command(
             "up",
             "-d",
@@ -375,14 +391,12 @@ async def run_phase82_matrix(args: argparse.Namespace) -> None:
             "--no-build",
             "--force-recreate",
             *API_SERVICES,
-            "traefik",
-            "grafana",
             benchmark_enabled=True,
             tracing_disabled=True,
             timeout=240.0,
         )
         await wait_for_containers(
-            (*phase8.PHASE82_API_CONTAINERS.values(), "pulsegrid-traefik-1", "pulsegrid-prometheus-1", "pulsegrid-grafana-1")
+            (*phase8.PHASE82_API_CONTAINERS.values(), "pulsegrid-prometheus-1", "pulsegrid-grafana-1")
         )
         trace_overlay_verified = phase8.assert_tracing_disabled(require_stopped=False)
         manifest["tracing_disabled_configuration_before_stop"] = trace_overlay_verified
@@ -594,17 +608,32 @@ async def run_phase82_matrix(args: argparse.Namespace) -> None:
                 if benchmark_overlay_attempted:
                     await asyncio.sleep(12.0)
                     manifest["benchmark_redis_bucket_ttl_wait_seconds"] = 12
+                # Recreate the gateway first to claim its reserved edge IP;
+                # the API containers use dynamically assigned edge addresses.
                 phase8.compose_command(
                     "up",
                     "-d",
                     "--no-deps",
                     "--no-build",
                     "--force-recreate",
-                    *NORMAL_COMPOSE_SERVICES,
+                    "traefik",
+                    timeout=240.0,
+                )
+                await wait_for_containers(("pulsegrid-traefik-1",))
+                phase8.compose_command(
+                    "up",
+                    "-d",
+                    "--no-deps",
+                    "--no-build",
+                    "--force-recreate",
+                    *API_SERVICES,
+                    "grafana",
+                    "tempo",
+                    "otel-collector",
                     timeout=240.0,
                 )
                 await wait_for_containers(
-                    (*phase8.PHASE82_API_CONTAINERS.values(), "pulsegrid-traefik-1", "pulsegrid-prometheus-1", "pulsegrid-grafana-1", "pulsegrid-tempo-1", "pulsegrid-otel-collector-1")
+                    (*phase8.PHASE82_API_CONTAINERS.values(), "pulsegrid-prometheus-1", "pulsegrid-grafana-1", "pulsegrid-tempo-1", "pulsegrid-otel-collector-1")
                 )
                 normal_route_hash = phase8.mounted_traefik_route_sha256()
                 normal_route_source = phase8.mounted_traefik_route_source()
