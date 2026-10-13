@@ -510,6 +510,12 @@
     color: var(--warning);
   }
 
+  .status-badge--danger {
+    border-color: #efcfcb;
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
   .empty-state {
     display: flex;
     align-items: flex-start;

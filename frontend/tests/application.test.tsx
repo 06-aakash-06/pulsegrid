@@ -84,8 +84,7 @@ describe("application routes", () => {
   ] as const)("renders the %s workspace shell after an identity response", async (role, workspaceName) => {
     await signInAs(role);
     expect(await screen.findAllByText(workspaceName)).not.toHaveLength(0);
-    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
-    if (role === "ops") expect(screen.getByText("Future workflow unavailable")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: role === "ops" ? "Control Room" : "Dashboard" })).toBeInTheDocument();
   });
 
   it("supports keyboard-visible responsive navigation interaction", async () => {
@@ -132,7 +131,8 @@ describe("application routes", () => {
 
   it.each(workspaces)("renders each configured page in the $name workspace", async ({ roles: workspaceRoles, pages }) => {
     await signInAs(workspaceRoles[0]);
-    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    const initialHeading = workspaceRoles.includes("ops") ? "Control Room" : "Dashboard";
+    expect(await screen.findByRole("heading", { name: initialHeading })).toBeInTheDocument();
     for (const page of pages) {
       fireEvent.click(screen.getByRole("link", { name: page.title }));
       expect(await screen.findByRole("heading", { name: page.title, level: 1 })).toBeInTheDocument();

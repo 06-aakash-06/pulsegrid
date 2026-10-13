@@ -14,6 +14,7 @@ import {
 import { Consultations, Prescriptions, RecordsPage } from "./records";
 import { MedicineCatalog } from "./pharmacy";
 import { BillingPage, EmergencyPage, InsurancePage } from "./billingEmergency";
+import { ControlRoom, TraceExplorer } from "../ops/ControlRoom";
 
 export function HospitalPage({
   workspace,
@@ -79,12 +80,20 @@ export function HospitalPage({
       );
     if (route === "staff") content = <StaffManagement />;
     if (route === "doctors") content = <DoctorDirectory admin />;
+    if (route === "control-room") content = <ControlRoom workspaceBasePath="/admin" />;
+    if (route === "traces") content = <TraceExplorer />;
+  }
+  if (role === "/ops") {
+    if (route === "dashboard") content = <ControlRoom workspaceBasePath="/ops" />;
+    if (route === "traces") content = <TraceExplorer />;
   }
   if (role === "/receptionist")
     content =
       route === "dashboard" ? <Demographics /> : <><Appointments reception /><ReceptionWorkflowPanel /></>;
   if (!content)
     return <PlaceholderPage page={page} workspaceName={workspace.name} />;
+  if (role === "/ops" || (role === "/admin" && ["control-room", "traces"].includes(route)))
+    return content;
   return (
     <div className="page-stack">
       <div className="page-heading">

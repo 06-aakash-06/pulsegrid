@@ -87,6 +87,8 @@ export const workspaces: WorkspaceConfig[] = [
     page("dashboard", "Dashboard", "A starting point for authorized hospital administration.", "Administration data is not connected yet."),
     page("staff", "Staff and roles", "Manage staff identity and role assignments through the patient service.", "Staff administration is not connected yet."),
     page("doctors", "Doctor directory", "Manage doctor profiles through the doctor service.", "Doctor administration is not connected yet."),
+    page("control-room", "Control Room", "Review live service health, event delivery, and operational alerts.", "Live operational metrics are temporarily unavailable."),
+    page("traces", "Trace Explorer", "Inspect safe timing summaries for recent distributed traces.", "Trace data is temporarily unavailable."),
     page("settings", "Administration", "Review available hospital configuration interfaces.", "Administrative configuration is not connected yet."),
   ]),
   workspace("/receptionist", "Reception workspace", "Receptionist", ["receptionist"], [
@@ -94,8 +96,8 @@ export const workspaces: WorkspaceConfig[] = [
     page("appointments", "Appointment coordination", "Review appointment, check-in, and queue interfaces owned by the appointment service.", "Appointment coordination is not connected yet."),
   ]),
   workspace("/ops", "Operations control room", "Operations", ["ops"], [
-    page("dashboard", "Dashboard", "Review aggregate system health after monitoring integrations are available.", "The control room is not connected yet. No live metrics, traces, or service status are shown."),
-    page("traces", "Trace search", "Search request and event traces after observability integration.", "Trace search is not connected yet. No trace data is fabricated."),
+    page("dashboard", "Control Room", "Review live service health, event delivery, and operational alerts.", "Live operational metrics are temporarily unavailable."),
+    page("traces", "Trace Explorer", "Inspect safe timing summaries for recent distributed traces.", "Trace data is temporarily unavailable."),
   ]),
 ];
 
