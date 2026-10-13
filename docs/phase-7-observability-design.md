@@ -1,8 +1,36 @@
 # Phase 7 observability design
 
 Status: implementation design for the synthetic single-hospital PulseGrid
-prototype. This phase adds operational visibility; it does not change the
-authority of any hospital service or make telemetry a business dependency.
+prototype. Checkpoints 1 and 2 are complete; tracing, dashboards/alerts, the
+Control Room, and full integration verification remain in progress. This phase
+adds operational visibility; it does not change the authority of any hospital
+service or make telemetry a business dependency.
+
+## Checkpoint 2 verification — 2026-10-13
+
+Prometheus v3.13.4 now scrapes the seven APIs by private Compose DNS and also
+discovers the configured `doctor_replica`. Its API target labels keep
+`service`, `replica_source`, and per-process `instance` distinct. Blackbox
+probes each discovered API's existing `/health/ready` route. RabbitMQ's native
+Prometheus plugin reports the live Appointment queues, and Traefik exposes
+metrics only on its private `:8083` entry point.
+
+Live Prometheus queries returned eight API targets and eight successful
+readiness probes: one target for each domain service plus the Doctor replica.
+After a bounded `/openapi.json` request to each process, the HTTP counter was
+present for all eight targets with the `/openapi.json` route template and
+`2xx` status class. A loopback gateway request also produced the Traefik
+`web` entry-point request series. RabbitMQ's detailed scrape returned four
+queue-ready series, including the two Appointment consumer queues and their
+dead-letter queues. The metrics test confirms request paths, query strings,
+and readiness probes are not emitted as label values.
+
+`docker compose config --quiet`, Prometheus `promtool check config`, and the
+focused metrics tests passed. The existing PostgreSQL, Redis, and RabbitMQ
+named volumes remain present; the monitoring stack added dedicated Prometheus,
+Tempo, and Grafana volumes. The current RabbitMQ node name is now configured
+explicitly so Compose recreation resumes the existing broker state. No
+database, Redis, or RabbitMQ data volume was reset.
 
 ## Existing instrumentation and boundaries
 

@@ -12,8 +12,23 @@ entryPoints:
     address: ':8082'
     http:
       aliasHeadersStrategy: reject
+  metrics:
+    address: ':8083'
 ping:
   entryPoint: health
+metrics:
+  prometheus:
+    entryPoint: metrics
+    addEntryPointsLabels: true
+    addServicesLabels: true
+    buckets: [0.05, 0.1, 0.25, 0.5, 1, 2.5, 5]
+tracing:
+  serviceName: traefik
+  sampleRate: 1.0
+  otlp:
+    grpc:
+      endpoint: otel-collector:4317
+      insecure: true
 providers:
   file:
     filename: /etc/traefik/routes.yaml

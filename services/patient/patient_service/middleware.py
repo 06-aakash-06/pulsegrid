@@ -14,6 +14,11 @@ from starlette.responses import Response
 from .constants import SERVICE_NAME
 from .errors import error_response
 
+_OBSERVABILITY_EXCLUDED_PATHS = {
+    "/metrics", "/health/live", "/health/ready",
+    "/api/v1/health/live", "/api/v1/health/ready",
+}
+
 _TRACEPARENT = re.compile(
     r"^(?P<version>[0-9a-f]{2})-(?P<trace_id>[0-9a-f]{32})-"
     r"(?P<span_id>[0-9a-f]{16})-(?P<flags>[0-9a-f]{2})"
@@ -35,6 +40,22 @@ def validate_traceparent(value: str | None) -> str | None:
     if match.group("version") == "00" and match.group("extension") is not None:
         return None
     return value
+
+
+def _active_traceparent(fallback: str | None) -> str | None:
+    """Use this request's server span as the parent for service-owned work."""
+    try:
+        from opentelemetry import trace
+
+        context = trace.get_current_span().get_span_context()
+        if context.is_valid:
+            return (
+                f"00-{context.trace_id:032x}-{context.span_id:016x}-"
+                f"{int(context.trace_flags):02x}"
+            )
+    except ImportError:
+        pass
+    return fallback
 
 
 def _parse_or_generate_uuid(value: str | None) -> tuple[UUID, bool]:
@@ -61,8 +82,8 @@ def install_request_context(app: FastAPI) -> None:
         )
         request.state.request_id = request_id
         request.state.correlation_id = correlation_id
-        request.state.traceparent = validate_traceparent(
-            request.headers.get("traceparent")
+        request.state.traceparent = _active_traceparent(
+            validate_traceparent(request.headers.get("traceparent"))
         )
 
         response_headers = {
@@ -84,17 +105,18 @@ def install_request_context(app: FastAPI) -> None:
         response.headers.update(response_headers)
         matched_route = request.scope.get("route")
         route_template = getattr(matched_route, "path", "<unmatched>")
-        request.app.state.logger.info(
-            "http_request_completed",
-            extra={
-                "service": SERVICE_NAME,
-                "request_id": str(request_id),
-                "correlation_id": str(correlation_id),
-                "traceparent": request.state.traceparent,
-                "method": request.method,
-                "path": route_template,
-                "status_code": response.status_code,
-                "duration_ms": round((perf_counter() - start) * 1000, 3),
-            },
-        )
+        if request.url.path not in _OBSERVABILITY_EXCLUDED_PATHS:
+            request.app.state.logger.info(
+                "http_request_completed",
+                extra={
+                    "service": SERVICE_NAME,
+                    "request_id": str(request_id),
+                    "correlation_id": str(correlation_id),
+                    "traceparent": request.state.traceparent,
+                    "method": request.method,
+                    "path": route_template,
+                    "status_code": response.status_code,
+                    "duration_ms": round((perf_counter() - start) * 1000, 3),
+                },
+            )
         return response

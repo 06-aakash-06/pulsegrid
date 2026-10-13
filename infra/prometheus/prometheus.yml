@@ -1,0 +1,86 @@
+global:
+  scrape_interval: 15s
+  scrape_timeout: 5s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [prometheus:9090]
+
+  - job_name: pulsegrid_api
+    dns_sd_configs:
+      - names:
+          - patient
+          - doctor
+          - doctor_replica
+          - appointment
+          - records
+          - pharmacy
+          - billing
+          - emergency
+        type: A
+        port: 8000
+        refresh_interval: 15s
+    relabel_configs:
+      - source_labels: [__meta_dns_name]
+        target_label: replica_source
+      - source_labels: [__meta_dns_name]
+        regex: doctor_replica
+        replacement: doctor
+        target_label: service
+      - source_labels: [__meta_dns_name]
+        regex: (patient|doctor|appointment|records|pharmacy|billing|emergency)
+        replacement: $1
+        target_label: service
+
+  - job_name: pulsegrid_readiness
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    dns_sd_configs:
+      - names:
+          - patient
+          - doctor
+          - doctor_replica
+          - appointment
+          - records
+          - pharmacy
+          - billing
+          - emergency
+        type: A
+        port: 8000
+        refresh_interval: 15s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+        replacement: http://$1/health/ready
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__meta_dns_name]
+        target_label: replica_source
+      - source_labels: [__meta_dns_name]
+        regex: doctor_replica
+        replacement: doctor
+        target_label: service
+      - source_labels: [__meta_dns_name]
+        regex: (patient|doctor|appointment|records|pharmacy|billing|emergency)
+        replacement: $1
+        target_label: service
+      - target_label: __address__
+        replacement: blackbox:9115
+
+  - job_name: rabbitmq
+    metrics_path: /metrics/detailed
+    params:
+      family:
+        - queue_coarse_metrics
+        - queue_consumer_count
+        - queue_delivery_metrics
+        - exchange_metrics
+    static_configs:
+      - targets: [rabbitmq:15692]
+
+  - job_name: traefik
+    static_configs:
+      - targets: [traefik:8083]

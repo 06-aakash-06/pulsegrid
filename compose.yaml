@@ -50,7 +50,9 @@ services:
       retries: 20
   rabbitmq:
     image: rabbitmq:4-alpine@sha256:2cb43283d8bbd3caa6c0f0dc00e96c8de772df33df7fd8af6aee4d605aeb8ada
+    hostname: ${RABBITMQ_HOSTNAME:-rabbitmq}
     environment:
+      RABBITMQ_NODENAME: ${RABBITMQ_NODENAME:-rabbit@rabbitmq}
       RABBITMQ_DEFAULT_USER: pulsegrid_infra
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?Generate .env first}
     volumes: [rabbitmq_data:/var/lib/rabbitmq]
