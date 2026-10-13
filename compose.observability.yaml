@@ -102,7 +102,7 @@ services:
       - tempo_data:/var/tempo
     networks: [observability]
     restart: unless-stopped
-    mem_limit: 256m
+    mem_limit: 512m
     cpus: 0.25
 
   otel-collector:

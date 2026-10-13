@@ -7,6 +7,19 @@
 
 ## 1. Executive summary
 
+### Phase 8.1 finalization status
+
+Phase 8.1 has confirmed the earlier Tempo restart cause: the observed
+`pulsegrid-tempo-1` process exited with code 137 while Docker reported
+`OOMKilled=true` under its 256 MiB cap. The cap is now 512 MiB, still bounded
+at 0.25 CPU, and its single ten-minute stability observation completed with
+zero restarts, 41.97% peak memory, and a newly generated queryable trace. The
+authenticated HTTP matrix is pending at this checkpoint. The historical Phase
+8 result below remains PARTIAL and its original measurements are retained.
+
+The details and measurement boundaries are in the
+[Phase 8.1 finalization report](phase-8-1-finalization.md).
+
 Phase 8 produced one 30-second authenticated Doctor read-mix trial, a bounded two-upstream routing probe, and a 120-second idle Tempo observation. The live matrix stopped when Tempo reached 99.08% of its 256 MiB container memory limit, above the plan’s 90% stop threshold. The idle observation then recorded another Tempo restart with no OOM kill. The stop safeguard prevented continuing the same run after that condition.
 
 The single HTTP trial completed 15,244 requests: 125 returned 2xx and 15,119 returned expected admission-control 429 responses. It recorded no 5xx responses, timeouts, or connection failures. Since 99.18% of responses were admission rejections, the high attempted request rate is not a measurement of Doctor service capacity.

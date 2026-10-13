@@ -226,11 +226,16 @@ telemetry receivers are not readiness dependencies. No database, Redis or
 RabbitMQ administrative credential is added to Grafana, Prometheus or the
 frontend.
 
-Initial memory/CPU caps are Prometheus 256 MiB/0.25 CPU, Grafana 256 MiB/0.25,
-Tempo 256 MiB/0.25, Collector 128 MiB/0.10 and Blackbox 32 MiB/0.10. Their
-combined configured ceiling is 928 MiB and 0.95 CPU. Prometheus retention is
-limited by both seven days and one GiB; Tempo retains local blocks for 24 hours.
-These are configuration budgets, not measured resource usage.
+The Phase 7 initial memory/CPU caps were Prometheus 256 MiB/0.25 CPU, Grafana
+256 MiB/0.25, Tempo 256 MiB/0.25, Collector 128 MiB/0.10 and Blackbox 32
+MiB/0.10. Their original combined configured ceiling was 928 MiB and 0.95
+CPU. Phase 8.1 raised only Tempo's bounded memory cap to 512 MiB after Docker
+reported `OOMKilled=true` and exit code 137 under the 256 MiB cap. The current
+combined ceiling is 1184 MiB and 0.95 CPU. Prometheus retention remains limited
+by both seven days and one GiB; Tempo retains local blocks for 24 hours. These
+are configuration budgets, not measured resource usage. The change and its
+bounded observation are recorded in the
+[Phase 8.1 finalization report](phase-8-1-finalization.md).
 
 If the monitoring overlay is absent, existing hospital services run without
 telemetry exporters. If monitoring is present but a component fails, metrics

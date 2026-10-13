@@ -1,0 +1,81 @@
+{
+  "controlled_trace_workload": {
+    "attempted": 31,
+    "endpoint": "authenticated GET /api/v1/doctors?q=Synthetic&limit=1",
+    "http_status_counts": {
+      "200": 30,
+      "401": 1
+    },
+    "successful": 30,
+    "trace_query": {
+      "body_bytes": 9399,
+      "http_status": 200,
+      "queryable": true,
+      "span_count": 13,
+      "trace_id": "c2b5726d5e954f47900359c279ac976d"
+    }
+  },
+  "cpu_percent_max": 1.64,
+  "cpu_percent_mean": 0.7072131147540983,
+  "docker_lifecycle_event_query_error": null,
+  "docker_lifecycle_events": [],
+  "ended_utc": "2026-10-13T08:25:23.334846+00:00",
+  "final_state": {
+    "exit_code": 0,
+    "memory_limit_bytes": 536870912,
+    "oom_killed": false,
+    "restart_count": 0,
+    "started_at": "2026-10-13T08:14:38.826649956Z",
+    "status": "running"
+  },
+  "hospital_api_readiness_end": {
+    "appointment": 200,
+    "billing": 200,
+    "doctor": 200,
+    "emergency": 200,
+    "patient": 200,
+    "pharmacy": 200,
+    "records": 200
+  },
+  "hospital_api_readiness_start": {
+    "appointment": 200,
+    "billing": 200,
+    "doctor": 200,
+    "emergency": 200,
+    "patient": 200,
+    "pharmacy": 200,
+    "records": 200
+  },
+  "initial_state": {
+    "exit_code": 0,
+    "memory_limit_bytes": 536870912,
+    "oom_killed": false,
+    "restart_count": 0,
+    "started_at": "2026-10-13T08:14:38.826649956Z",
+    "status": "running"
+  },
+  "log_inspection_scope": "Tempo container logs emitted during the observation window",
+  "logs": {
+    "error_lines": 15,
+    "idle_no_jobs_errors": 15,
+    "incomplete_wal_meta_warnings": 0,
+    "other_error_lines": 0,
+    "warning_lines": 15
+  },
+  "memory_bytes_max": 225338982,
+  "memory_bytes_min": 91687485,
+  "memory_percent_max": 41.97,
+  "observed_duration_seconds": 600.007,
+  "observed_sample_interval_median_seconds": 9.99900000000001,
+  "oom_killed_at_end": false,
+  "readiness_failures": 0,
+  "readiness_successes": 61,
+  "requested_duration_seconds": 600,
+  "restart_delta": 0,
+  "sample_interval_seconds": 10.0,
+  "samples": 61,
+  "started_utc": "2026-10-13T08:15:21.811746+00:00",
+  "stop_reason": null,
+  "success": true,
+  "trace_workload_interval_seconds": 20.0
+}
