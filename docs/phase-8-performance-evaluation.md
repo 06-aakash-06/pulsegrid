@@ -3,9 +3,21 @@
 **Evaluation date:** 2026-10-13
 **Branch:** local main
 **Starting commit:** 1de2a1c
-**Verdict: PARTIAL**
+**Phase 8.2 scoped verdict: PASS; broader evaluation: PARTIAL**
 
 ## 1. Executive summary
+
+### Phase 8.2 finalization status
+
+Phase 8.2 completed all six authenticated Doctor HTTP conditions at 4, 16, and
+64 concurrent clients with one and two replicas. Each 30-second trial recorded
+zero HTTP 429, other 4xx, 5xx, timeout, or connection-failure outcomes. The
+two-replica observations measured 218.13, 245.33, and 170.33 successful RPS;
+observed scaling efficiency was 83.05%, 97.10%, and 79.25%, respectively.
+These are one local observation per condition with distributed tracing
+disabled, so they have limited repeatability evidence and are not measurements
+of the fully instrumented deployment. See the [Phase 8.2 finalization report](phase-8-2-scalability-finalization.md)
+and its [raw results and graphs](../experiments/phase8/results/phase8-2-20261013-run3/).
 
 ### Phase 8.1 finalization status
 
@@ -37,7 +49,7 @@ stopped when Tempo reached 99.08% of its then 256 MiB container memory limit.
 
 The single HTTP trial completed 15,244 requests: 125 returned 2xx and 15,119 returned expected admission-control 429 responses. It recorded no 5xx responses, timeouts, or connection failures. Since 99.18% of responses were admission rejections, the high attempted request rate is not a measurement of Doctor service capacity.
 
-The existing Phase 4–7 evidence supplies component comparisons, one distributed-quota check, bounded failure and recovery workflows, and a historical Surge Mode check. Neither Phase 8 nor Phase 8.1 completed a low/medium/high HTTP curve or a valid matched one-versus-two-replica capacity comparison. A same-load NORMAL-versus-SURGE comparison and new event-throughput measurements also remain unavailable.
+The existing Phase 4–7 evidence supplies component comparisons, one distributed-quota check, bounded failure and recovery workflows, and a historical Surge Mode check. Phases 8 and 8.1 did not complete a low/medium/high HTTP curve or valid matched one-versus-two-replica comparison; Phase 8.2 later completed the six required cells with one trial per cell. Its observations provide a matched local comparison but limited repeatability evidence. A same-load NORMAL-versus-SURGE comparison and new event-throughput measurements remain unavailable.
 
 All recorded actors and data were synthetic. The run used authenticated GET requests, preserved the existing data volumes, restored the Traefik route file byte-for-byte, and ended with Surge Mode in NORMAL. This is a local educational prototype evaluation, not a production capacity or clinical reliability certification.
 
@@ -248,11 +260,15 @@ The Phase 4 component measurements expose a coordination trade-off: Redis-backed
 
 No database saturation, Redis saturation, or gateway capacity limit can be identified from the stopped HTTP trial. There were no database wait or connection-pool measurements for it. The report therefore treats Tempo memory and admission policy as observed constraints and leaves application capacity bottlenecks unproven.
 
+Phase 8.2 later measured 107.47 successful RPS at one replica and 170.33 at two replicas under 64 clients, with P95 latencies of 1,311.74 ms and 1,120.76 ms. Its peak Doctor CPU sample was about 54%, PostgreSQL CPU 29.04%, Redis CPU 7.40%, and the Docker VM reached 69.86% of its four allocated CPUs. These samples show higher latency at the highest offered concurrency but do not identify a specific saturated dependency or explain the throughput change.
+
 ## 13. Security, data integrity, and deployment recovery
 
 The new HTTP workload used authenticated synthetic patient access to read-only routes. No credentials, access tokens, response bodies, patient IDs, or Doctor IDs were stored in the request CSV. No state-changing hospital endpoint was used during L1. No database, Redis, RabbitMQ, or Tempo volume was reset.
 
 The original Phase 8 run manifest records Surge Mode NORMAL, version 4, and the historical route hash `0c93b76e…`. Phase 8.1 separately restored the active Phase 4 route to `15e25694927bfc59643d158e49857e2e2a643af65e222a4635c989ac81eae99e`; a post-run read-only check found the mounted Traefik hash matched the source. Both Doctor containers had the temporary policy disabled, authenticated Doctor directory access used normal Redis-backed admission, and an unauthenticated Emergency read returned 401. All seven API readiness routes and Prometheus API/readiness targets were up; Surge Mode was NORMAL, version 4. The separate Tempo readiness probe returned ready. See the [Phase 8.1 restoration evidence](../experiments/phase8/results/phase8-1-20261013-run3/metrics/post-restore-check.json).
+
+Phase 8.2 independently verified restoration: the mounted Phase 4 route hash matched its recorded original value, benchmark admission variables and routes were absent, normal Redis admission accepted an authenticated Doctor read, all seven API readiness routes returned 200, all 20 Prometheus targets were up, Emergency rejected an unauthenticated read with 401, and Surge Mode was NORMAL at version 4. Tracing was enabled again in all application containers, the original Traefik and Grafana settings were restored, and Tempo readiness returned `ready`. See the [Phase 8.2 final restored-target snapshot](../experiments/phase8/results/phase8-2-20261013-run3/metrics/final-restored-targets.json).
 
 This evaluation does not establish clinical validity, emergency dispatch reliability, high availability, or production security certification.
 
@@ -280,9 +296,14 @@ They are generated from the new CSV/JSON evidence and labeled partial. Graph 4
 shows a hatched provisional efficiency from the stopped 14.635-second
 two-replica window; the formal matched scaling efficiency remains unavailable.
 
+Phase 8.2 adds four independent graphs under
+[`phase8-2-20261013-run3/graphs/`](../experiments/phase8/results/phase8-2-20261013-run3/graphs/).
+They show the six tracing-disabled HTTP conditions and are backed by the
+retained request/resource CSVs. The matching-input and output hash check passed.
+
 ## 15. Limitations and incomplete acceptance criteria
 
-- The original Phase 8 HTTP matrix contains one 99.18%-429 trial. Phase 8.1 has one complete C=4 one-replica trial and one partial C=4 two-replica sample; neither supplies the 4 / 16 / 64 multi-trial curve.
+- The original Phase 8 HTTP matrix contains one 99.18%-429 trial. Phase 8.1 has one complete C=4 one-replica trial and one partial C=4 two-replica sample. Phase 8.2 supplies the six 4 / 16 / 64 cells with one tracing-disabled trial per cell, so repeatability remains limited.
 - The provisional 67.09% scaling efficiency uses unequal completed windows and is not accepted as a matched result.
 - Phase 8 did not execute its same-workload NORMAL/SURGE pair or measure Class B admission.
 - No Phase 8 event throughput, queue depth, pending outbox age, or sustained duplicate-delivery experiment was run.
@@ -305,13 +326,18 @@ Regenerate only the Phase 8.1 Graphs 1–4 from the retained run with:
 
     python3 experiments/phase8/plot_results.py --run-id phase8-1-20261013-run3 --phase8-1-finalization
 
+Regenerate only the Phase 8.2 scalability graphs from the completed six-cell
+run with:
+
+    python3 experiments/phase8/plot_results.py --run-id phase8-2-20261013-run3 --phase8-2-scalability
+
 The harness checks can be run without contacting the stack:
 
     ./.venv/bin/python -m unittest discover -s experiments/phase8 -p 'test_*.py' -v
     ./.venv/bin/python experiments/phase8/benchmark.py --self-test
     python3 -m py_compile experiments/phase8/observe_tempo.py experiments/phase8/plot_results.py
 
-A fresh live matrix requires a healthy local Compose deployment and the private synthetic fixtures described in [the Phase 8 README](../experiments/phase8/README.md). Use a new run ID for any future authorized campaign; the retained run ID is guardrail-stopped and the runner refuses to resume it. The original fixed matrix command is documented in that README. The Tempo observation command is also documented there; do not treat the retained trace query count as proof of trace identity.
+A fresh live matrix requires a healthy local Compose deployment and the private synthetic fixtures described in [the Phase 8 README](../experiments/phase8/README.md). The Phase 8.2 `run1` and `run2` artifacts retain setup failures; `run3` is the completed six-trial result. The runner refuses to reuse any nonempty result directory, so use a new run ID for a future authorized campaign. The Tempo observation command is also documented in the README; do not treat the retained trace query count as proof of trace identity.
 
 Phase 8.1 focused checks completed:
 
@@ -321,6 +347,11 @@ Phase 8.1 focused checks completed:
   Tempo configuration verification: passed.
 - Four Phase 8.1 graphs regenerated from raw CSV/JSON; manifest sample counts
   and SVG/PNG hashes verified.
+- Phase 8.2 harness tests: 12 passed; benchmark helper self-test: 5 passed.
+- Phase 8.2 raw request classifications and successful-RPS arithmetic reconciled
+  across all six 30-second trials; all four graphs and 21 input hashes verified.
+- Phase 8.2 normal route, admission, tracing, API readiness, Prometheus targets,
+  Emergency authorization, Tempo readiness, and Surge Mode restoration passed.
 - One/two-upstream routing, normal Redis admission restoration, API readiness,
   Prometheus targets, Emergency authentication, and Surge Mode NORMAL checked.
 - `git diff --check` passed. Final branch is local `main`; the worktree is
@@ -329,6 +360,6 @@ Phase 8.1 focused checks completed:
 
 ## 17. Final verdict
 
-**PARTIAL.** Phase 8 preserves the original admission-dominated HTTP trial and historical component/fault evidence. Phase 8.1 adds a corrected Redis-backed admission preflight, one complete authenticated C=4 trial, one guardrail-stopped two-replica sample, per-container resource samples, a bounded Tempo observation and four reproducible partial graphs. The fixed matrix did not complete; low/medium/high scaling and a valid matched efficiency remain unavailable. Tempo stayed within its guardrail during the ten-minute observation, but approached the limit during the HTTP run and had one later restart with an unresolved trigger.
+**Phase 8.2: PASS for the scoped Doctor scalability matrix. Broader Phase 8 evaluation: PARTIAL.** Phase 8 preserves the original admission-dominated HTTP trial and historical component/fault evidence. Phase 8.1 adds its corrected preflight, one complete C=4 trial, one guardrail-stopped two-replica sample, and bounded Tempo observation. Phase 8.2 later completed the authenticated 4 / 16 / 64 one-versus-two-replica matrix with tracing disabled, no measured HTTP errors, resource samples, calculated scaling ratios, and four reproducible graphs. One trial per condition limits repeatability evidence. The earlier Tempo restart trigger remains unresolved; Phase 8.2 did not investigate Tempo stability or measure tracing-enabled performance.
 
 The final state was restored to the normal deployment route and admission policy; all API readiness and Prometheus targets were up, Emergency authentication remained enforced, and Surge Mode was NORMAL. All changes are committed locally on `main`; nothing was pushed, and Phase 9 was not started.
