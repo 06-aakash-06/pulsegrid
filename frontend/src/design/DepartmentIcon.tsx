@@ -57,7 +57,7 @@ export function departmentFor(base: string, path: string): Department {
     return "pharmacy";
   if (base === "/billing" || path === "billing") return "billing";
   if (base === "/emergency" || path === "emergency") return "emergency";
-  if (path === "records" || path === "journey") return "records";
+  if (path === "records" || path === "journey" || path === "consultations") return "records";
   if (base === "/doctor" || path === "doctors") return "consultation";
   return "reception";
 }

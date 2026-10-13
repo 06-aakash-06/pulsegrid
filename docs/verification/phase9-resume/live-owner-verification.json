@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "browser booking is persisted under the correct patient and doctor",
+      "status": "PASS"
+    },
+    {
+      "name": "QR check-in and clinical completion are owner-confirmed",
+      "status": "PASS"
+    },
+    {
+      "name": "daily queue token is retained after clinical completion",
+      "status": "PASS"
+    },
+    {
+      "name": "consultation finalization is persisted by Records",
+      "status": "PASS"
+    },
+    {
+      "name": "immutable patient record references the finalized consultation",
+      "status": "PASS"
+    },
+    {
+      "name": "prescription retains the owner-issued medicine quantity",
+      "status": "PASS"
+    },
+    {
+      "name": "reservation is dispensed and cannot be treated as unfulfilled",
+      "status": "PASS"
+    },
+    {
+      "name": "Billing owns the INR 150 total and zero paid balance",
+      "status": "PASS"
+    },
+    {
+      "name": "committed simulated decline and success both remain in payment history",
+      "status": "PASS"
+    },
+    {
+      "name": "rescheduling retained the selected slot before cancellation",
+      "status": "PASS"
+    },
+    {
+      "name": "Emergency owner confirms resolved priority 2 and released claim",
+      "status": "PASS"
+    },
+    {
+      "name": "another patient cannot read the new appointment or clinical record",
+      "status": "PASS"
+    },
+    {
+      "name": "patient role cannot read Control Room or admin Surge state",
+      "status": "PASS"
+    },
+    {
+      "name": "authorized technical summary includes all seven domains",
+      "status": "PASS"
+    },
+    {
+      "name": "browser review did not change global admission from NORMAL",
+      "status": "PASS"
+    }
+  ],
+  "browser_resource_ids": {
+    "appointment_id": "3235690241249035747",
+    "consultation_id": "91739",
+    "record_id": "91840",
+    "prescription_id": "91841",
+    "reservation_id": "8559759713122726078",
+    "dispensing_id": "2735913209903052896",
+    "invoice_id": "3153192988036942692",
+    "emergency_id": "7799690521604536773"
+  },
+  "billing_total_minor": 15000,
+  "billing_balance_minor": 0,
+  "currency": "INR",
+  "backend_code_changed": false,
+  "database_resets": false,
+  "physical_camera_verified": false
+}

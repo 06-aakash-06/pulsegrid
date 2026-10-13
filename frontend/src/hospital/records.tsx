@@ -303,15 +303,8 @@ function History({
       >
         {(record, etag, refresh) => (
           <>
-            <Facts
-              values={{
-                "Record ID": record.id,
-                "Consultation ID": record.consultation_id,
-                Revision: record.revision,
-                Supersedes: record.supersedes_id,
-              }}
-            />
-            <ClinicalFacts value={record.content} />
+            <header className="record-document-heading"><DepartmentIcon department="records"/><div><h3>Clinical record …{record.id.slice(-4)}</h3><p>Revision {record.revision} · Records service</p></div></header>
+            <div className="clinical-dossier-body"><ClinicalFacts value={record.content}/><aside className="record-document-index"><h3>Document history</h3><Facts values={{Revision:record.revision,Supersedes:record.supersedes_id?`Record …${record.supersedes_id.slice(-4)}`:"Original document"}}/><details className="owner-identifiers"><summary>Owner references</summary><Facts values={{"Record ID":record.id,"Consultation ID":record.consultation_id}}/></details>{!doctor&&<nav aria-label="Related care"><h3>Related care</h3><a href="/patient/prescriptions">Prescriptions →</a><a href="/patient/journey">Patient journey →</a></nav>}</aside></div>
             {doctor && (
               <CommandForm<MedicalRecord>
                 title="Amend medical record"
@@ -416,10 +409,10 @@ export function RecordsPage({ doctor = false }: { doctor?: boolean }) {
           )}
         </>
       ) : (
-        <Resource<PatientProfile> path="/api/v1/patients/me">
+        <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>
           {(profile) => (
             <>
-              <div className="record-patient-strip"><DepartmentIcon department="reception"/><strong>{profile.display_name}</strong><span>Authorized medical history</span><small>Synthetic hospital data</small></div>
+              <div className="record-patient-strip"><DepartmentIcon department="reception"/><strong>{profile.display_name.startsWith("Synthetic")?"Your clinical dossier":profile.display_name}</strong><span>Authorized medical history</span><small>Synthetic hospital data</small></div>
               <nav className="record-document-tabs" aria-label="Clinical documents"><span>Visit History</span><a href="/patient/prescriptions">Prescriptions</a><a href="/patient/journey">Care Journey</a></nav>
               <History patientId={profile.id} doctor={false} />
               <details className="record-grants"><summary>Record access permissions</summary><Grants patientId={profile.id} /></details>

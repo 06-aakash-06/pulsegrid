@@ -324,3 +324,31 @@
 .reference-departments .emergency-actions .hospital-form button { margin-top:8px; }
 .reference-departments .emergency-actions .hospital-form label { font-size:11px; }
 .reference-departments .emergency-actions .hospital-form input { width:100%; }
+.record-document-heading { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #cdb99e; }
+.record-document-heading h3 { font-size:17px;margin:0; }
+.record-document-heading p { font-size:11px;margin:5px 0 0; }
+.record-document-heading .department-icon { width:34px;height:34px; }
+.clinical-dossier-body { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-top:15px; }
+.record-document-index { background:#e9ddcd; padding:14px; font-size:11px; }
+.record-document-index h3 { font-size:13px; }
+.record-document-index nav { display:grid;gap:12px;margin-top:22px; }
+.record-document-index .hospital-facts { grid-template-columns:1fr;font-size:12px; }
+@media(min-width:901px){
+ .reference-departments .record-history { min-height:0;grid-template-columns:minmax(210px,1fr) minmax(0,3fr); }
+ .reference-departments .active-dossier,.reference-departments .visit-timeline{background:#f4e9db;}
+ .reference-departments .active-dossier .clinical-content { padding:0;min-height:0;border:0;background:none; }
+ .reference-departments .active-dossier .clinical-content .hospital-facts { gap:0; }
+ .reference-departments .active-dossier .clinical-content .hospital-facts>div { border:0;border-bottom:1px solid #d2bfa3;background:#fcf7ed;padding:16px;min-height:90px;border-radius:0; }
+ .reference-departments .active-dossier .clinical-content dd { font-size:14px;line-height:1.5; }
+ .reference-departments .record-document-tabs { margin-block:8px; }
+ .reference-departments .record-patient-strip { padding:16px; }
+ .reference-departments .record-history .visit-timeline .hospital-items { max-height:385px; }
+}
+@media(max-width:900px){.clinical-dossier-body{grid-template-columns:minmax(0,1fr);}.record-document-index nav{grid-template-columns:1fr 1fr;}.record-document-index nav h3{grid-column:1/-1;}}
+@media(min-width:901px){
+ .reference-departments .emergency-workbench--patient {grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);}
+ .reference-departments .emergency-workbench--patient .emergency-case-layout {grid-template-columns:minmax(0,1fr);}
+ .reference-departments .emergency-workbench--patient .emergency-register .hospital-form {padding:14px;}
+ .reference-departments .emergency-workbench--patient .emergency-register .hospital-items {max-height:210px;}
+ .reference-departments .emergency-workbench--patient .emergency-register>.hospital-panel {margin-bottom:18px;}
+}

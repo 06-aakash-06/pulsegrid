@@ -279,7 +279,7 @@ export function EmergencyPage({ staff = false }: { staff?: boolean }) {
   const { state } = useAuth();
   const userId = state.status === "authenticated" ? state.user.id : undefined;
   return (
-    <div className="emergency-workbench">
+    <div className={`emergency-workbench emergency-workbench--${staff?"staff":"patient"}`}>
       <p className="emergency-service-note">
         Synthetic educational requests only. This prototype does not provide
         emergency dispatch or certified clinical triage.
