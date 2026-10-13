@@ -1,0 +1,6 @@
+{
+  "production_local_demo_data_absent": true,
+  "needles_checked": 5,
+  "ignored_manifest": true,
+  "serve_only_middleware": true
+}

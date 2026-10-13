@@ -372,6 +372,22 @@ describe("patient profiles and appointment commands", () => {
       ),
     );
   });
+  it("opens the first owner profile without an empty selection card and keeps internal IDs in Details",async()=>{
+    setup('/patient/doctors','patient',(path)=>path==='/api/v1/doctors'?json({items:[doctor],next_cursor:null}):path==='/api/v1/doctors/21'?json(doctor,200,'"3"'):undefined);
+    expect(await screen.findByRole('heading',{name:doctor.display_name,level:2})).toBeInTheDocument();
+    expect(screen.queryByText('Select your doctor')).not.toBeInTheDocument();
+    expect(screen.queryByText('Internal Doctor ID')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Details'}));
+    expect(await screen.findByText('Internal Doctor ID')).toBeInTheDocument();
+    expect(screen.getByText(doctor.id)).toBeInTheDocument();
+  });
+  it("does not expose receptionist appointment links to an administrator without that role",async()=>{
+    const {fetcher}=setup('/admin/doctors','hospital_admin',path=>path==='/api/v1/doctors'?json({items:[doctor],next_cursor:null}):path==='/api/v1/doctors/21'?json(doctor,200,'"3"'):undefined);
+    await screen.findByRole('heading',{name:doctor.display_name,level:2});
+    expect(screen.queryByRole('link',{name:'Appointments'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button',{name:'Book Appointment'})).not.toBeInTheDocument();
+    expect(fetcher.mock.calls.some(([url])=>String(url).startsWith('/api/v1/appointments?'))).toBe(false);
+  });
   it("books accepted availability with own profile ID rather than token subject", async () => {
     const { fetcher } = setup(
       "/patient/appointments",

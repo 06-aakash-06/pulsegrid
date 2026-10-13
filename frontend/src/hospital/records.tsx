@@ -201,8 +201,8 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
     <div className="consultation-clinical">
       {doctor && (
         <>
-          <Appointments doctor />
-          <Panel title="Create assigned consultation">
+          <div className="clinical-tools"><details className="assigned-appointments"><summary>Assigned appointments</summary><Appointments doctor /></details>
+          <details className="new-consultation" open={!selected}><summary>New consultation</summary><Panel title="Create assigned consultation">
             <CommandForm<Consultation>
               title="Create consultation"
               path="/api/v1/records/consultations"
@@ -219,7 +219,7 @@ export function Consultations({ doctor = false }: { doctor?: boolean }) {
                 setRevision((v) => v + 1);
               }}
             />
-          </Panel>
+          </Panel></details></div>
         </>
       )}
       <section className="consultation-register">

@@ -1,3 +1,5 @@
+import { StatusBadge } from "../components/StatusBadge";
+import { m } from "motion/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ApiError,
@@ -87,10 +89,12 @@ export function Panel({
 export function Resource<T>({
   path,
   revision = 0,
+  showReload = true,
   children,
 }: {
   path: string | null;
   revision?: number;
+  showReload?: boolean;
   children: (data: T, etag: string | null, refresh: () => void) => ReactNode;
 }) {
   const resource = useResource<T>(path, revision);
@@ -98,7 +102,7 @@ export function Resource<T>({
     <>
       {resource.loading && <p role="status">Loading resource…</p>}
       {resource.error && <p role="alert">{resource.error}</p>}
-      {path && (
+      {path && showReload && (
         <button
           type="button"
           disabled={resource.loading}
@@ -169,9 +173,9 @@ function CollectionPage<T extends { id: string }>({
           )}
           <div className="hospital-items">
             {resource.response.data.items.map((item) => (
-              <article className="hospital-item" key={item.id}>
+              <m.article initial={false} layout="position" transition={{duration:0.18}} className="hospital-item" key={item.id}>
                 {renderItem(item)}
-              </article>
+              </m.article>
             ))}
           </div>
           <div className="hospital-actions">
@@ -209,6 +213,7 @@ export interface Field {
   max?: number;
   min?: number;
   options?: string[];
+  optionLabels?: Record<string,string>;
   initial?: string;
   nullable?: boolean;
   id?: boolean;
@@ -327,7 +332,7 @@ export function Inputs({
             >
               <option value="">Select…</option>
               {field.options?.map((option) => (
-                <option key={option}>{option}</option>
+                <option key={option} value={option}>{field.optionLabels?.[option] ?? option}</option>
               ))}
             </select>
           ) : field.kind === "textarea" ? (
@@ -370,6 +375,7 @@ export function CommandForm<T = unknown>({
   conditional = false,
   build,
   onSuccess,
+  onLockChange,
   notice,
   children,
 }: {
@@ -381,6 +387,7 @@ export function CommandForm<T = unknown>({
   conditional?: boolean;
   build?: (values: Values) => unknown;
   onSuccess?: (data: T, etag: string | null) => void;
+  onLockChange?: (locked: boolean) => void;
   notice?: string;
   children?: ReactNode;
 }) {
@@ -394,6 +401,7 @@ export function CommandForm<T = unknown>({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const lock = useRef(false);
+  useEffect(()=>{onLockChange?.(!!attempt || pending);},[attempt,pending,onLockChange]);
   async function send(command: Attempt) {
     if (lock.current) return;
     lock.current = true;
@@ -479,10 +487,10 @@ export function CommandForm<T = unknown>({
         disabled={!!attempt || pending}
       />
       {error && <p role="alert">{error}</p>}
-      {success && <p role="status">{title}: confirmed by the service.</p>}
+      {success && <m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{title}: confirmed by the service.</m.p>}
       {pending && <p role="status">Submitting {title.toLowerCase()}…</p>}
       {attempt ? (
-        <div
+        <m.div initial={{opacity:.7}} animate={{opacity:1}} transition={{duration:.18}}
           className="hospital-confirm"
           role="group"
           aria-label={`Confirm ${title}`}
@@ -508,7 +516,7 @@ export function CommandForm<T = unknown>({
               Keep editing
             </button>
           )}
-        </div>
+        </m.div>
       ) : (
         <button type="submit" disabled={pending || (conditional && !etag)}>
           Review {title}
@@ -554,7 +562,7 @@ export function Facts({ values }: { values: Record<string, ReactNode> }) {
       {Object.entries(values).map(([key, value]) => (
         <div key={key}>
           <dt>{key}</dt>
-          <dd>{value ?? "None"}</dd>
+          <dd>{typeof value === "string" && /^\d{4}-\d\d-\d\dT/.test(value) && Number.isFinite(Date.parse(value)) ? <time dateTime={value} title={value}>{new Date(value).toLocaleString("en-IN",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})} UTC</time> : ["State","Status"].includes(key) && typeof value === "string" ? <StatusBadge tone={["confirmed","paid","finalized","completed","dispensed","resolved","success"].includes(value)?"success":["cancelled","declined","revoked"].includes(value)?"danger":"warning"}>{value.replaceAll("_"," ")}</StatusBadge> : value ?? "None"}</dd>
         </div>
       ))}
     </dl>
@@ -570,7 +578,7 @@ export function Selected<T extends Versioned>({
   children: (item: T, etag: string | null, refresh: () => void) => ReactNode;
 }) {
   return path ? (
-    <Panel title={path.includes("/doctors/") ? "Doctor profile" : path.includes("/billing/invoices/") ? "Current invoice" : path.includes("/emergencies/") ? "Active request" : path.includes("/pharmacy/medicines/") ? "Medicine details" : path.includes("/appointments/") ? "Appointment details" : path.includes("/records/prescriptions/") ? "Prescription details" : path.includes("/records/") ? "Clinical dossier" : "Selected resource"}>
+    <Panel title={path.includes("/doctors/") ? "Doctor profile" : path.includes("/billing/invoices/") ? "Current invoice" : path.includes("/emergencies/") ? "Active request" : path.includes("/pharmacy/reservations/") ? "Current reservation" : path.includes("/pharmacy/medicines/") ? "Medicine details" : path.includes("/appointments/") ? "Appointment details" : path.includes("/records/prescriptions/") ? "Prescription details" : path.includes("/records/") ? "Clinical dossier" : "Selected resource"}>
       <Resource<T> path={path} revision={revision}>
         {(item, etag, refresh) => (
           <div key={`${item.id}:${item.version}`}>

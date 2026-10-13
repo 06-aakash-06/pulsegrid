@@ -176,7 +176,7 @@ function StockVerification() {
 export function StaffFulfillmentPanel() {
   return (
     <StaffRoleGate role="pharmacist">
-      <div className="staff-advanced-page">
+      <div className="staff-advanced-page staff-fulfillment">
         <FulfillmentStatusLookup />
         <StockVerification />
         <ExistingFulfillment pharmacist />

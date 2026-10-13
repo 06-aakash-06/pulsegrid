@@ -149,3 +149,7 @@ revocation and dispensing-history safety. Never run these writers concurrently
 against a shared fixture or use real patient data. Browser camera hardware is
 not certified or validated; QR encode/decode and manual/browser workflows are
 covered as described in the report.
+
+## Phase 9 visual correction
+
+Reception and Consultation were rebuilt following the user's rejection of the initial design. See the [two-screen correction and comparison report](docs/phase-9-visual-correction.md). The other departments await review. The fictional local demo uses owner APIs and ignored development-only metadata; no demo credentials or record mappings enter production. No remote publication was performed.

@@ -1,3 +1,4 @@
+import { SurgeModeControls } from "./SurgeModeControls";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
@@ -259,7 +260,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             <div className="ops-panel-heading">
               <div><h2>Service health</h2><p>Readiness is probed per running instance; service values aggregate replicas.</p></div>
             </div>
-            <div className="ops-table-wrap">
+            <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Service health table">
               <table className="ops-table">
                 <thead><tr><th scope="col">Service</th><th scope="col">Health</th><th scope="col">Instances</th><th scope="col">Req/s</th><th scope="col">5xx</th><th scope="col">P95</th><th scope="col">Recent activity</th></tr></thead>
                 <tbody>
@@ -304,7 +305,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
           <div className="ops-two-column ops-messaging-and-events">
             <section className="ops-panel">
               <div className="ops-panel-heading"><div><h2>Event delivery</h2><p>RabbitMQ queue state and producer-owned outbox measurements.</p></div></div>
-              <div className="ops-table-wrap">
+              <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Event delivery table">
                 <table className="ops-table ops-queue-table">
                   <thead><tr><th scope="col">Queue</th><th scope="col">Ready</th><th scope="col">Unacked</th><th scope="col">Consumers</th></tr></thead>
                   <tbody>{summary.messaging.queues.map((queue) => <tr key={queue.name}><th scope="row">{queue.name.replace("pulsegrid.", "")}</th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
@@ -329,6 +330,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
           <p className="ops-footnote">Metrics update every 30 seconds. Missing measurements remain marked as no data.</p>
         </>
       ) : null}
+      <SurgeModeControls onChange={()=>void refresh()}/>
     </section>
   );
 }

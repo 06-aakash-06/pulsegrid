@@ -1,6 +1,7 @@
 import { defineConfig } from "vitest/config";
 import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+import { readFile } from "node:fs/promises";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
@@ -13,11 +14,48 @@ export default defineConfig(({ mode }) => {
         "/s/": { target: gatewayUrl, changeOrigin: false },
       },
     },
-    plugins: [react()],
-    build: { rollupOptions: { output: { manualChunks(id) {
-      if (id.includes("@zxing")) return "qr-decoder";
-      if (id.includes("node_modules/qrcode")) return "qr-encoder";
-    } } } },
+    plugins: [
+      react(),
+      {
+        name: "local-fictional-demo",
+        apply: "serve",
+        configureServer(server) {
+          server.middlewares.use(
+            "/__demo/hospital.json",
+            async (_request, response) => {
+              if (env.VITE_LOCAL_HOSPITAL_DEMO !== "true") {
+                response.statusCode = 404;
+                response.end();
+                return;
+              }
+              try {
+                response.setHeader("Content-Type", "application/json");
+                response.setHeader("Cache-Control", "no-store");
+                response.end(
+                  await readFile(
+                    new URL("./.demo/hospital.json", import.meta.url),
+                    "utf8",
+                  ),
+                );
+              } catch {
+                response.statusCode = 404;
+                response.end();
+              }
+            },
+          );
+        },
+      },
+    ],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("@zxing")) return "qr-decoder";
+            if (id.includes("node_modules/qrcode")) return "qr-encoder";
+          },
+        },
+      },
+    },
     test: {
       environment: "jsdom",
       setupFiles: ["./src/test/setup.ts"],

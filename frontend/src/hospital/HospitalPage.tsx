@@ -96,8 +96,8 @@ export function HospitalPage({
   if (role === "/ops" || (role === "/admin" && ["control-room", "traces"].includes(route)))
     return content;
   return (
-    <div className={`page-stack department-page department-page--${departmentFor(role,route)} route-${route}`}>
-      <div className="page-heading">
+    <div data-workspace={role} className={`page-stack department-page department-page--${departmentFor(role,route)} route-${route}`}>
+      {route!=="doctors"&&<div className="page-heading">
         <DepartmentIcon department={departmentFor(role,route)}/>
         <div>
           <p className="eyebrow">{workspace.name}</p>
@@ -107,6 +107,7 @@ export function HospitalPage({
           </p>
         </div>
       </div>
+      }
       <div className={`department-workspace workspace-${departmentFor(role,route)}`}>{content}</div>
     </div>
   );

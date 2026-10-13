@@ -1,0 +1,9 @@
+/* Inter by Rasmus Andersson, bundled under SIL OFL 1.1 via Fontsource. */
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+    format("woff2");
+}

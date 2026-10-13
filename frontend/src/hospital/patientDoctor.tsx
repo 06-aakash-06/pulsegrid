@@ -1,5 +1,8 @@
+import { ReceptionVisit } from "../design/ReceptionVisit";
+import { ReferenceConsultation } from "../design/ReferenceConsultation";
+import { m } from "motion/react";
 import { ReceptionScene } from "../design/ReceptionScene";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { useState } from "react";
 import { DoctorAutocomplete, AppointmentShortLinkPanel } from "../phase4";
@@ -12,7 +15,6 @@ import type {
   DoctorSelf,
   PatientProfile,
   Proposal,
-  Specialty,
   UserView,
 } from "./models";
 import {
@@ -113,10 +115,9 @@ export function ProfileEditor({
   );
 }
 export function PatientDashboard() {
-  return <Resource<PatientProfile> path="/api/v1/patients/me">{(profile,etag,refresh)=><>
-    <ReceptionScene name={profile.display_name}/>
-    <div className="reception-activity"><Panel title="Your next step"><p>Appointments, check-in and records stay connected through your care journey.</p><div className="hospital-actions"><Link className="button" to="/patient/journey">Follow your journey →</Link><Link className="button button--secondary" to="/patient/waitlist">Your waitlist</Link></div></Panel><Panel title="Hospital updates"><p>Open your appointment or queue to see the latest owner-confirmed status. A separate announcement feed is not available.</p></Panel></div>
-    <details className="profile-desk" open><summary>Your profile</summary><ProfileEditor key={profile.version} profile={profile} etag={etag} path="/api/v1/patients/me" refresh={refresh}/></details>
+  return <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>{(profile,etag,refresh)=><>
+    <ReceptionScene name={profile.display_name}><ReceptionVisit patientId={profile.id}/></ReceptionScene>
+    <details className="profile-desk"><summary>Your profile</summary><button type="button" onClick={refresh}>Refresh profile</button><ProfileEditor key={profile.version} profile={profile} etag={etag} path="/api/v1/patients/me" refresh={refresh}/></details>
   </>}</Resource>;
 }
 export function Demographics({ admin = false }: { admin?: boolean }) {
@@ -333,9 +334,9 @@ export function AvailabilityPicker({
   onSlot,
 }: {
   doctorId: string;
-  onSlot?: (slotId: string, revision: number) => void;
+  onSlot?: (slotId: string, revision: number, startsAt: string, endsAt: string) => void;
 }) {
-  const [values, setValues] = useState<Values>({});
+  const [values, setValues] = useState<Values>(()=>{const start=new Date().toISOString().slice(0,10)+"T00:00:00Z";return {from:start,to:new Date(Date.parse(start)+86400000).toISOString()};});
   const [day, setDay] = useState(new Date().toISOString().slice(0,10));
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const days = Array.from({length:7},(_,i)=>new Date(Date.parse(`${day}T00:00:00Z`)+i*86400000));
@@ -368,14 +369,14 @@ export function AvailabilityPicker({
           }
         }}
       >
-        <Inputs
+        <details className="availability-range"><summary>Custom UTC range</summary><Inputs
           fields={[
             { name: "from", label: "From (UTC)" },
             { name: "to", label: "To (UTC)" },
           ]}
           values={values}
           change={(name, value) => setValues({ ...values, [name]: value })}
-        />
+        /></details>
         <button>Load availability</button>
         {error && <p role="alert">{error}</p>}
       </form>
@@ -395,7 +396,7 @@ export function AvailabilityPicker({
                     type="button"
                     aria-label={`Select slot ${slot.id}`}
                     aria-pressed={selectedSlot===slot.id}
-                    onClick={() => {setSelectedSlot(slot.id);onSlot(slot.id, slot.revision);}}
+                    onClick={() => {setSelectedSlot(slot.id);onSlot(slot.id, slot.revision, slot.starts_at, slot.ends_at);}}
                   >
                     {new Date(slot.starts_at).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit',timeZone:'UTC'})}
                   </button>
@@ -412,41 +413,52 @@ export function AvailabilityPicker({
 export function Booking({
   patientId,
   doctorId,
+  doctorName,
+  patientName,
   onSuccess,
+  onLockChange,
 }: {
   patientId?: string;
   doctorId?: string;
+  doctorName?: string;
+  patientName?: string;
   onSuccess?: () => void;
+  onLockChange?: (locked:boolean)=>void;
 }) {
   const {state,api}=useAuth();
   const [doctor, setDoctor] = useState(doctorId ?? "");
-  const [slot, setSlot] = useState<{ id: string; revision: number } | null>(
+  const [slot, setSlot] = useState<{ id: string; revision: number; startsAt: string; endsAt: string } | null>(
     null,
   );
+  const [doctorLabel,setDoctorLabel] = useState(doctorName??"");
+  const [locked,setLocked] = useState(false);
   const [confirmed,setConfirmed] = useState<Appointment|null>(null);
   return (
-    <div className="booking-composition"><section className="booking-doctor"><h3><span className="step-number">1</span>Select Doctor</h3>
-      <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setDoctor(item.id);setSlot(null);}} />
-      <Lookup
+    <div className="booking-composition"><section className="booking-doctor"><fieldset disabled={locked}><h3><span className="step-number">1</span>Select Doctor</h3>
+      <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setDoctor(item.id);setDoctorLabel(item.label);setSlot(null);}} />
+      {!doctorId && <div className="booking-doctor-directory"><Collection<Doctor> title="Doctor directory" path="/api/v1/doctors" renderItem={item=><button type="button" aria-label={`Select doctor ${item.id}`} aria-pressed={doctor===item.id} onClick={()=>{setDoctor(item.id);setDoctorLabel(item.display_name);setSlot(null);}}><span className="doctor-initials" aria-hidden="true">{item.display_name.split(' ').slice(-2).map(n=>n[0]).join('')}</span><strong>{item.display_name}</strong><small>{item.specialties.map(s=>s.name).join(', ')}</small><span aria-hidden="true">›</span></button>}/></div>}
+      <details className="manual-doctor-lookup"><summary>Use a doctor ID</summary><Lookup
         label="Doctor ID for availability"
         onSelect={(value) => {
           setDoctor(value);
+          setDoctorLabel("");
           setSlot(null);
         }}
-      />
-      </section><section className="booking-schedule"><h3><span className="step-number">2</span>Choose Date & Time</h3>
+      /></details>
+      </fieldset></section><section className="booking-schedule"><fieldset disabled={locked}><h3><span className="step-number">2</span>Choose Date & Time</h3>
       {!doctor && <div className="resource-empty"><DepartmentIcon department="appointments"/><strong>Choose a doctor first</strong><p>Their accepted dates and slots will appear here.</p></div>}
       {doctor && (
         <AvailabilityPicker
           key={doctor}
           doctorId={doctor}
-          onSlot={(id, revision) => setSlot({ id, revision })}
+          onSlot={(id, revision, startsAt, endsAt) => setSlot({ id, revision, startsAt, endsAt })}
         />
       )}
-      </section><aside className="booking-receipt"><h3>Appointment Summary</h3><div className="receipt-rule"/><Facts values={{"Doctor ID":doctor||"Select doctor","Patient ID":patientId||"Enter patient below","Slot ID":slot?.id??"Choose a time","Schedule revision":slot?.revision??"—"}}/>
+      </fieldset></section><aside className="booking-receipt"><h3>Appointment Summary</h3><div className="receipt-rule"/><Facts values={{"Doctor":doctorLabel||doctor||"Select doctor","Patient":patientName||patientId||"Enter patient below","Starts (UTC)":slot?.startsAt??"Choose a time","Ends (UTC)":slot?.endsAt??"—"}}/>
       {slot && (
         <CommandForm<Appointment>
           key={slot.id}
+          onLockChange={value=>{setLocked(value);onLockChange?.(value);}}
           title="Book appointment"
           path="/api/v1/appointments"
           fields={patientId ? [] : [idField("patient_id", "Patient ID")]}
@@ -459,147 +471,17 @@ export function Booking({
           notice={`Selected slot ${slot.id}, accepted revision ${slot.revision}.`}
         />
       )}
-      {confirmed && <div className="printed-receipt" role="status"><DepartmentIcon department="appointments"/><strong>APPOINTMENT {confirmed.state.toUpperCase()}</strong><Facts values={{"Appointment ID":confirmed.id,"Starts (UTC)":confirmed.starts_at,"Ends (UTC)":confirmed.ends_at,"Doctor ID":confirmed.doctor_id}}/><p>Confirmed by Appointment Service.</p></div>}
+      {confirmed && <m.div initial={{opacity:.5,y:6}} animate={{opacity:1,y:0}} transition={{duration:.3}} className="printed-receipt" role="status"><DepartmentIcon department="appointments"/><strong>APPOINTMENT {confirmed.state.toUpperCase()}</strong><Facts values={{"Appointment ID":confirmed.id,"Starts (UTC)":confirmed.starts_at,"Ends (UTC)":confirmed.ends_at,"Doctor ID":confirmed.doctor_id}}/><p>Confirmed by Appointment Service.</p></m.div>}
       </aside></div>
   );
 }
-export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
-  const [draft, setDraft] = useState<Values>({});
-  const [filters, setFilters] = useState<Values>({});
-  const [error, setError] = useState("");
-  const [selected, setSelected] = useState<string | null>(null);
-  const [revision, setRevision] = useState(0);
-  const { state, api } = useAuth();
-  const patient =
-    state.status === "authenticated" && state.roleHints.includes("patient");
-  const fields: Field[] = [
-    { name: "q", label: "Doctor search", max: 100 },
-    idField("specialty_id", "Specialty ID filter", false),
-    ...(admin
-      ? [
-          {
-            name: "active",
-            label: "Active filter",
-            kind: "select" as const,
-            options: ["true", "false"],
-          },
-        ]
-      : []),
-  ];
-  return (
-    <div className="consultation-directory">
-      <aside className="specialty-rail">
-      <Collection<Specialty>
-        title="Specialties"
-        revision={revision}
-        path="/api/v1/doctors/specialties"
-        renderItem={(item) => (
-          <>
-            <strong>{item.name}</strong>
-            <p>ID: {item.id}</p>
-            <button
-              onClick={() => {
-                setDraft({ ...draft, specialty_id: item.id });
-                setFilters({ ...filters, specialty_id: item.id });
-                setSelected(null);
-              }}
-            >
-              Filter by {item.name}
-            </button>
-          </>
-        )}
-      />
-      </aside>
-      <div className="doctor-selection">
-      <DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => setSelected(item.id)} />
-      <DoctorAutocomplete kind="specialty" api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => { setDraft({...draft, specialty_id:item.id}); setFilters({...filters, specialty_id:item.id}); }} />
-      <details className="directory-filters"><summary>Directory filters</summary><Panel title="Directory filters">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            try {
-              buildFields(fields, draft);
-              if (
-                draft.q &&
-                (draft.q.trim().length < 2 || draft.q.trim().length > 100)
-              )
-                throw new Error("Search must contain 2 to 100 characters.");
-              setFilters(
-                Object.fromEntries(
-                  Object.entries(draft).map(([k, v]) => [k, v.trim()]),
-                ),
-              );
-              setSelected(null);
-              setError("");
-            } catch (err) {
-              setError(err instanceof Error ? err.message : "Invalid filters.");
-            }
-          }}
-        >
-          <Inputs
-            fields={fields}
-            values={draft}
-            change={(name, value) => setDraft({ ...draft, [name]: value })}
-          />
-          <button>Search doctors</button>
-          {error && <p role="alert">{error}</p>}
-        </form>
-      </Panel>
-      </details>
-      <Collection<Doctor>
-        title="Doctors"
-        revision={revision}
-        path={query("/api/v1/doctors", filters)}
-        renderItem={(doctor) => (
-          <>
-            <strong><span className="doctor-initials" aria-hidden="true">{doctor.display_name.split(" ").slice(-2).map(n=>n[0]).join("")}</span>{doctor.display_name}</strong>
-            <p>
-              {doctor.specialties.map((s) => s.name).join(", ")} •{" "}
-              {doctor.active ? "Active" : "Inactive"}
-            </p>
-            <button aria-label={`View doctor ${doctor.id}`} onClick={() => setSelected(doctor.id)}>View profile →</button>
-          </>
-        )}
-      />
-      </div>
-      <aside className="doctor-dossier">
-      {!selected && <Panel title="Doctor profile"><div className="resource-empty"><DepartmentIcon department="consultation"/><strong>Select your doctor</strong><p>Choose a doctor to view their specialties and accepted schedule.</p></div></Panel>}
-      <Selected<Doctor> path={selected ? `/api/v1/doctors/${selected}` : null}>
-        {(doctor, etag, refresh) => (
-          <>
-            <Facts
-              values={{
-                "Doctor ID": doctor.id,
-                Name: doctor.display_name,
-                Specialties: doctor.specialties.map((s) => s.name).join(", "),
-                Active: doctor.active ? "Yes" : "No",
-              }}
-            />
-            {admin ? (
-              <DoctorManagement
-                doctor={doctor}
-                etag={etag}
-                refresh={() => {
-                  refresh();
-                  setRevision((v) => v + 1);
-                }}
-                admin
-              />
-            ) : patient ? (
-              <Resource<PatientProfile> path="/api/v1/patients/me">
-                {(profile) => (
-                  <Booking patientId={profile.id} doctorId={doctor.id} />
-                )}
-              </Resource>
-            ) : (
-              <AvailabilityPicker doctorId={doctor.id} />
-            )}
-          </>
-        )}
-      </Selected>
-      </aside>
-      {admin && (
-        <Panel title="Create directory entries">
+export function DoctorDirectory({admin=false}:{admin?:boolean}) {
+  const {state}=useAuth();const patient=state.status==='authenticated'&&state.roleHints.includes('patient');
+  const [revision,setRevision]=useState(0);
+  return <ReferenceConsultation admin={admin} revision={revision}
+    renderManagement={(doctor,etag,refresh)=><DoctorManagement doctor={doctor} etag={etag} refresh={refresh} admin/>}
+    booking={(doctor,onLockChange)=>patient?<Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>{profile=><Booking patientId={profile.id} patientName={profile.display_name} doctorId={doctor.id} doctorName={doctor.display_name} onLockChange={onLockChange}/>}</Resource>:<AvailabilityPicker doctorId={doctor.id}/>}
+    createEntries={admin?<Panel title="Create directory entries">
           <CommandForm
             title="Create specialty"
             path="/api/v1/doctors/specialties"
@@ -661,10 +543,7 @@ export function DoctorDirectory({ admin = false }: { admin?: boolean }) {
             })}
             onSuccess={() => setRevision((v) => v + 1)}
           />
-        </Panel>
-      )}
-    </div>
-  );
+        </Panel>:null}/>
 }
 export function Appointments({
   reception = false,
@@ -687,7 +566,7 @@ export function Appointments({
   return (
     <div className="appointment-workspace">
       {!doctor && <nav className="department-tabs" aria-label="Appointment views"><button type="button" aria-pressed={view==='book'} onClick={()=>setView('book')}>Book Appointment</button><button type="button" aria-pressed={view==='manage'} onClick={()=>setView('manage')}>My Appointments / Reschedule / Cancel</button>{reception && <button type="button" aria-pressed={view==='walk-in'} onClick={()=>setView('walk-in')}>Walk-in Registration</button>}</nav>}
-      {reception && <section className="walkin-workspace" hidden={view!=='walk-in'}><div className="walkin-steps"><p><span className="step-number">1</span>Find existing patient</p><p><span className="step-number">2</span>Choose doctor & accepted slot</p><p><span className="step-number">3</span>Review & confirm booking</p></div><div><h2>Walk-in Registration</h2><p>Find the patient below, then use their Patient ID in the booking form. Walk-in care uses an accepted appointment slot.</p><Demographics/><Booking onSuccess={()=>setRevision(v=>v+1)}/></div><aside className="walkin-guidance"><h3>Before booking</h3><p>Use an existing synthetic patient profile. New patients can create an account through patient registration.</p><Link to="/register">Patient registration →</Link><p>The service determines slot availability. No separate walk-in queue or estimated waiting time is available.</p></aside></section>}
+      {reception && <section className="walkin-workspace" hidden={view!=='walk-in'}><div className="walkin-steps"><p><span className="step-number">1</span>Find existing patient</p><p><span className="step-number">2</span>Choose doctor & accepted slot</p><p><span className="step-number">3</span>Review & confirm booking</p></div><div><h2>Walk-in Registration</h2><p>Find the patient below, then use their Patient ID in the booking form. Walk-in care uses an accepted appointment slot.</p><Demographics/><Booking onSuccess={()=>setRevision(v=>v+1)}/></div><aside className="walkin-guidance"><h3>Before booking</h3><p>Use an existing synthetic patient profile. New patients can create an account through patient registration.</p><p>The service determines slot availability. No separate walk-in queue or estimated waiting time is available.</p></aside></section>}
       <section hidden={view!=='book'} className="appointment-booking">
       {!doctor &&
         (reception ? (
@@ -695,11 +574,12 @@ export function Appointments({
             <Booking onSuccess={() => setRevision((v) => v + 1)} />
           </Panel>
         ) : (
-          <Resource<PatientProfile> path="/api/v1/patients/me">
+          <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>
             {(profile) => (
               <Panel title="New booking">
                 <Booking
                   patientId={profile.id}
+                  patientName={profile.display_name}
                   onSuccess={() => setRevision((v) => v + 1)}
                 />
               </Panel>

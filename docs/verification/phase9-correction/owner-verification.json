@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Six owner doctor profiles read",
+    "Accepted second schedule restored from owner",
+    "Browser booking owner patient, doctor and time confirmed",
+    "Real waiting token confirmed",
+    "Three owner medicine profiles read"
+  ],
+  "owner_resources_checked": 13,
+  "demo_doctors": 6,
+  "demo_specialties": 6,
+  "demo_patients": 6,
+  "demo_appointments": 8,
+  "demo_medicines": 3,
+  "browser_booking_id": "8361876042933944065",
+  "queue_token": 1,
+  "resume_file_recovered_from_owner_reads": true
+}

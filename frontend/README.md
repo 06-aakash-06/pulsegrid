@@ -79,3 +79,7 @@ when available or ZXing, with an audited staff manual fallback. Raw QR secrets
 remain in mounted component memory. Polling pauses for hidden documents. See the
 [Phase 3 verification report](../docs/phase-3-integration-verification.md) for
 executed browser/API checks and the explicitly untested physical camera path.
+
+## Phase 9 current stop point
+
+The corrected Reception and Consultation compositions are documented in the [visual correction report](../docs/phase-9-visual-correction.md). The initial wider redesign was not visually accepted. All 142 frontend tests, typecheck and production build pass. Local demo mode requires ignored `.env.local` and `.demo/hospital.json`; its serve-only middleware and development-only hook are absent from the production data path. Fictional accounts are provisioned through owner APIs with private credentials outside Git; completed seeds are retained without further writes.

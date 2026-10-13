@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { PulseGridRoutes } from "../src/app/App";
@@ -84,7 +84,7 @@ describe("application routes", () => {
   ] as const)("renders the %s workspace shell after an identity response", async (role, workspaceName) => {
     await signInAs(role);
     expect(await screen.findAllByText(workspaceName)).not.toHaveLength(0);
-    expect(await screen.findByRole("heading", { name: role === "ops" ? "Control Room" : "Dashboard" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: workspaces.find(w=>w.roles.includes(role))!.pages[0].title })).toBeInTheDocument();
   });
 
   it("supports keyboard-visible responsive navigation interaction", async () => {
@@ -93,8 +93,8 @@ describe("application routes", () => {
     fireEvent.click(menu);
     expect(menu).toHaveAttribute("aria-expanded", "true");
 
-    fireEvent.click(screen.getByRole("link", { name: "Find a doctor" }));
-    expect(await screen.findByRole("heading", { name: "Find a doctor" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "Consultation" }));
+    expect(await screen.findByRole("heading", { name: "Consultation" })).toBeInTheDocument();
   });
 
   it("restores a valid refresh-cookie session and redirects away from login", async () => {
@@ -110,7 +110,7 @@ describe("application routes", () => {
       </AuthProvider>,
     );
 
-    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Reception" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
   });
 
@@ -131,10 +131,13 @@ describe("application routes", () => {
 
   it.each(workspaces)("renders each configured page in the $name workspace", async ({ roles: workspaceRoles, pages }) => {
     await signInAs(workspaceRoles[0]);
-    const initialHeading = workspaceRoles.includes("ops") ? "Control Room" : "Dashboard";
+    const initialHeading = workspaces.find(w=>w.roles.includes(workspaceRoles[0]))!.pages[0].title;
     expect(await screen.findByRole("heading", { name: initialHeading })).toBeInTheDocument();
     for (const page of pages) {
-      fireEvent.click(screen.getByRole("link", { name: page.title }));
+      const directory=screen.getByRole("complementary",{name:"Hospital directory"});
+      const destination=within(directory).getAllByRole("link").find(link=>link.getAttribute("href")===`${workspaces.find(w=>w.roles.includes(workspaceRoles[0]))!.basePath}/${page.path}`);
+      expect(destination).toBeDefined();
+      fireEvent.click(destination!);
       expect(await screen.findByRole("heading", { name: page.title, level: 1 })).toBeInTheDocument();
     }
   });
@@ -147,7 +150,7 @@ describe("Phase 4 authentication handoff", () => {
     fireEvent.change(screen.getByLabelText("Password"),{target:{value:"test-only-password"}});
     fireEvent.click(screen.getByRole("button",{name:"Sign in"}));
     expect(await screen.findByRole("heading",{name:"Secure appointment link"})).toBeInTheDocument();
-    expect(screen.queryByRole("heading",{name:"Dashboard"})).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading",{name:"Reception"})).not.toBeInTheDocument();
   });
   it("shows Retry-After on identity admission rejection", async () => {
     const client={...authClientFor("patient"),login:async()=>{throw new ApiError("Rate limited.",429,"rate_limited",undefined,7)}};

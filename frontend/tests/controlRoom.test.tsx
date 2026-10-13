@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => {
   return { request, api: { request } };
 });
 
-vi.mock("../src/auth/authContext", () => ({ useAuth: () => ({ api: mocks.api }) }));
+vi.mock("../src/auth/authContext", () => ({ useAuth: () => ({ api: mocks.api, state: {status:"authenticated", user:{id:"21",roleHints:["ops"]},roleHints:["ops"]} }) }));
 
 import { ControlRoom, TraceExplorer } from "../src/ops/ControlRoom";
 
@@ -71,6 +71,7 @@ describe("PulseGrid Control Room", () => {
     renderInRouter(<ControlRoom workspaceBasePath="/ops" />);
 
     expect(await screen.findByRole("heading", { name: "Control Room" })).toBeInTheDocument();
+    expect(screen.queryByText("Surge Mode controls · Administrator")).not.toBeInTheDocument();
     expect(await screen.findByText("healthy", { selector: "span" })).toBeInTheDocument();
     expect(screen.getAllByText("1.25").length).toBeGreaterThan(0);
     expect(screen.getByText("Hash topology epoch")).toBeInTheDocument();

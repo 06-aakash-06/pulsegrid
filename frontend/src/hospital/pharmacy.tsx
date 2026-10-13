@@ -292,7 +292,7 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
   const [revision, setRevision] = useState(0);
   const [dispensing, setDispensing] = useState<Dispensing | null>(null);
   return (
-    <>
+    <div className="fulfillment-workspace"><section className="prescription-counter">
       <Prescriptions pharmacist={pharmacist} onSelect={setPrescription} />
       {prescription && (
         <Reserve
@@ -301,6 +301,7 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
           onSuccess={() => setRevision((v) => v + 1)}
         />
       )}
+      </section><section className="reservation-counter">
       <Collection<Reservation>
         title="Reservations"
         path="/api/v1/pharmacy/reservations"
@@ -390,6 +391,7 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
           this source ID.
         </p>
       )}
+      </section><section className="dispensing-register">
       <Collection<Dispensing>
         title="Dispensings"
         path="/api/v1/pharmacy/dispensings"
@@ -408,6 +410,6 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
           />
         )}
       />
-    </>
+    </section></div>
   );
 }

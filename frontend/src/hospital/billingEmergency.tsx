@@ -112,11 +112,10 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
                   Balance: money(invoice.balance_minor),
                 }}
               />
-              <InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} />
               {invoice.items.length === 0 && (
                 <p>No charges have been imported.</p>
               )}
-              <div className="invoice-line-scroll"><table className="invoice-lines"><caption>Itemized invoice</caption><thead><tr><th scope="col">Charge / source</th><th scope="col">Qty</th><th scope="col">Unit price</th><th scope="col">Tariff</th></tr></thead><tbody>{invoice.items.map(item=><tr key={item.id}><th scope="row">{item.charge_code}<small>{item.source_service} · {item.source_item_id}</small></th><td>{item.quantity}</td><td>{money(item.unit_amount_minor)}</td><td>{item.tariff_revision}</td></tr>)}</tbody></table></div>
+              <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items"><table className="invoice-lines"><caption>Itemized invoice</caption><thead><tr><th scope="col">Charge / source</th><th scope="col">Qty</th><th scope="col">Unit price</th><th scope="col">Tariff</th></tr></thead><tbody>{invoice.items.map(item=><tr key={item.id}><th scope="row">{item.charge_code}<small>{item.source_service} · {item.source_item_id}</small></th><td>{item.quantity}</td><td>{money(item.unit_amount_minor)}</td><td>{item.tariff_revision}</td></tr>)}</tbody></table></div>
               <div className="invoice-total"><span>Balance due</span><strong>{money(invoice.balance_minor)}</strong></div>
               {staff && (
                 <CommandForm
@@ -193,6 +192,7 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
                   }}
                 />
               )}
+              <details className="insurance-receipt"><summary>Insurance estimates</summary><InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} /></details>
               <Collection<Payment>
                 title="Invoice payments"
                 path={`/api/v1/billing/invoices/${invoice.id}/payments`}

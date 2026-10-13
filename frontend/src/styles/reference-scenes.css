@@ -1,0 +1,2238 @@
+/* Two reference compositions. Isolated from the unapproved department layouts. */
+.workspace-shell:has(.reference-consultation),
+.workspace-shell:has(.reception-scene) {
+  padding-top: 85px;
+}
+.workspace-shell:has(.reference-consultation) .workspace-content,
+.workspace-shell:has(.reception-scene) .workspace-content {
+  padding-bottom: 16px;
+}
+.workspace-shell:has(.reference-consultation) .workspace-sidebar,
+.workspace-shell:has(.reception-scene) .workspace-sidebar {
+  top: 82px;
+  bottom: 16px;
+  padding: 22px 14px 14px;
+  background: #f0e4d4f2;
+  border-radius: 6px;
+  box-shadow:
+    3px 4px 0 #977b5770,
+    0 12px 25px #2c1e171f;
+}
+.workspace-shell:has(.reference-consultation) .directory-subroute,
+.workspace-shell:has(.reception-scene) .directory-subroute {
+  display: none;
+}
+.workspace-shell:has(.reference-consultation) .workspace-nav-link,
+.workspace-shell:has(.reception-scene) .workspace-nav-link {
+  min-height: 72px;
+  padding: 12px 6px;
+  grid-template-columns: 24px 26px minmax(0, 1fr) 15px;
+  gap: 9px;
+}
+.workspace-shell:has(.reference-consultation) .directory-copy small,
+.workspace-shell:has(.reception-scene) .directory-copy small {
+  font-size: 9px;
+  white-space: nowrap;
+}
+.workspace-shell:has(.reference-consultation) .directory-heading,
+.workspace-shell:has(.reception-scene) .directory-heading {
+  padding: 0 8px 18px;
+  margin-bottom: 8px;
+}
+.workspace-shell:has(.reference-consultation) .workspace-nav,
+.workspace-shell:has(.reception-scene) .workspace-nav {
+  gap: 0;
+}
+.workspace-shell:has(.reference-consultation) .directory-number,
+.workspace-shell:has(.reception-scene) .directory-number {
+  font-size: 12px;
+}
+.workspace-shell:has(.reference-consultation) .directory-copy strong,
+.workspace-shell:has(.reception-scene) .directory-copy strong {
+  font-size: 12px;
+  font-weight: 570;
+}
+/* Raw identifiers and secondary tools remain reachable from the directory drawer. */
+.workspace-shell:has(.reference-consultation)
+  .workspace-sidebar:focus-within
+  .directory-subroute,
+.workspace-shell:has(.reception-scene)
+  .workspace-sidebar:focus-within
+  .directory-subroute {
+  display: flex;
+}
+.department-page:has(.reference-consultation) > .page-heading {
+  display: none;
+}
+.reference-consultation {
+  position: relative;
+  display: grid;
+  gap: 0;
+  padding: 0 0 12px;
+  color: #102638;
+  min-width: 0;
+}
+.consultation-wall-heading {
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px 0 26px;
+  background: none;
+}
+.consultation-wall-heading h1 {
+  font-size: 44px;
+  font-weight: 650;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  margin: 0;
+}
+.consultation-wall-heading p {
+  font-size: 16px;
+  margin: 7px 0 0;
+}
+.consultation-wall-mark {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-right: 20%;
+}
+.consultation-wall-mark .department-icon {
+  width: 65px;
+  height: 65px;
+  stroke-width: 0.8;
+}
+.consultation-wall-mark span {
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 2px;
+}
+.consultation-tabs {
+  display: flex;
+  width: 66%;
+  height: 42px;
+  background: #f5e8d9e8;
+  border: 1px solid #fdf5e5;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  overflow: visible;
+  align-items: stretch;
+  padding: 0 8px;
+}
+.consultation-tabs > a,
+.consultation-tabs > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 15px;
+  font-size: 11px;
+  white-space: nowrap;
+  border-right: 1px solid #cfbea750;
+  flex: 1;
+  justify-content: center;
+}
+.consultation-tabs .department-icon {
+  width: 18px;
+  height: 18px;
+}
+.consultation-tabs > span {
+  background: #fff8ee;
+  border-bottom: 3px solid #173c43;
+  font-weight: 600;
+}
+.consultation-board {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.65fr) minmax(330px, 1.45fr) minmax(
+      320px,
+      1.1fr
+    );
+  min-height: 450px;
+  align-items: stretch;
+  gap: 0;
+  background: linear-gradient(
+    90deg,
+    #f3e4d5f0 0%,
+    #edddcdeb 66%,
+    transparent 66%
+  );
+  border-radius: 0 0 6px 6px;
+  position: relative;
+  padding: 14px 12px 14px 20px;
+  box-shadow: 0 13px 12px #66402622;
+}
+.reference-specialties {
+  padding: 10px 18px 8px 0;
+  border-right: 1px solid #cbbba2;
+  position: relative;
+  min-width: 0;
+}
+.reference-specialties h2 {
+  font-size: 14px;
+  margin: 0 0 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.reference-specialties button {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  align-items: center;
+  border: 0 !important;
+  border-radius: 3px !important;
+  background: transparent !important;
+  color: #182e37 !important;
+  padding: 9px 10px !important;
+  width: 100%;
+  min-height: 34px !important;
+  font-size: 12px !important;
+  font-weight: 400;
+  margin: 0 !important;
+}
+.reference-specialties button.is-selected {
+  background: #24484dd9 !important;
+  color: #fff !important;
+  box-shadow: 0 3px 5px #1a2b2220;
+}
+.reference-specialties button:not(.is-selected) {
+  border-bottom: 1px solid #c9b8a444 !important;
+}
+.reference-specialties button span {
+  color: inherit;
+  font-size: 11px;
+}
+.specialty-tools {
+  margin: 20px 5px 0;
+  font-size: 11px;
+}
+.specialty-tools summary {
+  cursor: pointer;
+}
+.demo-footnote {
+  position: absolute;
+  bottom: 8px;
+  font-size: 9px;
+  color: #687269;
+}
+.reference-roster {
+  padding: 0 13px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.doctor-search-bar {
+  height: 37px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  padding: 0 9px;
+  background: #fff8ee85;
+  border: 1px solid #d4c5b2;
+  border-radius: 4px;
+}
+.workspace-content .doctor-search-bar input {
+  border: 0 !important;
+  background: none !important;
+  min-height: 30px !important;
+  padding: 5px !important;
+  flex: 1;
+  width: 0;
+  font-size: 11px;
+  box-shadow: none;
+}
+.workspace-content .doctor-search-bar button {
+  padding: 4px 7px !important;
+  min-height: 25px !important;
+  border: 0 !important;
+  background: none !important;
+  font-size: 10px;
+}
+.roster-caption {
+  font-size: 10px;
+  color: #5d6666;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+}
+.workspace-content .roster-caption button {
+  font-size: 10px;
+  min-height: 22px;
+  padding: 3px 6px;
+  border: 0;
+  background: transparent;
+}
+.reference-doctor-list {
+  display: grid;
+  gap: 5px;
+  max-height: 370px;
+  overflow: auto;
+  padding: 1px 1px 3px;
+  scrollbar-width: thin;
+}
+.workspace-content .reference-doctor-row {
+  display: grid;
+  grid-template-columns: 47px minmax(0, 1fr) 113px 10px;
+  gap: 9px;
+  align-items: center;
+  min-height: 70px;
+  padding: 8px 9px;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+  background: #f8eee4ac;
+  border: 1px solid #eedfd0;
+  border-radius: 5px;
+  box-shadow: none;
+  min-width: 0;
+  color: #102638;
+}
+.workspace-content .reference-doctor-row[aria-pressed="true"] {
+  border-left: 2px solid #238de1;
+  background: #eef0ece0;
+  box-shadow: 0 1px 5px #34537022;
+}
+.doctor-row-name {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.doctor-row-name strong {
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+.doctor-row-name > span {
+  font-size: 11px;
+}
+.doctor-row-name small {
+  font-size: 9px;
+  color: #66706d;
+}
+.reference-portrait {
+  width: 47px;
+  height: 57px;
+  display: block;
+  background-size: 300% 200%;
+  background-repeat: no-repeat;
+  border-radius: 5px;
+  background-color: #d9d3c7;
+  flex-shrink: 0;
+}
+.reference-portrait--initials {
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  color: #25474d;
+  background: #d9d3c7;
+}
+.reference-portrait--large {
+  width: 125px;
+  height: 150px;
+}
+.doctor-availability {
+  display: grid;
+  grid-template-columns: 6px minmax(0, 1fr);
+  gap: 4px;
+  align-items: center;
+  font-size: 10px;
+  border-left: 1px solid #c9bba65c;
+  padding-left: 12px;
+  min-width: 0;
+}
+.doctor-availability strong {
+  font-weight: 500;
+  font-size: 10px;
+  color: #096e4b;
+  white-space: normal;
+}
+.doctor-availability small {
+  grid-column: 2;
+  font-size: 9px;
+  line-height: 1.3;
+}
+.availability-dot {
+  width: 6px;
+  height: 6px;
+  background: #0b9b63;
+  border-radius: 50%;
+}
+.availability-dot--quiet {
+  background: #b88c5e;
+}
+.roster-arrow {
+  font-size: 15px;
+  font-weight: 300;
+}
+.roster-pagination {
+  display: flex;
+  gap: 5px;
+  margin-top: auto;
+  justify-content: flex-end;
+  padding-top: 6px;
+}
+.workspace-content .roster-pagination button {
+  font-size: 9px;
+  min-height: 24px;
+  padding: 3px 7px;
+  background: none;
+}
+.reference-doctor-profile {
+  margin-top: -60px;
+  margin-left: 5px;
+  border: 1px solid #faeee0;
+  border-radius: 9px;
+  background: #f6e9dccf;
+  box-shadow:
+    0 2px 3px #a5734666,
+    0 0 0 3px #a884571c;
+  backdrop-filter: none;
+  padding: 16px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.reference-profile-top {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+.reference-profile-top > div {
+  min-width: 0;
+  padding-top: 2px;
+}
+.profile-active {
+  font-size: 10px;
+  display: inline-block;
+  background: #c8dfbd;
+  color: #087148;
+  padding: 5px 8px;
+  border-radius: 15px;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+.reference-profile-top h2 {
+  font-size: 21px;
+  line-height: 1.2;
+  margin: 0 0 5px;
+  font-weight: 650;
+  letter-spacing: -0.6px;
+}
+.reference-profile-top p {
+  font-size: 13px;
+  line-height: 1.35;
+  margin: 0 0 5px;
+}
+.reference-profile-top small {
+  font-size: 9px;
+  color: #66706d;
+}
+.reference-profile-status {
+  margin-top: 10px;
+  border-block: 1px solid #cfbca050;
+  padding: 12px 0;
+}
+.doctor-availability--profile {
+  border: 0;
+  padding: 0;
+  grid-template-columns: 6px 1fr;
+  gap: 5px;
+}
+.doctor-availability--profile strong {
+  font-size: 11px;
+}
+.doctor-availability--profile small {
+  font-size: 10px;
+}
+.profile-slot-strip {
+  grid-column: 1/-1;
+  display: flex;
+  gap: 5px;
+  margin-top: 3px;
+}
+.profile-slot-strip span {
+  background: #fff5e675;
+  padding: 5px;
+  border: 1px solid #d1bda57a;
+  border-radius: 3px;
+  font-size: 9px;
+  flex: 1;
+  text-align: center;
+}
+.profile-tabs {
+  display: flex;
+  gap: 14px;
+  border-bottom: 1px solid #c8b7a459;
+  margin-bottom: 12px;
+}
+.workspace-content .profile-tabs button {
+  flex: 1;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font-size: 11px;
+  padding: 10px 0;
+  min-height: 34px;
+}
+.workspace-content .profile-tabs button[aria-pressed="true"] {
+  border-bottom: 2px solid #14313a;
+  color: #102638;
+  font-weight: 600;
+}
+.profile-about p {
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+.profile-about h3 {
+  font-size: 12px;
+  margin-bottom: 7px;
+}
+.specialty-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.specialty-chips span {
+  background: #d5d8dc;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+}
+.profile-about .profile-note {
+  font-size: 11px;
+  color: #5c6767;
+  margin-top: 16px;
+}
+.profile-technical-details {
+  font-size: 11px;
+}
+.profile-technical-details dd {
+  margin: 3px 0 10px;
+  overflow-wrap: anywhere;
+}
+.workspace-content .reference-book-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  width: 100%;
+  background: #123740;
+  color: #fff;
+  min-height: 40px;
+  padding: 10px 18px;
+  font-size: 13px;
+  border: 0;
+  border-radius: 4px;
+}
+.profile-management {
+  font-size: 10px;
+  margin-top: 12px;
+}
+.profile-management summary {
+  cursor: pointer;
+}
+.reference-booking-desk {
+  margin-block: 14px;
+  background: #f3e5d5;
+  padding: 20px;
+  border: 1px solid #fdf5e5;
+}
+.reference-booking-desk > h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.consultation-desk {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(240px, 1fr);
+  gap: 28px;
+  padding: 27px 0 0;
+  align-items: start;
+}
+.consultation-schedule {
+  background: #f6e8d9e6;
+  padding: 16px 20px;
+  border-radius: 9px 9px 3px 3px;
+  box-shadow:
+    0 4px 0 #9d805756,
+    0 7px 14px #2a201833;
+  border: 1px solid #fff4df;
+  position: relative;
+}
+.consultation-schedule:before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: -7px;
+  height: 5px;
+  background: #77644d;
+  border-radius: 3px;
+}
+.schedule-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.schedule-title h2 {
+  font-size: 14px;
+  margin: 0;
+}
+.schedule-title > span {
+  font-size: 10px;
+  color: #5f6261;
+}
+.schedule-visits {
+  display: flex;
+  gap: 10px;
+  overflow: auto;
+  padding: 15px 3px 2px;
+  border-top: 1px solid #beaa9260;
+  scrollbar-width: thin;
+}
+.schedule-visit {
+  flex: 1;
+  min-width: 105px;
+  display: grid;
+  gap: 2px;
+  border-left: 2px solid var(--visit-color);
+  padding: 0 8px;
+  font-size: 11px;
+  position: relative;
+}
+.schedule-visit:before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  background: var(--visit-color);
+  border-radius: 50%;
+}
+.schedule-visit time {
+  font-size: 9px;
+  color: #66706d;
+  margin-bottom: 5px;
+}
+.schedule-visit strong {
+  font-size: 12px;
+}
+.schedule-visit small {
+  font-size: 9px;
+  color: #647070;
+  line-height: 1.3;
+}
+.consultation-quick {
+  background: #f4e5d4e6;
+  box-shadow: 0 3px 0 #9475576b;
+  padding: 16px 20px;
+  border: 1px solid #fcf0dc;
+  border-radius: 8px 8px 3px 3px;
+}
+.consultation-quick h2 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.consultation-quick a {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 12px;
+}
+.consultation-quick .department-icon {
+  color: #1684d3;
+  width: 22px;
+  height: 22px;
+}
+.consultation-quick span {
+  display: grid;
+  gap: 3px;
+}
+.consultation-quick strong {
+  font-weight: 550;
+  font-size: 11px;
+}
+.consultation-quick small {
+  font-size: 9px;
+  color: #5b696c;
+}
+.reference-advanced {
+  padding: 12px 16px;
+  background: #f0e0ccbe;
+  margin-top: 18px;
+  font-size: 11px;
+  border: 1px solid #ddcbae;
+}
+.reference-advanced summary {
+  cursor: pointer;
+}
+.reference-advanced > form {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.reference-advanced > form > label {
+  flex: 1;
+}
+/* Reception: wall, robot, counter, physical objects, then information instruments. */
+.workspace-shell:has(.reception-scene),
+.public-page:has(.reception-scene) {
+  --environment: url("/environments/reception-corrected.webp");
+  background-position: center top;
+  background-size: cover;
+}
+.reception-scene {
+  min-height: 770px;
+  height: calc(100vh - 115px);
+  position: relative;
+  padding: 0;
+  display: block;
+}
+.reception-scene .wayfinding {
+  position: absolute;
+  top: 1.5%;
+  left: 12%;
+  right: 0;
+  width: 88%;
+  margin: 0;
+  border: 1px solid #766f52;
+  overflow: visible;
+  height: 66px;
+  border-radius: 7px;
+  box-shadow:
+    0 3px 0 #584b3652,
+    0 8px 20px #32281f35;
+  z-index: 2;
+}
+.reception-scene .wayfinding:before,
+.reception-scene .wayfinding:after {
+  content: "";
+  position: absolute;
+  top: -35px;
+  height: 35px;
+  width: 2px;
+  background: #403b32;
+}
+.reception-scene .wayfinding:before {
+  left: 20%;
+}
+.reception-scene .wayfinding:after {
+  right: 20%;
+}
+.reception-scene .wayfinding-sign {
+  padding: 10px 16px;
+  gap: 12px;
+  position: relative;
+  color: #fff;
+}
+.reception-scene .wayfinding-sign strong {
+  font-size: 14px;
+}
+.reception-scene .wayfinding-sign small {
+  font-size: 10px;
+}
+.reception-scene .wayfinding-sign .department-icon {
+  width: 28px;
+  height: 28px;
+}
+.reception-scene .wayfinding-sign b {
+  font-size: 30px;
+}
+.reception-scene .welcome-wall {
+  position: absolute;
+  top: 17%;
+  left: 30%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+  width: 35%;
+  background: none;
+}
+.reception-scene .welcome-intro {
+  font-size: 25px;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  margin: 0 0 4px;
+}
+.department-page[data-workspace="/patient"].route-dashboard
+  .reception-scene
+  .welcome-wall
+  h2,
+.reception-scene .welcome-wall h2 {
+  font-size: 42px;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  font-weight: 650;
+  max-width: none;
+  white-space: nowrap;
+  margin: 0;
+}
+.reception-scene .welcome-motto {
+  font-size: 8px;
+  letter-spacing: 3px;
+  margin-top: 16px;
+  white-space: nowrap;
+}
+.reception-scene .robot-conversation {
+  position: absolute;
+  top: 35%;
+  left: 30%;
+  margin: 0;
+  width: 170px;
+  padding: 13px 14px;
+  border-radius: 8px;
+  font-size: 10px;
+  background: #fff9efeb;
+  box-shadow: 0 1px 2px #8b765e30;
+}
+.reception-scene .robot-conversation > span {
+  display: none;
+}
+.reception-scene .reception-counter {
+  position: absolute;
+  top: 55%;
+  left: 0;
+  right: 0;
+  padding: 0;
+  height: 27%;
+}
+.reception-scene .reception-counter-label {
+  position: absolute;
+  top: 0;
+  left: 39%;
+  right: 12%;
+  margin: 0;
+  padding: 6px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  font-size: 12px;
+  letter-spacing: 8px;
+}
+.reception-scene .appointment-slips {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: end;
+  gap: 5%;
+  padding: 0 3% 12px;
+  border: 0;
+}
+.workspace-content .reception-scene .appointment-slip,
+.reception-scene .appointment-slip {
+  display: block;
+  flex: 1;
+  position: relative;
+  min-height: 122px;
+  height: auto;
+  padding: 20px 22px 18px;
+  color: #102638;
+  border: 1px solid #c7b9a6;
+  border-radius: 5px 5px 2px 2px;
+  background: #f7f0e8;
+  box-shadow:
+    3px 5px 0 #6e4c363d,
+    0 7px 12px #5d392339;
+  transition: translate 0.2s;
+  transform: skew(-4deg) rotate(-2deg);
+  z-index: 1;
+  max-width: 230px;
+}
+.reception-scene .appointment-slip:before {
+  content: "";
+  position: absolute;
+  inset: -9px 8px 4px -7px;
+  background: #c66d59;
+  border: 1px solid #c4a285;
+  border-radius: 3px;
+  z-index: -2;
+  transform: skew(3deg) rotate(-3deg);
+  box-shadow: -4px 3px 0 #ab5644;
+}
+.reception-scene .slip-object-backing {
+  position: absolute;
+  inset: -11px -3px 5px -5px;
+  background: #eee8df;
+  border: 1px solid #cabdae;
+  border-radius: 3px;
+  z-index: -1;
+  transform: rotate(2deg);
+}
+.reception-scene .slip-object-binding {
+  position: absolute;
+  top: -5px;
+  left: 13px;
+  right: 13px;
+  height: 11px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 9px,
+    #4a433c 9px 11px,
+    transparent 11px 16px
+  );
+  border-top: 1px solid #6f5c4a;
+  border-radius: 4px;
+}
+.reception-scene .appointment-slip .department-icon {
+  display: none;
+}
+.reception-scene .appointment-slip strong {
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 600;
+  max-width: 130px;
+}
+.reception-scene .appointment-slip p {
+  font-size: 11px;
+  line-height: 1.35;
+  margin: 9px 0 0;
+  padding-right: 16px;
+  max-width: 145px;
+}
+.reception-scene .slip-arrow {
+  right: 12px;
+  bottom: 12px;
+  width: 25px;
+  height: 25px;
+  font-size: 18px;
+}
+.reception-scene .slip-object--appointments {
+  transform: skew(1deg) rotate(-2deg);
+}
+.reception-scene .slip-object--appointments:before {
+  background: #839d87;
+  transform: rotate(1deg);
+  box-shadow: -4px 1px 0 #547867;
+}
+.reception-scene .slip-object--appointments .slip-object-binding {
+  display: none;
+}
+.reception-scene .slip-object--appointments .slip-object-backing:before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -9px;
+  width: 56px;
+  height: 10px;
+  background: #81a786;
+  border: 1px solid #6d8d71;
+  border-radius: 3px 3px 0 0;
+}
+.reception-scene .slip-object--check-in {
+  transform: skew(3deg) rotate(1deg);
+  min-height: 112px;
+  border: 0;
+  background: #f6e9d5;
+}
+.reception-scene .slip-object--check-in:before,
+.reception-scene .slip-object--check-in .slip-object-backing,
+.reception-scene .slip-object--check-in .slip-object-binding {
+  display: none;
+}
+.reception-scene .slip-object--records {
+  transform: skew(-3deg) rotate(-2deg);
+}
+.reception-scene .slip-object--records:before {
+  background: #c9b293;
+  box-shadow: -7px 1px 0 #7c5b35;
+  transform: rotate(-2deg);
+  inset: -14px -2px 6px -11px;
+}
+.reception-scene .slip-object--records .slip-object-binding {
+  display: none;
+}
+.reception-scene .slip-object--records .slip-object-backing:before {
+  content: "VISIT HISTORY";
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  right: 12px;
+  background: #e5d5bd;
+  border: 1px solid #baaa94;
+  height: 12px;
+}
+.reception-hospital-today {
+  position: absolute;
+  top: 17%;
+  right: 12%;
+  width: 18%;
+  font-size: 11px;
+  color: #172e34;
+}
+.reception-hospital-today > .eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.8px;
+  margin-bottom: 14px;
+}
+.reception-hospital-today > div {
+  display: grid;
+  grid-template-columns: 19px 22px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #ad957d38;
+}
+.reception-hospital-today .department-icon {
+  width: 19px;
+  height: 19px;
+  color: #007caf;
+}
+.reception-hospital-today strong {
+  font-size: 17px;
+  font-weight: 550;
+}
+.reception-hospital-today > small {
+  font-size: 8px;
+  color: #5a605b;
+  display: block;
+  margin-top: 10px;
+}
+.reception-live-error {
+  font-size: 9px;
+}
+.reception-information-rail {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14%;
+  min-height: 100px;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1.1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+.reception-today,
+.reception-announcements {
+  background: #f4e5d3e8;
+  box-shadow:
+    0 3px 0 #8c674b55,
+    0 4px 14px #3e241c30;
+  border: 1px solid #fff1df;
+  padding: 14px 18px;
+  border-radius: 7px 7px 3px 3px;
+  min-width: 0;
+}
+.reception-info-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  align-items: center;
+}
+.reception-info-title h3,
+.reception-announcements h3 {
+  font-size: 12px;
+  margin: 0;
+}
+.reception-info-title > span {
+  font-size: 9px;
+}
+.reception-next-time {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 11px;
+  margin: 12px 0 6px;
+  border-bottom: 1px solid #b09b7b;
+  padding-bottom: 5px;
+}
+.reception-next-time time {
+  font-weight: 600;
+  font-size: 14px;
+}
+.reception-today > a {
+  font-size: 9px;
+}
+.reception-queue-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr 18px;
+  gap: 8px;
+  background: #292929;
+  color: #fff;
+  padding: 13px 17px;
+  border-radius: 7px;
+  border: 1px solid #a58b69;
+  box-shadow: 0 4px 7px #38291955;
+  align-items: center;
+  position: relative;
+  min-width: 0;
+}
+.reception-queue-display > span {
+  grid-column: 1/-1;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.queue-flaps {
+  display: flex;
+  gap: 4px;
+}
+.queue-flaps strong {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(#151515 49%, #38332e 50%);
+  border: 1px solid #080808;
+  border-radius: 3px;
+  padding: 3px 4px;
+  font-size: 25px;
+  font-weight: 500;
+  min-width: 22px;
+}
+.reception-queue-display > div:not(.queue-flaps) {
+  display: grid;
+  gap: 5px;
+}
+.reception-queue-display > div > strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+.reception-queue-display small {
+  font-size: 9px;
+  color: #d8d6cf;
+}
+.reception-queue-display > b {
+  font-weight: 300;
+  font-size: 24px;
+}
+.reception-announcements p {
+  display: flex;
+  gap: 7px;
+  font-size: 9px;
+  line-height: 1.35;
+  margin-top: 8px;
+}
+.reception-announcements i {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #2c956c;
+  margin-top: 3px;
+}
+.reception-announcements > small {
+  font-size: 8px;
+  color: #6c6560;
+}
+.profile-desk {
+  margin-top: 20px;
+}
+.reception-scene--public .reception-guidance {
+  position: absolute;
+  left: 110%;
+  top: 0;
+  width: 200px;
+  background: none;
+  padding: 0 0 0 20px;
+  gap: 8px;
+}
+.reception-scene--public .reception-guidance > p:not(.eyebrow) {
+  font-size: 12px;
+}
+@media (min-width: 1500px) {
+  .consultation-wall-heading {
+    height: 120px;
+  }
+  .consultation-board {
+    min-height: 485px;
+  }
+  .reference-doctor-list {
+    max-height: 410px;
+  }
+  .workspace-content .reference-doctor-row {
+    min-height: 77px;
+  }
+  .reference-profile-top h2 {
+    font-size: 24px;
+  }
+  .reference-portrait--large {
+    width: 135px;
+    height: 158px;
+  }
+  .consultation-desk {
+    padding-top: 32px;
+  }
+}
+@media (max-width: 1300px) and (min-width: 901px) {
+  .consultation-board {
+    grid-template-columns: 140px minmax(270px, 1.35fr) minmax(265px, 1fr);
+    padding-left: 12px;
+  }
+  .reference-roster {
+    padding-inline: 10px;
+  }
+  .workspace-content .reference-doctor-row {
+    grid-template-columns: 40px minmax(0, 1fr) 88px 8px;
+    gap: 6px;
+    padding: 8px 6px;
+  }
+  .reference-portrait {
+    width: 40px;
+    height: 50px;
+  }
+  .reference-portrait--large {
+    width: 95px;
+    height: 125px;
+  }
+  .reference-profile-top {
+    gap: 10px;
+  }
+  .reference-profile-top h2 {
+    font-size: 18px;
+  }
+  .doctor-row-name strong {
+    font-size: 11px;
+  }
+  .doctor-row-name > span {
+    font-size: 10px;
+  }
+  .doctor-availability {
+    padding-left: 7px;
+  }
+  .reference-doctor-profile {
+    padding: 13px;
+  }
+  .reference-specialties button {
+    font-size: 11px !important;
+    padding-inline: 7px !important;
+  }
+  .consultation-wall-heading h1 {
+    font-size: 40px;
+  }
+  .consultation-wall-mark {
+    margin-right: 16%;
+  }
+  .consultation-tabs {
+    width: 66%;
+  }
+  .consultation-tabs > a,
+  .consultation-tabs > span {
+    padding-inline: 10px;
+    font-size: 10px;
+  }
+  .reception-scene {
+    min-height: 665px;
+  }
+  .reception-scene .welcome-wall {
+    left: 25%;
+    top: 18%;
+  }
+  .reception-scene .robot-conversation {
+    left: 24%;
+    top: 37%;
+  }
+  .reception-scene .wayfinding-sign {
+    padding: 10px;
+    gap: 8px;
+  }
+  .reception-scene .wayfinding-sign strong {
+    font-size: 12px;
+  }
+  .reception-scene .wayfinding-sign small {
+    font-size: 8px;
+  }
+  .reception-scene .appointment-slip {
+    padding: 17px 16px;
+    min-height: 118px;
+  }
+  .reception-scene .appointment-slip strong {
+    font-size: 15px;
+  }
+  .reception-scene .appointment-slips {
+    gap: 3%;
+  }
+  .reception-hospital-today {
+    right: 8%;
+    width: 21%;
+  }
+  .reception-information-rail {
+    gap: 12px;
+  }
+  .reception-today,
+  .reception-announcements {
+    padding: 12px;
+  }
+  .reception-queue-display {
+    padding: 12px;
+  }
+  .queue-flaps strong {
+    font-size: 21px;
+  }
+}
+@media (max-width: 900px) {
+  .workspace-shell:has(.reference-consultation),
+  .workspace-shell:has(.reception-scene) {
+    padding-top: 83px;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-sidebar,
+  .workspace-shell:has(.reception-scene) .workspace-sidebar {
+    top: 0;
+    bottom: 0;
+  }
+  .workspace-shell:has(.reference-consultation) .directory-subroute,
+  .workspace-shell:has(.reception-scene) .directory-subroute {
+    display: flex;
+  }
+  .consultation-wall-heading {
+    height: 85px;
+    padding: 10px;
+  }
+  .consultation-wall-heading h1 {
+    font-size: 34px;
+  }
+  .consultation-wall-heading p {
+    font-size: 12px;
+  }
+  .consultation-wall-mark {
+    margin: 0;
+  }
+  .consultation-wall-mark .department-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .consultation-wall-mark span {
+    display: none;
+  }
+  .consultation-tabs {
+    width: 100%;
+    overflow: auto;
+  }
+  .consultation-board {
+    grid-template-columns: 150px minmax(0, 1fr);
+    padding: 12px;
+    gap: 0;
+    background: #f0e0cfe8;
+  }
+  .reference-doctor-profile {
+    grid-column: 1/-1;
+    margin: 15px 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    background: #f4e6d8;
+  }
+  .reference-profile-top {
+    grid-row: 1/4;
+  }
+  .reference-profile-status {
+    margin: 0;
+  }
+  .profile-tabs {
+    margin: 0;
+  }
+  .reference-book-button {
+    grid-column: 2;
+  }
+  .profile-management {
+    grid-column: 1/-1;
+  }
+  .consultation-desk {
+    gap: 15px;
+    grid-template-columns: 1fr;
+  }
+  .consultation-quick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+  }
+  .consultation-quick h2 {
+    width: 100%;
+    margin: 0;
+  }
+  .reference-doctor-list {
+    max-height: 360px;
+  }
+  .reception-scene {
+    height: calc(100vh - 110px);
+    min-height: 780px;
+  }
+  .reception-scene .wayfinding {
+    left: 0;
+    width: 100%;
+    height: 60px;
+  }
+  .reception-scene .wayfinding-sign {
+    padding: 10px 8px;
+    gap: 6px;
+  }
+  .reception-scene .wayfinding-sign strong {
+    font-size: 11px;
+  }
+  .reception-scene .wayfinding-sign small {
+    font-size: 8px;
+  }
+  .reception-scene .wayfinding-sign b {
+    display: none;
+  }
+  .reception-scene .welcome-wall {
+    left: 16%;
+    top: 15%;
+    width: 45%;
+  }
+  .reception-scene .welcome-wall h2 {
+    font-size: 36px !important;
+  }
+  .reception-scene .welcome-intro {
+    font-size: 22px;
+  }
+  .reception-hospital-today {
+    right: 2%;
+    top: 15%;
+    width: 29%;
+  }
+  .reception-scene .robot-conversation {
+    left: 12%;
+    top: 32%;
+  }
+  .reception-scene .reception-counter {
+    top: 53%;
+    height: 30%;
+  }
+  .reception-scene .appointment-slips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    padding: 0 4%;
+  }
+  .reception-scene .appointment-slip {
+    max-width: none;
+    min-height: 106px;
+  }
+  .reception-scene .reception-counter-label {
+    top: -8%;
+    left: 25%;
+    right: 25%;
+  }
+  .reception-information-rail {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    bottom: -140px;
+  }
+  .reception-announcements {
+    grid-column: 1/-1;
+  }
+  .profile-desk {
+    margin-top: 160px;
+  }
+}
+@media (max-width: 580px) {
+  .workspace-shell:has(.reference-consultation) .workspace-content,
+  .workspace-shell:has(.reception-scene) .workspace-content {
+    padding-inline: 12px;
+  }
+  .consultation-wall-heading h1 {
+    font-size: 30px;
+  }
+  .consultation-tabs > a,
+  .consultation-tabs > span {
+    min-width: 110px;
+    padding: 8px;
+    font-size: 11px;
+  }
+  .consultation-board {
+    display: block;
+    padding: 10px;
+    min-height: 0;
+  }
+  .reference-specialties {
+    border: 0;
+    padding: 0 0 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .reference-specialties h2 {
+    width: 100%;
+    font-size: 12px;
+    margin: 0 0 4px;
+  }
+  .reference-specialties button {
+    width: auto;
+    min-height: 30px !important;
+    font-size: 10px !important;
+    padding: 5px 8px !important;
+    background: #f6eee3 !important;
+    border: 1px solid #cbb89e70 !important;
+  }
+  .reference-specialties button span {
+    display: none;
+  }
+  .specialty-tools {
+    margin: 0;
+    font-size: 10px;
+    align-self: center;
+  }
+  .demo-footnote {
+    position: static;
+    width: 100%;
+    font-size: 8px;
+    margin: 2px 0;
+  }
+  .reference-roster {
+    padding: 0;
+  }
+  .reference-doctor-list {
+    max-height: 280px;
+  }
+  .workspace-content .reference-doctor-row {
+    grid-template-columns: 42px minmax(0, 1fr) 80px 8px;
+    gap: 7px;
+    padding: 8px 7px;
+    min-height: 70px;
+  }
+  .reference-portrait {
+    width: 42px;
+    height: 52px;
+  }
+  .doctor-row-name strong {
+    font-size: 11px;
+  }
+  .doctor-row-name > span {
+    font-size: 10px;
+  }
+  .doctor-row-name small {
+    font-size: 8px;
+  }
+  .doctor-availability {
+    padding-left: 5px;
+  }
+  .doctor-availability strong {
+    font-size: 9px;
+  }
+  .doctor-availability small {
+    font-size: 8px;
+  }
+  .reference-doctor-profile {
+    display: flex;
+    margin-top: 16px;
+    padding: 14px;
+    gap: 0;
+  }
+  .reference-profile-top h2 {
+    font-size: 21px;
+  }
+  .reference-portrait--large {
+    width: 100px;
+    height: 125px;
+  }
+  .reference-profile-status {
+    margin-top: 10px;
+  }
+  .profile-tabs {
+    margin-bottom: 12px;
+  }
+  .profile-about p {
+    font-size: 12px;
+  }
+  .reference-book-button {
+    margin-top: 10px !important;
+  }
+  .consultation-desk {
+    padding-top: 22px;
+  }
+  .consultation-schedule {
+    padding: 14px;
+  }
+  .schedule-title h2 {
+    font-size: 12px;
+  }
+  .schedule-title > span {
+    font-size: 8px;
+  }
+  .schedule-visit {
+    min-width: 110px;
+  }
+  .reference-advanced {
+    margin-top: 12px;
+  }
+  .reference-consultation {
+    padding: 0 0 12px;
+  }
+  .workspace-shell:has(.reception-scene) {
+    background-size: auto 620px;
+    background-position: center 50px;
+    background-repeat: no-repeat;
+    background-color: #d8c1a5;
+  }
+  .reception-scene {
+    height: auto;
+    min-height: 980px;
+  }
+  .reception-scene .wayfinding {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .reception-scene .wayfinding-sign {
+    min-height: 48px;
+    font-size: 10px;
+    gap: 8px;
+  }
+  .reception-scene .wayfinding-sign .department-icon {
+    width: 20px;
+    height: 20px;
+  }
+  .reception-scene .wayfinding-sign strong {
+    font-size: 11px;
+  }
+  .reception-scene .wayfinding-sign small {
+    font-size: 8px;
+  }
+  .reception-scene .welcome-wall {
+    top: 125px;
+    left: 8%;
+    width: 65%;
+  }
+  .reception-scene .welcome-intro {
+    font-size: 18px;
+  }
+  .reception-scene .welcome-wall h2 {
+    font-size: 31px !important;
+  }
+  .reception-scene .welcome-motto {
+    font-size: 6px;
+    letter-spacing: 2px;
+    margin-top: 10px;
+  }
+  .reception-hospital-today {
+    position: absolute;
+    top: 215px;
+    left: 8%;
+    right: auto;
+    width: 84%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 10px;
+    align-items: center;
+    padding: 8px 0;
+  }
+  .reception-hospital-today > .eyebrow {
+    width: 100%;
+    margin: 0;
+    font-size: 7px;
+  }
+  .reception-hospital-today > div {
+    grid-template-columns: 16px auto 1fr;
+    gap: 5px;
+    padding: 3px 0;
+    border: 0;
+    font-size: 8px;
+  }
+  .reception-hospital-today strong {
+    font-size: 12px;
+  }
+  .reception-hospital-today .department-icon {
+    width: 15px;
+    height: 15px;
+  }
+  .reception-hospital-today > small {
+    margin: 0;
+    width: 100%;
+    font-size: 7px;
+  }
+  .reception-scene .robot-conversation {
+    top: 330px;
+    left: 5%;
+    width: 140px;
+    padding: 10px;
+    font-size: 9px;
+  }
+  .reception-scene .reception-counter {
+    top: 465px;
+    height: 265px;
+  }
+  .reception-scene .reception-counter-label {
+    top: -42px;
+    font-size: 9px;
+    letter-spacing: 6px;
+  }
+  .reception-scene .appointment-slips {
+    left: 0;
+    right: 0;
+    padding: 0 10px 12px;
+    gap: 20px 18px;
+  }
+  .reception-scene .appointment-slip {
+    min-height: 107px;
+    padding: 15px;
+    font-size: 13px;
+  }
+  .reception-scene .appointment-slip strong {
+    font-size: 14px;
+  }
+  .reception-scene .appointment-slip p {
+    font-size: 10px;
+  }
+  .reception-information-rail {
+    top: 755px;
+    bottom: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    position: relative;
+    top: auto;
+    padding-top: 660px;
+  }
+  .reception-today,
+  .reception-announcements {
+    padding: 14px;
+  }
+  .reception-queue-display {
+    min-height: 93px;
+  }
+  .queue-flaps strong {
+    font-size: 30px;
+    min-width: 25px;
+  }
+  .profile-desk {
+    margin-top: 15px;
+  }
+  .reception-scene--public .reception-guidance {
+    position: absolute;
+    top: 105px;
+    left: 0;
+    width: 250px;
+    padding: 0;
+    border: 0;
+  }
+  .reception-scene--public .reception-counter {
+    top: 485px;
+  }
+  .reception-scene--public {
+    min-height: 780px;
+  }
+  .reception-scene--public .reception-counter {
+    height: 265px;
+  }
+  .reception-scene--public .robot-conversation {
+    top: 350px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reception-scene .appointment-slip {
+    transition: none;
+  }
+  .reference-book-button {
+    transition: none;
+  }
+}
+
+.reference-directory-tools {
+  font-size: 10px;
+  padding: 5px 10px;
+  background: none;
+  border: 0;
+}
+.reference-directory-tools summary {
+  cursor: pointer;
+}
+.reference-directory-tools a {
+  display: block;
+  padding: 6px 0;
+  font-size: 11px;
+}
+.workspace-content .doctor-search-bar button {
+  color: #213c44 !important;
+}
+.reference-doctor-profile {
+  background: #f4e7daef;
+}
+.reference-profile-top .reference-portrait--large {
+  background-size: 300% 200%;
+}
+.reference-consultation .reference-portrait {
+  border: 1px solid #e4d6c6;
+}
+.reference-consultation .profile-management .hospital-form {
+  margin-top: 10px;
+}
+.reference-consultation .roster-caption {
+  min-height: 24px;
+}
+@media (min-width: 1500px) {
+  .workspace-shell:has(.reference-consultation) .workspace-main,
+  .workspace-shell:has(.reception-scene) .workspace-main {
+    margin-left: 320px;
+  }
+  .reference-doctor-list {
+    max-height: 385px;
+  }
+  .workspace-content .reference-doctor-row {
+    min-height: 73px;
+  }
+  .reference-specialties {
+    padding-right: 14px;
+  }
+  .consultation-desk {
+    padding-top: 25px;
+  }
+  .reference-doctor-profile {
+    margin-top: -58px;
+  }
+  .reception-scene .wayfinding {
+    left: 12%;
+    width: 88%;
+  }
+  .reception-hospital-today {
+    right: 20%;
+    width: 18%;
+  }
+  .reception-scene .reception-counter-label {
+    left: 26%;
+    right: 26%;
+    top: 1%;
+  }
+}
+@media (min-width: 901px) and (max-width: 1499px) {
+  .reception-hospital-today {
+    right: 18%;
+    width: 21%;
+  }
+  .reception-scene .reception-counter-label {
+    left: 26%;
+    right: 26%;
+  }
+  .reference-doctor-list {
+    max-height: 335px;
+  }
+  .workspace-content .reference-doctor-row {
+    min-height: 62px;
+  }
+  .reference-portrait {
+    height: 52px;
+  }
+  .reference-portrait--large {
+    height: 150px;
+  }
+  .consultation-board {
+    min-height: 425px;
+  }
+  .reference-profile-top h2 {
+    font-size: 20px;
+  }
+  .consultation-desk {
+    padding-top: 22px;
+  }
+}
+
+.workspace-shell:has(.reference-consultation) {
+  --environment: url("/environments/consultation-corrected.webp");
+  background-position: center top;
+  background-size: cover;
+}
+.reference-consultation .consultation-board {
+  background: linear-gradient(
+    90deg,
+    #f3e4d5f2 0%,
+    #edddcdf0 66%,
+    transparent 66%
+  );
+}
+
+.reception-scene .robot-conversation {
+  left: 27%;
+}
+.reception-information-rail .queue-flaps strong {
+  font-size: 31px;
+  min-width: 27px;
+  font-weight: 450;
+}
+.reception-information-rail .reception-queue-display {
+  grid-template-columns: 1.15fr 1fr 18px;
+}
+.counter-token-stand {
+  position: absolute;
+  top: 67%;
+  left: 46.5%;
+  z-index: 3;
+  width: 80px;
+  min-height: 133px;
+  padding: 13px 6px 9px;
+  background: #f5ecdf;
+  border: 1px solid #c7b49b;
+  box-shadow:
+    5px 12px 0 #292e30,
+    0 14px 10px #5d3e3455;
+  transform: rotate(-5deg);
+  border-radius: 2px;
+  display: grid;
+  gap: 5px;
+  text-align: center;
+  color: #102638;
+}
+.counter-token-stand > small {
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+.counter-token-stand > strong {
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+.counter-token-stand > span {
+  font-size: 9px;
+}
+.counter-token-stand > b {
+  font-size: 18px;
+  font-weight: 300;
+}
+.reception-scene:has(.counter-token-stand) .slip-object--check-in {
+  margin-left: 60px;
+}
+.reception-scene:has(.counter-token-stand) .appointment-slips {
+  gap: 3%;
+}
+@media (min-width: 1500px) {
+  .reception-scene .wayfinding {
+    right: 10%;
+    width: 78%;
+  }
+  .workspace-shell:has(.reference-consultation) .hospital-header,
+  .workspace-shell:has(.reception-scene) .hospital-header {
+    inset-inline: 48px;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-sidebar,
+  .workspace-shell:has(.reception-scene) .workspace-sidebar {
+    height: 770px;
+    bottom: auto;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-nav-link,
+  .workspace-shell:has(.reception-scene) .workspace-nav-link {
+    min-height: 61px;
+    padding-block: 8px;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-context,
+  .workspace-shell:has(.reception-scene) .workspace-context {
+    display: none;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-switcher,
+  .workspace-shell:has(.reception-scene) .workspace-switcher {
+    padding: 5px 10px;
+  }
+  .workspace-shell:has(.reference-consultation) .directory-help,
+  .workspace-shell:has(.reception-scene) .directory-help {
+    padding-top: 12px;
+  }
+  .reception-scene .appointment-slip {
+    min-height: 131px;
+  }
+  .reference-consultation .consultation-desk {
+    grid-template-columns: minmax(0, 2.5fr) minmax(265px, 1fr);
+    gap: 35px;
+  }
+}
+@media (max-width: 1300px) and (min-width: 901px) {
+  .counter-token-stand {
+    left: 46%;
+    width: 65px;
+    min-height: 116px;
+    top: 68%;
+    padding: 9px 4px;
+  }
+  .counter-token-stand > strong {
+    font-size: 23px;
+  }
+  .counter-token-stand > span {
+    font-size: 8px;
+  }
+  .reception-scene:has(.counter-token-stand) .slip-object--check-in {
+    margin-left: 40px;
+  }
+  .reception-information-rail .queue-flaps strong {
+    font-size: 24px;
+    min-width: 22px;
+  }
+}
+@media (max-width: 900px) {
+  .counter-token-stand {
+    display: none;
+  }
+  .reception-scene:has(.counter-token-stand) .slip-object--check-in {
+    margin-left: 0;
+  }
+  .reception-scene .robot-conversation {
+    left: 10%;
+  }
+  .reception-information-rail .reception-queue-display {
+    grid-template-columns: 1fr 1fr 18px;
+  }
+}
+@media (max-width: 580px) {
+  .reception-scene .robot-conversation {
+    left: 4%;
+  }
+  .reception-information-rail .queue-flaps strong {
+    font-size: 29px;
+    min-width: 25px;
+  }
+}
+@media (min-width: 901px) {
+  .workspace-shell:has(.reference-consultation) .workspace-nav-link,
+  .workspace-shell:has(.reception-scene) .workspace-nav-link {
+    min-height: 58px;
+    padding-block: 8px;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-nav,
+  .workspace-shell:has(.reception-scene) .workspace-nav {
+    gap: 0;
+  }
+  .workspace-shell:has(.reference-consultation) .directory-help,
+  .workspace-shell:has(.reception-scene) .directory-help {
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-context,
+  .workspace-shell:has(.reception-scene) .workspace-context {
+    display: none;
+  }
+  .workspace-shell:has(.reference-consultation) .workspace-switcher,
+  .workspace-shell:has(.reception-scene) .workspace-switcher {
+    padding: 5px 10px;
+  }
+  .reception-scene .wayfinding {
+    right: 10%;
+    width: 78%;
+  }
+}
+@media (max-width: 580px) {
+  .reception-hospital-today {
+    top: 750px;
+    left: 8px;
+    right: 8px;
+    width: auto;
+    background: #f0e2d0;
+    padding: 10px 12px;
+    border-block: 1px solid #c8b18e;
+    z-index: 2;
+  }
+  .reception-hospital-today > div {
+    font-size: 10px;
+    gap: 6px;
+  }
+  .reception-hospital-today > .eyebrow {
+    font-size: 8px;
+  }
+  .reception-hospital-today > small {
+    font-size: 8px;
+  }
+  .reception-information-rail {
+    padding-top: 760px;
+  }
+  .reception-scene {
+    min-height: 1110px;
+  }
+}
+.profile-accepted-schedule {
+  font-size: 11px;
+}
+.profile-accepted-schedule > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 10px 0;
+}
+.profile-accepted-schedule > div > span {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+  border: 1px solid #c9b69c;
+  padding: 6px 3px;
+  border-radius: 3px;
+  background: #fbf2e6;
+}
+.profile-accepted-schedule > div > span > small {
+  font-size: 8px;
+  color: #646861;
+}
+.profile-accepted-schedule > small {
+  font-size: 9px;
+  color: #5c6665;
+}
+.profile-schedule-metrics {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border-block: 1px solid #ccb99f70;
+  margin-top: 8px;
+  padding: 8px 0;
+}
+.profile-schedule-metrics > span {
+  display: grid;
+  text-align: center;
+  gap: 3px;
+}
+.profile-schedule-metrics strong {
+  font-size: 16px !important;
+  color: #102638 !important;
+}
+.profile-schedule-metrics small {
+  font-size: 9px !important;
+}
+.profile-schedule-metrics > span + span {
+  border-left: 1px solid #c7b39850;
+}
+@media (min-width: 901px) {
+  .doctor-row-name strong {
+    font-size: 14px;
+  }
+  .doctor-row-name > span {
+    font-size: 12px;
+  }
+  .doctor-availability strong {
+    font-size: 11px;
+  }
+  .doctor-availability small {
+    font-size: 10px;
+  }
+  .reference-specialties button {
+    font-size: 13px !important;
+  }
+  .profile-about p {
+    font-size: 13px;
+  }
+  .profile-about .profile-note {
+    font-size: 12px;
+  }
+  .reference-profile-top p {
+    font-size: 14px;
+  }
+  .reference-profile-top h2 {
+    font-size: 23px;
+  }
+  .reference-profile-status {
+    padding-block: 8px;
+  }
+  .reference-doctor-profile {
+    padding: 14px;
+  }
+  .profile-about h3 {
+    font-size: 13px;
+  }
+  .profile-tabs {
+    margin-bottom: 10px;
+  }
+  .consultation-wall-heading h1 {
+    font-size: 48px;
+  }
+  .consultation-quick strong {
+    font-size: 12px;
+  }
+  .consultation-quick small {
+    font-size: 10px;
+  }
+}
+@media (max-width: 1300px) and (min-width: 901px) {
+  .doctor-row-name strong {
+    font-size: 12px;
+  }
+  .doctor-row-name > span {
+    font-size: 11px;
+  }
+  .doctor-availability strong {
+    font-size: 10px;
+  }
+  .doctor-availability small {
+    font-size: 9px;
+  }
+  .reference-profile-top h2 {
+    font-size: 19px;
+  }
+  .reference-specialties button {
+    font-size: 12px !important;
+  }
+  .consultation-wall-heading h1 {
+    font-size: 42px;
+  }
+}
+.profile-schedule-metrics > span {
+  grid-template-columns: 1fr;
+}
+.profile-schedule-metrics > span > strong,
+.profile-schedule-metrics > span > small {
+  grid-column: 1 !important;
+}
+.profile-schedule-metrics > span > small {
+  grid-row: 2;
+}
+.reference-profile-status .profile-slot-strip {
+  display: none;
+}
+@media (max-width: 1300px) and (min-width: 901px) {
+  .workspace-shell:has(.reference-consultation) .workspace-nav-link,
+  .workspace-shell:has(.reception-scene) .workspace-nav-link {
+    min-height: 49px;
+    padding-block: 5px;
+  }
+  .reference-profile-top .reference-portrait--large {
+    height: 125px;
+  }
+  .reference-profile-top {
+    min-height: 125px;
+  }
+  .reference-profile-status {
+    padding-block: 6px;
+  }
+  .reference-doctor-profile {
+    min-height: 0;
+  }
+  .profile-about p {
+    font-size: 12px;
+  }
+  .profile-about h3 {
+    margin-bottom: 5px;
+  }
+  .profile-management {
+    margin-top: 8px;
+  }
+}
+.reference-consultation {
+  grid-template-columns: minmax(0, 1fr);
+}
+.reference-consultation > * {
+  min-width: 0;
+}
+.consultation-schedule,
+.schedule-visits {
+  min-width: 0;
+}
+.consultation-tabs {
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .consultation-desk {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .reference-consultation .reference-booking-desk {
+    min-width: 0;
+  }
+}
+@media (max-width: 900px) {
+  .consultation-tabs > a,
+  .consultation-tabs > span {
+    flex: 0 0 auto;
+    min-width: 110px;
+    padding-inline: 14px;
+  }
+  .doctor-row-name strong {
+    font-size: 13px;
+  }
+  .doctor-row-name > span {
+    font-size: 11px;
+  }
+}

@@ -202,7 +202,7 @@ describe("authentication pages", () => {
     expect(password).toHaveAttribute("type", "password");
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
-    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Reception" })).toBeInTheDocument();
     const loginCall = fetcher.mock.calls.find(([url]) => String(url).includes("/auth/login"));
     expect(loginCall?.[0]).toBe("/api/v1/auth/login");
     const loginInit = loginCall?.[1] as RequestInit;
@@ -239,7 +239,7 @@ describe("session lifecycle and protected API requests", () => {
       if (path === "/api/v1/auth/refresh") return jsonResponse(tokenSet("doctor"));
       return errorResponse(404, "not_found", "Not found.");
     }, "/doctor/dashboard");
-    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Consultation" })).toBeInTheDocument();
     const restorationCall = fetcher.mock.calls.find(([url]) => String(url).includes("/auth/refresh"));
     const restorationInit = restorationCall?.[1] as RequestInit;
     expect(restorationInit.credentials).toBe("include");
@@ -256,7 +256,7 @@ describe("session lifecycle and protected API requests", () => {
       if (path === "/api/v1/auth/logout") return new Response(null, { status: 204 });
       return errorResponse(404, "not_found", "Not found.");
     }, "/patient/dashboard");
-    await screen.findByRole("heading", { name: "Dashboard" });
+    await screen.findByRole("heading", { name: "Reception" });
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
 
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
@@ -272,7 +272,7 @@ describe("session lifecycle and protected API requests", () => {
       if (path === "/api/v1/auth/logout") return errorResponse(503, "unavailable", "Sign out is unavailable.");
       return errorResponse(404, "not_found", "Not found.");
     }, "/patient/dashboard");
-    await screen.findByRole("heading", { name: "Dashboard" });
+    await screen.findByRole("heading", { name: "Reception" });
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
 
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
@@ -281,7 +281,7 @@ describe("session lifecycle and protected API requests", () => {
   it("keeps the session anonymous when startup refresh fails", async () => {
     setupApplication(anonymousHandler, "/patient/dashboard");
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Dashboard" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Reception" })).not.toBeInTheDocument();
   });
 
   it("refreshes an expired access token and maintains the workspace session", async () => {
@@ -299,10 +299,10 @@ describe("session lifecycle and protected API requests", () => {
     await screen.findByRole("heading", { name: "Sign in" });
     fillLogin();
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
-    await screen.findByRole("heading", { name: "Dashboard" });
+    await screen.findByRole("heading", { name: "Reception" });
 
     await waitFor(() => expect(refreshCount).toBe(2), { timeout: 2500 });
-    expect(screen.getByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Reception" })).toBeInTheDocument();
     expect(fetcher.mock.calls.filter(([url]) => String(url).includes("/auth/refresh"))).toHaveLength(2);
   });
 
@@ -319,11 +319,11 @@ describe("session lifecycle and protected API requests", () => {
     await screen.findByRole("heading", { name: "Sign in" });
     fillLogin();
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
-    await screen.findByRole("heading", { name: "Dashboard" });
+    await screen.findByRole("heading", { name: "Reception" });
 
     expect(await screen.findByRole("heading", { name: "Sign in" })).toBeInTheDocument();
     expect(refreshCount).toBe(2);
-    expect(screen.queryByRole("heading", { name: "Dashboard" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Reception" })).not.toBeInTheDocument();
   });
 
   it("shares one refresh across simultaneous 401 responses and retries each request once", async () => {

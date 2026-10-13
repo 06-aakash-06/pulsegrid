@@ -1,3 +1,5 @@
+import { LazyMotion, MotionConfig } from "motion/react";
+const loadMotionFeatures=()=>import("../design/motionFeatures").then(m=>m.default);
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { ShortLinkLanding } from "../phase4";
@@ -29,7 +31,7 @@ export function App() {
 
 export function PulseGridRoutes() {
   return (
-    <Routes>
+    <MotionConfig reducedMotion="user"><LazyMotion features={loadMotionFeatures} strict><Routes>
       <Route path="/short-link" element={<ShortLinkPage />} />
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />
@@ -54,6 +56,6 @@ export function PulseGridRoutes() {
         </Route>
       ))}
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    </Routes></LazyMotion></MotionConfig>
   );
 }

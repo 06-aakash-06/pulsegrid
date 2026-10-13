@@ -30,6 +30,8 @@ export function CheckinScanner({
   const [active, setActive] = useState(false);
   const [starting,setStarting] = useState(false);
   const mountedRef = useRef(true);
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
   const generationRef = useRef(0);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [scannerMessage, setScannerMessage] = useState("");
@@ -70,6 +72,7 @@ export function CheckinScanner({
           catch { return []; } // A frame without a readable code keeps scanning.
         },
       };
+      if(!mountedRef.current || generation!==generationRef.current)return;
       const camera = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: "environment" } },
         audio: false,
@@ -89,6 +92,7 @@ export function CheckinScanner({
   }
 
   const detectorRef = useRef<BarcodeDetectorLike | null>(null);
+  useEffect(()=>{if(disabled && (active || starting))stopCamera();},[disabled]);
 
   useEffect(() => {
     if (!stream || !videoRef.current) return;
@@ -107,6 +111,7 @@ export function CheckinScanner({
       if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
         try {
           const results = await detectorRef.current.detect(video);
+          if(disposed || disabledRef.current)return;
           const rawValue = results.find((result) => result.rawValue)?.rawValue;
           if (rawValue) {
             try {
