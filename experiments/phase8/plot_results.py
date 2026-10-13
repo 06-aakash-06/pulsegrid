@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import csv
+from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path
 import statistics
@@ -374,10 +376,356 @@ def plot_resources(output: Path, run_dir: Path) -> None:
     )
 
 
+def load_finalization_observations(run_dir: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    progress = read_json(run_dir / "progress.json")
+    completed = set(progress.get("completed_cases", []))
+    interrupted = {
+        str(item.get("case_id"))
+        for item in progress.get("guardrail_stops", [])
+        if item.get("case_id")
+    }
+    observations: list[dict[str, Any]] = []
+    for case_id in sorted(completed | interrupted):
+        summary_path = run_dir / "summaries" / f"{case_id}.json"
+        requests_path = run_dir / "requests" / f"{case_id}.csv"
+        if not summary_path.exists() or not requests_path.exists():
+            raise ValueError(f"missing summary or raw requests for {case_id}")
+        summary = read_json(summary_path)
+        request_rows = read_csv(requests_path)
+        classes: dict[str, int] = {}
+        for row in request_rows:
+            classification = row.get("classification", "unknown")
+            classes[classification] = classes.get(classification, 0) + 1
+        if len(request_rows) != int(summary.get("completed_http_responses", -1)):
+            raise ValueError(f"raw response count does not match summary for {case_id}")
+        if classes != summary.get("classification_counts", {}):
+            raise ValueError(f"raw response classes do not match summary for {case_id}")
+        if case_id in completed and case_id in interrupted:
+            raise ValueError(f"case is both completed and guardrail-stopped: {case_id}")
+        observations.append(
+            {
+                "case_id": case_id,
+                "status": "complete" if case_id in completed else "partial_guardrail_stop",
+                "summary": summary,
+                "raw_request_count": len(request_rows),
+                "raw_classification_counts": classes,
+            }
+        )
+    return observations, progress
+
+
+def plot_phase8_1_throughput(output: Path, observations: list[dict[str, Any]]) -> None:
+    fig, ax = plt.subplots(figsize=(8.6, 5.0))
+    styles = {
+        1: {"color": COLORS["blue"], "marker": "o", "label": "1 Doctor replica"},
+        2: {"color": COLORS["orange"], "marker": "^", "label": "2 Doctor replicas"},
+    }
+    for replica_count in (1, 2):
+        rows = [
+            item for item in observations
+            if int(item["summary"].get("replicas", 0)) == replica_count
+        ]
+        style = styles[replica_count]
+        for item in rows:
+            summary = item["summary"]
+            complete = item["status"] == "complete"
+            ax.scatter(
+                [int(summary["concurrency"])],
+                [float(summary["successful_rps"])],
+                color=style["color"] if complete else "white",
+                edgecolor=style["color"],
+                marker=style["marker"],
+                s=95,
+                linewidth=1.8,
+                label=style["label"] if item is rows[0] else None,
+                zorder=3,
+            )
+            if not complete:
+                ax.annotate(
+                    f"partial {summary['measurement_seconds']:.1f}s",
+                    (int(summary["concurrency"]), float(summary["successful_rps"])),
+                    xytext=(8, -18),
+                    textcoords="offset points",
+                    fontsize=8,
+                    color=style["color"],
+                )
+    ax.set_xscale("log", base=2)
+    ax.set_xticks([4, 16, 64], ["4", "16", "64"])
+    ax.set_xlabel("Concurrent authenticated clients")
+    ax.set_ylabel("Successful Doctor responses per second")
+    ax.set_title("Phase 8.1 authenticated Doctor throughput")
+    ax.grid(True, alpha=0.25)
+    ax.legend(frameon=False)
+    save(
+        fig,
+        output / "01_phase8_1_successful_throughput.svg",
+        "Phase 8.1 successful throughput by concurrency and Doctor replica count",
+        "Only C=4 ran: one 30s complete one-replica trial and one two-replica trial stopped at 14.6s by the Tempo memory guardrail. C=16 and C=64 were not measured.",
+    )
+
+
+def plot_phase8_1_latency(output: Path, observations: list[dict[str, Any]]) -> None:
+    fig, (mean_ax, p95_ax) = plt.subplots(1, 2, figsize=(11.0, 4.8), sharex=True)
+    styles = {
+        1: {"color": COLORS["blue"], "marker": "o", "label": "1 Doctor replica"},
+        2: {"color": COLORS["orange"], "marker": "^", "label": "2 Doctor replicas"},
+    }
+    for replica_count in (1, 2):
+        rows = [
+            item for item in observations
+            if int(item["summary"].get("replicas", 0)) == replica_count
+        ]
+        style = styles[replica_count]
+        for item in rows:
+            summary = item["summary"]
+            complete = item["status"] == "complete"
+            latency = summary["success_latency_ms"]
+            for axis, field in ((mean_ax, "mean"), (p95_ax, "p95")):
+                axis.scatter(
+                    [int(summary["concurrency"])],
+                    [float(latency[field])],
+                    color=style["color"] if complete else "white",
+                    edgecolor=style["color"],
+                    marker=style["marker"],
+                    s=90,
+                    linewidth=1.8,
+                    label=style["label"] if item is rows[0] else None,
+                    zorder=3,
+                )
+    for axis, title, ylabel in (
+        (mean_ax, "Mean successful latency", "Mean latency (ms)"),
+        (p95_ax, "P95 successful latency", "P95 latency (ms)"),
+    ):
+        axis.set_xscale("log", base=2)
+        axis.set_xticks([4, 16, 64], ["4", "16", "64"])
+        axis.set_xlabel("Concurrent authenticated clients")
+        axis.set_ylabel(ylabel)
+        axis.set_title(title)
+        axis.grid(True, alpha=0.25)
+    handles, labels = p95_ax.get_legend_handles_labels()
+    if handles:
+        p95_ax.legend(handles, labels, frameon=False, loc="upper right", fontsize=8)
+    save(
+        fig,
+        output / "02_phase8_1_success_latency.svg",
+        "Phase 8.1 mean and P95 latency for successful Doctor responses",
+        "Filled markers are complete; hollow markers are guardrail-stopped partial data. Only C=4 was measured, and the two-replica latency covers 14.6s.",
+    )
+
+
+def plot_phase8_1_errors(output: Path, observations: list[dict[str, Any]]) -> None:
+    fig, ax = plt.subplots(figsize=(9.0, 5.0))
+    labels: list[str] = []
+    x_positions: list[int] = []
+    for index, item in enumerate(observations):
+        summary = item["summary"]
+        responses = max(1, int(summary.get("completed_http_responses", 0)))
+        label = f"{summary['replicas']} replica{'s' if summary['replicas'] != 1 else ''}\n{item['status'].replace('_', ' ')}"
+        labels.append(label)
+        x_positions.append(index)
+        for field, color, marker in (
+            ("http_429", COLORS["rejected"], "o"),
+            ("http_5xx", COLORS["purple"], "s"),
+        ):
+            count = int(summary.get(field, 0))
+            rate = 100.0 * count / responses
+            point_x = index + (-0.045 if field == "http_429" else 0.045)
+            ax.scatter(
+                [point_x], [rate], color=color, marker=marker, s=75,
+                label={"http_429": "HTTP 429", "http_5xx": "HTTP 5xx"}[field] if index == 0 else None,
+                zorder=3,
+            )
+            ax.annotate(
+                f"{count}/{responses}",
+                (point_x, rate),
+                xytext=(-20 if field == "http_429" else 5, 9),
+                textcoords="offset points",
+                ha="right" if field == "http_429" else "left",
+                fontsize=8,
+                color=color,
+            )
+    ax.axhline(10, color=COLORS["gray"], linestyle="--", linewidth=1.2, label="10% 429 stop threshold")
+    ax.set_xticks(x_positions, labels)
+    ax.set_ylim(-1, 12)
+    ax.set_ylabel("Share of completed HTTP responses (%)")
+    ax.set_title("Phase 8.1 admission rejections and server errors")
+    ax.grid(axis="y", alpha=0.25)
+    ax.legend(frameon=False)
+    save(
+        fig,
+        output / "03_phase8_1_rejection_and_server_error_rates.svg",
+        "Phase 8.1 HTTP rejection and server error rates",
+        "The two-replica observation stopped at 14.6s. Counts use completed HTTP responses; transport failures are recorded separately in the raw summaries.",
+    )
+
+
+def phase8_1_scaling(observations: list[dict[str, Any]]) -> dict[str, Any]:
+    by_replica = {
+        int(item["summary"]["replicas"]): item
+        for item in observations
+        if int(item["summary"]["concurrency"]) == 4
+        and int(item["summary"]["trial"]) == 1
+    }
+    one = by_replica.get(1)
+    two = by_replica.get(2)
+    if not one or not two:
+        return {"accepted": False, "reason": "A matched C=4 trial is unavailable for both replica counts."}
+    t1 = float(one["summary"]["successful_rps"])
+    t2 = float(two["summary"]["successful_rps"])
+    improvement = t2 / t1 if t1 else None
+    efficiency = t2 / (2.0 * t1) if t1 else None
+    accepted = one["status"] == "complete" and two["status"] == "complete"
+    return {
+        "accepted": accepted,
+        "concurrency": 4,
+        "trial": 1,
+        "one_replica_successful_rps": t1,
+        "two_replica_successful_rps": t2,
+        "throughput_improvement_ratio": improvement,
+        "scaling_efficiency_percent": 100.0 * efficiency if efficiency is not None else None,
+        "provisional_partial_window_estimate": not accepted,
+        "reason": None if accepted else "The two-replica trial stopped at 14.6s of 30s on the Tempo memory guardrail; this ratio is descriptive only and is not accepted as matched scaling efficiency.",
+    }
+
+
+def plot_phase8_1_replica_comparison(
+    output: Path,
+    observations: list[dict[str, Any]],
+    scaling: dict[str, Any],
+) -> None:
+    rows = [
+        item for item in observations
+        if int(item["summary"].get("concurrency", 0)) == 4
+        and int(item["summary"].get("trial", 0)) == 1
+    ]
+    fig, (throughput_ax, efficiency_ax) = plt.subplots(
+        1, 2, figsize=(10.4, 4.8), gridspec_kw={"width_ratios": [1.15, 1]}
+    )
+    names = ["1 replica\ncomplete", "2 replicas\npartial"]
+    colors = [COLORS["blue"], COLORS["orange"]]
+    values = [float(item["summary"]["successful_rps"]) for item in rows]
+    bars = throughput_ax.bar(range(len(rows)), values, color=colors, edgecolor=colors)
+    if len(rows) > 1 and rows[1]["status"] != "complete":
+        bars[1].set_facecolor("white")
+        bars[1].set_hatch("//")
+    throughput_ax.bar_label(bars, fmt="%.1f req/s", padding=3, fontsize=8)
+    throughput_ax.set_xticks(range(len(rows)), names[:len(rows)])
+    throughput_ax.set_ylabel("Successful responses per second")
+    throughput_ax.set_title("Matched C=4 observation")
+    throughput_ax.grid(axis="y", alpha=0.25)
+
+    efficiency_ax.set_title("Scaling efficiency")
+    efficiency_ax.set_ylabel("T₂ / (2 × T₁) (%)")
+    efficiency_ax.set_ylim(0, 100)
+    efficiency_ax.set_xticks([0], ["C=4, trial 1"])
+    efficiency_ax.grid(axis="y", alpha=0.25)
+    if scaling.get("scaling_efficiency_percent") is not None:
+        efficiency = float(scaling["scaling_efficiency_percent"])
+        if scaling.get("accepted"):
+            efficiency_ax.bar([0], [efficiency], color=COLORS["accepted"], width=0.5)
+            efficiency_ax.text(0, efficiency + 3, f"{efficiency:.1f}%", ha="center")
+        else:
+            efficiency_ax.bar(
+                [0], [efficiency], color="white", edgecolor=COLORS["orange"],
+                hatch="//", width=0.5,
+            )
+            efficiency_ax.text(0, efficiency + 3, f"{efficiency:.1f}%*", ha="center", color=COLORS["orange"])
+    else:
+        efficiency_ax.text(0.5, 0.5, "Not calculable", ha="center", va="center", transform=efficiency_ax.transAxes)
+    save(
+        fig,
+        output / "04_phase8_1_replica_scaling.svg",
+        "Phase 8.1 one versus two Doctor replica comparison",
+        "*Provisional ratio from a 14.6s two-replica partial window versus a complete 30s one-replica trial; not accepted as matched scaling efficiency.",
+    )
+
+
+def generate_phase8_1_graphs(run_id: str) -> dict[str, Any]:
+    run_dir = ROOT / "experiments/phase8/results" / run_id
+    output = run_dir / "graphs"
+    output.mkdir(parents=True, exist_ok=True)
+    observations, progress = load_finalization_observations(run_dir)
+    if not observations:
+        raise ValueError("no completed or guardrail-stopped Phase 8.1 trials are available")
+    plot_phase8_1_throughput(output, observations)
+    plot_phase8_1_latency(output, observations)
+    plot_phase8_1_errors(output, observations)
+    scaling = phase8_1_scaling(observations)
+    plot_phase8_1_replica_comparison(output, observations, scaling)
+    normalize_svg_whitespace(output)
+    graph_files = {
+        "1": "01_phase8_1_successful_throughput.svg",
+        "2": "02_phase8_1_success_latency.svg",
+        "3": "03_phase8_1_rejection_and_server_error_rates.svg",
+        "4": "04_phase8_1_replica_scaling.svg",
+    }
+    manifest = {
+        "run_id": run_id,
+        "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "generated_partial",
+        "matrix": {
+            "planned_cases": 18,
+            "completed_cases": sorted(progress.get("completed_cases", [])),
+            "guardrail_stopped_cases": sorted(
+                str(item.get("case_id")) for item in progress.get("guardrail_stops", [])
+            ),
+            "not_started_concurrency_levels": [16, 64],
+        },
+        "generated_from": [
+            f"experiments/phase8/results/{run_id}/progress.json",
+            *[
+                f"experiments/phase8/results/{run_id}/summaries/{item['case_id']}.json"
+                for item in observations
+            ],
+            *[
+                f"experiments/phase8/results/{run_id}/requests/{item['case_id']}.csv"
+                for item in observations
+            ],
+        ],
+        "graphs": {
+            key: {
+                "file": value,
+                "png_file": str(Path(value).with_suffix(".png")),
+                "status": "generated_partial",
+                "sha256_svg": hashlib.sha256((output / value).read_bytes()).hexdigest(),
+                "sha256_png": hashlib.sha256((output / Path(value).with_suffix(".png")).read_bytes()).hexdigest(),
+            }
+            for key, value in graph_files.items()
+        },
+        "trial_data_quality": [
+            {
+                "case_id": item["case_id"],
+                "status": item["status"],
+                "raw_http_responses": item["raw_request_count"],
+                "classification_counts": item["raw_classification_counts"],
+                "measurement_seconds": item["summary"].get("measurement_seconds"),
+            }
+            for item in observations
+        ],
+        "horizontal_scaling_efficiency": (
+            scaling.get("scaling_efficiency_percent") if scaling.get("accepted") else None
+        ),
+        "provisional_partial_comparison": scaling,
+        "invalidated_setup_trial_excluded": "r1-c4-t1 in setup_attempts/invalid-trial-r1-c4-t1",
+    }
+    manifest_path = output / "plot_manifest.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(json.dumps(manifest, indent=2, sort_keys=True))
+    return manifest
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-id", default=DEFAULT_RUN)
+    parser.add_argument(
+        "--phase8-1-finalization",
+        action="store_true",
+        help="generate only the four Phase 8.1 HTTP matrix graphs for the selected result set",
+    )
     args = parser.parse_args()
+    if args.phase8_1_finalization:
+        generate_phase8_1_graphs(args.run_id)
+        return 0
     run_dir = ROOT / "experiments/phase8/results" / args.run_id
     output = run_dir / "graphs"
     output.mkdir(parents=True, exist_ok=True)
