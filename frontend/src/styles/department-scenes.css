@@ -273,3 +273,24 @@
  .reference-departments .staff-fulfillment .reservation-counter>form{grid-column:1;grid-row:3;background:#f3e7d6;padding:14px;}
  .reference-departments .staff-fulfillment .dispensing-register{grid-column:1/-1;}
 }
+.invoice-register,.billing-tariff-desk { padding:14px; background:#f1e4d2; border:1px solid #d6c2a6; border-radius:4px; }
+.invoice-register>summary,.billing-tariff-desk>summary,.payment-history>summary { cursor:pointer; font-size:12px; font-weight:550; }
+.invoice-status-strip { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-block:12px; }
+.charge-source-tabs { display:flex; gap:8px; font-size:12px; border-bottom:1px solid #cbb99e; margin-bottom:14px; }
+.charge-source-tabs span { padding:10px; background:#e2d6c4; }
+.payment-history { margin-top:14px; }
+@media(min-width:901px){
+ .reference-departments .billing-workbench{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);}
+ .reference-departments .billing-source-desk>[data-panel="create-invoice"]>h2{display:none;}
+ .reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-form{padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;}
+ .reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-form>h3{grid-column:1/-1;margin:0;}
+ .reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-fields{grid-template-columns:1fr;margin:0;}
+ .reference-departments .billing-source-desk>[data-panel="charge-sources"]{background:#f4eadd;}
+ .reference-departments .billing-source-desk>[data-panel="charge-sources"] .hospital-form{padding:14px;}
+ .reference-departments .invoice-receipt{background:#f5ebdf;}
+ .reference-departments .invoice-receipt .hospital-facts{grid-template-columns:repeat(3,minmax(0,1fr));font-size:11px;}
+ .reference-departments .invoice-register .hospital-items{display:block;max-height:280px;overflow:auto;}
+ .reference-departments .invoice-register .hospital-item{padding:10px;}
+ .reference-departments .billing-ledger-row .owner-state{justify-self:start;}
+ .reference-departments .billing-tariff-desk{grid-column:1/-1;}
+}

@@ -1,6 +1,7 @@
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { InsuranceEstimatePanel, InsuranceRefreshPanel } from "../phase4";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import type {
   Emergency,
@@ -29,6 +30,7 @@ import {
 } from "./ui";
 export function BillingPage({ staff = false }: { staff?: boolean }) {
   const { state: authState, api }=useAuth();
+  const location = useLocation();
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const [payment, setPayment] = useState<Payment | null>(null);
@@ -57,6 +59,8 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
           />
         </Panel>
       )}
+      {staff && selected && <InvoiceChargeSources invoiceId={selected} revision={revision} onChange={()=>setRevision(v=>v+1)}/>}
+      <details className="invoice-register" open={!staff||location.pathname.endsWith("/invoices")||location.pathname.endsWith("/payments")}><summary>Invoice register</summary>
       <Collection<Invoice>
         title="Invoices"
         path="/api/v1/billing/invoices"
@@ -85,9 +89,10 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
           setPayment(null);
         }}
       />
-      </section><aside className="invoice-receipt">{!selected && <Panel title="Current bill"><div className="resource-empty"><DepartmentIcon department="billing"/><strong>Open an invoice</strong><p>Choose an invoice to review its authoritative line items, insurance estimate and balance.</p></div></Panel>}
+      </details></section><aside className="invoice-receipt">{!selected && <Panel title="Current bill"><div className="resource-empty"><DepartmentIcon department="billing"/><strong>Open an invoice</strong><p>Choose an invoice to review its authoritative line items, insurance estimate and balance.</p></div></Panel>}
       <Selected<Invoice>
         path={selected ? `/api/v1/billing/invoices/${selected}` : null}
+        revision={revision}
       >
         {(invoice, etag, refresh) => {
           const changed = () => {
@@ -96,57 +101,14 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
           };
           return (
             <>
-              <Facts
-                values={{
-                  "Invoice ID": invoice.id,
-                  "Patient ID": invoice.patient_id,
-                  "Appointment ID": invoice.appointment_id,
-                  Status: invoice.status,
-                  Total: money(invoice.total_minor),
-                  Paid: money(invoice.paid_minor),
-                  Balance: money(invoice.balance_minor),
-                }}
-              />
+              <div className="invoice-status-strip"><strong>Invoice …{invoice.id.slice(-4)}</strong><span className="owner-state">{invoice.status}</span></div>
+              <Facts values={{Total:money(invoice.total_minor),Paid:money(invoice.paid_minor),Balance:money(invoice.balance_minor)}}/>
+              <details className="owner-identifiers"><summary>Patient, visit and invoice references</summary><Facts values={{"Invoice ID":invoice.id,"Patient ID":invoice.patient_id,"Appointment ID":invoice.appointment_id}}/></details>
               {invoice.items.length === 0 && (
                 <p>No charges have been imported.</p>
               )}
-              <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items"><table className="invoice-lines"><caption>Itemized invoice</caption><thead><tr><th scope="col">Charge / source</th><th scope="col">Qty</th><th scope="col">Unit price</th><th scope="col">Tariff</th></tr></thead><tbody>{invoice.items.map(item=><tr key={item.id}><th scope="row">{item.charge_code}<small>{item.source_service} · {item.source_item_id}</small></th><td>{item.quantity}</td><td>{money(item.unit_amount_minor)}</td><td>{item.tariff_revision}</td></tr>)}</tbody></table></div>
+              <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items"><table className="invoice-lines"><caption>Itemized invoice</caption><thead><tr><th scope="col">Charge / source</th><th scope="col">Qty</th><th scope="col">Unit price</th><th scope="col">Amount</th></tr></thead><tbody>{invoice.items.map(item=><tr key={item.id}><th scope="row">{item.charge_code==="consultation"?"Consultation":"Medicine"}<small>{item.source_service}</small><details className="owner-identifiers"><summary>Source</summary>{item.charge_code} · {item.source_item_id} · Tariff {item.tariff_revision}</details></th><td>{item.quantity}</td><td>{money(item.unit_amount_minor)}</td><td>{money(item.quantity*item.unit_amount_minor)}</td></tr>)}</tbody></table></div>
               <div className="invoice-total"><span>Balance due</span><strong>{money(invoice.balance_minor)}</strong></div>
-              {staff && (
-                <CommandForm
-                  title="Import charges manually"
-                  path={`/api/v1/billing/invoices/${invoice.id}/charges`}
-                  conditional
-                  etag={etag}
-                  fields={[
-                    idField(
-                      "consultation_id",
-                      "Finalized consultation ID",
-                      false,
-                    ),
-                    {
-                      name: "dispensing_ids",
-                      label: "Completed dispensing IDs (comma separated)",
-                    },
-                  ]}
-                  build={(values) => {
-                    const consultationId = values.consultation_id.trim();
-                    const dispensingIds = ids(values.dispensing_ids);
-                    if (!consultationId && !dispensingIds.length)
-                      throw new Error(
-                        "Select at least one consultation or dispensing source.",
-                      );
-                    return {
-                      ...(consultationId
-                        ? { consultation_id: id(consultationId) }
-                        : {}),
-                      dispensing_ids: dispensingIds,
-                    };
-                  }}
-                  onSuccess={changed}
-                  notice="Source IDs must belong to this invoice's appointment and patient. Missing imports are not automatically detected. Prices come from Billing tariffs."
-                />
-              )}
               {invoice.balance_minor > 0 && (
                 <CommandForm<Payment>
                   title="Submit simulated payment"
@@ -188,7 +150,7 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
                 />
               )}
               <details className="insurance-receipt"><summary>Insurance estimates</summary><InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} /></details>
-              <Collection<Payment>
+              <details className="payment-history"><summary>Payment history</summary><Collection<Payment>
                 title="Invoice payments"
                 path={`/api/v1/billing/invoices/${invoice.id}/payments`}
                 renderItem={(item) => (
@@ -200,7 +162,7 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
                     }}
                   />
                 )}
-              />
+              /></details>
             </>
           );
         }}
@@ -215,9 +177,46 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
         </p>
       )}
       </aside>
-      {staff && <section className="billing-tariff-desk"><Tariffs /></section>}
+      {staff && <details className="billing-tariff-desk"><summary>Tariffs and charge pricing</summary><Tariffs /></details>}
     </div>
   );
+}
+function InvoiceChargeSources({invoiceId,revision,onChange}:{invoiceId:string;revision:number;onChange:()=>void}) {
+  return <Panel title="Charge sources"><div className="charge-source-tabs"><span>Consultation · Records</span><span>Medicines · Pharmacy</span></div><Resource<Invoice> path={`/api/v1/billing/invoices/${invoiceId}`} revision={revision}>{(invoice,etag)=>(
+<CommandForm
+                  title="Import charges manually"
+                  path={`/api/v1/billing/invoices/${invoice.id}/charges`}
+                  conditional
+                  etag={etag}
+                  fields={[
+                    idField(
+                      "consultation_id",
+                      "Finalized consultation ID",
+                      false,
+                    ),
+                    {
+                      name: "dispensing_ids",
+                      label: "Completed dispensing IDs (comma separated)",
+                    },
+                  ]}
+                  build={(values) => {
+                    const consultationId = values.consultation_id.trim();
+                    const dispensingIds = ids(values.dispensing_ids);
+                    if (!consultationId && !dispensingIds.length)
+                      throw new Error(
+                        "Select at least one consultation or dispensing source.",
+                      );
+                    return {
+                      ...(consultationId
+                        ? { consultation_id: id(consultationId) }
+                        : {}),
+                      dispensing_ids: dispensingIds,
+                    };
+                  }}
+                  onSuccess={onChange}
+                  notice="Source IDs must belong to this invoice's appointment and patient. Missing imports are not automatically detected. Prices come from Billing tariffs."
+                />
+  )}</Resource></Panel>;
 }
 function Tariffs() {
   const [revision, setRevision] = useState(0);
