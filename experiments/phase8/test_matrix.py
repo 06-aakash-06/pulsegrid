@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import AsyncMock, patch
 
+from run_phase82_matrix import wait_for_hospital_prometheus_targets
 from run_matrix import (
     DoctorRoute,
     DockerStatsSampler,
+    ExperimentStopped,
     benchmark_route_upstream_counts,
     guardrail_reason,
     load_progress,
@@ -196,6 +200,27 @@ class MatrixHelpersTests(unittest.TestCase):
         self.assertIn("entryPoint: metrics", config)
         self.assertIn("filename: /etc/traefik/routes.yaml", config)
         self.assertNotIn("\ntracing:", config)
+
+    def test_prometheus_target_wait_retries_transient_down_sample(self):
+        snapshots = iter(({"attempt": 1}, {"attempt": 2}))
+
+        def verify_api(snapshot):
+            if snapshot["attempt"] == 1:
+                raise ExperimentStopped("Prometheus reports a missing or down hospital API target")
+            return {"all_up": True}
+
+        with (
+            patch("run_phase82_matrix.phase8.prometheus_snapshot", side_effect=lambda _: next(snapshots)),
+            patch("run_phase82_matrix.phase8.verify_prometheus_targets", side_effect=verify_api),
+            patch("run_phase82_matrix.phase8.verify_all_prometheus_targets", return_value={"all_up": True}),
+            patch("run_phase82_matrix.asyncio.sleep", new=AsyncMock()),
+        ):
+            result = asyncio.run(wait_for_hospital_prometheus_targets(timeout_seconds=2.0))
+
+        self.assertEqual(result[0], {"attempt": 2})
+        self.assertEqual(result[3]["attempts"], 2)
+        self.assertTrue(result[3]["all_targets_recovered"])
+        self.assertEqual(len(result[3]["transient_failures"]), 1)
 
     def test_progress_prevents_repeating_started_trial(self):
         with tempfile.TemporaryDirectory() as directory:

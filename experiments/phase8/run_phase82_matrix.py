@@ -67,6 +67,34 @@ async def wait_for_all_prometheus_targets(timeout_seconds: float = 60.0) -> tupl
     raise phase8.ExperimentStopped(f"Prometheus targets did not all recover: {last_health}")
 
 
+async def wait_for_hospital_prometheus_targets(
+    timeout_seconds: float = 60.0,
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], dict[str, Any]]:
+    deadline = time.monotonic() + timeout_seconds
+    attempts = 0
+    transient_failures: list[str] = []
+    last_snapshot: dict[str, Any] = {}
+    while time.monotonic() < deadline:
+        attempts += 1
+        last_snapshot = phase8.prometheus_snapshot("phase8-2-tracing-disabled-before-load")
+        try:
+            api_health = phase8.verify_prometheus_targets(last_snapshot)
+            all_health = phase8.verify_all_prometheus_targets(last_snapshot)
+            return last_snapshot, api_health, all_health, {
+                "attempts": attempts,
+                "waited_seconds": round(min(time.monotonic() - (deadline - timeout_seconds), timeout_seconds), 2),
+                "transient_failures": transient_failures,
+                "all_targets_recovered": True,
+            }
+        except phase8.ExperimentStopped as error:
+            transient_failures.append(str(error))
+            await asyncio.sleep(2.0)
+    raise phase8.ExperimentStopped(
+        "Prometheus hospital API targets did not recover after service recreation; "
+        f"attempts={attempts}, last_failure={transient_failures[-1] if transient_failures else 'none'}"
+    )
+
+
 def host_load_average_1m() -> float | None:
     try:
         return float(os.getloadavg()[0])
@@ -406,8 +434,15 @@ async def run_phase82_matrix(args: argparse.Namespace) -> None:
         if any(status != 200 for status in readiness_before.values()):
             raise phase8.ExperimentStopped("one or more hospital API readiness routes failed")
         manifest["doctor_http_metrics_active"] = phase8.assert_doctor_http_metrics_active()
-        prometheus_before = phase8.prometheus_snapshot("phase8-2-tracing-disabled-before-load")
-        manifest["prometheus_api_targets_before_matrix"] = phase8.verify_prometheus_targets(prometheus_before)
+        (
+            prometheus_before,
+            api_targets_before_matrix,
+            all_targets_before_matrix,
+            prometheus_target_wait,
+        ) = await wait_for_hospital_prometheus_targets()
+        manifest["prometheus_api_targets_before_matrix"] = api_targets_before_matrix
+        manifest["prometheus_targets_before_matrix"] = all_targets_before_matrix
+        manifest["prometheus_target_readiness_wait_before_matrix"] = prometheus_target_wait
         phase8.write_snapshot(output / "metrics" / "tracing-disabled-before-load.json", prometheus_before)
         phase8.compose_command(
             "stop",
