@@ -9,24 +9,41 @@
 
 ### Phase 8.1 finalization status
 
-Phase 8.1 has confirmed the earlier Tempo restart cause: the observed
-`pulsegrid-tempo-1` process exited with code 137 while Docker reported
-`OOMKilled=true` under its 256 MiB cap. The cap is now 512 MiB, still bounded
-at 0.25 CPU, and its single ten-minute stability observation completed with
-zero restarts, 41.97% peak memory, and a newly generated queryable trace. The
-authenticated HTTP matrix is pending at this checkpoint. The historical Phase
-8 result below remains PARTIAL and its original measurements are retained.
+Phase 8.1 directly confirmed that the original 256 MiB Tempo cap caused an
+OOM termination: Docker recorded exit 137 and `OOMKilled=true`. Tempo now has a
+512 MiB cap and retained its 0.25 CPU limit. One ten-minute observation passed
+with zero restarts, a 41.97% memory peak, and a newly generated 13-span trace
+that remained queryable. During the later HTTP matrix, Tempo reached 90.99% of
+that cap and the experiment stopped. A subsequent read-only inspection found
+one additional process restart; its trigger remains unresolved.
+
+The corrected admission preflight returned 762/762 successful responses.
+One complete authenticated C=4, one-replica trial measured 110.70 successful
+responses/s with 36.21 ms mean and 90.56 ms P95 latency. The matched two-
+replica trial recorded 148.55 responses/s and 26.92 ms mean / 84.17 ms P95
+latency, but stopped at 14.635 seconds of its planned 30 seconds on the Tempo
+guardrail. Both captured windows had zero HTTP 429 and 5xx responses. Only one
+of 18 planned trials completed; a second is partial, and C=16/C=64 were not
+started. Formal scaling efficiency remains unavailable; 67.09% is a
+provisional partial-window estimate and is not accepted as a matched result.
 
 The details and measurement boundaries are in the
 [Phase 8.1 finalization report](phase-8-1-finalization.md).
 
-Phase 8 produced one 30-second authenticated Doctor read-mix trial, a bounded two-upstream routing probe, and a 120-second idle Tempo observation. The live matrix stopped when Tempo reached 99.08% of its 256 MiB container memory limit, above the plan’s 90% stop threshold. The idle observation then recorded another Tempo restart with no OOM kill. The stop safeguard prevented continuing the same run after that condition.
+The original Phase 8 evaluation below remains historical evidence. It produced
+one 30-second authenticated Doctor read-mix trial, a bounded two-upstream
+routing probe, and a 120-second idle Tempo observation. That live matrix
+stopped when Tempo reached 99.08% of its then 256 MiB container memory limit.
 
 The single HTTP trial completed 15,244 requests: 125 returned 2xx and 15,119 returned expected admission-control 429 responses. It recorded no 5xx responses, timeouts, or connection failures. Since 99.18% of responses were admission rejections, the high attempted request rate is not a measurement of Doctor service capacity.
 
-The existing Phase 4–7 evidence supplies component comparisons, one distributed-quota check, bounded failure and recovery workflows, and a historical Surge Mode check. It does not supply a Phase 8 low/medium/high HTTP curve, a controlled one-versus-two-replica capacity comparison, a same-load NORMAL-versus-SURGE comparison, or new event-throughput measurements. No evidence supports a horizontal scaling efficiency estimate.
+The existing Phase 4–7 evidence supplies component comparisons, one distributed-quota check, bounded failure and recovery workflows, and a historical Surge Mode check. Neither Phase 8 nor Phase 8.1 completed a low/medium/high HTTP curve or a valid matched one-versus-two-replica capacity comparison. A same-load NORMAL-versus-SURGE comparison and new event-throughput measurements also remain unavailable.
 
 All recorded actors and data were synthetic. The run used authenticated GET requests, preserved the existing data volumes, restored the Traefik route file byte-for-byte, and ended with Surge Mode in NORMAL. This is a local educational prototype evaluation, not a production capacity or clinical reliability certification.
+
+Sections 2–14 retain the original Phase 8 measurements and their scope. The
+Phase 8.1 results are additive and do not replace or rewrite the original
+429-dominated trial, Phase 4 component experiments, or Phase 6/7 evidence.
 
 ## 2. Objectives and scope
 
@@ -211,7 +228,7 @@ The same trace search at the start and end each inspected 648 traces and returne
 
 A separate read-only finalization snapshot at 07:35:53 UTC found Tempo still running, with readiness returning “ready,” exit code 0, and OOMKilled=false. Restart count had risen to 27, four above the T1 end count of 23; its current started-at time was 07:34:37 UTC. Logs collected after the T1 window contained three failed WAL replays with missing meta.json, four unowned WAL entry warnings, 54 scheduler “no jobs found” lines, and eight single-binary auto-configuration warnings. These later lines are outside the T1 7-warning / 3-error counts and are retained separately in [the finalization snapshot](../experiments/phase8/results/phase8-20261013-run1/tempo/finalization_snapshot.json), [the post-T1 log summary](../experiments/phase8/results/phase8-20261013-run1/tempo/post_t1_log_summary.json), and [the redacted relevant log lines](../experiments/phase8/results/phase8-20261013-run1/tempo/post_t1_relevant_logs.txt). The readiness probe is a single point-in-time check, not a stability window.
 
-The version-matched Tempo 3.1.0 source automatically configures the worker and scheduler addresses when the single-binary deployment leaves them blank, so those two startup warnings are expected for that mode. That code does not explain the “no jobs found” messages or the observed process restart. Grafana documents that monolithic components share a resource pool and can experience memory pressure, which makes the 256 MiB limit a plausible risk in this co-located stack; it is not proof of the restart cause. No Tempo configuration change was justified by the evidence. The restart cause remains unresolved. [Tempo v3.1.0 modules.go](https://github.com/grafana/tempo/blob/v3.1.0/cmd/tempo/app/modules.go), [Grafana Tempo deployment modes](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/deployment-modes/).
+The version-matched Tempo 3.1.0 source automatically configures the worker and scheduler addresses when the single-binary deployment leaves them blank, so those two startup warnings are expected for that mode. That code does not explain the “no jobs found” messages or the observed process restart. Grafana documents that monolithic components share a resource pool and can experience memory pressure. At the time, the evidence did not identify the restart trigger. Phase 8.1 later confirmed the original 256 MiB OOM and raised the cap to 512 MiB; its separate ten-minute observation had no restarts, but a later partial HTTP trial again approached the cap and a subsequent inspection found one additional restart with its trigger unresolved. See the [Phase 8.1 finalization report](phase-8-1-finalization.md) for the later measurements. [Tempo v3.1.0 modules.go](https://github.com/grafana/tempo/blob/v3.1.0/cmd/tempo/app/modules.go), [Grafana Tempo deployment modes](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/deployment-modes/).
 
 Raw samples, the summary, and bounded relevant log lines are preserved in the [Tempo evidence directory](../experiments/phase8/results/phase8-20261013-run1/tempo/).
 
@@ -219,13 +236,13 @@ Raw samples, the summary, and bounded relevant log lines are preserved in the [T
 
 Phase 7 verified Prometheus scraping for eight API targets (seven domains plus the second Doctor process), application request metrics, RabbitMQ queue series, Surge Mode counters, selected traces, Control Room availability, and the dashboard query expressions. Its report records successful execution of 30 dashboard PromQL expressions; see [Phase 7 verification](phase-7-integration-verification.md).
 
-Prometheus does not have PostgreSQL, Redis, or container exporters in this stack. The Phase 8 CPU and memory figures therefore come from Docker stats sampling, while API, admission, cache, and RabbitMQ observations in historical reports come from Prometheus or owner checks as identified in their source reports. The Phase 8 per-request HTTP data comes directly from the benchmark runner. A separate routing probe verified both Doctor replicas received requests; it is not used as a rate or scaling estimate. No complete Phase 8 per-route Prometheus counter delta was collected for the stopped L1 trial.
+Prometheus does not have PostgreSQL, Redis, or container exporters in this stack. The original Phase 8 CPU and memory figures therefore come from Docker stats sampling, while API, admission, cache, and RabbitMQ observations in historical reports come from Prometheus or owner checks as identified in their source reports. The Phase 8.1 per-request HTTP data comes directly from the benchmark runner. Its one- and two-upstream probes confirmed the configured routes and Redis admission; no complete per-trial Prometheus delta was collected for the guardrail-stopped partial trial.
 
 ## 12. Bottleneck and trade-off analysis
 
-The only directly observed stop condition was Tempo memory pressure against a 256 MiB cap while the local stack was under the bounded Doctor read trial. Tempo reached 99.08% of its limit without an OOM kill. The 120-second idle check later peaked at 88.16% and still recorded a restart. Resource pressure is plausible, but the evidence does not identify the restart cause.
+In the original Phase 8 run, the stop condition was Tempo memory pressure against a 256 MiB cap; it reached 99.08% without an OOM kill in that particular sample. The original 120-second idle check later recorded a restart. Phase 8.1 increased the bounded cap to 512 MiB and passed a ten-minute low-rate observation at 41.97% peak memory. During the subsequent two-replica C=4 trial, Tempo reached 90.99% and the run stopped; a follow-up inspection recorded one additional restart with `OOMKilled=false` at inspection time. The exact trigger remains unresolved.
 
-The HTTP result is chiefly an admission-control observation: nearly every request was rejected quickly. Its 508.13 attempted requests/s and low all-response P95 do not demonstrate Doctor throughput or saturation. The successful-response sample is too small and the trial too singular to characterize latency under increasing accepted load.
+The original HTTP result is chiefly an admission-control observation: nearly every request was rejected quickly. Its 508.13 attempted requests/s and low all-response P95 do not demonstrate Doctor throughput or saturation. Phase 8.1 produced one complete one-replica C=4 trial at 110.70 successful responses/s and one guardrail-stopped two-replica sample at 148.55 responses/s. Both captured new windows had zero 429 and 5xx responses, but only one was complete; neither establishes a concurrency trend or accepted matched scaling efficiency.
 
 The Phase 4 component measurements expose a coordination trade-off: Redis-backed global admission adds several milliseconds of decision latency and admits fewer requests than process-local buckets under higher offered load, while enforcing the intended shared quota. Warm cache benefits depend on catalog size and access layer; the small authenticated endpoint regressed. Consistent hashing moves fewer keys during node addition at a measurable lookup cost and does not itself replicate them. CSPRNG beat the Snowflake insertion pipeline on throughput, while Snowflake serves a different ID-allocation property. Trie autocomplete sometimes wins and sometimes loses against sorted prefixes, with the high-catalog memory cost exceeding its configured cap. Bounded crawler concurrency improved throughput up to four slots in the measured high fixture, with little added gain at eight.
 
@@ -235,7 +252,7 @@ No database saturation, Redis saturation, or gateway capacity limit can be ident
 
 The new HTTP workload used authenticated synthetic patient access to read-only routes. No credentials, access tokens, response bodies, patient IDs, or Doctor IDs were stored in the request CSV. No state-changing hospital endpoint was used during L1. No database, Redis, RabbitMQ, or Tempo volume was reset.
 
-The run manifest records the final Surge Mode status as NORMAL, version 4. The temporary Traefik route edit was restored to its original SHA-256, 0c93b76e22c7f4b6931d14c79a765220110889d8d693eee769301ccb499b798b. The final Compose check found all containers with configured health checks running and healthy. Tempo, Prometheus, Grafana, the OpenTelemetry Collector, and Blackbox were running without Compose health checks; the separate Tempo readiness probe returned “ready,” with the recurring Tempo restarts documented above. The two Doctor containers remained running.
+The original Phase 8 run manifest records Surge Mode NORMAL, version 4, and the historical route hash `0c93b76e…`. Phase 8.1 separately restored the active Phase 4 route to `15e25694927bfc59643d158e49857e2e2a643af65e222a4635c989ac81eae99e`; a post-run read-only check found the mounted Traefik hash matched the source. Both Doctor containers had the temporary policy disabled, authenticated Doctor directory access used normal Redis-backed admission, and an unauthenticated Emergency read returned 401. All seven API readiness routes and Prometheus API/readiness targets were up; Surge Mode was NORMAL, version 4. The separate Tempo readiness probe returned ready. See the [Phase 8.1 restoration evidence](../experiments/phase8/results/phase8-1-20261013-run3/metrics/post-restore-check.json).
 
 This evaluation does not establish clinical validity, emergency dispatch reliability, high availability, or production security certification.
 
@@ -257,27 +274,36 @@ The plotting script regenerates the retained graphs from Phase 4 CSV/JSON and Ph
 
 The generated SVG and PNG files and their declared scopes are under [the result graphs directory](../experiments/phase8/results/phase8-20261013-run1/graphs/). Graph 4 is intentionally absent rather than interpolated from unrelated results.
 
+Phase 8.1 adds a separate set of four graphs under
+[`phase8-1-20261013-run3/graphs/`](../experiments/phase8/results/phase8-1-20261013-run3/graphs/).
+They are generated from the new CSV/JSON evidence and labeled partial. Graph 4
+shows a hatched provisional efficiency from the stopped 14.635-second
+two-replica window; the formal matched scaling efficiency remains unavailable.
+
 ## 15. Limitations and incomplete acceptance criteria
 
-- The Phase 8 HTTP matrix contains one trial at one concurrency and one upstream topology; it does not answer throughput or latency trends across 4 / 16 / 64 clients.
-- The 99.18% 429 share means the only HTTP run measures admission pressure more than accepted Doctor work.
-- No controlled replica scaling efficiency was calculated.
+- The original Phase 8 HTTP matrix contains one 99.18%-429 trial. Phase 8.1 has one complete C=4 one-replica trial and one partial C=4 two-replica sample; neither supplies the 4 / 16 / 64 multi-trial curve.
+- The provisional 67.09% scaling efficiency uses unequal completed windows and is not accepted as a matched result.
 - Phase 8 did not execute its same-workload NORMAL/SURGE pair or measure Class B admission.
 - No Phase 8 event throughput, queue depth, pending outbox age, or sustained duplicate-delivery experiment was run.
 - Redis, RabbitMQ, Records, and Prometheus outage evidence is reused from Phase 5–7 bounded checks and lacks some raw request counts or timing detail.
 - Phase 4 components used different hardware caps, databases, catalog sizes, and workload layers. They are historical comparisons, not direct Phase 8 capacity baselines.
 - The local MacBook and Docker resource caps do not represent a cloud or production deployment.
 - Docker reported other local containers outside the Compose project, and no full-host isolation was established.
-- Tempo restarted during an idle observation; readiness remained successful and no OOM kill was recorded, but the cause remains unresolved.
+- Tempo had zero restarts during the 600-second Phase 8.1 stability observation, then one additional process restart was observed after the later load stop. Its exact trigger remains unresolved.
 - No final PDF was created; that deliverable belongs to Phase 9.
 
 These gaps make the evaluation **PARTIAL**, not a system correctness failure.
 
 ## 16. Reproduction instructions and checks
 
-From the repository root, the retained Phase 8 charts can be regenerated without running the live services:
+From the repository root, the original Phase 8/Phase 4 charts can be regenerated without running live services:
 
     python3 experiments/phase8/plot_results.py
+
+Regenerate only the Phase 8.1 Graphs 1–4 from the retained run with:
+
+    python3 experiments/phase8/plot_results.py --run-id phase8-1-20261013-run3 --phase8-1-finalization
 
 The harness checks can be run without contacting the stack:
 
@@ -287,19 +313,22 @@ The harness checks can be run without contacting the stack:
 
 A fresh live matrix requires a healthy local Compose deployment and the private synthetic fixtures described in [the Phase 8 README](../experiments/phase8/README.md). Use a new run ID for any future authorized campaign; the retained run ID is guardrail-stopped and the runner refuses to resume it. The original fixed matrix command is documented in that README. The Tempo observation command is also documented there; do not treat the retained trace query count as proof of trace identity.
 
-Checks completed for this evaluation:
+Phase 8.1 focused checks completed:
 
-- Phase 8 unit tests: 6 passed.
-- Benchmark helper self-test: 5 passed.
-- Python compilation for the new observer and plotter: passed.
-- Plot regeneration from retained evidence: passed.
-- Git whitespace validation with git diff --check: passed.
-- Final Docker Compose service status, Traefik route hash, Git branch, and clean working tree: checked before completion.
-- No full Phase 1–7 suite was rerun because no application business logic changed.
-- No package was installed and no persistent volume was reset.
+- Phase 8 harness unit tests: 7 passed; benchmark helper self-test: 5 passed.
+- Doctor benchmark-admission tests: 4 passed (one deprecation warning).
+- Python compilation, normal and benchmark Compose configuration, and pinned
+  Tempo configuration verification: passed.
+- Four Phase 8.1 graphs regenerated from raw CSV/JSON; manifest sample counts
+  and SVG/PNG hashes verified.
+- One/two-upstream routing, normal Redis admission restoration, API readiness,
+  Prometheus targets, Emergency authentication, and Surge Mode NORMAL checked.
+- `git diff --check` passed. Final branch is local `main`; the worktree is
+  clean. No push, full backend regression suite, new matrix, or package
+  installation was performed; no persistent volume was reset.
 
 ## 17. Final verdict
 
-**PARTIAL.** Phase 8 preserves a reproducible authenticated-read harness, raw evidence for one stopped HTTP trial, per-container resource samples, a bounded Tempo observation, reusable Phase 4 algorithm comparisons, historical Surge and fault-recovery evidence, and reproducible graphs. The matrix stopped at its declared resource guardrail. The horizontal scaling, multi-concurrency hospital HTTP, and controlled Surge comparisons remain unavailable. Tempo readiness stayed available during the idle window, but its unexplained restart and earlier WAL replay warning remain open findings.
+**PARTIAL.** Phase 8 preserves the original admission-dominated HTTP trial and historical component/fault evidence. Phase 8.1 adds a corrected Redis-backed admission preflight, one complete authenticated C=4 trial, one guardrail-stopped two-replica sample, per-container resource samples, a bounded Tempo observation and four reproducible partial graphs. The fixed matrix did not complete; low/medium/high scaling and a valid matched efficiency remain unavailable. Tempo stayed within its guardrail during the ten-minute observation, but approached the limit during the HTTP run and had one later restart with an unresolved trigger.
 
-The final state was restored to the normal deployment route and Surge Mode NORMAL. All final changes are committed locally on main; nothing was pushed, and Phase 9 was not started.
+The final state was restored to the normal deployment route and admission policy; all API readiness and Prometheus targets were up, Emergency authentication remained enforced, and Surge Mode was NORMAL. All changes are committed locally on `main`; nothing was pushed, and Phase 9 was not started.
