@@ -666,3 +666,153 @@
   .workspace-shell .queue-station .checkin-kiosk .kiosk-brand .department-icon { width:22px;height:22px; }
   .workspace-shell .queue-station .checkin-kiosk>.text-link { margin-top:14px; }
 }
+
+/* Pharmacy: continuous cabinet joinery, counter documents and owner workspaces. */
+.pharmacy-counter-workspace { display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start; }
+.pharmacy-counter-workspace .pharmacy-catalog,.pharmacy-counter-workspace .pharmacy-shelf-workspace,.pharmacy-prescription-desk { display:contents; }
+.pharmacy-counter-workspace .pharmacy-search-counter { grid-column:1;grid-row:1;background:#f2e7d7;padding:14px 18px;display:grid;grid-template-columns:1fr;gap:10px; }
+.pharmacy-counter-workspace .pharmacy-autocomplete { width:auto; }
+.pharmacy-counter-workspace .pharmacy-autocomplete label { font-size:11px; }
+.pharmacy-counter-workspace .pharmacy-autocomplete input { background:#fbf6ed; }
+.pharmacy-catalog-search { font-size:11px; }
+.pharmacy-catalog-search>summary { cursor:pointer; }
+.pharmacy-catalog-search .hospital-panel { background:none;padding:10px 0;border:0;box-shadow:none; }
+.medicine-availability-tabs { display:flex;gap:6px;flex-wrap:wrap; }
+.workspace-content .medicine-availability-tabs>button { background:#dfd2bd;border:0;font-size:11px;font-weight:450;min-height:36px;padding:8px 14px; }
+.workspace-content .medicine-availability-tabs>button[aria-pressed="true"] { background:#183d43;color:#fff6e7; }
+.pharmacy-counter-workspace .medicine-shelves { grid-column:1;grid-row:2;position:relative;min-height:0;padding:0;border:7px solid #a17b52;background:#9a764e;box-shadow:inset 0 0 0 2px #694726,0 3px 0 #6f4d2e; }
+.cabinet-signage { display:flex;align-items:center;justify-content:space-between;gap:12px;background:#6f4d2f;color:#fff2dc;padding:12px 18px;font-size:11px;letter-spacing:.1em; }
+.cabinet-signage>span { font-size:10px;letter-spacing:0; }
+.pharmacy-counter-workspace .medicine-shelves .hospital-panel { padding:10px 12px 0;background:none;border:0;box-shadow:none; }
+.pharmacy-counter-workspace .medicine-shelves .hospital-panel>h2 { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); }
+.pharmacy-counter-workspace .medicine-shelves .resource-toolbar { margin:0 0 10px;padding:0;font-size:10px;color:#fff3df;border:0; }
+.pharmacy-counter-workspace .medicine-shelves .hospital-items { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;max-height:365px;overflow:auto; }
+.pharmacy-counter-workspace .medicine-shelves .hospital-item { display:block;min-height:0;border:0;border-right:6px solid #8b603b;border-bottom:9px solid #694525;border-radius:0;background:none;padding:0;box-shadow:none;margin:0; }
+.pharmacy-counter-workspace .medicine-shelves .hospital-item:nth-child(3n) { border-right:0; }
+.medicine-shelf-slot { padding:14px 12px 10px;min-width:0;background:#e2cfac42;box-shadow:inset 0 -6px 8px #3c2b2026; }
+.carton-space { display:flex;justify-content:center;align-items:end;height:120px;margin-bottom:16px;border-bottom:3px solid #cba57c;padding-bottom:10px; }
+.pharmacy-counter-workspace .medicine-shelves .medicine-box {
+  display:grid;justify-items:start;align-content:start;gap:8px;position:relative;width:100px;height:110px;
+  background:#f9f5e9;border:1px solid #c3b69e;border-left:7px solid #286a7a;box-shadow:5px 3px 0 #b6b09f,7px 5px 5px #362b2430;border-radius:0;padding:10px 7px;color:#1b3b43;font-size:11px;
+}
+.pharmacy-counter-workspace .medicine-shelves .medicine-box>small { font-size:6px;letter-spacing:.1em; }
+.pharmacy-counter-workspace .medicine-shelves .medicine-box>.department-icon { width:17px;height:17px; }
+.pharmacy-counter-workspace .medicine-shelves .medicine-box>span { white-space:normal;line-height:1.25;overflow:visible; }
+.pharmacy-counter-workspace .medicine-shelves .medicine-box>i { display:block;height:7px;width:32px;background:repeating-linear-gradient(90deg,#32464b 0 1px,transparent 1px 3px); }
+.medicine-shelves .hospital-item:nth-child(3n + 2) .medicine-box { border-left-color:#a45139; }
+.medicine-shelves .hospital-item:nth-child(3n) .medicine-box { border-left-color:#9a8541; }
+.pharmacy-counter-workspace .medicine-shelves .medicine-shelf-slot>button { display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:48px;border:0;border-radius:0;background:#efe4ce;color:#183d43;padding:10px;text-align:left; }
+.medicine-shelf-slot>button strong { font-size:12px;line-height:1.35; }
+.medicine-shelf-slot>button>span { font-size:10px;white-space:nowrap; }
+.pharmacy-counter-workspace .medicine-shelves .medicine-shelf-slot[data-selected="true"]>button { background:#173d43;color:#fff5df; }
+.medicine-shelf-slot>p { font-size:10px;color:#fff5e3;margin:8px 0 0;text-transform:capitalize; }
+.pharmacy-counter-workspace .medicine-shelves .hospital-actions { padding:10px 0; }
+.pharmacy-counter-workspace .medicine-shelves .resource-empty { background:#f3e4cc;padding:20px;min-height:100px;color:#19383e; }
+.pharmacy-counter-workspace .dispensing-counter { grid-column:2;grid-row:1;margin:0;min-width:0; }
+.pharmacy-counter-workspace .dispensing-counter>.hospital-panel { background:#f6eddf;min-height:0;padding:18px; }
+.pharmacy-counter-workspace .dispensing-counter>.hospital-panel>h2:first-child { font-size:15px; }
+.pharmacy-counter-workspace .dispensing-counter .selected-medicine-name { font-size:18px;margin:12px 0; }
+.pharmacy-counter-workspace .dispensing-counter .hospital-facts { grid-template-columns:1fr 1fr;gap:12px;font-size:11px; }
+.catalog-edit-tools { font-size:11px;margin-top:15px; }
+.pharmacy-counter-workspace .pharmacy-catalog-tools { grid-column:1;grid-row:4;font-size:11px; }
+.pharmacy-counter-workspace .pharmacy-inventory-ledger { grid-column:2;grid-row:2 / 4;background:#f2e6d4;padding:15px;min-width:0; }
+.inventory-source-filter { font-size:11px; }
+.pharmacy-inventory-ledger .hospital-panel { background:none;padding:12px 0;box-shadow:none;border:0; }
+.pharmacy-inventory-ledger .hospital-panel>h2 { font-size:16px; }
+.pharmacy-inventory-ledger .hospital-items { display:block;max-height:270px;overflow:auto; }
+.pharmacy-inventory-ledger .hospital-item { border:0;border-bottom:1px solid #c7b79b;border-radius:0;background:none;padding:12px 0; }
+.pharmacy-inventory-ledger .stock-ledger-row { grid-template-columns:1fr 1fr;font-size:11px;gap:8px; }
+.pharmacy-inventory-ledger .pharmacy-stock-tools { padding:12px 0;border:0;background:none; }
+.prescription-stand { grid-column:1;grid-row:3;position:relative;align-self:start;background:#fcf6e8;border:2px solid #e5d3b7;padding:20px 22px 24px;border-radius:5px 5px 1px 1px;box-shadow:0 9px 0 #8e6039,2px 14px 12px #4c332825;max-width:620px; }
+.prescription-stand::before { content:"";position:absolute;top:-5px;left:45%;width:50px;height:9px;background:#b7aa92;box-shadow:inset 0 1px 0 #fff7e0;border-radius:2px; }
+.prescription-stand>header { display:flex;align-items:center;gap:10px;border-bottom:1px solid #d9c8aa;padding-bottom:12px;margin-bottom:12px; }
+.prescription-stand>header .department-icon { width:23px;height:23px; }
+.prescription-stand>header h2 { font-size:17px;margin:0; }
+.prescription-stand>header>span { margin-left:auto;font:italic 24px Georgia,serif; }
+.prescription-stand label,.prescription-stand p,.prescription-stand>small { font-size:12px;line-height:1.5; }
+.prescription-stand>small { display:block;margin-top:15px; }
+.prescription-stand select { font-size:12px;width:100%;min-width:0; }
+.prescribed-document-lines>article { border-bottom:1px solid #dccbad;padding:12px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px; }
+.prescribed-document-lines>article>strong { font-size:13px; }
+.prescribed-document-lines>article>span { font-size:11px; }
+.prescribed-document-lines>article>p { grid-column:1 / -1;margin:0; }
+.patient-dispensing-workspace { grid-column:2;grid-row:2 / 4;background:#f2e6d4;padding:18px;min-width:0;border:1px solid #e8d7bc;box-shadow:0 3px 0 #bbab90; }
+.patient-dispensing-workspace>h2 { font-size:18px;margin:0 0 12px; }
+.patient-dispensing-workspace p { font-size:11px;line-height:1.5; }
+.patient-dispensing-workspace>.patient-workflow__item { border:0;background:none;border-radius:0;margin:0;padding:0; }
+.patient-dispensing-workspace .patient-workflow__facts { grid-template-columns:1fr 1fr;font-size:11px;gap:10px; }
+.patient-dispensing-workspace .patient-workflow__facts>div { padding:0;background:none;border:0; }
+.patient-dispensing-workspace .patient-workflow__facts dd { margin:4px 0 0;overflow-wrap:anywhere; }
+.pharmacy-allowance-table { overflow:auto; }
+.pharmacy-allowance-table table { width:100%;border-collapse:collapse;font-size:10px; }
+.pharmacy-allowance-table th,.pharmacy-allowance-table td { padding:10px 5px;border-bottom:1px solid #d0bda0;text-align:left; }
+.patient-dispensing-workspace details { font-size:11px;margin-top:14px;padding-block:10px;border-top:1px solid #cbb799; }
+.patient-dispensing-workspace fieldset { border:0;padding:0; }
+.patient-dispensing-workspace fieldset label { font-size:11px; }
+@media(max-width:1100px) and (min-width:901px){
+  .pharmacy-counter-workspace { grid-template-columns:minmax(0,1.7fr) minmax(0,1fr); }
+  .medicine-shelf-slot>button { flex-wrap:wrap; }
+}
+@media(max-width:900px){
+  .pharmacy-counter-workspace { grid-template-columns:minmax(0,1fr);gap:22px; }
+  .pharmacy-counter-workspace .pharmacy-search-counter,.pharmacy-counter-workspace .medicine-shelves,.pharmacy-counter-workspace .dispensing-counter,.pharmacy-counter-workspace .pharmacy-inventory-ledger,.pharmacy-counter-workspace .pharmacy-catalog-tools,.prescription-stand,.patient-dispensing-workspace { grid-column:1;grid-row:auto; }
+  .pharmacy-counter-workspace .medicine-shelves .hospital-items { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .pharmacy-counter-workspace .medicine-shelves .hospital-item:nth-child(3n) { border-right:6px solid #8b603b; }
+  .pharmacy-counter-workspace .medicine-shelves .hospital-item:nth-child(2n) { border-right:0; }
+}
+@media(max-width:500px){
+  .pharmacy-counter-workspace .medicine-shelves .hospital-items { grid-template-columns:1fr;max-height:450px; }
+  .pharmacy-counter-workspace .medicine-shelves .hospital-item { border-right:0; }
+  .medicine-shelf-slot { display:grid;grid-template-columns:85px minmax(0,1fr);gap:5px 12px;align-items:center;padding:12px; }
+  .carton-space { grid-column:1;grid-row:1 / 3;height:auto;margin:0;border:0;padding:0; }
+  .pharmacy-counter-workspace .medicine-shelves .medicine-box { width:73px;height:90px;font-size:9px;gap:5px;padding:6px; }
+  .medicine-shelf-slot>button { grid-column:2; }
+  .medicine-shelf-slot>p { grid-column:2; }
+  .cabinet-signage { display:block;padding:12px; }
+  .cabinet-signage>span { display:block;margin-top:5px; }
+  .prescription-stand { padding:20px 16px; }
+}
+/* Secondary dispensing uses the same foreground prescription stand and counter. */
+.workspace-content .staff-fulfillment>.fulfillment-workspace { grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start; }
+.fulfillment-workspace>.prescription-stand { grid-column:1;grid-row:auto;max-width:none; }
+.fulfillment-workspace>.reservation-counter { grid-column:2;background:#f3e7d7;padding:18px;min-width:0;border:1px solid #dfc9a9;box-shadow:0 3px 0 #b8a386; }
+.reservation-register { margin-bottom:16px;font-size:12px; }
+.reservation-register>.hospital-panel { background:none;padding:12px 0;border:0;box-shadow:none; }
+.reservation-register .hospital-items { max-height:240px;overflow:auto;display:block; }
+.reservation-register .hospital-item { border:0;border-bottom:1px solid #c8b396;background:none;padding:10px 0; }
+.fulfillment-workspace .reservation-counter>.hospital-panel { background:none;padding:0;border:0;box-shadow:none; }
+.fulfillment-workspace .reservation-counter>.hospital-panel>h2 { font-size:19px; }
+.dispensing-reservation-title { font-size:16px;margin-top:16px; }
+.dispensing-medicine-line { display:flex;align-items:center;gap:12px;border-bottom:1px solid #c8b396;padding:15px 0;font-size:12px; }
+.dispensing-medicine-line>.department-icon { width:24px;height:24px;flex-shrink:0; }
+.dispensing-medicine-line>div { flex:1;min-width:0; }
+.dispensing-medicine-line>span { font-size:11px; }
+.fulfillment-workspace .hospital-form { background:none;box-shadow:none;padding:12px 0;border:0;border-top:1px solid #ccb598; }
+.fulfillment-workspace .hospital-facts { grid-template-columns:1fr 1fr;font-size:11px; }
+.fulfillment-workspace .prescription-workspace { display:block; }
+.fulfillment-workspace .prescription-workspace>.hospital-panel { background:none;box-shadow:none;border:0;padding:15px 0; }
+.pharmacy-prescription-document h3 { font-size:17px; }
+.pharmacy-prescription-document>p { font-size:11px; }
+.prescribed-document-line { padding:12px 0;border-block:1px solid #dcc7a6;margin-top:12px; }
+.prescribed-document-line>strong { font-size:13px; }
+.fulfillment-workspace .dispensing-register { grid-column:1 / -1; }
+@media(max-width:900px){
+  .workspace-content .staff-fulfillment>.fulfillment-workspace { grid-template-columns:1fr; }
+  .fulfillment-workspace>.prescription-stand,.fulfillment-workspace>.reservation-counter { grid-column:1; }
+}
+.pharmacy-counter-workspace .pharmacy-search-counter { grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:12px 16px;gap:8px; }
+.pharmacy-counter-workspace .pharmacy-autocomplete { grid-column:1 / -1; }
+.pharmacy-counter-workspace .pharmacy-autocomplete .phase4-autocomplete>label { position:absolute;overflow:hidden;width:1px;height:1px;clip-path:inset(50%); }
+.pharmacy-counter-workspace .medicine-availability-tabs { grid-column:1 / -1; }
+.pharmacy-counter-workspace .pharmacy-catalog-search { grid-column:1;align-self:center; }
+.pharmacy-counter-workspace label.catalog-cohort { grid-column:2;margin:0;font-size:9px;align-self:center; }
+.pharmacy-counter-workspace .pharmacy-catalog-search[open] { grid-column:1 / -1; }
+.pharmacy-counter-workspace .dispensing-counter>.hospital-panel { padding:14px 16px; }
+.pharmacy-counter-workspace .dispensing-counter>.hospital-panel>h2:first-child { margin:0 0 12px;padding-bottom:10px; }
+.pharmacy-counter-workspace .dispensing-counter>.hospital-panel>button { float:right;font-size:10px;min-height:30px;padding:5px 8px;margin-left:8px; }
+.pharmacy-counter-workspace .dispensing-counter .selected-medicine-name { font-size:16px;line-height:1.4;margin:10px 0; }
+.pharmacy-counter-workspace .catalog-edit-tools { margin-top:10px; }
+@media(max-width:600px){
+ .pharmacy-counter-workspace .pharmacy-search-counter { grid-template-columns:1fr; }
+ .pharmacy-counter-workspace label.catalog-cohort { grid-column:1;font-size:10px; }
+}

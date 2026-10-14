@@ -39,10 +39,10 @@ export function HospitalPage({
     if (route === "prescriptions") content = <Prescriptions />;
     if (route === "pharmacy")
       content = (
-        <>
+        <div className="pharmacy-counter-workspace">
           <MedicineCatalog />
-          <PatientFulfillmentPanel />
-        </>
+          <PatientFulfillmentPanel counter />
+        </div>
       );
     if (route === "billing") content = <BillingPage />;
     if (route === "emergency") content = <EmergencyPage />;
@@ -61,7 +61,7 @@ export function HospitalPage({
   }
   if (role === "/pharmacist") {
     if (route === "inventory" || route === "dashboard")
-      content = <MedicineCatalog staff inventory />;
+      content = <div className="pharmacy-counter-workspace"><MedicineCatalog staff inventory /><section className="prescription-stand pharmacist-prescription-stand"><header><DepartmentIcon department="records"/><h2>Prescription counter</h2><span aria-hidden="true">Rx</span></header><p>Validate an existing Records prescription and review its Pharmacy reservation before dispensing.</p><a className="button" href="/pharmacist/prescriptions">Open dispensing workspace →</a><small>Stock and prescription allowance are confirmed by Pharmacy.</small></section></div>;
     if (route === "prescriptions") content = <StaffFulfillmentPanel />;
   }
   if (
@@ -101,7 +101,7 @@ export function HospitalPage({
         <DepartmentIcon department={departmentFor(role,route)}/>
         <div>
           <p className="eyebrow">{workspace.name}</p>
-          <h1>{page.title}</h1>
+          <h1>{role === "/pharmacist" && route === "dashboard" ? "Pharmacy" : page.title}</h1>
           <p className="page-description">
             {role === "/patient" && route === "queue" ? "Check in. Follow your place in the queue." : departmentDescriptions[departmentFor(role,route)]}
           </p>

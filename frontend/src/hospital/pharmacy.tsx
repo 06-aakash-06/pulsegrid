@@ -23,6 +23,7 @@ import {
   Panel,
   query,
   reasonField,
+  Resource,
   Selected,
   type Field,
   type Values,
@@ -45,9 +46,12 @@ export function MedicineCatalog({
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const [medicineId, setMedicineId] = useState("");
+  const [availability, setAvailability] = useState<Medicine["availability"] | "">("");
   return (
     <div className="pharmacy-catalog"><div className="pharmacy-search-counter">
-      <details className="pharmacy-autocomplete"><summary>Quick medicine lookup</summary><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={item => {setSelected(item.id);setDemoSelected(true);}} /></details>
+      <div className="pharmacy-autocomplete"><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} label="Quick medicine lookup" placeholder="Find a medicine by name…" onSelect={item => {setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(true);}} /></div>
+      <nav className="medicine-availability-tabs" aria-label="Catalog availability on this page">{[["","All medicines"],["available","Available"],["unavailable","Unavailable"],["unknown","Not reported"]].map(([value,label])=><button type="button" key={value} aria-pressed={availability===value} onClick={()=>{setAvailability(value as Medicine["availability"]|"");setSelected(null);setDemoSelected(false);}}>{label}</button>)}</nav>
+      <details className="pharmacy-catalog-search"><summary>Search & catalog filters</summary>
       <Panel title="Medicine search">
         <form
           onSubmit={(e) => {
@@ -85,22 +89,21 @@ export function MedicineCatalog({
           {error && <p role="alert">{error}</p>}
         </form>
       </Panel>
+      </details>
       {demo&&<label className="catalog-cohort"><input type="checkbox" checked={showAll} onChange={e=>{setShowAll(e.target.checked);setSelected(null);}}/>Show all owner records · Fictional demo catalog</label>}
-      </div><div className="pharmacy-shelf-workspace"><div className="medicine-shelves">
+      </div><div className="pharmacy-shelf-workspace"><div className="medicine-shelves"><div className="cabinet-signage"><strong>MEDICINE CABINET</strong><span>Catalog availability · Pharmacy</span></div>
       <Collection<Medicine>
         title="Medicines"
         path={query("/api/v1/pharmacy/medicines", filters)}
         revision={revision}
-        itemFilter={item=>!demo||showAll||!!filters.q||item.sku.startsWith("DEMO-")}
+        itemFilter={item=>(!demo||showAll||!!filters.q||item.sku.startsWith("DEMO-"))&&(!availability||item.availability===availability)}
         onFirstItem={item=>{if(!selected||(demo&&!showAll&&!demoSelected)){setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(Boolean(demo));}}}
         renderItem={(item) => (
-          <>
-            <span className="medicine-box" aria-hidden="true"><DepartmentIcon department="pharmacy"/><span>{item.name}</span></span><strong>{item.name}</strong>
-            <p>
-              {item.availability.replaceAll("_", " ")} · Stock hint
-            </p>
-            <button aria-label={`View medicine ${item.id}`} onClick={() => {setSelected(item.id);if(inventory)setMedicineId(item.id);}}>Medicine details →</button>
-          </>
+          <div className="medicine-shelf-slot" data-selected={selected===item.id} data-availability={item.availability}>
+            <div className="carton-space"><span className="medicine-box" aria-hidden="true"><small>PULSEGRID · DEMO</small><DepartmentIcon department="pharmacy"/><span>{item.name.startsWith("Synthetic") ? "Catalog medicine" : item.name}</span><i /></span></div>
+            <button aria-label={`View medicine ${item.id}`} aria-pressed={selected===item.id} onClick={() => {setSelected(item.id);if(inventory)setMedicineId(item.id);}}><strong>{item.name.startsWith("Synthetic")?`Demo catalog item …${item.id.slice(-4)}`:item.name}</strong><span>Details →</span></button>
+            <p>{item.availability.replaceAll("_", " ")} · Stock hint</p>
+          </div>
         )}
       />
       </div><aside className="dispensing-counter">{!selected && <Panel title="Medicine details"><div className="resource-empty"><DepartmentIcon department="pharmacy"/><strong>Choose a medicine</strong><p>Open a shelf item to review its catalog status. Prescription fulfillment remains a separate authorized workflow.</p></div></Panel>}
@@ -109,10 +112,10 @@ export function MedicineCatalog({
       >
         {(item, etag, refresh) => (
           <>
-            <h2 className="selected-medicine-name">{item.name}</h2>
+            <h2 className="selected-medicine-name">{item.name.startsWith("Synthetic")?`Demo catalog item …${item.id.slice(-4)}`:item.name}</h2>
             <Facts values={{"Catalog status":item.active?"Active":"Inactive","Availability hint":item.availability}}/>
             <details className="owner-identifiers"><summary>Catalog identifiers</summary><Facts values={{"Medicine ID":item.id,SKU:item.sku}}/></details>
-            {staff && (
+            {staff && (<details className="catalog-edit-tools"><summary>Edit selected catalog entry</summary>
               <CommandForm
                 title="Save medicine"
                 path={`/api/v1/pharmacy/medicines/${item.id}`}
@@ -149,7 +152,7 @@ export function MedicineCatalog({
                   setRevision((v) => v + 1);
                 }}
               />
-            )}
+            </details>)}
           </>
         )}
       </Selected>
@@ -173,11 +176,11 @@ export function MedicineCatalog({
         </Panel></details>
       )}
       {inventory && (
-        <>
-          <Lookup
+        <div className="pharmacy-inventory-ledger">
+          <details className="inventory-source-filter"><summary>Inventory reference filter</summary><Lookup
             label="Inventory medicine ID filter"
             onSelect={setMedicineId}
-          />
+          /></details>
           <Collection<Batch>
             title="Inventory batches"
             path={query("/api/v1/pharmacy/inventory", {
@@ -189,7 +192,7 @@ export function MedicineCatalog({
             )}
           />
           <details className="pharmacy-stock-tools"><summary>Adjust batch stock</summary><StockAdjustment onSuccess={() => setRevision((v) => v + 1)} /></details>
-        </>
+        </div>
       )}
     </div>
   );
@@ -282,7 +285,7 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
   const [revision, setRevision] = useState(0);
   const [dispensing, setDispensing] = useState<Dispensing | null>(null);
   return (
-    <div className="fulfillment-workspace"><section className="prescription-counter">
+    <div className="fulfillment-workspace"><section className="prescription-counter prescription-stand"><header><DepartmentIcon department="records"/><h2>Prescription counter</h2><span aria-hidden="true">Rx</span></header>
       <Prescriptions pharmacist={pharmacist} onSelect={setPrescription} />
       {prescription && (
         <Reserve
@@ -291,7 +294,7 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
           onSuccess={() => setRevision((v) => v + 1)}
         />
       )}
-      </section><section className="reservation-counter">
+      </section><section className="reservation-counter"><details className="reservation-register"><summary>Reservation register</summary>
       <Collection<Reservation>
         title="Reservations"
         path="/api/v1/pharmacy/reservations"
@@ -306,28 +309,21 @@ export function Fulfillment({ pharmacist = false }: { pharmacist?: boolean }) {
         )}
       />
       <Lookup label="Reservation ID" onSelect={setSelected} />
+      </details>
       <Selected<Reservation>
         path={selected ? `/api/v1/pharmacy/reservations/${selected}` : null}
       >
         {(item, etag, refresh) => (
           <>
-            <Facts
+            <h3 className="dispensing-reservation-title">Reservation …{item.id.slice(-4)}</h3><Facts
               values={{
-                "Reservation ID": item.id,
-                "Prescription ID": item.prescription_id,
                 State: item.state,
                 "Expires (UTC)": item.expires_at,
               }}
             />
+            <details className="owner-identifiers"><summary>Reservation and prescription references</summary>Reservation {item.id} · Prescription {item.prescription_id}</details>
             {item.items.map((line) => (
-              <Facts
-                key={line.prescription_item_id}
-                values={{
-                  "Prescription item": line.prescription_item_id,
-                  "Medicine ID": line.medicine_id,
-                  Quantity: line.quantity,
-                }}
-              />
+              <div className="dispensing-medicine-line" key={line.prescription_item_id}><DepartmentIcon department="pharmacy"/><div><Resource<Medicine> path={`/api/v1/pharmacy/medicines/${line.medicine_id}`} showReload={false}>{medicine=><strong>{medicine.name.startsWith("Synthetic")?`Catalog item …${medicine.id.slice(-4)}`:medicine.name}</strong>}</Resource><details className="owner-identifiers"><summary>Item references</summary>Medicine {line.medicine_id} · Prescription item {line.prescription_item_id}</details></div><span>Quantity <strong>{line.quantity}</strong></span></div>
             ))}
             {item.state !== "dispensed" && (
               <CommandForm

@@ -31,3 +31,25 @@ Live operator browser selected the retained checked-in visit A034 and returned t
 Compared `waiting-comparison.jpg` (reference/original/corrected at equal aspect ratio). The QR equipment and center display now dominate the composition. Fixed excessive kiosk height, a legacy scanner text contrast issue, scanner width spilling beyond the enclosure at 1280, and mobile kiosk density. Freshness/errors remain visible. The board only shows this patient's authorized queue entry; the reference's other people and 15-minute estimate are intentionally absent because the owner API does not authorize/supply them.
 
 Responsive captures: `waiting-after-{1536,1440,1280,390}.jpg`, `waiting-after-mobile-full.jpg`, camera request/cancellation captures, manual check-in and receptionist workflow captures. All four widths report no horizontal page overflow. TypeScript and 56 focused application/design/patient/staff workflow tests pass. A small directory follow-up scrolls the selected row into its own navigation viewport so it remains visible on shorter laptops.
+
+## Pharmacy recovery checkpoint — in progress
+
+Work stopped at the user's request to resume later. The current implementation is saved as a recoverable checkpoint, not a completed visual correction.
+
+The owner catalog now uses continuous wood cabinet bays, medicine cartons, direct autocomplete and actual availability filters. Patient Pharmacy integrates an owned prescription stand and reservation counter. Pharmacist pages retain catalog editing, batch inventory and authorized dispensing actions; secondary fulfillment uses a prescription stand and receipt composition. Medicine names and quantities are read from owner APIs, with technical references kept secondary. Existing Records layouts retain their default behavior outside the pharmacist compact view. No retail prices, stock values or backend business rules were invented.
+
+The counter selection locks during pending or ambiguous reservation attempts. A focused test verifies the selection lock, safe retry with the same idempotency key and body, returned reservation state, and absence of patient dispensing controls. The 78 focused Pharmacy-related tests and TypeScript check passed.
+
+Browser evidence: `pharmacy-pharmacist-before-1536.jpg`, `pharmacy-pharmacist-after-1536.jpg`, and `pharmacy-fulfillment-before-1536.jpg`. The pharmacist cabinet was inspected against the approved reference. Search density improved, but the cabinet remains too tall and the foreground prescription stand starts too low in the 1536×1024 viewport. This discrepancy remains unresolved. Patient counter, corrected secondary fulfillment, autocomplete selection and four-size responsive browser verification remain unfinished. No live inventory or dispensing mutation was performed.
+
+## Wrap-up validation and next resume point
+
+- `npm --prefix frontend test -- --reporter=dot`: PASS, 11 files / 142 tests.
+- TypeScript check: PASS; production build also runs TypeScript.
+- `npm --prefix frontend run build`: PASS.
+- `git diff --check`: PASS.
+- Directory checkpoint: `20c365e`; Waiting Room checkpoint: `8c5f1ec`.
+
+Resume with Pharmacy counter positioning and cabinet height, then patient/pharmacist primary and secondary workflow browser checks at 1536×1024, 1440×900, 1280×800 and 390×844. Physical QR camera decoding remains unverified. Reception and Consultation scene implementations remain preserved. Development servers are left running; no database reset or push was performed.
+
+Final verdict for the three-correction task: **PARTIAL**. Directory and Waiting Room corrections are complete within the recorded limitations; Pharmacy is a validated implementation checkpoint with remaining visual and browser verification work.

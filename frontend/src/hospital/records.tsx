@@ -6,6 +6,7 @@ import type {
   FinalizeResult,
   Grant,
   MedicalRecord,
+  Medicine,
   PatientProfile,
   Prescription,
   PrescriptionItemInput,
@@ -430,9 +431,12 @@ export function RecordsPage({ doctor = false }: { doctor?: boolean }) {
 }
 export function PrescriptionDetail({
   prescription,
+  compact = false,
 }: {
   prescription: Prescription;
+  compact?: boolean;
 }) {
+  if (compact) return <div className="pharmacy-prescription-document"><h3>Prescription …{prescription.id.slice(-4)}</h3><p>Records · {prescription.state} · Revision {prescription.revision}</p>{prescription.state === "revoked" && <p className="prescription-revoked-note">Revoked prescription. Instructions are retained as history.</p>}{prescription.items.map(item=><article className="prescribed-document-line" key={item.id}><Resource<Medicine> path={`/api/v1/pharmacy/medicines/${item.medicine_id}`} showReload={false}>{medicine=><strong>{medicine.name.startsWith("Synthetic")?`Catalog item …${medicine.id.slice(-4)}`:medicine.name}</strong>}</Resource><Facts values={{Quantity:item.quantity,Dosage:item.dosage,Instructions:item.instructions}}/></article>)}<details className="owner-identifiers"><summary>Records references</summary><Facts values={{"Prescription ID":prescription.id,"Consultation ID":prescription.consultation_id,"Patient ID":prescription.patient_id}}/></details></div>;
   return (
     <>
       <Facts
@@ -496,7 +500,7 @@ export function Prescriptions({
       >
         {(prescription, etag, refresh) => (
           <>
-            <PrescriptionDetail prescription={prescription} />
+            <PrescriptionDetail prescription={prescription} compact={pharmacist} />
             {onSelect && prescription.state === "issued" && (
               <button onClick={() => onSelect(prescription)}>
                 Request medicines from prescription {prescription.id}

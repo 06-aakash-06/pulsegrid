@@ -363,6 +363,7 @@ describe("Agent 6 patient workflows", () => {
       expires_at: "2026-10-11T10:30:00Z", version: 1,
     };
     let request: RequestInit | null = null;
+    const attempts: RequestInit[] = [];
     const fulfillment: Fulfillment = {
       prescription_id: "71", appointment_id: "51", patient_id: "11", prescription_revision: 1,
       prescription_state: "issued",
@@ -377,19 +378,28 @@ describe("Agent 6 patient workflows", () => {
       if (url.pathname === "/api/v1/pharmacy/reservations" && method(init) === "GET") return json(page(reserved ? [reservation] : []));
       if (url.pathname === "/api/v1/pharmacy/reservations" && method(init) === "POST") {
         request = init;
+        attempts.push(init);
+        if (attempts.length === 1) return failure(503, "dependency_unavailable", "Retry original reservation.");
         reserved = 2;
         return json(reservation, 201, '"1"');
       }
       return undefined;
     };
-    setup(<PatientFulfillmentPanel />, handler);
+    setup(<PatientFulfillmentPanel counter />, handler);
     fireEvent.change(await screen.findByLabelText(/Item 72 quantity \(up to 4\)/), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Request reservation" }));
+    await screen.findByRole("button", { name: "Retry reservation request" });
+    expect(screen.getByLabelText("Your prescription")).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry reservation request" }));
     await screen.findByText(/Pharmacy returned reservation 91, state reserved/);
     expect(body(request!)).toEqual({ prescription_id: "71", items: [{ prescription_item_id: "72", quantity: 2 }] });
     expect(headers(request!).get("Idempotency-Key")).toMatch(/^[0-9a-f-]{36}$/);
+    expect(headers(attempts[0]).get("Idempotency-Key")).toBe(headers(attempts[1]).get("Idempotency-Key"));
+    expect(body(attempts[0])).toEqual(body(attempts[1]));
     expect(await screen.findByText(/72: 2/)).toBeInTheDocument();
     expect(screen.queryByText(/All prescribed quantities dispensed/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Your prescription")).toHaveValue("71");
+    expect(screen.queryByRole("button", { name: /Dispense reservation/ })).not.toBeInTheDocument();
   });
 
   it("does not expose patient workflows to a non-patient role or call patient endpoints", async () => {
