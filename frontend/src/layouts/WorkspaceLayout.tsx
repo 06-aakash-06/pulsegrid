@@ -167,7 +167,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
       />
       <aside
         ref={sidebar}
-        className={`workspace-sidebar${menuOpen ? " workspace-sidebar--open" : ""}`}
+        className={`workspace-sidebar physical-directory${menuOpen ? " workspace-sidebar--open" : ""}`}
         aria-label="Hospital directory"
       >
         <div className="directory-heading">
@@ -188,7 +188,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
                   to={`${item.base}/${item.path}`}
                   aria-label={departmentNames[item.department]}
                   className={({ isActive }) =>
-                    `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}`
+                    `workspace-nav-link${isActive || department === item.department || (department === "appointments" && item.department === "reception") ? " workspace-nav-link--active" : ""}`
                   }
                 >
                   <span className="directory-number">
