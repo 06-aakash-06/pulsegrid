@@ -1,155 +1,158 @@
 # PulseGrid
 
-PulseGrid is a single-hospital management prototype for the System Design Laboratory. Phase 5 adds reliable, asynchronous Pharmacy and Billing signals that wake Appointment's existing journey reconciler. Phase 6 extends the shared Redis admission component with Surge Mode and adds bounded resilience around optional Appointment journey snapshots. Patient management, doctor profiles and schedules, protected appointment booking, clinical records and prescriptions, pharmacy inventory and fulfillment, invoices and simulated payments, and emergency requests continue to use their owning APIs. Existing registration, login, session rotation, logout and CSRF protection are preserved.
+**A hospital workflow prototype built around seven independent services.**
 
-See the [Phase 2 integration verification](docs/phase-2-integration-verification.md) for executed PostgreSQL, security, concurrency, HTTP and browser checks, and the [Phase 2 API contracts](docs/phase-2-api-contracts.md) for the compatible baseline interface. See [Phase 3 contracts](docs/phase-3-api-contracts.md) and [Phase 3 verification](docs/phase-3-integration-verification.md) for activated waitlists and temporary offers, QR check-in, consultation queues, patient journeys and staff/patient UI. Older architecture documents describe the broader target; their future algorithms and event workflows are not current implementation claims.
+PulseGrid is a synthetic, single-hospital educational project for the System Design Laboratory. It combines patient and staff workflows with transactional data ownership, asynchronous reconciliation, resilience controls and distributed observability. The React interface uses warm hospital interiors, physical directory navigation and department-specific workspaces.
 
-Uses synthetic data exclusively. This is an educational prototype, not a certified clinical or emergency-response platform. Payments and insurance fixtures/estimates are simulated; no real insurer integration.
+![PulseGrid reception](docs/verification/phase9-fidelity/directory-reception-1536.jpg)
 
-## Phase 4 integration
+> Educational prototype only. All records are synthetic. Payments and insurance estimates are simulated. This project does not claim clinical certification, reliable emergency dispatch or production availability.
 
-All eight agent implementations are integrated locally. The opt-in Phase 4
-configuration activates seven components in the existing owner services and
-hospital pages. See [integration verification](docs/phase-4-integration-verification.md)
-for executed evidence, limits and the completion verdict. Frozen
-[component contracts](docs/phase-4-component-contracts.md),
-[parallel plan](docs/phase-4-parallel-plan.md),
-[benchmark plan](docs/phase-4-benchmark-plan.md) and
-[preparation verification](docs/phase-4-preparation-verification.md) retain the
-reviewed preparation baseline.
+## What it does
 
-## Phase 5 event delivery
+| Domain | Workflows |
+| --- | --- |
+| Patient | Registration, authentication, sessions, profiles and role authority |
+| Doctor | Discovery, profiles and schedule proposals |
+| Appointment | Accepted schedules, booking, cancellation/rescheduling, waitlists, check-in, consultation queues and patient journeys |
+| Records | Clinical records, notes, prescriptions and scoped access |
+| Pharmacy | Medicine catalog, inventory, reservations, fulfillment and dispensing |
+| Billing | Invoices, owner charge imports, simulated payments and insurance estimates |
+| Emergency | Patient requests and authorized staff priority, claim and status workflows |
 
-Pharmacy reservation dispenses and successful Billing payments publish from
-their existing PostgreSQL outboxes to Appointment. Appointment deduplicates each
-subscription in its inbox and asks its existing worker to fetch fresh owner
-snapshots. No event changes inventory, money, access decisions or discharge
-eligibility. See [Phase 5 contracts](docs/phase-5-event-contracts.md) and the
-[Phase 5 verification report](docs/phase-5-integration-verification.md).
-
-After `python3 infra/scripts/init-env.py`, start RabbitMQ and create its scoped
-accounts before starting the service containers:
-
-```sh
-python3 infra/scripts/configure-rabbitmq-events.py
-```
-
-Then use the regular authenticated/Phase 4 Compose command below. RabbitMQ stays
-private. APIs continue to commit local business transactions if the broker is
-unavailable; the outbox workers retry publication in the background.
-
-Private cache/admission configuration is initialized by
-`python infra/phase4/init_config.py` (existing keys are retained). Add
-`-f compose.phase4.yaml` after the existing Compose and auth files when building
-and starting the existing project. Do not create a second retained stack or reset
-volumes. Fixture providers are synthetic4101–4103/policyDEMO. Appointment/Billing
-worker identities are explicitly bound to their owner/replica allocations.
-
-## Phase 6 resilience
-
-Surge Mode uses the existing shared admission Redis and server-assigned A/B/C
-route classes. Manual control requires current `hospital_admin` authorization and
-is audited by Appointment. Automatic activation remains disabled because current
-metrics are process-local. Appointment's Records, Pharmacy, and Billing journey
-snapshot reads use bounded GET retries, per-owner circuit breakers, pooled HTTP,
-and two-request bulkheads. See the [Phase 6 design](docs/phase-6-resilience-design.md)
-and [verification report](docs/phase-6-integration-verification.md) for actual
-checks and limitations.
+Patient and staff workspaces expose actions according to actual permissions. The Control Room monitors software services, telemetry and manual Surge Mode; it does not implement bed or staff management.
 
 ## Architecture
 
-Seven independently deployable FastAPI services: Patient, Doctor, Appointment, Records, Pharmacy, Billing, and Emergency. Each owns a separate PostgreSQL logical database, migrations and runtime credentials. React/TypeScript provides patient and staff workspaces. Traefik routes versioned public APIs; authenticated internal REST APIs stay private. Redis supports existing Phase 4 components and Phase 6 Surge Mode. RabbitMQ carries only the selected Phase 5 events and does not gate API transactions.
-
-PostgreSQL transactions and constraints enforce booking, inventory, payment and emergency claim correctness. Phase 2 cross-service workflows use bounded authenticated REST validation, explicit schedule reconciliation, durable clinical holds and manual charge imports. Phase 5 publishes two existing outbox transitions and uses Appointment's existing journey reconciliation as the safe asynchronous effect. Phase 7 adds private metrics and tracing collection, provisioned Grafana dashboards and alerts, and a role-protected Control Room. Phase 4 adds private cache/admission, hashing placement, additive IDs, short aliases, synthetic crawler and autocomplete; PostgreSQL remains business authority. Advanced journeys use authoritative owner snapshots and durable local polling, including exact charge-source validation before administrative discharge.
-
-## Foundation documents
-
-- [Architecture](docs/architecture.md): flows, resilience, consistency, scaling, algorithm integrations.
-- [Service boundaries](docs/service-boundaries.md): responsibilities, ownership, dependencies.
-- [Database design](docs/database-design.md): initial schema, keys, constraints and planned transactions.
-- [API contracts](docs/api-contracts.md): versioned REST routes, schemas, authorization, failure semantics.
-- [Event contracts](docs/event-contracts.md): event catalog, schemas, outbox, replay, dead letters.
-- [Phase 5 event contracts](docs/phase-5-event-contracts.md): active event paths, ownership and delivery/recovery behavior.
-- [Phase 5 integration verification](docs/phase-5-integration-verification.md): reliability and failure-recovery evidence.
-- [Phase 7 observability design](docs/phase-7-observability-design.md): metrics, tracing, dashboards, alerts, security and resource limits.
-- [Phase 7 integration verification](docs/phase-7-integration-verification.md): live workflow, outage, regression and configuration evidence.
-- [Security](docs/security.md): identity, authorization, sensitive operations, privacy.
-- [Local infrastructure](docs/infrastructure.md): startup, database isolation, migrations, gateway, tests and limits.
-- [Roadmap](docs/development-roadmap.md): nine phases and acceptance gates.
-- [Agent instructions](AGENTS.md): durable repository and parallel-work rules.
-
-## Current layout
-
-```text
-PulseGrid/
-  README.md
-  AGENTS.md
-  .gitignore
-  docs/                         # architecture, contracts and development runbooks
-  services/                     # seven independent FastAPI packages and migration histories
-    patient/ doctor/ appointment/ records/ pharmacy/ billing/ emergency/
-  frontend/                     # React/TypeScript hospital workflows and deferred route shells
-  contracts/                    # future: reviewed OpenAPI and event JSON schemas
-  infra/                        # Compose database bootstrap, Traefik and credential generation
-  tests/                        # isolated backend suites and live infrastructure/auth/hospital verification
-  experiments/                  # future: Locust, chaos, algorithm benchmarks
+```mermaid
+flowchart LR
+    Browser[React / TypeScript] --> Gateway[Traefik]
+    Gateway --> Patient[Patient]
+    Gateway --> Doctor[Doctor]
+    Gateway --> Appointment[Appointment]
+    Gateway --> Records[Records]
+    Gateway --> Pharmacy[Pharmacy]
+    Gateway --> Billing[Billing]
+    Gateway --> Emergency[Emergency]
+    Services[Seven owner services] --> PostgreSQL[(Separate PostgreSQL databases)]
+    Services --> Redis[(Redis cache / admission)]
+    Pharmacy --> RabbitMQ[RabbitMQ events]
+    Billing --> RabbitMQ
+    RabbitMQ --> Appointment
+    Services --> Telemetry[Prometheus / OpenTelemetry / Tempo]
+    Telemetry --> Grafana[Grafana]
 ```
 
-## Local development
+- **Backend:** Python/FastAPI, seven independent domains with separate databases, migrations and credentials.
+- **Frontend:** React 19, TypeScript, Vite, Motion and GSAP.
+- **Infrastructure:** Docker Compose, PostgreSQL, Redis, RabbitMQ and Traefik.
+- **Observability:** Prometheus, Grafana, OpenTelemetry and Tempo.
+- **Verification:** pytest/PostgreSQL integration checks, Vitest, browser evidence and Locust experiments.
 
-With Docker running, from this directory:
+PostgreSQL transactions, locks and constraints enforce business correctness. Redis is not booking authority. Outbox/inbox delivery is at least once; events wake reconciliation, which reads authoritative owner APIs. Cross-service workflows use bounded authenticated calls and explicit degraded states. No shared database queries or global transaction claims.
+
+## Current status
+
+Phases 1–8 have implementation and verification reports with their scoped limitations. Phase 8.2 completed its documented local Doctor scalability matrix; those measurements are not production capacity estimates.
+
+Phase 9 redesigned the hospital workspaces and retained the approved Reception and Consultation compositions. The latest visual correction checkpoint is **PARTIAL**: shared directory and Waiting Room corrections are complete within documented limits; Pharmacy cabinet/counter positioning and additional role/responsive browser checks remain. Physical QR camera decoding is unverified in the tested environment.
+
+Latest checkpoint validation: **142 frontend tests passed**, TypeScript passed and production build passed. These are recorded checks, not a claim that every backend scenario was rerun at that checkpoint.
+
+- [Phase 9 continuation and workflow evidence](docs/phase-9-resume.md)
+- [Latest visual corrections and exact resume point](docs/phase-9-visual-fidelity-corrections.md)
+- [Frontend design system](docs/phase-9-design-system.md)
+- [Phase 8.2 measured scalability evaluation](docs/phase-8-2-scalability-finalization.md)
+
+## Run locally
+
+### Prerequisites
+
+Docker with Compose v2, Python compatible with the service packages, and Node.js/npm compatible with the frontend lockfile. Run commands from the repository root. The backend must be running for sign-in and hospital workflows; starting Vite alone is insufficient.
+
+### First-time backend setup
 
 ```sh
 python3 infra/scripts/init-env.py
-python3 infra/scripts/configure-rabbitmq-events.py
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e 'services/patient[test]'
 python services/patient/generate_auth_keys.py --directory secrets/auth
-# Add services/patient/auth.env.example settings to the ignored root .env.
-# Do not overwrite existing DB credentials or regenerate existing keys.
-docker compose -f compose.yaml -f services/patient/compose.auth.yaml config --quiet
-# Build each domain separately on small Docker VMs; migration jobs share these images.
-for domain in patient doctor appointment records pharmacy billing emergency; do
-  docker compose -f compose.yaml -f services/patient/compose.auth.yaml build "$domain" || exit 1
-done
-docker compose -f compose.yaml -f services/patient/compose.auth.yaml up -d --no-build
 ```
 
-The script creates private, ignored credentials; never commit `.env`. Provision the RabbitMQ event users as described above before starting the APIs. All seven migration jobs must exit 0 before their APIs start. Gateway: `http://127.0.0.1:8080`; example readiness: `/api/v1/patients/health/ready`. PostgreSQL is required for readiness. Redis supports existing Phase 4 features; the selected RabbitMQ workers reconnect independently and do not block API readiness or local commits.
+Add the development settings from [auth.env.example](services/patient/auth.env.example) to the generated, ignored root `.env`. Keep generated passwords. Never overwrite retained credentials or regenerate existing signing keys.
+
+```sh
+python3 infra/scripts/configure-rabbitmq-events.py
+python3 infra/phase4/init_config.py
+
+docker compose -f compose.yaml -f services/patient/compose.auth.yaml -f compose.phase4.yaml config --quiet
+
+# Build domains separately when Docker has limited memory.
+for domain in patient doctor appointment records pharmacy billing emergency; do
+  docker compose -f compose.yaml -f services/patient/compose.auth.yaml -f compose.phase4.yaml build "$domain" || exit 1
+done
+
+docker compose -f compose.yaml -f services/patient/compose.auth.yaml -f compose.phase4.yaml up -d --no-build
+```
+
+Migration jobs must exit successfully before their APIs start. The gateway is at `http://127.0.0.1:8080`; Patient readiness is `/api/v1/patients/health/ready`. Optional observability uses `compose.observability.yaml`; follow the [observability runbook](docs/phase-7-observability-design.md) for its configuration.
+
+### Start an existing installation
+
+Reuse its `.env`, signing keys and volumes:
+
+```sh
+docker compose -f compose.yaml -f services/patient/compose.auth.yaml -f compose.phase4.yaml up -d --no-build
+```
+
+Use the same overlays originally configured for that installation. Do not reset volumes to fix a login problem; inspect service health and configuration first.
+
+### Frontend
+
+In another terminal:
 
 ```sh
 cd frontend
 npm ci
-npm run dev -- --strictPort
+npm run dev -- --host 127.0.0.1 --strictPort
 ```
 
-Frontend: `http://127.0.0.1:5173`, with same-origin API requests proxied to the gateway. Stop infrastructure with `docker compose -f compose.yaml -f services/patient/compose.auth.yaml down` from the root; persistent volumes remain. See the [infrastructure runbook](docs/infrastructure.md) for configuration, logs, migrations, reset, tests, controlled failure checks and authentication prerequisites.
+Open **http://127.0.0.1:5173**. Vite proxies API requests to the loopback gateway. Register a synthetic patient through the application. Privileged roles require the documented authorized bootstrap; there is no universal staff password. Local demo credentials, mappings and signing keys are deliberately excluded from Git.
 
-See [authentication integration](docs/authentication-integration.md) for CSRF, registration retry semantics, environment settings and verification. Phase 2–7 backend paths are integrated. Shared executable contract artifacts remain future work. Backend and frontend tests are colocated with their packages. No remote publication is authorized.
+See [infrastructure](docs/infrastructure.md) and [authentication integration](docs/authentication-integration.md) for configuration, bootstrap, migrations and troubleshooting. Production frontend builds need an API reverse proxy; the static build does not start backend services.
 
-## Hospital workflow verification
+## Validation
 
-Install the seven service test extras in one local test environment, with local PostgreSQL `initdb` and `pg_ctl` on PATH. Run `python tests/run_phase2_regressions.py` from the root. It uses disposable service databases, including Patient authentication and Records/Appointment isolated clusters; it never truncates the Compose databases. Ignored development auth keys must already exist for the retained Patient authentication tests. Run frontend typecheck, test and build commands from `frontend/`.
+```sh
+npm --prefix frontend run typecheck
+npm --prefix frontend test
+npm --prefix frontend run build
+```
 
-With the existing authenticated Compose stack running, `python tests/verify_phase2_infrastructure.py` checks live migration heads, owned schemas, audit chains, database isolation, gateway routing and frozen endpoint presence without resetting data. `python tests/verify_authentication.py` exercises real authentication through Traefik; `--base-url http://127.0.0.1:5173` checks the frontend proxy. The hospital workflow verifier's operator bootstrap and private resume fixture are explained in the verification report. Synthetic test identities and audit history are retained.
+Backend tests live in each service. [The regression runner](tests/run_phase2_regressions.py) requires installed test extras and local PostgreSQL tooling, and uses disposable test databases. Live workflow verifiers have specific synthetic-fixture prerequisites and may perform mutations or bounded outages; read their verification documents before running them against a retained stack.
 
-## Development conventions
+## Repository map
 
-Python uses `snake_case`, TypeScript uses `camelCase` and PascalCase components. Service directories are singular lowercase names. Wire fields use `snake_case`; IDs are decimal strings. APIs start at `/api/v1/<domain>`. UTC timestamps use RFC 3339. Documentation and contracts precede implementation, and verification reports distinguish planned checks from executed checks.
+```text
+services/       Seven FastAPI domains, migrations and colocated tests
+frontend/       React application, API clients, assets and UI tests
+infra/          Gateway, databases, credentials bootstrap and telemetry config
+experiments/    Load experiments and recorded synthetic measurements
+tests/          Cross-service, authentication and infrastructure verification
+docs/           Architecture, contracts, runbooks and browser evidence
+compose*.yaml   Local deployment and optional overlays
+```
 
-Phase 3 verification reuses the disposable backend runner and read-only owner
-schema/isolation checks. `python tests/verify_phase3_infrastructure.py` additionally
-checks reviewed active routes and private-leaf protection. `tests/verify_phase3.py`
-executes the six synthetic gateway workflows against the existing deployment,
-including a bounded Billing outage with mandatory restoration; it requires the
-existing private operator fixture described in the report. Supplemental
-`tests/verify_phase3_security.py` uses a separate private fixture for QR races,
-revocation and dispensing-history safety. Never run these writers concurrently
-against a shared fixture or use real patient data. Browser camera hardware is
-not certified or validated; QR encode/decode and manual/browser workflows are
-covered as described in the report.
+## Documentation
 
-## Phase 9 visual correction
+- [Architecture](docs/architecture.md) · [Service boundaries](docs/service-boundaries.md) · [Database design](docs/database-design.md)
+- [Security](docs/security.md) · [Roadmap](docs/development-roadmap.md)
+- [Phase 2 contracts](docs/phase-2-api-contracts.md) · [Verification](docs/phase-2-integration-verification.md)
+- [Phase 3 contracts](docs/phase-3-api-contracts.md) · [Verification](docs/phase-3-integration-verification.md)
+- [Phase 4 component contracts](docs/phase-4-component-contracts.md) · [Verification](docs/phase-4-integration-verification.md)
+- [Phase 5 event contracts](docs/phase-5-event-contracts.md) · [Verification](docs/phase-5-integration-verification.md)
+- [Phase 6 resilience](docs/phase-6-resilience-design.md) · [Verification](docs/phase-6-integration-verification.md)
+- [Phase 7 observability](docs/phase-7-observability-design.md) · [Verification](docs/phase-7-integration-verification.md)
 
-Reception and Consultation were rebuilt following the user's rejection of the initial design. See the [two-screen correction and comparison report](docs/phase-9-visual-correction.md). The other departments await review. The fictional local demo uses owner APIs and ignored development-only metadata; no demo credentials or record mappings enter production. No remote publication was performed.
+Older foundation documents include proposed architecture. Phase-specific contracts and verification reports distinguish implemented behavior, measured results and remaining work. The repository contains source, synthetic evidence and development history; private local credentials and runtime data stay excluded.
