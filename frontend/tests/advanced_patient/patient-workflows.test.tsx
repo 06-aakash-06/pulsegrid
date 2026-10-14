@@ -284,7 +284,7 @@ describe("Agent 6 patient workflows", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Reconnect now" }));
     await screen.findByText("in_consultation");
     expect(screen.getByText("2", { selector: "dd" })).toBeInTheDocument();
-    expect(screen.getByText("7", { selector: "dd" })).toBeInTheDocument();
+    expect(screen.getByText("Queue token").nextElementSibling).toHaveTextContent("7");
     expect(screen.getByText(/Queue status updates are polled every five seconds/)).toBeInTheDocument();
   });
 
@@ -307,7 +307,8 @@ describe("Agent 6 patient workflows", () => {
       return undefined;
     };
     setup(<PatientQueuePage />, handler);
-    expect(await screen.findByText("7", { selector: "dd" })).toBeInTheDocument();
+    await screen.findByText("Queue token");
+    expect(screen.getByText("Queue token").nextElementSibling).toHaveTextContent("7");
     present = false;
     fireEvent.click(screen.getByRole("button", { name: "Refresh queue now" }));
     await screen.findByText(/The service has not returned a queue entry/);

@@ -152,10 +152,12 @@ export function CheckinScanner({
 
   return (
     <div className="staff-advanced-scanner">
+      <div className="scanner-viewport">
+        {active ? <video aria-label="Check-in QR camera" autoPlay muted playsInline ref={videoRef} /> : <div className="scanner-reticle" aria-hidden="true"><span /></div>}
+      </div>
       <p>
-        Camera access starts only when you request scanning. The token stays in this page's memory and is cleared after a confirmed check-in.
+        Camera opens only when you scan. Review the appointment before confirming check-in.
       </p>
-      {active && <video aria-label="Check-in QR camera" autoPlay muted playsInline ref={videoRef} />}
       {scannerMessage && <p role="status">{scannerMessage}</p>}
       {starting && <button type="button" onClick={()=>{stopCamera();setScannerMessage("Camera request cancelled. Enter the appointment ID and token below.");}}>Cancel camera request</button>}
       {active ? (

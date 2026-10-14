@@ -567,3 +567,102 @@
   .physical-directory .workspace-nav-link { transition:none; }
   .physical-directory .workspace-nav-link:hover { transform:none; }
 }
+
+/* Waiting equipment: a self-service kiosk, framed queue screen and position sign. */
+.scanner-viewport { position:relative; aspect-ratio:4 / 3; min-height:130px; background:#14292e; border:4px solid #b9b7ad; box-shadow:inset 0 0 0 2px #07161a,0 1px 0 #fff8e9; border-radius:7px; overflow:hidden; }
+.scanner-viewport video { display:block; width:100%; height:100%; object-fit:contain; }
+.scanner-reticle { position:absolute; inset:21%; border:2px solid #ecf6f0; border-radius:4px; }
+.scanner-reticle::before { content:""; position:absolute; inset:15%; background:#14292e; }
+.scanner-reticle span { position:absolute; inset:30% -4px; background:#14292e; }
+.staff-advanced-scanner .scanner-viewport + p { font-size:11px; line-height:1.5; }
+.kiosk-brand { display:grid; justify-items:center; gap:5px; margin-block:24px 12px; }
+.kiosk-brand .department-icon { width:30px; height:30px; }
+.kiosk-brand strong { font-size:17px; }
+.kiosk-brand small { font-size:10px; }
+.queue-monitor-heading { display:flex; align-items:center; gap:10px; border-bottom:1px solid #78939866; padding-bottom:15px; margin-bottom:14px; }
+.queue-monitor-heading h2 { margin:0; font-size:20px; }
+.queue-monitor-heading>.department-icon { width:28px;height:28px;flex-shrink:0; }
+.queue-monitor-heading>span { margin-left:auto; font-size:10px; color:#b3dac9; letter-spacing:.06em; text-transform:uppercase; }
+.queue-monitor-footer { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; padding-top:15px; margin-top:14px; border-top:1px solid #76979d66; font-size:10px; color:#bfd2d0; }
+.queue-wait-sign>header { display:flex; align-items:center; justify-content:center; gap:10px; padding-bottom:16px; border-bottom:1px solid #c4b599; }
+.queue-wait-sign>header h2 { margin:0;font-size:21px; }
+.waiting-position-display { padding:24px 0 20px; }
+.waiting-position-display>small { font-size:10px;letter-spacing:.18em; }
+.waiting-position-display>strong { display:block;font-size:64px;line-height:1.2;margin-block:8px; }
+.waiting-status-lines { margin:0 0 18px; text-align:left; }
+.waiting-status-lines>div { display:flex;justify-content:space-between; gap:12px; border-top:1px solid #c4b599; padding:12px 0;font-size:12px; }
+.waiting-status-lines dd { margin:0;font-weight:600;text-transform:capitalize; }
+.workspace-shell .queue-station>.queue-monitor {
+  background:#17353d; color:#f0f3e8; border:6px solid #c1b8a9; border-radius:8px;
+  box-shadow:0 3px 0 2px #796e5e,inset 0 0 0 1px #091d23,0 12px 20px #3d2d2224; padding:22px; min-height:0;
+}
+.workspace-shell .queue-monitor select { background:#23444b;color:#f7f5eb;border:1px solid #91a5a1;font-size:12px;padding:10px; }
+.workspace-shell .queue-monitor label { font-size:11px;color:#c4d3cb; }
+.workspace-shell .queue-monitor button { background:#d9e4dd;color:#16343c;border-color:#d9e4dd;font-size:11px; }
+.workspace-shell .queue-monitor .queue-wall-table caption { font-size:12px;color:#bccfca;padding:18px 0 8px; }
+.workspace-shell .queue-monitor .queue-wall-table th,.workspace-shell .queue-monitor .queue-wall-table td { padding:14px 6px;border-bottom:1px solid #718c8c66; }
+.workspace-shell .queue-monitor .queue-wall-table th { color:#bfcfc9;font-size:11px; }
+.workspace-shell .queue-monitor .queue-wall-table td { font-size:14px; }
+.queue-monitor .queue-token-number { font-size:52px;font-weight:550;line-height:1;font-variant-numeric:tabular-nums; }
+.workspace-shell .queue-monitor .queue-count-strip { border-color:#78939866;padding:16px 0; }
+.queue-monitor .queue-source-details { margin-block:16px;font-size:11px; }
+.queue-monitor .patient-workflow__facts { color:var(--ink); }
+.workspace-shell .queue-station .checkin-kiosk,.workspace-shell .waiting-station:not(.queue-station) .checkin-kiosk {
+  background:#e2ddd3;border:4px solid #faf3e7;box-shadow:5px 6px 0 #b9ac95,0 12px 15px #3e2c2530;
+  border-radius:22px 22px 6px 6px;padding:20px 14px;position:relative;
+}
+.checkin-kiosk .scanner-frame { padding:0;background:none;border:0; }
+.checkin-kiosk .staff-advanced-scanner>p { font-size:10px;line-height:1.5;margin-block:12px; }
+.checkin-kiosk .staff-advanced-scanner>button { font-size:12px;min-height:40px;width:100%;margin-top:8px; }
+.checkin-kiosk>.text-link { display:block;font-size:11px;margin-top:12px; }
+.checkin-kiosk>h2 { font-size:23px;margin:0 0 10px; }
+.checkin-kiosk>p { font-size:12px;margin:0 0 18px; }
+.workspace-shell .queue-station>.queue-wait-sign { background:#f0e4d2;border:2px solid #fcf5e6;border-radius:6px;box-shadow:3px 4px 0 #c5b59e;padding:22px 18px;min-height:0; }
+@media(min-width:901px){
+  .reference-departments .department-page--waiting.route-queue>.page-heading { min-height:180px;background:none;padding-left:10vw; }
+  .reference-departments .queue-station { grid-template-columns:minmax(190px,20%) minmax(0,53%) minmax(0,27%);gap:16px!important;align-items:start;padding-top:10px; }
+  .reference-departments .queue-station .checkin-kiosk { margin-top:70px;min-height:430px; }
+  .reference-departments .queue-station>.queue-wait-sign { grid-column:auto; }
+}
+@media(max-width:1100px) and (min-width:901px){
+  .reference-departments .queue-station { padding-left:0;grid-template-columns:180px minmax(0,1fr); }
+  .reference-departments .queue-station>.queue-wait-sign { grid-column:2;display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+}
+@media(max-width:900px){
+  .queue-station { padding:0!important;gap:22px!important; }
+  .queue-station .checkin-kiosk { margin-top:0; }
+  .queue-monitor .queue-token-number { font-size:38px; }
+  .queue-monitor .queue-wall-table { overflow:auto; }
+  .queue-monitor-heading h2 { font-size:17px; }
+  .workspace-shell .queue-station>.queue-monitor { padding:16px; }
+  .queue-station .checkin-kiosk .scanner-viewport { width:180px;margin-inline:auto; }
+}
+.workspace-shell .checkin-kiosk { display:block; }
+.workspace-shell .checkin-kiosk .scanner-frame { min-height:0;box-shadow:none;color:var(--ink); }
+.workspace-shell .checkin-kiosk .scanner-frame::before { content:none; }
+.workspace-shell .checkin-kiosk .staff-advanced-scanner>p,
+.workspace-shell .checkin-kiosk .scanner-frame [role="status"] { color:#34433d!important; }
+.workspace-shell .checkin-kiosk .staff-advanced-scanner { gap:4px; }
+.workspace-shell .checkin-kiosk .staff-advanced-scanner>p { margin-block:8px; }
+.workspace-shell .checkin-kiosk .kiosk-brand { margin-top:28px; }
+.workspace-shell .queue-monitor .queue-monitor-heading { margin-bottom:12px; }
+.workspace-shell .queue-monitor .queue-monitor-heading h2 { font-size:20px; }
+.workspace-shell .queue-monitor .queue-wall-table caption { padding-top:12px; }
+.workspace-shell .queue-monitor .queue-source-details { margin-block:12px; }
+.workspace-shell .checkin-kiosk .staff-advanced-scanner { min-width:0; }
+.workspace-shell .checkin-kiosk .scanner-viewport { width:100%;min-height:0;aspect-ratio:4 / 3; }
+@media(min-width:901px) and (max-width:1300px){
+  .reference-departments .queue-station .checkin-kiosk { margin-top:40px; }
+}
+.workspace-shell .checkin-kiosk .scanner-frame .staff-advanced-scanner>button { background:#17353d;color:#f7f3e8;border-color:#17353d;min-height:44px; }
+@media(min-width:901px) and (max-width:1300px){.reference-departments .queue-station .checkin-kiosk{margin-top:32px;}}
+@media(max-width:900px){.workspace-shell .queue-station .checkin-kiosk .scanner-viewport{width:180px;}}
+@media(max-width:650px){
+  .workspace-shell .queue-station .checkin-kiosk .staff-advanced-scanner { display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:start;text-align:left; }
+  .workspace-shell .queue-station .checkin-kiosk .scanner-viewport { width:120px;grid-column:1;grid-row:1 / 5; }
+  .workspace-shell .queue-station .checkin-kiosk .staff-advanced-scanner>p,
+  .workspace-shell .queue-station .checkin-kiosk .staff-advanced-scanner>button { grid-column:2;margin:0; }
+  .workspace-shell .queue-station .checkin-kiosk .kiosk-brand { display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-block:16px 10px; }
+  .workspace-shell .queue-station .checkin-kiosk .kiosk-brand .department-icon { width:22px;height:22px; }
+  .workspace-shell .queue-station .checkin-kiosk>.text-link { margin-top:14px; }
+}

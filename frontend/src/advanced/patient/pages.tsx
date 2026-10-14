@@ -12,7 +12,7 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ApiError } from "../../api/client";
 import {
   buildQuery,
@@ -497,6 +497,7 @@ function mergeQueueSnapshot(current: QueueSnapshot | null, incoming: QueueSnapsh
 }
 
 export function PatientQueuePage() {
+  const navigate = useNavigate();
   const demo=useLocalDemo();
   const { api, gate, sessionKey } = usePatientAccess();
   const profile = useLoad<PatientProfile>(api, gate === "ready" ? "/api/v1/patients/me" : null, gate === "ready");
@@ -514,9 +515,9 @@ export function PatientQueuePage() {
   const live = usePolling<QueueSnapshot>(api, `${sessionKey}:${selectedId}`, gate === "ready" && isId(selectedId), poll, 5000, mergeQueueSnapshot);
 
   if (gate !== "ready") return <PatientGate state={gate} />;
-  return <div className="patient-workflow waiting-station queue-station"><aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Check In Here</h2><p>Check in, then follow your queue status.</p><div className="kiosk-display"><DepartmentIcon department="appointments"/><span>Your place in the queue is confirmed by the service.</span></div><Link className="button" to="/patient/check-in">Scan QR / Check In →</Link><Link className="text-link" to="/patient/waitlist">View waitlist →</Link></aside>
-    <section className="patient-workflow__panel" aria-labelledby="patient-queue-title">
-      <h2 id="patient-queue-title">Your consultation queue</h2>
+  return <div className="patient-workflow waiting-station queue-station"><aside className="checkin-kiosk"><h2>Check In Here</h2><p>Scan your secure QR code.</p><div className="scanner-frame"><Suspense fallback={<p role="status">Loading scanner…</p>}><PatientScanner onScan={scan=>navigate(`/patient/check-in#${new URLSearchParams({appointment_id:scan.appointmentId,token:scan.token})}`)}/></Suspense></div><Link className="text-link" to="/patient/check-in">Manual check-in →</Link><div className="kiosk-brand"><DepartmentIcon department="waiting"/><strong>PulseGrid</strong><small>Patient check-in</small></div><Link className="text-link" to="/patient/waitlist">View waitlist →</Link></aside>
+    <section className="patient-workflow__panel queue-monitor" aria-label="Your consultation queue">
+      <header className="queue-monitor-heading"><DepartmentIcon department="waiting"/><h2 id="patient-queue-title">Live Queue</h2><span>{live.error ? "Unavailable" : live.stale ? "Reconnecting" : live.data?.queue ? "Live" : "Your visit"}</span></header>
       {appointments.loading && <p role="status">Loading your appointments…</p>}
       {appointments.error && <div role="alert"><p>{appointments.error}</p><RetryButton onClick={appointments.reload} /></div>}
       {confirmed.length > 0 && <>
@@ -533,7 +534,7 @@ export function PatientQueuePage() {
       {live.error && <div role="alert"><p>{live.error}</p>{live.stopped ? <p>Polling stopped because the service denied access. Check the signed-in account and reload this page after access is corrected.</p> : <button type="button" onClick={live.retryNow}>Reconnect now</button>}</div>}
       {live.stale && live.data && <p className="patient-workflow__stale" role="status">Queue data is stale. Reconnecting; last successful refresh was {live.lastSuccessAt ? formatTime(new Date(live.lastSuccessAt).toISOString()) : "not reported"}.</p>}
       {live.data?.queue && <>
-        <div className="queue-wall-table"><table><caption>Live Queue · Your consultation</caption><thead><tr><th>Token No.</th><th>Patient</th><th>Position</th><th>Status</th></tr></thead><tbody><tr><td><strong>{live.data.queue.entry.token_number}</strong></td><td>{profile.data?.display_name??'Your appointment'}</td><td>{live.data.queue.entry.position??'—'}</td><td><span className="owner-state">{live.data.queue.entry.state.replaceAll('_',' ')}</span></td></tr></tbody></table></div>
+        <div className="queue-wall-table"><table><caption>Live Queue · Your consultation</caption><thead><tr><th scope="col">Your token</th><th scope="col">Patient</th><th scope="col">Position</th><th scope="col">Status</th></tr></thead><tbody><tr><td><strong className="queue-token-number">{live.data.queue.entry.token_number}</strong></td><td>{profile.data?.display_name?.startsWith('Synthetic')?'Your appointment':profile.data?.display_name??'Your appointment'}</td><td>{live.data.queue.entry.position??'—'}</td><td><span className="owner-state">{live.data.queue.entry.state.replaceAll('_',' ')}</span></td></tr></tbody></table></div>
         <div className="queue-count-strip"><span><strong>{live.data.queue.waiting_count}</strong> Waiting</span><span><strong>{live.data.queue.in_consultation_count}</strong> In consultation</span></div>
         <details className="queue-source-details"><summary>Queue details and freshness</summary>
         <dl className="patient-workflow__facts">
@@ -551,8 +552,9 @@ export function PatientQueuePage() {
       {live.data?.workflow && <p>Consultation status: <strong>{live.data.workflow.state}</strong> (workflow version {live.data.workflow.version}).</p>}
       {live.data && !live.data.workflow && <p className="patient-workflow__muted">No workflow was returned for this appointment.</p>}
       {!live.error && selectedId && <button type="button" onClick={live.retryNow}>Refresh queue now</button>}
+      <footer className="queue-monitor-footer"><span>PulseGrid · Consultation queue</span>{live.data?.queue && <time dateTime={live.data.queue.observed_at}>Observed {formatTime(live.data.queue.observed_at)}</time>}</footer>
     </section>
-    <aside className="queue-wait-sign"><DepartmentIcon department="waiting"/><h2>Your Turn</h2><strong>{live.data?.queue?.entry.position??'—'}</strong><p>{live.data?.queue?.entry.position?'Your current queue position':'Check in for your position'}</p><hr/><p>Wait estimates are not supplied by the service.</p><p>Please keep this page open to see your current status.</p><small>Synthetic hospital · Owner queue data</small></aside>
+    <aside className="queue-wait-sign"><header><DepartmentIcon department="waiting"/><h2>Your Turn</h2></header><div className="waiting-position-display"><small>QUEUE POSITION</small><strong>{live.data?.queue?.entry.position??'—'}</strong><p>{live.data?.queue?.entry.position?'Your current queue position':'Check in for your position'}</p></div><dl className="waiting-status-lines"><div><dt>Your token</dt><dd>{live.data?.queue?.entry.token_number??'Not checked in'}</dd></div><div><dt>Status</dt><dd>{live.data?.queue?.entry.state.replaceAll('_',' ')??'Not available'}</dd></div></dl><p>Keep this page open for status updates.</p><small>Wait estimates are not supplied by the service.</small></aside>
   </div>;
 }
 

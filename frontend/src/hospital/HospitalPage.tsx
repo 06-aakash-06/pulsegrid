@@ -103,7 +103,7 @@ export function HospitalPage({
           <p className="eyebrow">{workspace.name}</p>
           <h1>{page.title}</h1>
           <p className="page-description">
-            {departmentDescriptions[departmentFor(role,route)]}
+            {role === "/patient" && route === "queue" ? "Check in. Follow your place in the queue." : departmentDescriptions[departmentFor(role,route)]}
           </p>
         </div>
       </div>

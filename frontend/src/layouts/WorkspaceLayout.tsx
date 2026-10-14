@@ -124,6 +124,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   useEffect(() => {
     setMenuOpen(false);
     window.scrollTo?.({ top: 0, behavior: "instant" });
+    sidebar.current?.querySelector<HTMLElement>(".workspace-nav-link--active")?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
     if (document.activeElement?.closest(".workspace-nav"))
       main.current?.focus();
   }, [location.pathname]);
