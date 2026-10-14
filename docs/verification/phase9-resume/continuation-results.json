@@ -19,8 +19,8 @@
     "passed": 15,
     "new_browser_transactions": false
   },
-  "browser_screenshots": 90,
-  "reference_comparisons": 7,
+  "browser_screenshots": 100,
+  "reference_comparisons": 9,
   "main_viewports": [
     [
       1536,
@@ -52,5 +52,10 @@
     "No existing ops-only credential was available; admin operations browser and ops RBAC unit checks were used.",
     "Not every secondary mutation was repeated live.",
     "Reference density and photographic objects differ where owner APIs do not supply the reference features."
-  ]
+  ],
+  "followup_checkpoint": {
+    "billing": "Owner tariff reference, compact source desk; no added pricing authority",
+    "records": "Patient and consultation filtered visit prescriptions; revoked history marked",
+    "responsive_overflow_observed": false
+  }
 }

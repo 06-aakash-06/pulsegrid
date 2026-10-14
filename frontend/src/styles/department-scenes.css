@@ -461,3 +461,48 @@
 .booking-patient-details small{display:block;font-size:10px;margin-top:8px;}
 .booking-patient-details label{font-size:11px;}
 @media(max-width:580px){.booking-patient-fields{grid-template-columns:1fr;}}
+
+/* Cashier price book and visit prescription sheets use owner responses only. */
+.cashier-price-book { background:#f4eadd; border-block:1px solid #cfbda3; padding:14px 18px; }
+.cashier-price-book>.hospital-panel { padding:0; background:none; border:0; box-shadow:none; }
+.cashier-price-book .hospital-items { display:block; max-height:230px; overflow:auto; }
+.cashier-price-book .hospital-item { margin:0; padding:10px 0; border:0; border-bottom:1px solid #d9c8b0; border-radius:0; background:none; }
+.cashier-price-row { display:flex; justify-content:space-between; align-items:start; gap:16px; font-size:13px; }
+.cashier-price-row small { display:block; font-size:10px; margin-top:4px; color:#5c625f; }
+.cashier-price-book>p { font-size:11px; line-height:1.5; margin:12px 0 0; }
+.dossier-prescriptions { border-top:1px solid #cfbda3; margin-top:18px; padding-top:14px; }
+.dossier-prescriptions>.hospital-panel { padding:0; background:none; border:0; box-shadow:none; }
+.dossier-prescriptions .hospital-items { display:block; }
+.dossier-prescriptions .hospital-item { background:#fcf7ed; border:0; border-left:3px solid #16424c; border-radius:0; padding:14px; }
+.prescription-document-heading { display:flex; align-items:center; flex-wrap:wrap; gap:12px; font-size:13px; padding-bottom:12px; border-bottom:1px solid #d7c6af; }
+.prescription-document-heading small { margin-left:auto; font-size:11px; }
+.prescription-instruction-list dl { display:grid; grid-template-columns:minmax(0,1fr) 65px minmax(0,1fr) minmax(0,1.5fr); gap:12px; margin:0; padding:14px 0; border-bottom:1px solid #dfd1bd; }
+.prescription-instruction-list dt { font-size:10px; color:#59645e; margin-bottom:7px; }
+.prescription-instruction-list dd { margin:0; font-size:13px; overflow-wrap:anywhere; }
+@media(max-width:650px){.prescription-instruction-list dl{grid-template-columns:1fr 1fr;}.cashier-price-book{padding:14px;}.prescription-document-heading small{margin-left:0;}}
+.reference-departments .billing-source-desk .hospital-form { border:0; background:none; box-shadow:none; padding:0; font-size:12px; }
+.reference-departments .billing-source-desk .hospital-form>h3 { font-size:14px; margin:0 0 10px; }
+.reference-departments .billing-source-desk .hospital-form>p { font-size:11px; line-height:1.5; margin:8px 0 12px; }
+.reference-departments .billing-source-desk .hospital-fields { margin:8px 0 12px; gap:10px; }
+.reference-departments .billing-source-desk .hospital-fields label { font-size:12px; }
+.reference-departments .billing-source-desk>.hospital-panel { padding:14px 18px; }
+.reference-departments .billing-source-desk>[data-panel="charge-sources"]>h2 { font-size:16px; margin:0 0 10px; padding-bottom:10px; }
+.reference-departments .billing-source-desk>[data-panel="charge-sources"] .hospital-form { padding:0; }
+.reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-form { padding:0; }
+.reference-departments .billing-source-desk .charge-source-tabs { margin-bottom:10px; }
+.reference-departments .billing-source-desk .cashier-price-book h2 { font-size:16px; }
+.reference-departments .billing-source-desk { align-content:start; }
+.reference-departments .billing-source-desk>[data-panel="create-invoice"] { order:0; }
+.reference-departments .billing-source-desk>.cashier-price-book { order:1; }
+.reference-departments .billing-source-desk>[data-panel="charge-sources"] { order:2; }
+.reference-departments .billing-source-desk>.invoice-register { order:3; }
+.reference-departments .billing-source-desk .cashier-price-book .hospital-items { max-height:180px; }
+.reference-departments .active-dossier>.hospital-panel>h2 { display:none; }
+.reference-departments .active-dossier>.hospital-panel>button { float:right; margin-left:12px; font-size:11px; }
+.reference-departments .active-dossier .record-document-heading { padding:8px 0 14px; }
+.reference-departments .active-dossier .clinical-content .hospital-facts>div { min-height:65px; padding:12px 16px; }
+.reference-departments .active-dossier .record-document-index { padding:12px; }
+.reference-departments .active-dossier .record-document-index nav { margin-top:14px; gap:10px; }
+.prescription-revoked-note { font-size:11px; color:#8d2b26; margin:10px 0; }
+@media(max-width:650px){.reference-departments .active-dossier>.hospital-panel>button{float:none;margin:0 0 12px;}}
+.reference-departments .billing-source-desk>[data-panel="create-invoice"]>h2 { display:none; }

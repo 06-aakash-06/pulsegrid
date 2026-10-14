@@ -144,6 +144,30 @@
     "sha256": "4429ca0765696d3b970aa5a5c83d9e048ac2a7df35e56ef32356e2b36a605be9"
   },
   {
+    "file": "billing-price-book-1280x800.jpg",
+    "width": 1280,
+    "height": 800,
+    "sha256": "b318134171b177754a7bf28a669b8fdd728d77cd9443497dc2a852c94288898f"
+  },
+  {
+    "file": "billing-price-book-1440x900.jpg",
+    "width": 1440,
+    "height": 900,
+    "sha256": "29efa2544e1882fa4fe17ccc706caefbdb8067f478a2ba7b2dc54d13e5565453"
+  },
+  {
+    "file": "billing-price-book-1536x1024.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "c6bc6ce16b478bb4653a6923788789c8b7dbcedf04b0d23f40d3b804a0af5237"
+  },
+  {
+    "file": "billing-price-book-390x844.jpg",
+    "width": 390,
+    "height": 844,
+    "sha256": "60b17b93748c87ae8b8a10370c2622d70a1652c200daae1b08739d3deb96a358"
+  },
+  {
     "file": "billing-staff-1280.jpg",
     "width": 1280,
     "height": 1132,
@@ -460,6 +484,42 @@
     "width": 1536,
     "height": 1024,
     "sha256": "9e773cb094401aa1dc9d8ed889b603ff58556448d6b38fcf993f8dcb310c42a1"
+  },
+  {
+    "file": "records-visit-prescription-1280x800.jpg",
+    "width": 1280,
+    "height": 800,
+    "sha256": "f727930d65a39470221bfdd346c1bedde67132fd0bf5df49158f29cf0d43ba5e"
+  },
+  {
+    "file": "records-visit-prescription-1440x900.jpg",
+    "width": 1440,
+    "height": 900,
+    "sha256": "fd3fe803823af3bd8fdfcf41441ec973595169f0ad7e3796f76ae7cdd9fd13d2"
+  },
+  {
+    "file": "records-visit-prescription-1536x1024.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "faedf04f5e819cfbfbd562402fbb9636df82a7ec16f278dc142f7f054ac3fef5"
+  },
+  {
+    "file": "records-visit-prescription-390x844.jpg",
+    "width": 390,
+    "height": 844,
+    "sha256": "3f5f2a48eb06201b3c819abafd6d248a8f5dc0915ec7bd37529038f178981a90"
+  },
+  {
+    "file": "records-visit-prescription-mobile-full.jpg",
+    "width": 390,
+    "height": 2816,
+    "sha256": "c06aa8fb787c54ed08d6195cca2c537bfa5943c749122b0967472f1601f08257"
+  },
+  {
+    "file": "records-visit-switched-1536x1024.jpg",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "63d55fd69bb8d433bebb745764278b11a6b0d967db2f66af9a18e4b8e10b3e50"
   },
   {
     "file": "traces-admin-1280.jpg",

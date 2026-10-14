@@ -304,6 +304,11 @@ function History({
           <>
             <header className="record-document-heading"><DepartmentIcon department="records"/><div><h3>Clinical record …{record.id.slice(-4)}</h3><p>Revision {record.revision} · Records service</p></div></header>
             <div className="clinical-dossier-body"><ClinicalFacts value={record.content}/><aside className="record-document-index"><h3>Document history</h3><Facts values={{Revision:record.revision,Supersedes:record.supersedes_id?`Record …${record.supersedes_id.slice(-4)}`:"Original document"}}/><details className="owner-identifiers"><summary>Owner references</summary><Facts values={{"Record ID":record.id,"Consultation ID":record.consultation_id}}/></details>{!doctor&&<nav aria-label="Related care"><h3>Related care</h3><a href="/patient/prescriptions">Prescriptions →</a><a href="/patient/journey">Patient journey →</a></nav>}</aside></div>
+            {!doctor && <section className="dossier-prescriptions" key={record.consultation_id}><Collection<Prescription>
+              title="Prescriptions from this visit"
+              path={query("/api/v1/records/prescriptions", { patient_id: patientId, consultation_id: record.consultation_id })}
+              renderItem={prescription=><><div className="prescription-document-heading"><strong>Prescription …{prescription.id.slice(-4)}</strong><span className="owner-state">{prescription.state}</span><small>Revision {prescription.revision}</small></div>{prescription.state === "revoked" && <p className="prescription-revoked-note">Revoked prescription. These instructions are retained as history.</p>}<div className="prescription-instruction-list">{prescription.items.map(item=><dl key={item.id}><div><dt>Medicine reference</dt><dd>…{item.medicine_id.slice(-4)}<details className="owner-identifiers"><summary>Full reference</summary>{item.medicine_id}</details></dd></div><div><dt>Quantity</dt><dd>{item.quantity}</dd></div><div><dt>Dosage</dt><dd>{item.dosage}</dd></div><div><dt>Instructions</dt><dd>{item.instructions}</dd></div></dl>)}</div></>}
+            /></section>}
             {doctor && (
               <CommandForm<MedicalRecord>
                 title="Amend medical record"

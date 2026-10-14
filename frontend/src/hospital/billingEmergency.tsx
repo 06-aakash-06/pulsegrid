@@ -59,6 +59,11 @@ export function BillingPage({ staff = false }: { staff?: boolean }) {
           />
         </Panel>
       )}
+      {staff && <section className="cashier-price-book" aria-label="Owner tariff reference"><Collection<Tariff>
+        title="Charge pricing reference"
+        path="/api/v1/billing/tariffs"
+        renderItem={item=><div className="cashier-price-row"><div><strong>{item.charge_code === "consultation" ? "Consultation fee" : `Medicine …${item.charge_code.slice(-4)}`}</strong><small>Tariff revision {item.revision}</small><details className="owner-identifiers"><summary>Charge code</summary>{item.charge_code}</details></div><strong>{money(item.unit_amount_minor)}</strong></div>}
+      /><p>Billing sets the price at import. This reference includes historical revisions; it does not calculate or add invoice charges.</p></section>}
       {staff && selected && <InvoiceChargeSources invoiceId={selected} revision={revision} onChange={()=>setRevision(v=>v+1)}/>}
       <details className="invoice-register" open={!staff||location.pathname.endsWith("/invoices")||location.pathname.endsWith("/payments")}><summary>Invoice register</summary>
       <Collection<Invoice>

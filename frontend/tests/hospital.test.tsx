@@ -728,7 +728,9 @@ describe("clinical and pharmacy workflows", () => {
     ).toBeInTheDocument();
   });
   it("reads own medical history and record detail", async () => {
-    setup("/patient/records", "patient", (path) => {
+    const { fetcher } = setup("/patient/records", "patient", (path, _init, url) => {
+      if (path === "/api/v1/records/prescriptions" && url.searchParams.get("patient_id") === "11" && url.searchParams.get("consultation_id") === "61")
+        return json({items:[{id:"71",consultation_id:"61",patient_id:"11",journey_id:null,revision:1,state:"issued",version:1,items:[{id:"72",medicine_id:"81",quantity:2,dosage:"Fixture dosage",instructions:"Fixture instructions"}]}],next_cursor:null});
       if (path === "/api/v1/records/patients/11")
         return json({
           items: [
@@ -759,6 +761,8 @@ describe("clinical and pharmacy workflows", () => {
       await screen.findByRole("button", { name: "View record 62" }),
     );
     expect(await screen.findByText("Synthetic assessment")).toBeInTheDocument();
+    expect(await screen.findByText("Fixture instructions")).toBeInTheDocument();
+    expect(fetcher.mock.calls.some(([url])=>String(url).includes("prescriptions?patient_id=11&consultation_id=61"))).toBe(true);
   });
   it("uses pharmacist prescription lookup without bulk clinical lists, then reserves items", async () => {
     const { fetcher } = setup(
