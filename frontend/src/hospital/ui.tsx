@@ -127,6 +127,7 @@ export function Collection<T extends { id: string }>({
   revision = 0,
   onFirstItem,
   itemFilter,
+  sourceNote = "Owner service data",
 }: {
   path: string | null;
   title: string;
@@ -134,6 +135,7 @@ export function Collection<T extends { id: string }>({
   revision?: number;
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
+  sourceNote?: ReactNode;
 }) {
   return (
     <CollectionPage<T>
@@ -143,6 +145,7 @@ export function Collection<T extends { id: string }>({
       renderItem={renderItem}
       onFirstItem={onFirstItem}
       itemFilter={itemFilter}
+      sourceNote={sourceNote}
     />
   );
 }
@@ -152,12 +155,14 @@ function CollectionPage<T extends { id: string }>({
   renderItem,
   onFirstItem,
   itemFilter,
+  sourceNote,
 }: {
   path: string | null;
   title: string;
   renderItem: (item: T) => ReactNode;
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
+  sourceNote: ReactNode;
 }) {
   const [cursor, setCursor] = useState<string | undefined>();
   const [history, setHistory] = useState<(string | undefined)[]>([]);
@@ -173,7 +178,7 @@ function CollectionPage<T extends { id: string }>({
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}
       {resource.error && <p role="alert">{resource.error}</p>}
-      <div className="resource-toolbar"><span>Owner service data</span><button
+      <div className="resource-toolbar">{sourceNote && <span>{sourceNote}</span>}<button
         type="button"
         onClick={resource.refresh}
         disabled={!path || resource.loading}

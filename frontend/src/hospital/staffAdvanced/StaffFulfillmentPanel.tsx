@@ -173,13 +173,19 @@ function StockVerification() {
   );
 }
 
-export function StaffFulfillmentPanel() {
+export function StaffFulfillmentPanel({ title, workspaceName }: { title?: string; workspaceName?: string }) {
   return (
     <StaffRoleGate role="pharmacist">
       <div className="staff-advanced-page staff-fulfillment">
-        <details className="fulfillment-verification"><summary>Verify prescription authority</summary><FulfillmentStatusLookup /></details>
-        <details className="fulfillment-verification"><summary>Verify available stock</summary><StockVerification /></details>
-        <ExistingFulfillment pharmacist />
+        <ExistingFulfillment
+          pharmacist
+          title={title}
+          workspaceName={workspaceName}
+          verification={<>
+            <details className="fulfillment-verification"><summary>Verify prescription authority</summary><FulfillmentStatusLookup /></details>
+            <details className="fulfillment-verification"><summary>Verify available stock</summary><StockVerification /></details>
+          </>}
+        />
       </div>
     </StaffRoleGate>
   );
