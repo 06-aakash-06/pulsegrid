@@ -1,4 +1,4 @@
-import type { Batch, Dispensing, Medicine, Prescription, Reservation } from "../src/hospital/models";
+import type { Batch, Consultation, Dispensing, Emergency, Grant, Invoice, MedicalRecord, Medicine, Payment, Prescription, Reservation, Tariff } from "../src/hospital/models";
 import type { Fulfillment, OwnQueue, Workflow } from "../src/advanced/patient/contracts";
 import { createState, users, type MockUser } from "./fixtures";
 
@@ -135,12 +135,64 @@ function adjustReserved(medicineId: string, delta: number, dispensed = false) {
 }
 
 function ownsPrescription(user: MockUser, prescription: Prescription) {
-  return user.roles.includes("pharmacist") || (user.roles.includes("patient") && prescription.patient_id === state.patient.id);
+  return user.roles.includes("pharmacist") || user.roles.includes("doctor") || (user.roles.includes("patient") && prescription.patient_id === state.patient.id);
 }
 
 type Route = [method: string, pattern: RegExp, handler: (request: MockRequest, user: MockUser, match: RegExpMatchArray) => MockResponse];
 
 const isPharmacist = (user: MockUser) => user.roles.includes("pharmacist");
+const isDoctor = (user: MockUser) => user.roles.includes("doctor");
+const isBilling = (user: MockUser) => user.roles.includes("billing_staff");
+const isEmergencyStaff = (user: MockUser) => user.roles.includes("emergency_staff");
+const isPatient = (user: MockUser) => user.roles.includes("patient");
+const stamp = () => new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+const DOCTOR_ID = "8001";
+
+function emergencyView(item: Emergency, user: MockUser): Emergency {
+  if (isEmergencyStaff(user)) return item;
+  const { id, state: emergencyState, reported_urgency, assigned_priority, created_at, updated_at, version } = item;
+  return { id, state: emergencyState, reported_urgency, assigned_priority, created_at, updated_at, version };
+}
+function visibleEmergency(user: MockUser, id: string) {
+  const item = state.emergencies.find((candidate) => candidate.id === id);
+  if (!item || (!isEmergencyStaff(user) && !(isPatient(user) && item.patient_id === state.patient.id))) return null;
+  return item;
+}
+function emergencyChange(item: Emergency, apply: () => MockResponse | void, user: MockUser): MockResponse {
+  const failed = apply();
+  if (failed) return failed;
+  item.version += 1;
+  item.updated_at = stamp();
+  return ok(emergencyView(item, user), item.version);
+}
+function reasonOf(body: unknown) {
+  const reason = (body as { reason?: string } | undefined)?.reason;
+  return typeof reason === "string" && reason.trim() ? reason : null;
+}
+function totals(invoice: Invoice) {
+  invoice.total_minor = invoice.items.reduce((sum, line) => sum + line.quantity * line.unit_amount_minor, 0);
+  invoice.balance_minor = invoice.total_minor - invoice.paid_minor;
+  invoice.status = invoice.total_minor > 0 && invoice.balance_minor <= 0 ? "paid" : "open";
+}
+function currentTariff(code: string): Tariff | undefined {
+  return state.tariffs.filter((item) => item.charge_code === code).sort((a, b) => b.revision - a.revision)[0];
+}
+function visibleInvoice(user: MockUser, id: string) {
+  const item = state.invoices.find((invoice) => invoice.id === id);
+  if (!item || (!isBilling(user) && !(isPatient(user) && item.patient_id === state.patient.id))) return null;
+  return item;
+}
+function recordSummary(item: MedicalRecord & { created_at: string }) {
+  const { id, consultation_id, patient_id, revision, created_at, version } = item;
+  return { id, consultation_id, patient_id, revision, created_at, version };
+}
+function visibleConsultation(user: MockUser, id: string): Consultation | null {
+  const item = state.consultations.find((consultation) => consultation.id === id);
+  if (!item) return null;
+  if (isDoctor(user) && item.doctor_id === DOCTOR_ID) return item;
+  if (isPatient(user) && item.patient_id === state.patient.id) return item;
+  return null;
+}
 const forbidden = () => error(403, "forbidden", "This account is not permitted to use this resource.");
 
 const routes: Route[] = [
@@ -301,13 +353,262 @@ const routes: Route[] = [
 
   ["GET", /^\/api\/v1\/records\/prescriptions$/, (request, user) => {
     const patientId = request.url.searchParams.get("patient_id");
-    if (!user.roles.includes("patient") || patientId !== state.patient.id) return forbidden();
-    return page(state.prescriptions.filter((item) => item.patient_id === patientId), request.url);
+    const consultationId = request.url.searchParams.get("consultation_id");
+    if (!(user.roles.includes("patient") || isDoctor(user)) || patientId !== state.patient.id) return forbidden();
+    return page(state.prescriptions.filter((item) => item.patient_id === patientId && (!consultationId || item.consultation_id === consultationId)), request.url);
   }],
   ["GET", /^\/api\/v1\/records\/prescriptions\/(\d+)$/, (_request, user, match) => {
     const item = state.prescriptions.find((prescription) => prescription.id === match[1]);
     if (!item || !ownsPrescription(user, item)) return error(404, "not_found", "Prescription not found.");
     return ok(item, item.version);
+  }],
+
+  ["GET", /^\/api\/v1\/emergencies$/, (request, user) => {
+    const newest = [...state.emergencies].sort((a, b) => b.created_at.localeCompare(a.created_at));
+    if (isEmergencyStaff(user)) return page(newest, request.url);
+    if (isPatient(user)) return page(newest.filter((item) => item.patient_id === state.patient.id).map((item) => emergencyView(item, user)), request.url);
+    return forbidden();
+  }],
+  ["POST", /^\/api\/v1\/emergencies$/, (request, user) => {
+    const body = request.body as { patient_id?: string; description?: string; reported_urgency?: Emergency["reported_urgency"]; synthetic_contact?: string };
+    if (!isPatient(user) || body.patient_id !== state.patient.id) return forbidden();
+    if (!body.description?.trim()) return error(422, "validation_failed", "A description is required.");
+    const created: Emergency = {
+      id: nextId(), state: "submitted", reported_urgency: body.reported_urgency ?? "unspecified", assigned_priority: null,
+      created_at: stamp(), updated_at: stamp(), patient_id: state.patient.id, description: body.description,
+      synthetic_contact: body.synthetic_contact ?? null, claimed_by_user_id: null, claim_expires_at: null, version: 1,
+    };
+    state.emergencies.unshift(created);
+    return ok(emergencyView(created, user), created.version, 201);
+  }],
+  ["GET", /^\/api\/v1\/emergencies\/(\d+)$/, (_request, user, match) => {
+    const item = visibleEmergency(user, match[1]);
+    return item ? ok(emergencyView(item, user), item.version) : error(404, "not_found", "Emergency request not found.");
+  }],
+  ["PATCH", /^\/api\/v1\/emergencies\/(\d+)\/priority$/, (request, user, match) => {
+    if (!isEmergencyStaff(user)) return forbidden();
+    const item = visibleEmergency(user, match[1]);
+    if (!item) return error(404, "not_found", "Emergency request not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    const body = request.body as { assigned_priority?: number };
+    return emergencyChange(item, () => {
+      if (["resolved", "cancelled"].includes(item.state)) return error(409, "invalid_state", "This request is closed.");
+      if (!Number.isInteger(body.assigned_priority) || body.assigned_priority! < 1 || body.assigned_priority! > 5) return error(422, "validation_failed", "Priority must be 1 to 5.");
+      if (!reasonOf(request.body)) return error(422, "validation_failed", "A reason is required.");
+      item.assigned_priority = body.assigned_priority!;
+      if (item.state === "submitted") item.state = "triaged";
+    }, user);
+  }],
+  ["POST", /^\/api\/v1\/emergencies\/(\d+)\/claim$/, (request, user, match) => {
+    if (!isEmergencyStaff(user)) return forbidden();
+    const item = visibleEmergency(user, match[1]);
+    if (!item) return error(404, "not_found", "Emergency request not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    return emergencyChange(item, () => {
+      if (item.state !== "triaged") return error(409, "invalid_state", "Only triaged requests can be claimed.");
+      item.state = "claimed";
+      item.claimed_by_user_id = user.id;
+      item.claim_expires_at = state.minutes(15);
+    }, user);
+  }],
+  ["POST", /^\/api\/v1\/emergencies\/(\d+)\/release$/, (request, user, match) => {
+    if (!isEmergencyStaff(user)) return forbidden();
+    const item = visibleEmergency(user, match[1]);
+    if (!item) return error(404, "not_found", "Emergency request not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    return emergencyChange(item, () => {
+      if (item.state !== "claimed" || item.claimed_by_user_id !== user.id) return error(409, "invalid_state", "Only your active claim can be released.");
+      if (!reasonOf(request.body)) return error(422, "validation_failed", "A reason is required.");
+      item.state = "triaged";
+      item.claimed_by_user_id = null;
+      item.claim_expires_at = null;
+    }, user);
+  }],
+  ["POST", /^\/api\/v1\/emergencies\/(\d+)\/transitions$/, (request, user, match) => {
+    const item = visibleEmergency(user, match[1]);
+    if (!item) return error(404, "not_found", "Emergency request not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    const target = (request.body as { state?: Emergency["state"] }).state;
+    return emergencyChange(item, () => {
+      if (!reasonOf(request.body)) return error(422, "validation_failed", "A reason is required.");
+      const owner = item.claimed_by_user_id === user.id;
+      const legal =
+        (target === "processing" && isEmergencyStaff(user) && item.state === "claimed" && owner) ||
+        (target === "resolved" && isEmergencyStaff(user) && item.state === "processing" && owner) ||
+        (target === "cancelled" && (["submitted", "triaged"].includes(item.state) || (isEmergencyStaff(user) && item.state === "claimed")));
+      if (!legal) return error(409, "invalid_transition", `A ${item.state} request cannot move to ${target}.`);
+      item.state = target!;
+      if (target !== "processing") { item.claimed_by_user_id = target === "resolved" ? item.claimed_by_user_id : null; item.claim_expires_at = null; }
+    }, user);
+  }],
+
+  ["GET", /^\/api\/v1\/billing\/tariffs$/, (request, user) =>
+    isBilling(user) ? page([...state.tariffs].sort((a, b) => a.charge_code.localeCompare(b.charge_code) || b.revision - a.revision), request.url) : forbidden()],
+  ["POST", /^\/api\/v1\/billing\/tariffs$/, (request, user) => {
+    if (!isBilling(user)) return forbidden();
+    const body = request.body as { charge_code?: string; unit_amount_minor?: number };
+    if (!body.charge_code || !Number.isInteger(body.unit_amount_minor)) return error(422, "validation_failed", "Charge code and amount are required.");
+    const created: Tariff = { id: nextId(), charge_code: body.charge_code, revision: (currentTariff(body.charge_code)?.revision ?? 0) + 1, unit_amount_minor: body.unit_amount_minor!, currency: "INR", version: 1 };
+    state.tariffs.push(created);
+    return ok(created, created.version, 201);
+  }],
+  ["GET", /^\/api\/v1\/billing\/invoices$/, (request, user) => {
+    if (isBilling(user)) return page(state.invoices, request.url);
+    if (isPatient(user)) return page(state.invoices.filter((item) => item.patient_id === state.patient.id), request.url);
+    return forbidden();
+  }],
+  ["POST", /^\/api\/v1\/billing\/invoices$/, (request, user) => {
+    if (!isBilling(user)) return forbidden();
+    const appointmentId = (request.body as { appointment_id?: string }).appointment_id;
+    if (!appointmentId) return error(422, "validation_failed", "An appointment ID is required.");
+    if (state.invoices.some((item) => item.appointment_id === appointmentId)) return error(409, "invoice_exists", "This appointment already has an invoice.");
+    const created: Invoice = { id: nextId(), journey_id: null, appointment_id: appointmentId, patient_id: state.patient.id, status: "open", items: [], total_minor: 0, paid_minor: 0, balance_minor: 0, currency: "INR", version: 1 };
+    state.invoices.unshift(created);
+    return ok(created, created.version, 201);
+  }],
+  ["GET", /^\/api\/v1\/billing\/invoices\/(\d+)$/, (_request, user, match) => {
+    const item = visibleInvoice(user, match[1]);
+    return item ? ok(item, item.version) : error(404, "not_found", "Invoice not found.");
+  }],
+  ["GET", /^\/api\/v1\/billing\/invoices\/(\d+)\/insurance-estimates$/, (request, user, match) =>
+    visibleInvoice(user, match[1]) ? page([], request.url) : error(404, "not_found", "Invoice not found.")],
+  ["POST", /^\/api\/v1\/billing\/invoices\/(\d+)\/charges$/, (request, user, match) => {
+    if (!isBilling(user)) return forbidden();
+    const item = visibleInvoice(user, match[1]);
+    if (!item) return error(404, "not_found", "Invoice not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    const body = request.body as { consultation_id?: string; dispensing_ids?: string[] };
+    const additions: Invoice["items"] = [];
+    if (body.consultation_id) {
+      const consultation = state.consultations.find((candidate) => candidate.id === body.consultation_id);
+      if (!consultation || consultation.status !== "finalized" || consultation.appointment_id !== item.appointment_id) return error(422, "invalid_source", "The consultation is not a finalized visit for this invoice's appointment.");
+      if (item.items.some((line) => line.source_service === "records" && line.source_item_id === consultation.id)) return error(409, "already_imported", "This consultation is already on the invoice.");
+      const tariff = currentTariff("consultation");
+      if (!tariff) return error(409, "missing_tariff", "No consultation tariff exists.");
+      additions.push({ id: nextId(), charge_code: "consultation", source_service: "records", source_item_id: consultation.id, quantity: 1, unit_amount_minor: tariff.unit_amount_minor, tariff_revision: tariff.revision });
+    }
+    for (const dispensingId of body.dispensing_ids ?? []) {
+      const dispensing = state.dispensings.find((candidate) => candidate.id === dispensingId);
+      if (!dispensing || dispensing.appointment_id !== item.appointment_id) return error(422, "invalid_source", `Dispensing ${dispensingId} is not a completed dispensing for this appointment.`);
+      for (const dispensed of dispensing.items) {
+        const tariff = currentTariff(`medicine:${dispensed.medicine_id}`);
+        if (!tariff) return error(409, "missing_tariff", `No tariff exists for medicine ${dispensed.medicine_id}.`);
+        additions.push({ id: nextId(), charge_code: tariff.charge_code, source_service: "pharmacy", source_item_id: dispensed.id, quantity: dispensed.quantity, unit_amount_minor: tariff.unit_amount_minor, tariff_revision: tariff.revision });
+      }
+    }
+    if (!additions.length) return error(422, "validation_failed", "Select at least one source.");
+    item.items.push(...additions);
+    totals(item);
+    item.version += 1;
+    return ok(item, item.version, 201);
+  }],
+  ["GET", /^\/api\/v1\/billing\/invoices\/(\d+)\/payments$/, (request, user, match) =>
+    visibleInvoice(user, match[1]) ? page(state.payments.filter((payment) => payment.invoice_id === match[1]), request.url) : error(404, "not_found", "Invoice not found.")],
+  ["POST", /^\/api\/v1\/billing\/invoices\/(\d+)\/payments$/, (request, user, match) => {
+    const item = visibleInvoice(user, match[1]);
+    if (!item) return error(404, "not_found", "Invoice not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    const body = request.body as { amount_minor?: number; simulated_outcome?: "success" | "decline" };
+    if (!Number.isInteger(body.amount_minor) || body.amount_minor! < 1 || body.amount_minor! > item.balance_minor) return error(422, "validation_failed", "The amount must be between 1 paisa and the balance.");
+    const payment: Payment = { id: nextId(), invoice_id: item.id, amount_minor: body.amount_minor!, currency: "INR", status: body.simulated_outcome === "decline" ? "declined" : "success", version: 1 };
+    state.payments.unshift(payment);
+    if (payment.status === "success") {
+      item.paid_minor += payment.amount_minor;
+      totals(item);
+    }
+    item.version += 1;
+    return ok(payment, payment.version, 201);
+  }],
+
+  ["GET", /^\/api\/v1\/records\/patients\/(\d+)$/, (request, user, match) => {
+    if (match[1] !== state.patient.id || !(isPatient(user) || isDoctor(user))) return forbidden();
+    return page([...state.records].sort((a, b) => b.created_at.localeCompare(a.created_at)).map(recordSummary), request.url);
+  }],
+  ["GET", /^\/api\/v1\/records\/consultations$/, (request, user) => {
+    if (isDoctor(user)) return page(state.consultations.filter((item) => item.doctor_id === DOCTOR_ID).reverse(), request.url);
+    if (isPatient(user)) return page(state.consultations.filter((item) => item.patient_id === state.patient.id && item.status === "finalized"), request.url);
+    return forbidden();
+  }],
+  ["POST", /^\/api\/v1\/records\/consultations$/, (request, user) => {
+    if (!isDoctor(user)) return forbidden();
+    const body = request.body as { appointment_id?: string; clinical_content?: Consultation["clinical_content"] };
+    const appointment = state.appointments.find((item) => item.id === body.appointment_id && item.doctor_id === DOCTOR_ID);
+    if (!appointment || !body.clinical_content) return error(422, "invalid_appointment", "Use an appointment assigned to you.");
+    if (state.consultations.some((item) => item.appointment_id === appointment.id)) return error(409, "consultation_exists", "This appointment already has a consultation.");
+    const created: Consultation = { id: nextId(), appointment_id: appointment.id, patient_id: appointment.patient_id, doctor_id: DOCTOR_ID, status: "draft", clinical_content: body.clinical_content, revision: 1, version: 1 };
+    state.consultations.push(created);
+    return ok(created, created.version, 201);
+  }],
+  ["GET", /^\/api\/v1\/records\/consultations\/(\d+)$/, (_request, user, match) => {
+    const item = visibleConsultation(user, match[1]);
+    return item ? ok(item, item.version) : error(404, "not_found", "Consultation not found.");
+  }],
+  ["PATCH", /^\/api\/v1\/records\/consultations\/(\d+)$/, (request, user, match) => {
+    const item = isDoctor(user) ? visibleConsultation(user, match[1]) : null;
+    if (!item) return error(404, "not_found", "Consultation not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    if (item.status !== "draft") return error(409, "finalized", "Finalized consultations cannot be edited.");
+    item.clinical_content = (request.body as { clinical_content: Consultation["clinical_content"] }).clinical_content;
+    item.version += 1;
+    return ok(item, item.version);
+  }],
+  ["POST", /^\/api\/v1\/records\/consultations\/(\d+)\/finalize$/, (request, user, match) => {
+    const item = isDoctor(user) ? visibleConsultation(user, match[1]) : null;
+    if (!item) return error(404, "not_found", "Consultation not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    if (item.status !== "draft") return error(409, "finalized", "This consultation is already finalized.");
+    item.status = "finalized";
+    item.version += 1;
+    const created = { id: nextId(), consultation_id: item.id, patient_id: item.patient_id, content: { ...item.clinical_content }, revision: 1, supersedes_id: null, version: 1, created_at: stamp() };
+    state.records.push(created);
+    const lines = (request.body as { prescription_items?: Prescription["items"] }).prescription_items ?? [];
+    const prescription: Prescription | null = lines.length ? { id: nextId(), consultation_id: item.id, patient_id: item.patient_id, journey_id: null, revision: 1, state: "issued", version: 1, items: lines.map((line) => ({ ...line, id: nextId() })) } : null;
+    if (prescription) state.prescriptions.push(prescription);
+    const { created_at: _created, ...record } = created;
+    return ok({ consultation: item, record, prescription }, item.version);
+  }],
+  ["GET", /^\/api\/v1\/records\/(\d+)$/, (_request, user, match) => {
+    const item = state.records.find((record) => record.id === match[1]);
+    if (!item || !(isPatient(user) || isDoctor(user))) return error(404, "not_found", "Medical record not found.");
+    const { created_at: _created, ...record } = item;
+    return ok(record, item.version);
+  }],
+  ["POST", /^\/api\/v1\/records\/(\d+)\/amendments$/, (request, user, match) => {
+    if (!isDoctor(user)) return forbidden();
+    const item = state.records.find((record) => record.id === match[1]);
+    if (!item) return error(404, "not_found", "Medical record not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    if (state.records.some((record) => record.supersedes_id === item.id)) return error(409, "superseded", "Amend the latest version of this record.");
+    const body = request.body as { content?: MedicalRecord["content"]; reason?: string };
+    if (!body.content || !reasonOf(body)) return error(422, "validation_failed", "Content and reason are required.");
+    const created = { id: nextId(), consultation_id: item.consultation_id, patient_id: item.patient_id, content: body.content, revision: item.revision + 1, supersedes_id: item.id, version: 1, created_at: stamp() };
+    state.records.push(created);
+    const { created_at: _created, ...record } = created;
+    return ok(record, record.version, 201);
+  }],
+  ["POST", /^\/api\/v1\/records\/access-grants$/, (request, user) => {
+    if (!isPatient(user)) return forbidden();
+    const body = request.body as Omit<Grant, "id" | "version">;
+    const created: Grant = { ...body, id: nextId(), version: 1 };
+    state.grants.push(created);
+    return ok(created, created.version, 201);
+  }],
+  ["DELETE", /^\/api\/v1\/records\/access-grants\/(\d+)$/, (request, user, match) => {
+    const item = state.grants.find((grant) => grant.id === match[1]);
+    if (!item || !isPatient(user)) return error(404, "not_found", "Grant not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    state.grants.splice(state.grants.indexOf(item), 1);
+    return { status: 204 };
   }],
 
   ["GET", /^\/api\/v1\/doctors\/specialties$/, (request) => page(state.specialties, request.url)],
@@ -327,7 +628,12 @@ const routes: Route[] = [
     return ok({ slots, accepted_revision: 1, observed_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z") });
   }],
   ["GET", /^\/api\/v1\/appointments$/, (request, user) =>
-    user.roles.includes("patient") ? page(state.appointments, request.url) : page([], request.url)],
+    isPatient(user) ? page(state.appointments, request.url) : isDoctor(user) ? page(state.appointments.filter((item) => item.doctor_id === DOCTOR_ID), request.url) : page([], request.url)],
+  ["GET", /^\/api\/v1\/appointments\/(\d+)$/, (_request, user, match) => {
+    const item = state.appointments.find((appointment) => appointment.id === match[1]);
+    if (!item || !(isPatient(user) || (isDoctor(user) && item.doctor_id === DOCTOR_ID))) return error(404, "not_found", "Appointment not found.");
+    return ok(item, item.version);
+  }],
   ["GET", /^\/api\/v1\/appointments\/(\d+)\/queue$/, (_request, _user, match) => {
     if (match[1] !== "5101") return error(404, "not_found", "No queue entry for this appointment.");
     const queue: OwnQueue = {

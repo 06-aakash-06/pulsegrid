@@ -7,6 +7,13 @@ import type {
   Reservation,
   Specialty,
   Appointment,
+  Consultation,
+  Emergency,
+  Grant,
+  Invoice,
+  MedicalRecord,
+  Payment,
+  Tariff,
 } from "../src/hospital/models";
 import type { PatientProfile } from "../src/api/authApi";
 import type { Role } from "../src/auth/authContext";
@@ -24,6 +31,8 @@ export const users: MockUser[] = [
   { id: "1002", email: "pharmacist@mock.test", roles: ["pharmacist"] },
   { id: "1003", email: "doctor@mock.test", roles: ["doctor"] },
   { id: "1004", email: "admin@mock.test", roles: ["hospital_admin"] },
+  { id: "1005", email: "billing@mock.test", roles: ["billing_staff"] },
+  { id: "1006", email: "emergency@mock.test", roles: ["emergency_staff"] },
 ];
 
 const now = Date.now();
@@ -138,7 +147,108 @@ export function createState() {
     },
   ];
 
+  const at = (date: string) => `${date}Z`;
+  const consultation = (id: string, appointment_id: string, doctor_id: string, status: Consultation["status"], summary: string, assessment: string, plan: string): Consultation => ({
+    id, appointment_id, patient_id: patient.id, doctor_id, status, clinical_content: { summary, assessment, plan }, revision: 1, version: status === "draft" ? 1 : 2,
+  });
+  const consultations: Consultation[] = [
+    consultation("5501", "5101", "8001", "finalized",
+      "Routine review. Reports a mild frontal headache for two days, worse in the evenings, and a sore throat since the weekend. No fever recorded at home.",
+      "Likely tension-type headache with an uncomplicated upper respiratory infection. No red-flag features reported.",
+      "Paracetamol when needed for pain. Five-day amoxicillin course for the throat infection. Omeprazole for one week while on antibiotics. Review in one week if symptoms persist."),
+    consultation("5502", "5102", "8002", "finalized",
+      "Follow-up for intermittent wheeze on exertion over the past month. Uses no regular inhaler.",
+      "Exercise-associated wheeze; spirometry not performed at this visit.",
+      "Reliever inhaler as needed. Keep a symptom diary and return if needed more than three times a week."),
+    consultation("5503", "5103", "8003", "finalized",
+      "Presented with a painful ankle after a minor fall the previous day. Walking with a mild limp.",
+      "Soft-tissue ankle sprain. No bony tenderness reported.",
+      "Rest, ice and elevation. Short course of anti-inflammatory tablets after food. Prescription later revoked when the patient reported stomach discomfort."),
+    consultation("5504", "5104", "8001", "finalized",
+      "Annual check. No current complaints.",
+      "Well adult review.",
+      "No medication changes. Routine follow-up in twelve months."),
+    consultation("5505", "5105", "8002", "finalized",
+      "Dry cough for ten days after a cold. Sleeping well, eating normally.",
+      "Post-viral cough, improving.",
+      "Fluids and rest. Return if the cough lasts beyond three weeks or breathing becomes difficult."),
+    consultation("5506", "5106", "8001", "draft",
+      "Draft: patient reports improvement in headache since last visit.",
+      "Draft assessment pending examination.",
+      "Draft plan pending."),
+  ];
+  const record = (id: string, consultation_id: string, created: string, revision = 1, supersedes_id: string | null = null): MedicalRecord & { created_at: string } => {
+    const source = consultations.find((item) => item.id === consultation_id)!;
+    return { id, consultation_id, patient_id: patient.id, content: { ...source.clinical_content }, revision, supersedes_id, version: 1, created_at: at(created) };
+  };
+  const records = [
+    record("5601", "5501", "2026-10-13T10:30:00"),
+    record("5602", "5502", "2026-08-02T16:15:00"),
+    record("5607", "5502", "2026-08-05T09:40:00", 2, "5602"),
+    record("5603", "5503", "2026-06-14T11:20:00"),
+    record("5604", "5504", "2026-03-05T09:00:00"),
+    record("5605", "5505", "2026-01-10T14:10:00"),
+  ];
+  records[2].content.assessment = "Exercise-associated wheeze; spirometry not performed at this visit. Amended after review: peak-flow diary recommended before the next appointment.";
+  const grants: Grant[] = [];
+
+  const emergency = (id: string, state: Emergency["state"], reported_urgency: Emergency["reported_urgency"], assigned_priority: number | null, createdMinutesAgo: number, description: string, patient_id = patient.id, claimed_by_user_id: string | null = null, claimMinutes: number | null = null, contact: string | null = null): Emergency => ({
+    id, state, reported_urgency, assigned_priority, created_at: minutes(-createdMinutesAgo), updated_at: minutes(-Math.max(1, Math.floor(createdMinutesAgo / 3))),
+    patient_id, description, synthetic_contact: contact, claimed_by_user_id, claim_expires_at: claimMinutes === null ? null : minutes(claimMinutes), version: 1,
+  });
+  const emergencies: Emergency[] = [
+    emergency("7101", "submitted", "urgent", null, 4, "Synthetic: sudden chest tightness while climbing stairs, now resting.", patient.id, null, null, "asha.rao@example.test"),
+    emergency("7102", "submitted", "unspecified", null, 11, "Synthetic: dizziness after skipping lunch.", "2002"),
+    emergency("7103", "triaged", "urgent", 1, 16, "Synthetic: difficulty breathing reported by a family member; speaking in short sentences.", "2003", null, null, "+91-90000-00003"),
+    emergency("7104", "triaged", "urgent", 2, 23, "Synthetic: deep cut on the palm from a kitchen knife, bleeding controlled with pressure.", "2004"),
+    emergency("7105", "triaged", "unspecified", 4, 38, "Synthetic: rash on both forearms since this morning, mildly itchy.", "2005"),
+    emergency("7106", "claimed", "urgent", 2, 27, "Synthetic: high fever and vomiting in a young adult since last night; unable to keep fluids down.", "2006", "1006", 12, "+91-90000-00006"),
+    emergency("7107", "processing", "unspecified", 3, 52, "Synthetic: twisted knee during football.", "2007", "1006", 9),
+    emergency("7108", "resolved", "unspecified", 5, 140, "Synthetic: request for advice about a minor burn.", patient.id),
+    emergency("7109", "cancelled", "urgent", null, 95, "Synthetic: test request cancelled by the patient.", patient.id),
+  ];
+
+  const tariff = (id: string, charge_code: string, revision: number, unit_amount_minor: number): Tariff => ({ id, charge_code, revision, unit_amount_minor, currency: "INR", version: 1 });
+  const tariffs: Tariff[] = [
+    tariff("9601", "consultation", 1, 50000),
+    tariff("9602", "consultation", 2, 60000),
+    tariff("9603", "medicine:3001", 1, 1800),
+    tariff("9604", "medicine:3002", 1, 7500),
+    tariff("9605", "medicine:3004", 1, 2200),
+    tariff("9606", "medicine:3008", 1, 32000),
+  ];
+  type Line = Invoice["items"][number];
+  const line = (id: string, charge_code: string, source_service: Line["source_service"], source_item_id: string, quantity: number, unit_amount_minor: number, tariff_revision: number): Line => ({ id, charge_code, source_service, source_item_id, quantity, unit_amount_minor, tariff_revision });
+  const invoice = (id: string, appointment_id: string, items: Line[], paid_minor: number): Invoice => {
+    const total_minor = items.reduce((sum, item) => sum + item.quantity * item.unit_amount_minor, 0);
+    return { id, journey_id: null, appointment_id, patient_id: patient.id, status: paid_minor >= total_minor && total_minor > 0 ? "paid" : "open", items, total_minor, paid_minor, balance_minor: total_minor - paid_minor, currency: "INR", version: 1 };
+  };
+  const invoices: Invoice[] = [
+    invoice("9701", "5101", [
+      line("9711", "consultation", "records", "5501", 1, 60000, 2),
+      line("9712", "medicine:3001", "pharmacy", "9811", 4, 1800, 1),
+      line("9713", "medicine:3002", "pharmacy", "9812", 6, 7500, 1),
+    ], 0),
+    invoice("9702", "5102", [
+      line("9721", "consultation", "records", "5502", 1, 50000, 1),
+      line("9722", "medicine:3008", "pharmacy", "9821", 1, 32000, 1),
+    ], 30000),
+    invoice("9703", "5103", [line("9731", "consultation", "records", "5503", 1, 60000, 2)], 60000),
+  ];
+  const payments: Payment[] = [
+    { id: "9751", invoice_id: "9702", amount_minor: 20000, currency: "INR", status: "declined", version: 1 },
+    { id: "9752", invoice_id: "9702", amount_minor: 30000, currency: "INR", status: "success", version: 1 },
+    { id: "9753", invoice_id: "9703", amount_minor: 60000, currency: "INR", status: "success", version: 1 },
+  ];
+
   return {
+    consultations,
+    records,
+    grants,
+    emergencies,
+    tariffs,
+    invoices,
+    payments,
     patient,
     medicines,
     batches,
