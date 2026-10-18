@@ -1,9 +1,9 @@
 /* Department compositions share the hospital directory, not a dashboard grid. */
 .workspace-shell:has(.appointment-workspace) { --environment: url('/environments/appointment-corrected.webp'); }
 .workspace-shell:has(.queue-station), .workspace-shell:has(.waiting-station):not(:has(.appointment-workspace)) { --environment: url('/environments/waiting-corrected.webp'); }
-.workspace-shell:has(.billing-workbench) { --environment: url('/environments/billing-corrected.webp'); }
-.workspace-shell:has(.record-history) { --environment: url('/environments/records-corrected.webp'); }
-.workspace-shell:has(.emergency-workbench) { --environment: url('/environments/emergency-corrected.webp'); }
+.workspace-shell:has(.cashier-desk) { --environment: url('/environments/billing-corrected.webp'); }
+.workspace-shell:has(.dossier-room) { --environment: url('/environments/records-corrected.webp'); }
+.workspace-shell:has(.er-desk) { --environment: url('/environments/emergency-corrected.webp'); }
 .workspace-shell:has(.reference-operations) { --environment: url('/environments/control-corrected.webp'); }
 .owner-state { display: inline-block; padding: 4px 10px; border-radius: 14px; background: #d2e3d1; color: #174d3b; font-size: 11px; text-transform: capitalize; }
 .owner-identifiers, .queue-source-details { font-size: 10px; margin-top: 8px; }
@@ -30,17 +30,6 @@
 .queue-wait-sign p { font-size: 12px; line-height: 1.6; }
 .queue-wait-sign hr { border: 0; border-top: 1px solid #baa98c; margin-block: 25px; }
 .queue-wait-sign small { font-size: 9px; }
-.billing-ledger-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
-.billing-ledger-row > strong { font-size: 18px; }
-.emergency-triage-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; font-size: 12px; }
-.emergency-triage-row time { font-size: 10px; }
-.emergency-triage-row > span:last-of-type { grid-column: 2; }
-.record-patient-strip { display: flex; align-items: center; gap: 22px; background: #f7eee1eb; padding: 20px; border-radius: 6px; }
-.record-patient-strip strong { font-size: 21px; }
-.record-patient-strip small { margin-left: auto; font-size: 10px; }
-.record-document-tabs { display: flex; gap: 25px; padding: 15px 20px; background: #f5e9dbe8; margin-block: 10px; font-size: 12px; }
-.record-document-tabs span { font-weight: 600; border-bottom: 2px solid #16424c; }
-.record-grants,.record-consultations { margin-top: 15px; background: #f5e8d9e8; padding: 14px 18px; font-size: 12px; }
 .ops-service-map { min-width: 0; padding: 16px; background: #f4e9dae8; border: 1px solid #f9f1e4; border-radius: 5px; }
 .ops-service-map header { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
 .ops-service-map header h2 { font-size: 16px; margin: 0; }
@@ -128,39 +117,7 @@
   .dispensing-counter { grid-column: 2; grid-row: 1 / 3; margin-top: -115px; align-self: start; }
   .dispensing-counter > .hospital-panel { min-height: 440px; background: #f5ebdfee; padding: 20px; border: 1px solid #fff0da; }
   .dispensing-counter .hospital-facts { grid-template-columns: 1fr; }
-  .billing-workbench { grid-template-columns: minmax(0,65%) minmax(0,35%); gap: 16px; }
-  .billing-source-desk { gap: 12px; }
-  .billing-source-desk > .hospital-panel { background: #f4eadcf0; padding: 18px; border: 0; box-shadow: none; }
-  .billing-source-desk [data-panel="invoices"] .hospital-items { display: block; max-height: 385px; }
-  .billing-source-desk .hospital-item { background: #fff5e673; border: 0; border-bottom: 1px solid #ccb99f; border-radius: 0; margin: 0; padding: 14px 8px; }
-  .invoice-receipt { padding: 20px; background: #f4eadcee; border: 1px solid #fef5e5; border-radius: 5px; box-shadow: 3px 5px 0 #90683d50; }
-  .invoice-receipt > .hospital-panel { padding: 0; border: 0; box-shadow: none; background: transparent; }
-  .invoice-lines th,.invoice-lines td { padding: 9px 5px; font-size: 11px; }
-  .billing-service-note,.emergency-service-note { background: #f5e8dce8; margin: 0; padding: 10px 15px; font-size: 11px; }
-  .emergency-workbench { grid-template-columns: minmax(0,28%) minmax(0,72%); gap: 15px; }
-  .emergency-register { padding: 12px; background: #f7ece0ed; border-radius: 5px; gap: 10px; }
-  .emergency-register > .hospital-panel { background: none; border: 0; box-shadow: none; padding: 0; }
-  .emergency-register .hospital-items { max-height: 460px; display: block; }
-  .emergency-register .hospital-item { padding: 12px 8px; }
-  .emergency-register .hospital-item > button { font-size: 10px; padding: 5px; }
-  .emergency-active { background: #f8eee1eb; padding: 18px; border-radius: 5px; }
-  .emergency-active > .hospital-panel { padding: 0; border: 0; background: none; box-shadow: none; }
-  .emergency-case-layout { grid-template-columns: minmax(0,1.8fr) minmax(0,1fr); gap: 18px; }
-  .emergency-case-layout .hospital-facts { font-size: 12px; padding: 14px; background: #fcf7efb0; border: 1px solid #d8c8b3; }
-  .emergency-case-layout > .hospital-form { padding: 15px; background: #eee0cf; border: 1px solid #d4c2a9; }
   .department-page--records > .page-heading { background: #f0e4d1e6; border-radius: 4px; }
-  .record-history { grid-template-columns: minmax(0,25%) minmax(0,75%); gap: 15px; min-height: 430px; }
-  .visit-timeline { padding: 18px 12px; background: #f3e7d8eb; }
-  .visit-timeline .hospital-panel { padding: 0; background: none; border: 0; box-shadow: none; }
-  .visit-timeline .hospital-items { max-height: 420px; display: block; overflow: auto; padding-left: 12px; }
-  .visit-timeline .hospital-item { background: #fff8ed5c; border: 0; border-left: 2px solid #2286cc; margin-block: 12px; padding: 12px; border-radius: 0; }
-  .visit-timeline .hospital-item > time { font-size: 11px; }
-  .visit-timeline .hospital-item > p { font-size: 10px; }
-  .visit-timeline .hospital-item > button { font-size: 10px; padding: 6px; }
-  .active-dossier { background: #f8ede0ed; padding: 20px; }
-  .active-dossier > .hospital-panel { padding: 0; background: none; border: 0; box-shadow: none; }
-  .active-dossier .clinical-content { min-height: 280px; background: #fff8ede0; border: 1px solid #d6c4ab; padding: 20px; }
-  .active-dossier .clinical-content .hospital-facts { grid-template-columns: 1fr; }
   .reference-operations { display: grid; grid-template-columns: minmax(0,2.1fr) minmax(0,1fr); gap: 14px; }
   .reference-operations > .ops-page-header,.reference-operations > .ops-metric-grid,.reference-operations > .ops-monitoring-banner,.reference-operations > .ops-footnote { grid-column: 1/-1; }
   .reference-operations .ops-page-header { min-height: 125px; padding: 20px; background: #f0e3d1e5; border-radius: 5px; }
@@ -194,9 +151,6 @@
   .queue-wait-sign > strong { font-size: 40px; padding-block: 10px; }
   .queue-wall-table th,.queue-wall-table td { padding: 12px 8px; }
   .appointment-slip-entry { grid-template-columns: minmax(0,1fr) auto; }
-  .record-patient-strip { flex-wrap: wrap; gap: 12px; }
-  .record-patient-strip small { margin-left: 0; }
-  .record-document-tabs { gap: 14px; overflow: auto; white-space: nowrap; }
   .ops-map-rooms { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 10px; gap: 12px; }
   .ops-map-room { padding: 12px; min-height: 115px; }
   .ops-service-map header { display: block; }
@@ -255,96 +209,6 @@
 .reference-departments .pharmacy-catalog > [data-panel="inventory-batches"] .hospital-items { display:block; }
 .reference-departments .pharmacy-catalog > [data-panel="inventory-batches"] .hospital-item { border:0; border-bottom:1px solid #cfbda4; border-radius:0; }
 @media(max-width:900px){.stock-ledger-row{grid-template-columns:repeat(2,minmax(0,1fr));}}
-.invoice-register,.billing-tariff-desk { padding:14px; background:#f1e4d2; border:1px solid #d6c2a6; border-radius:4px; }
-.invoice-register>summary,.billing-tariff-desk>summary,.payment-history>summary { cursor:pointer; font-size:12px; font-weight:550; }
-.invoice-status-strip { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-block:12px; }
-.charge-source-tabs { display:flex; gap:8px; font-size:12px; border-bottom:1px solid #cbb99e; margin-bottom:14px; }
-.charge-source-tabs span { padding:10px; background:#e2d6c4; }
-.payment-history { margin-top:14px; }
-@media(min-width:901px){
- .reference-departments .billing-workbench{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);}
- .reference-departments .billing-source-desk>[data-panel="create-invoice"]>h2{display:none;}
- .reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-form{padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;}
- .reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-form>h3{grid-column:1/-1;margin:0;}
- .reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-fields{grid-template-columns:1fr;margin:0;}
- .reference-departments .billing-source-desk>[data-panel="charge-sources"]{background:#f4eadd;}
- .reference-departments .billing-source-desk>[data-panel="charge-sources"] .hospital-form{padding:14px;}
- .reference-departments .invoice-receipt{background:#f5ebdf;}
- .reference-departments .invoice-receipt .hospital-facts{grid-template-columns:repeat(3,minmax(0,1fr));font-size:11px;}
- .reference-departments .invoice-register .hospital-items{display:block;max-height:280px;overflow:auto;}
- .reference-departments .invoice-register .hospital-item{padding:10px;}
- .reference-departments .billing-ledger-row .owner-state{justify-self:start;}
- .reference-departments .billing-tariff-desk{grid-column:1/-1;}
-}
-.emergency-case-header { display:flex; align-items:center; gap:15px; padding:14px; background:#efe2d2; border:1px solid #d8c3a9; }
-.emergency-case-header>.department-icon { width:40px;height:40px; }
-.emergency-case-header strong { font-size:20px;margin-right:12px; }
-.emergency-case-header time { margin-left:auto;font-size:11px; }
-.emergency-case-header p { margin:7px 0 0;font-size:12px; }
-.emergency-brief { min-width:0; }
-.request-description { padding:16px;background:#fcf7ed;border:1px solid #d7c4a8;font-size:15px;line-height:1.5; }
-.terminal-request { padding:12px;border-left:3px solid #698477;background:#e7ece0; }
-.emergency-actions { min-width:0; }
-.emergency-actions>.hospital-form { margin-bottom:12px; }
-.emergency-actions>h3,.emergency-brief>h3 { font-size:14px;margin-top:0; }
-.emergency-triage-row[data-priority="1"] .owner-state,.owner-state[data-priority="1"] { background:#f8d1c9;color:#9a160e; }
-.emergency-triage-row[data-priority="2"] .owner-state,.owner-state[data-priority="2"] { background:#f2dab2;color:#7e3b10; }
-@media(min-width:901px){
- .reference-departments .department-page--emergency>.page-heading{background:#f3e6d2;border-radius:4px;}
- .reference-departments .emergency-register,.reference-departments .emergency-active{background:#f5eadc;}
- .reference-departments .emergency-case-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(230px,1fr);gap:16px;align-items:start;}
- .reference-departments .emergency-case-header{grid-column:1/-1;}
- .reference-departments .emergency-case-layout .hospital-facts{grid-template-columns:1fr 1fr;margin:10px 0;font-size:11px;}
- .reference-departments .emergency-actions .hospital-form{padding:12px;background:#ecdfce;}
- .reference-departments .emergency-register .hospital-item{border-left:0;border-bottom:1px solid #cfbaa1;border-radius:0;}
- .reference-departments .emergency-register .hospital-item:has([data-state="submitted"]){border-left:3px solid #ac3822;background:#f8e2d8;}
-}
-@media(max-width:900px){.emergency-case-header{flex-wrap:wrap;}.emergency-case-header time{margin-left:0;}.emergency-case-header strong{font-size:17px;}}
-.reference-departments .emergency-actions .hospital-fields { grid-template-columns:1fr; gap:10px; }
-.reference-departments .emergency-actions .hospital-form textarea { min-height:68px; }
-.reference-departments .emergency-actions .hospital-form h3 { font-size:13px; margin-bottom:10px; }
-.reference-departments .emergency-actions .hospital-form button { margin-top:8px; }
-.reference-departments .emergency-actions .hospital-form label { font-size:11px; }
-.reference-departments .emergency-actions .hospital-form input { width:100%; }
-.record-document-heading { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #cdb99e; }
-.record-document-heading h3 { font-size:17px;margin:0; }
-.record-document-heading p { font-size:11px;margin:5px 0 0; }
-.record-document-heading .department-icon { width:34px;height:34px; }
-.clinical-dossier-body { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;margin-top:15px; }
-.record-document-index { background:#e9ddcd; padding:14px; font-size:11px; }
-.record-document-index h3 { font-size:13px; }
-.record-document-index nav { display:grid;gap:12px;margin-top:22px; }
-.record-document-index .hospital-facts { grid-template-columns:1fr;font-size:12px; }
-@media(min-width:901px){
- .reference-departments .record-history { min-height:0;grid-template-columns:minmax(210px,1fr) minmax(0,3fr); }
- .reference-departments .active-dossier,.reference-departments .visit-timeline{background:#f4e9db;}
- .reference-departments .active-dossier .clinical-content { padding:0;min-height:0;border:0;background:none; }
- .reference-departments .active-dossier .clinical-content .hospital-facts { gap:0; }
- .reference-departments .active-dossier .clinical-content .hospital-facts>div { border:0;border-bottom:1px solid #d2bfa3;background:#fcf7ed;padding:16px;min-height:90px;border-radius:0; }
- .reference-departments .active-dossier .clinical-content dd { font-size:14px;line-height:1.5; }
- .reference-departments .record-document-tabs { margin-block:8px; }
- .reference-departments .record-patient-strip { padding:16px; }
- .reference-departments .record-history .visit-timeline .hospital-items { max-height:385px; }
-}
-@media(max-width:900px){.clinical-dossier-body{grid-template-columns:minmax(0,1fr);}.record-document-index nav{grid-template-columns:1fr 1fr;}.record-document-index nav h3{grid-column:1/-1;}}
-@media(min-width:901px){
- .reference-departments .emergency-workbench--patient {grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);}
- .reference-departments .emergency-workbench--patient .emergency-case-layout {grid-template-columns:minmax(0,1fr);}
- .reference-departments .emergency-workbench--patient .emergency-register .hospital-form {padding:14px;}
- .reference-departments .emergency-workbench--patient .emergency-register .hospital-items {max-height:210px;}
- .reference-departments .emergency-workbench--patient .emergency-register>.hospital-panel {margin-bottom:18px;}
-}
-.consultation-slip { display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; }
-@media(min-width:901px){
- .reference-departments .consultation-clinical {display:grid;grid-template-columns:minmax(230px,1fr) minmax(0,2.6fr);gap:14px;align-items:start;}
- .reference-departments .consultation-clinical .clinical-tools {grid-column:1/-1;}
- .reference-departments .consultation-clinical .consultation-register .hospital-items {display:block;max-height:350px;overflow:auto;}
- .reference-departments .consultation-clinical .hospital-item{border:0;border-bottom:1px solid #d1bea3;border-radius:0;}
- .reference-departments .consultation-clinical .clinical-editor .hospital-panel {padding:18px;background:#f5ebdc;}
- .reference-departments .consultation-clinical .clinical-content {padding:0;border:0;background:none;min-height:0;}
- .reference-departments .consultation-clinical .clinical-content .hospital-facts {grid-template-columns:1fr;gap:0;}
- .reference-departments .consultation-clinical .clinical-content .hospital-facts>div {padding:16px;border:0;border-bottom:1px solid #cfb99e;background:#fcf7ed;border-radius:0;}
-}
 .ops-runtime-signals { border-top:1px solid #d3bfa2; margin-top:16px; padding-top:14px; }
 .ops-runtime-signals h3 { font-size:14px; }
 .ops-runtime-signals dl>div { display:flex; justify-content:space-between;gap:15px;border-bottom:1px solid #d7c5ac;padding:9px 0;font-size:11px; }
@@ -444,50 +308,7 @@
 .booking-patient-details label{font-size:11px;}
 @media(max-width:580px){.booking-patient-fields{grid-template-columns:1fr;}}
 
-/* Cashier price book and visit prescription sheets use owner responses only. */
-.cashier-price-book { background:#f4eadd; border-block:1px solid #cfbda3; padding:14px 18px; }
-.cashier-price-book>.hospital-panel { padding:0; background:none; border:0; box-shadow:none; }
-.cashier-price-book .hospital-items { display:block; max-height:230px; overflow:auto; }
-.cashier-price-book .hospital-item { margin:0; padding:10px 0; border:0; border-bottom:1px solid #d9c8b0; border-radius:0; background:none; }
-.cashier-price-row { display:flex; justify-content:space-between; align-items:start; gap:16px; font-size:13px; }
-.cashier-price-row small { display:block; font-size:10px; margin-top:4px; color:#5c625f; }
-.cashier-price-book>p { font-size:11px; line-height:1.5; margin:12px 0 0; }
-.dossier-prescriptions { border-top:1px solid #cfbda3; margin-top:18px; padding-top:14px; }
-.dossier-prescriptions>.hospital-panel { padding:0; background:none; border:0; box-shadow:none; }
-.dossier-prescriptions .hospital-items { display:block; }
-.dossier-prescriptions .hospital-item { background:#fcf7ed; border:0; border-left:3px solid #16424c; border-radius:0; padding:14px; }
-.prescription-document-heading { display:flex; align-items:center; flex-wrap:wrap; gap:12px; font-size:13px; padding-bottom:12px; border-bottom:1px solid #d7c6af; }
-.prescription-document-heading small { margin-left:auto; font-size:11px; }
-.prescription-instruction-list dl { display:grid; grid-template-columns:minmax(0,1fr) 65px minmax(0,1fr) minmax(0,1.5fr); gap:12px; margin:0; padding:14px 0; border-bottom:1px solid #dfd1bd; }
-.prescription-instruction-list dt { font-size:10px; color:#59645e; margin-bottom:7px; }
-.prescription-instruction-list dd { margin:0; font-size:13px; overflow-wrap:anywhere; }
-@media(max-width:650px){.prescription-instruction-list dl{grid-template-columns:1fr 1fr;}.cashier-price-book{padding:14px;}.prescription-document-heading small{margin-left:0;}}
-.reference-departments .billing-source-desk .hospital-form { border:0; background:none; box-shadow:none; padding:0; font-size:12px; }
-.reference-departments .billing-source-desk .hospital-form>h3 { font-size:14px; margin:0 0 10px; }
-.reference-departments .billing-source-desk .hospital-form>p { font-size:11px; line-height:1.5; margin:8px 0 12px; }
-.reference-departments .billing-source-desk .hospital-fields { margin:8px 0 12px; gap:10px; }
-.reference-departments .billing-source-desk .hospital-fields label { font-size:12px; }
-.reference-departments .billing-source-desk>.hospital-panel { padding:14px 18px; }
-.reference-departments .billing-source-desk>[data-panel="charge-sources"]>h2 { font-size:16px; margin:0 0 10px; padding-bottom:10px; }
-.reference-departments .billing-source-desk>[data-panel="charge-sources"] .hospital-form { padding:0; }
-.reference-departments .billing-source-desk>[data-panel="create-invoice"] .hospital-form { padding:0; }
-.reference-departments .billing-source-desk .charge-source-tabs { margin-bottom:10px; }
-.reference-departments .billing-source-desk .cashier-price-book h2 { font-size:16px; }
-.reference-departments .billing-source-desk { align-content:start; }
-.reference-departments .billing-source-desk>[data-panel="create-invoice"] { order:0; }
-.reference-departments .billing-source-desk>.cashier-price-book { order:1; }
-.reference-departments .billing-source-desk>[data-panel="charge-sources"] { order:2; }
-.reference-departments .billing-source-desk>.invoice-register { order:3; }
-.reference-departments .billing-source-desk .cashier-price-book .hospital-items { max-height:180px; }
-.reference-departments .active-dossier>.hospital-panel>h2 { display:none; }
-.reference-departments .active-dossier>.hospital-panel>button { float:right; margin-left:12px; font-size:11px; }
-.reference-departments .active-dossier .record-document-heading { padding:8px 0 14px; }
-.reference-departments .active-dossier .clinical-content .hospital-facts>div { min-height:65px; padding:12px 16px; }
-.reference-departments .active-dossier .record-document-index { padding:12px; }
-.reference-departments .active-dossier .record-document-index nav { margin-top:14px; gap:10px; }
 .prescription-revoked-note { font-size:11px; color:#8d2b26; margin:10px 0; }
-@media(max-width:650px){.reference-departments .active-dossier>.hospital-panel>button{float:none;margin:0 0 12px;}}
-.reference-departments .billing-source-desk>[data-panel="create-invoice"]>h2 { display:none; }
 
 /* The shell recedes at its far edge. Text and hit targets remain on an
    untransformed inner surface; only the material faces use perspective geometry. */
@@ -864,4 +685,290 @@
   .department-page--pharmacy .cabinet-rail__search { flex-basis:100%; }
   .department-page--pharmacy .cabinet-rail__options[open] > form { left:auto;right:0;width:min(320px,80vw); }
   .department-page--pharmacy .pharmacy-counter-front { margin:0; }
+}
+
+/* Clinical desks (Emergency, Billing, Medical Records): compact wall sign, opaque work surfaces, text-carried status. */
+:is(.department-page--emergency,.department-page--billing,.department-page--records):has(:is(.er-desk,.cashier-desk,.dossier-room)) > .department-workspace { display:block; }
+:is(.er-desk,.cashier-desk,.dossier-room) { color:var(--ink);font-size:var(--text-body-size); }
+:is(.er-desk,.cashier-desk,.dossier-room) :is(button,.button) { min-height:40px;margin:0;padding:8px 14px;font-size:14px;border-radius:6px; }
+:is(.er-desk,.cashier-desk,.dossier-room) :is(input,select,textarea) { min-height:40px;font-size:14px; }
+:is(.er-desk,.cashier-desk,.dossier-room) label { font-size:var(--text-secondary-size); }
+:is(.er-desk,.cashier-desk,.dossier-room) summary { display:flex;align-items:center;gap:6px;min-height:40px;cursor:pointer;font-size:14px;font-weight:500; }
+:is(.er-desk,.cashier-desk,.dossier-room) .owner-identifiers { margin-top:10px;font-size:var(--text-secondary-size);color:#3f4848; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-facts { font-size:14px; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-facts dt { font-size:var(--text-secondary-size);color:#4a5250; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-form { display:block;margin:0;padding:12px 0 0;background:none;border:0;box-shadow:none; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-form h3 { margin:0 0 6px;font-size:15px; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-form > p { font-size:var(--text-secondary-size);line-height:1.45; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-fields { grid-template-columns:1fr;gap:8px;margin:8px 0; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-confirm { display:flex;flex-wrap:wrap;gap:8px;align-items:center; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-confirm > p { flex-basis:100%;font-size:var(--text-secondary-size); }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-panel { padding:0;background:none;border:0;box-shadow:none; }
+:is(.er-desk,.cashier-desk,.dossier-room) .hospital-panel > h2 { font-size:15px;padding-bottom:6px; }
+:is(.er-desk,.cashier-desk,.dossier-room) .resource-toolbar { display:flex;justify-content:flex-end;margin:0 0 6px;border:0;padding:0; }
+:is(.er-desk,.cashier-desk,.dossier-room) .owner-state { display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;text-transform:capitalize;background:var(--status-neutral-bg);color:var(--status-neutral-fg); }
+:is(.er-desk,.cashier-desk,.dossier-room) [role="alert"] { padding:8px 10px;background:var(--status-danger-bg);color:var(--status-danger-fg);border-radius:4px; }
+
+:is(.er-desk,.cashier-desk,.dossier-room--doctor) > .department-sign { grid-area:sign; }
+.department-sign { display:flex;align-items:center;gap:16px;min-height:80px;padding:10px 24px;background:linear-gradient(#f6eddf,#eadcc6);border:1px solid #fff7ea;border-bottom:4px solid #a77a4b;border-radius:4px;box-shadow:0 12px 16px -14px #3b2412; }
+.department-sign__mark { flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:var(--accent);color:#f8eedb; }
+.department-sign--emergency .department-sign__mark { background:#fff6f2;color:var(--emergency-red);box-shadow:inset 0 0 0 2px #e7c3bb; }
+.department-sign__mark .department-icon { width:30px;height:30px;color:inherit; }
+.department-sign__name { min-width:0; }
+.department-sign__name h1 { margin:0;font-size:36px;line-height:1.05;letter-spacing:-.02em;color:var(--accent); }
+.department-sign--emergency .department-sign__name h1 { color:var(--emergency-red); }
+.department-sign__name p { margin:4px 0 0;font-size:15px;color:#33433f; }
+.department-sign__aside { margin-left:auto;min-width:0; }
+.department-sign__note { display:grid;gap:2px;max-width:280px;margin:0;padding-left:18px;border-left:1px solid #cdb592;font-size:var(--text-secondary-size);color:#3c4744; }
+.department-sign__note strong { font-size:14px;color:var(--ink); }
+
+/* Emergency */
+.department-page--emergency .er-desk { display:grid;gap:12px 14px;align-items:start; }
+.department-page--emergency .er-desk--staff { grid-template-columns:minmax(0,32fr) minmax(0,40fr) minmax(0,28fr);grid-template-areas:"sign sign sign" "notice notice notice" "register case steps"; }
+.department-page--emergency .er-desk--patient { grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"sign sign" "notice notice" "intake requests"; }
+.department-page--emergency .er-notice { grid-area:notice;margin:0;padding:8px 14px;background:#fbf3e6;border-left:4px solid var(--emergency-red);border-radius:3px;font-size:var(--text-secondary-size);color:#3a2a24; }
+.department-page--emergency .er-counts { display:flex;align-items:stretch;gap:8px;margin:0;padding:0;list-style:none; }
+.department-page--emergency .er-counts > li:not(.er-counts__scope) { display:grid;min-width:92px;padding:6px 12px;background:#fffaf2;border:1px solid #e3d2b8;border-radius:6px; }
+.department-page--emergency .er-counts strong { font-size:24px;line-height:1.1; }
+.department-page--emergency .er-counts span { font-size:var(--text-secondary-size);color:#424a48; }
+.department-page--emergency .er-counts [data-tone="urgent"] { background:var(--status-danger-bg);border-color:#e9b9af; }
+.department-page--emergency .er-counts [data-tone="urgent"] strong { color:var(--status-danger-fg); }
+.department-page--emergency .er-counts [data-tone="claimed"] { background:var(--status-info-bg);border-color:#bcd2e2; }
+.department-page--emergency .er-counts__scope { align-self:end;font-size:12px;color:#4a5250; }
+.department-page--emergency :is(.er-register,.er-case,.er-steps,.er-intake) { min-width:0;padding:14px 16px;background:#fbf6ee;border:1px solid #fff4e2;border-radius:4px;box-shadow:0 12px 18px -14px #3a2412; }
+.department-page--emergency .er-desk--staff > .er-register { grid-area:register; }
+.department-page--emergency .er-register { display:flex;flex-direction:column;max-height:max(440px,calc(100vh - 260px)); }
+.department-page--emergency .er-desk--staff > .er-case { grid-area:case; }
+.department-page--emergency .er-desk--staff > .er-steps { grid-area:steps; }
+.department-page--emergency .er-intake { grid-area:intake; }
+.department-page--emergency :is(.er-register,.er-case,.er-steps,.er-intake) h2 { margin:0;font-size:17px; }
+.department-page--emergency .er-register__header { display:flex;align-items:center;gap:8px;margin-bottom:8px; }
+.department-page--emergency .er-register__header h2 { flex:1; }
+.department-page--emergency .er-register__header h2 span { font-size:var(--text-secondary-size);font-weight:500;color:#4a5250; }
+.department-page--emergency .er-register__toggle { display:none; }
+.department-page--emergency .er-queue { flex:1 1 auto;min-height:0;overflow:auto;display:grid;align-content:start;gap:6px;margin:0;padding:0;list-style:none; }
+.department-page--emergency .er-desk .er-row { display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;width:100%;padding:10px;text-align:left;background:#fffdf8;border:1px solid #e3d4bd;border-left:4px solid transparent;border-radius:4px;color:var(--ink); }
+.department-page--emergency .er-desk .er-row[aria-pressed="true"] { background:#fbe9e4;border-color:#e3b7ad;border-left-color:var(--emergency-red); }
+.department-page--emergency .er-row__main { display:grid;gap:2px;min-width:0; }
+.department-page--emergency .er-row__main strong { display:-webkit-box;overflow:hidden;font-size:14px;font-weight:600;line-height:1.3;-webkit-line-clamp:2;-webkit-box-orient:vertical; }
+.department-page--emergency .er-row__main small,.department-page--emergency .er-row__meta time { font-size:var(--text-secondary-size);color:#4a5250; }
+.department-page--emergency .er-row__meta { display:grid;justify-items:end;gap:4px; }
+.department-page--emergency .priority-chip { display:inline-grid;place-items:center;min-width:44px;padding:4px 8px;border-radius:5px;font-size:13px;font-weight:700;background:var(--status-neutral-bg);color:var(--status-neutral-fg);border:1px solid #d3c9b9; }
+.department-page--emergency .priority-chip[data-priority="1"] { background:var(--emergency-red);color:#fff;border-color:var(--emergency-red); }
+.department-page--emergency .priority-chip[data-priority="2"] { background:var(--status-warning-bg);color:var(--status-warning-fg);border-color:#e3c38a; }
+.department-page--emergency .priority-chip[data-priority="none"] { background:#fff;border-style:dashed;font-weight:600; }
+.department-page--emergency .owner-state[data-state="submitted"],.department-page--emergency .owner-state:is([data-state="claimed"],[data-state="processing"]) { background:var(--status-info-bg);color:var(--status-info-fg); }
+.department-page--emergency .owner-state[data-state="resolved"] { background:var(--status-success-bg);color:var(--status-success-fg); }
+.department-page--emergency .owner-state[data-state="cancelled"] { background:#ece9e4;color:#4a4a48; }
+.department-page--emergency .er-register__pages { display:flex;gap:8px;margin-top:8px; }
+.department-page--emergency .er-lookup { margin-top:6px;border-top:1px solid #e0d0b6; }
+.department-page--emergency .er-case__header { display:flex;align-items:flex-start;gap:12px;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid #dccab0; }
+.department-page--emergency .er-case__header > div:first-child { flex:1;min-width:0; }
+.department-page--emergency .er-case__eyebrow { margin:0 0 4px;font-size:var(--text-secondary-size);font-weight:600;color:var(--emergency-red); }
+.department-page--emergency .er-case__eyebrow span { color:#4a5250;font-weight:500; }
+.department-page--emergency .er-case__header h2 { font-size:19px;line-height:1.3; }
+.department-page--emergency .er-case__chips { display:flex;flex-direction:column;align-items:flex-end;gap:6px; }
+.department-page--emergency .er-facts { display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin:0; }
+.department-page--emergency .er-facts dt { font-size:var(--text-secondary-size);color:#4a5250; }
+.department-page--emergency .er-facts dd { display:grid;gap:2px;margin:2px 0 0;font-size:14px;font-weight:500; }
+.department-page--emergency .er-facts small { font-size:var(--text-secondary-size);font-weight:400;color:#4a5250; }
+.department-page--emergency .er-description { margin-top:14px;padding:12px 14px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:4px; }
+.department-page--emergency .er-description h3 { margin:0 0 6px;font-size:14px; }
+.department-page--emergency .er-description p { margin:0;font-size:15px;line-height:1.55;white-space:pre-wrap; }
+.department-page--emergency .er-case--empty { display:flex;align-items:center;gap:12px; }
+.department-page--emergency .er-steps h2 { margin-bottom:10px; }
+.department-page--emergency .er-steps__note { padding:10px 12px;background:#f1ebe1;border-left:3px solid #8a7a62;font-size:14px; }
+.department-page--emergency .er-primary .hospital-form { padding-top:0; }
+.department-page--emergency .er-primary .hospital-form :is(button[type="submit"],.hospital-confirm > button:first-of-type) { width:100%;min-height:44px;background:var(--emergency-red);border-color:var(--emergency-red);color:#fff;font-weight:600; }
+.department-page--emergency .er-secondary { margin-top:10px;border-top:1px solid #e0d0b6; }
+.department-page--emergency .er-secondary .hospital-form button[type="submit"] { background:#fff;border:1px solid #b9a283;color:var(--ink); }
+.department-page--emergency .er-patient-requests { grid-area:requests;display:grid;gap:12px;min-width:0; }
+.department-page--emergency .er-desk--patient .er-register { max-height:300px; }
+.department-page--emergency .er-patient-case { display:grid;gap:12px; }
+.department-page--emergency .er-intake textarea { min-height:96px; }
+
+/* Billing */
+.department-page--billing .cashier-desk { display:grid;gap:12px 16px;align-items:start; }
+.department-page--billing .cashier-desk--staff { grid-template-columns:minmax(0,62fr) minmax(0,38fr);grid-template-areas:"sign sign" "context context" "left receipt"; }
+.department-page--billing .cashier-desk--patient { grid-template-columns:minmax(0,58fr) minmax(0,42fr);grid-template-areas:"sign sign" "context context" "receipt register"; }
+.department-page--billing :is(.cashier-context,.cashier-workbench,.cashier-register,.cashier-receipt) { min-width:0;padding:14px 18px;background:#fbf6ee;border:1px solid #fff4e2;border-radius:4px;box-shadow:0 12px 18px -14px #3a2412; }
+.department-page--billing .cashier-context { grid-area:context;display:flex;align-items:center;gap:16px;padding:12px 18px; }
+.department-page--billing .cashier-context dl { display:flex;flex:1;flex-wrap:wrap;gap:8px 32px;margin:0; }
+.department-page--billing .cashier-context dl > div { display:grid;gap:2px;padding-right:24px;border-right:1px solid #ddcdb2; }
+.department-page--billing .cashier-context dl > div:last-child { border-right:0; }
+.department-page--billing .cashier-context dt { font-size:var(--text-secondary-size);color:#4a5250; }
+.department-page--billing .cashier-context dd { display:grid;margin:0;font-size:16px;font-weight:600; }
+.department-page--billing .cashier-context dd small { font-size:var(--text-secondary-size);font-weight:400;color:#4a5250; }
+.department-page--billing .cashier-context > p { flex:1;margin:0; }
+.department-page--billing .cashier-context > button { background:#fff;border:1px solid #b9a283; }
+.department-page--billing .cashier-left { grid-area:left;display:grid;gap:12px;min-width:0; }
+.department-page--billing .cashier-receipt { grid-area:receipt; }
+.department-page--billing .cashier-desk--patient .cashier-register { grid-area:register; }
+.department-page--billing .cashier-tabs { display:flex;gap:6px;margin-bottom:12px;border-bottom:1px solid #d8c6aa; }
+.department-page--billing .cashier-tabs [role="tab"] { margin-bottom:-1px;background:#efe4d2;border:1px solid #d8c6aa;border-radius:6px 6px 0 0;color:var(--ink);font-weight:500; }
+.department-page--billing .cashier-tabs [role="tab"][aria-selected="true"] { background:var(--select-teal);border-color:var(--select-teal);color:#fff8ec; }
+.department-page--billing .cashier-import > p,.department-page--billing .cashier-panel-heading p { margin:0 0 6px;font-size:var(--text-secondary-size);line-height:1.45; }
+.department-page--billing .cashier-panel-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px; }
+.department-page--billing .cashier-panel-heading h2,.department-page--billing .cashier-receipt__header h2 { margin:0;font-size:17px; }
+.department-page--billing .cashier-import .hospital-form { display:grid;grid-template-columns:1fr 1fr auto;align-items:end;gap:0 12px; }
+.department-page--billing .cashier-import .hospital-form > :is(h3,p) { grid-column:1 / -1; }
+.department-page--billing .cashier-import .hospital-fields { grid-column:1 / 3;grid-template-columns:1fr 1fr;margin:0; }
+.department-page--billing .cashier-import .hospital-form > :is(button,[role="alert"],.hospital-confirm,.command-receipt) { grid-column:3; }
+.department-page--billing .cashier-import .hospital-form > :is([role="alert"],.hospital-confirm,.command-receipt) { grid-column:1 / -1; }
+.department-page--billing :is(.cashier-register__table,.cashier-price-table,.cashier-lines) { width:100%;border-collapse:collapse; }
+.department-page--billing :is(.cashier-register__table,.cashier-price-table,.cashier-lines) :is(th,td) { padding:8px 6px;border-bottom:1px solid #e0d0b6;text-align:left;font-size:14px; }
+.department-page--billing :is(.cashier-register__table,.cashier-price-table,.cashier-lines) thead th { font-size:var(--text-secondary-size);color:#4a5250;font-weight:600; }
+.department-page--billing .cashier-register__table tr[data-selected="true"] { background:var(--select-teal-soft);box-shadow:inset 4px 0 0 var(--select-teal); }
+.department-page--billing .cashier-register__table td:last-child { text-align:right; }
+.department-page--billing .cashier-register__table button[aria-pressed="true"] { background:var(--select-teal);border-color:var(--select-teal);color:#fff8ec; }
+.department-page--billing .cashier-price-table tr[data-historical="true"] :is(th,td) { color:#4f5553;font-style:italic; }
+.department-page--billing .cashier-pages { display:flex;gap:8px;margin-top:8px; }
+.department-page--billing .cashier-more { margin-top:10px;border-top:1px solid #e0d0b6; }
+.department-page--billing .cashier-receipt__header { display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px; }
+.department-page--billing .cashier-receipt__header p { margin:4px 0 0;font-size:var(--text-secondary-size); }
+.department-page--billing .cashier-receipt__empty { display:flex;align-items:center;gap:10px; }
+.department-page--billing .invoice-line-scroll { max-height:none;overflow:auto; }
+.department-page--billing .cashier-lines td { white-space:nowrap; }
+.department-page--billing .cashier-lines td:last-child { text-align:right;font-weight:600; }
+.department-page--billing .cashier-lines__group th { padding-top:12px;background:#f2e8d9;font-size:14px;font-weight:700; }
+.department-page--billing .cashier-lines__group span { font-weight:400;color:#4a5250; }
+.department-page--billing .cashier-balance { display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:12px;margin:12px 0 6px;padding:12px 16px;background:#dcebdf;border:1px solid #b9d3be;border-radius:4px; }
+.department-page--billing .cashier-balance dt { font-size:var(--text-secondary-size);color:#2f4a3a; }
+.department-page--billing .cashier-balance dd { margin:2px 0 0;font-size:17px;font-weight:600; }
+.department-page--billing .cashier-balance__due dd { font-size:24px;color:#0c4a33; }
+.department-page--billing .cashier-simulated { margin:0;font-size:var(--text-secondary-size);color:#4a4a40; }
+.department-page--billing .cashier-receipt .hospital-form { display:grid;grid-template-columns:1fr 1fr;gap:0 12px;align-items:end; }
+.department-page--billing .cashier-receipt .hospital-form > :not(.hospital-fields) { grid-column:1 / -1; }
+.department-page--billing .cashier-receipt .hospital-fields { grid-column:1 / -1;grid-template-columns:1fr 1fr;margin:6px 0 0; }
+.department-page--billing .cashier-receipt .hospital-form button[type="submit"],.department-page--billing .cashier-receipt .hospital-confirm > button:first-of-type { background:var(--select-teal);border-color:var(--select-teal);color:#fff8ec;font-weight:600; }
+.department-page--billing .paise-preview { margin:4px 0 8px;font-size:var(--text-secondary-size);color:#2f4a3a; }
+.department-page--billing .cashier-payment-result { padding:8px 10px;background:#f1ebe1;border-radius:4px; }
+.department-page--billing .cashier-payment-row { display:flex;align-items:center;gap:12px; }
+.department-page--billing .owner-state:is([data-state="paid"],[data-state="success"]) { background:var(--status-success-bg);color:var(--status-success-fg); }
+.department-page--billing .owner-state[data-state="part-paid"] { background:var(--status-info-bg);color:var(--status-info-fg); }
+.department-page--billing .owner-state:is([data-state="unpaid"],[data-state="declined"]) { background:var(--status-warning-bg);color:var(--status-warning-fg); }
+.department-page--billing .cashier-sources { margin:6px 0 0;padding-left:18px;font-size:var(--text-secondary-size); }
+.department-page--billing .cashier-register:focus-visible { outline:3px solid var(--select-teal);outline-offset:2px; }
+
+/* Medical Records */
+.department-page--records .dossier-room { display:grid;gap:12px; }
+.department-page--records .dossier-room__body { display:grid;grid-template-columns:minmax(0,26fr) minmax(0,48fr) minmax(0,26fr);gap:14px;align-items:start; }
+.department-page--records .dossier-room--consultations.dossier-room--doctor { grid-template-columns:minmax(0,26fr) minmax(0,48fr) minmax(0,26fr);grid-template-areas:"sign sign sign" "timeline sheet side";gap:12px 14px;align-items:start; }
+.department-page--records .dossier-room--consultations:not(.dossier-room--doctor) { grid-template-columns:minmax(0,30fr) minmax(0,70fr);align-items:start; }
+.department-page--records .dossier-room--doctor > .dossier-timeline { grid-area:timeline; }
+.department-page--records .dossier-room--doctor > .dossier-sheet { grid-area:sheet; }
+.department-page--records .dossier-room--doctor > .dossier-side { grid-area:side; }
+.department-page--records :is(.dossier-band,.dossier-timeline,.dossier-sheet,.dossier-side > *,.record-consultations) { min-width:0;padding:14px 16px;background:#fbf6ee;border:1px solid #fff4e2;border-radius:4px;box-shadow:0 12px 18px -14px #3a2412; }
+.department-page--records .dossier-band { display:flex;align-items:center;gap:16px;padding:12px 18px; }
+.department-page--records .dossier-band > .department-icon { width:40px;height:40px;padding:8px;border-radius:50%;background:#efe4d2; }
+.department-page--records .dossier-band__name { display:grid;gap:2px;padding-right:24px;border-right:1px solid #ddcdb2; }
+.department-page--records .dossier-band__name strong { font-size:20px; }
+.department-page--records .dossier-band__name small,.department-page--records .dossier-band dt { font-size:var(--text-secondary-size);color:#4a5250; }
+.department-page--records .dossier-band dl { display:flex;gap:32px;margin:0; }
+.department-page--records .dossier-band dd { margin:2px 0 0;font-size:16px;font-weight:600; }
+.department-page--records .dossier-panel-heading { display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px; }
+.department-page--records :is(.dossier-panel-heading h2,.dossier-side h2) { margin:0;font-size:17px; }
+.department-page--records .dossier-timeline { max-height:max(420px,calc(100vh - 290px));overflow:auto; }
+.department-page--records .visit-list { position:relative;display:grid;gap:8px;margin:0;padding:0 0 0 18px;list-style:none; }
+.department-page--records .visit-list::before { content:"";position:absolute;top:6px;bottom:6px;left:5px;width:2px;background:#cdb99a; }
+.department-page--records .visit-list > li { position:relative; }
+.department-page--records .visit-list > li::before { content:"";position:absolute;top:16px;left:-17px;width:10px;height:10px;border-radius:50%;background:#fbf6ee;border:2px solid #8f7a5c; }
+.department-page--records .visit-list > li:has([aria-pressed="true"])::before { background:var(--select-teal);border-color:var(--select-teal); }
+.department-page--records .dossier-room .visit-entry { display:grid;gap:2px;width:100%;padding:10px 12px;text-align:left;background:#fffdf8;border:1px solid #e3d4bd;border-left:4px solid transparent;border-radius:4px;color:var(--ink); }
+.department-page--records .dossier-room .visit-entry[aria-pressed="true"] { background:var(--select-teal-soft);border-color:#b7cfc6;border-left-color:var(--select-teal); }
+.department-page--records .visit-entry time,.department-page--records .visit-entry small { font-size:var(--text-secondary-size);color:#424a48; }
+.department-page--records .visit-entry strong { font-size:15px; }
+.department-page--records .visit-entry .owner-state { justify-self:start; }
+.department-page--records .dossier-pages { display:flex;gap:8px;margin-top:8px; }
+.department-page--records .dossier-more { margin-top:10px;border-top:1px solid #e0d0b6; }
+.department-page--records .dossier-sheet { padding:18px 24px;background:#fffdf8; }
+.department-page--records .dossier-header { display:flex;align-items:flex-start;gap:12px;padding-bottom:12px;border-bottom:2px solid #d7c5a9; }
+.department-page--records .dossier-header > div:first-child { flex:1;min-width:0; }
+.department-page--records .dossier-eyebrow { margin:0 0 2px;font-size:var(--text-secondary-size);font-weight:600;color:var(--select-teal);text-transform:uppercase;letter-spacing:.06em; }
+.department-page--records .dossier-header h2 { margin:0;font-size:22px; }
+.department-page--records .dossier-header p:not(.dossier-eyebrow) { margin:4px 0 0;font-size:14px;color:#3f4848; }
+.department-page--records .owner-state:is([data-state="current"],[data-state="finalized"],[data-state="issued"]) { background:var(--status-success-bg);color:var(--status-success-fg); }
+.department-page--records .owner-state:is([data-state="draft"],[data-state="earlier"]) { background:var(--status-warning-bg);color:var(--status-warning-fg); }
+.department-page--records .owner-state[data-state="revoked"] { background:var(--status-danger-bg);color:var(--status-danger-fg); }
+.department-page--records .dossier-notice { margin:10px 0 0;padding:8px 12px;background:var(--status-warning-bg);border-radius:4px; }
+.department-page--records .dossier-notice button { margin-left:8px;min-height:36px;padding:4px 10px; }
+.department-page--records .dossier-clinical > section { padding:12px 0;border-bottom:1px solid #eadfcd; }
+.department-page--records .dossier-clinical h3 { margin:0 0 4px;font-size:14px;color:var(--select-teal); }
+.department-page--records .dossier-clinical p { margin:0;font-size:15px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere; }
+.department-page--records .dossier-prescriptions { margin-top:14px; }
+.department-page--records .dossier-prescriptions > h3 { margin:0 0 8px;font-size:16px; }
+.department-page--records .dossier-rx { margin-bottom:12px;overflow:auto;border:1px solid #e3d4bd;border-radius:4px; }
+.department-page--records .dossier-rx[data-state="revoked"] { border-color:#e3b7ad;background:#fdf3f1; }
+.department-page--records .dossier-rx__status { display:flex;align-items:center;gap:10px;margin:0;padding:8px 10px;font-size:var(--text-secondary-size);border-bottom:1px solid #e3d4bd; }
+.department-page--records .dossier-rx table { width:100%;border-collapse:collapse; }
+.department-page--records .dossier-rx :is(th,td) { padding:8px 10px;border-bottom:1px solid #efe4d3;text-align:left;font-size:14px;vertical-align:top; }
+.department-page--records .dossier-rx thead th { font-size:var(--text-secondary-size);color:#4a5250; }
+.department-page--records .dossier-side { display:grid;gap:12px;min-width:0; }
+.department-page--records .dossier-side h2 { margin-bottom:8px; }
+.department-page--records .record-versions { display:grid;gap:6px;margin:0;padding:0;list-style:none; }
+.department-page--records .record-versions button { display:grid;gap:2px;width:100%;text-align:left;background:#fffdf8;border:1px solid #e3d4bd;color:var(--ink); }
+.department-page--records .record-versions button[aria-pressed="true"] { background:var(--select-teal-soft);border-color:var(--select-teal); }
+.department-page--records .record-versions time { font-size:var(--text-secondary-size);color:#424a48; }
+.department-page--records .dossier-links { display:grid;gap:4px; }
+.department-page--records .dossier-links a { display:flex;align-items:center;min-height:40px;font-size:14px;color:var(--select-teal);font-weight:500; }
+.department-page--records .dossier-side > details.dossier-more { margin-top:0;border-top:0; }
+.department-page--records .dossier-empty { display:flex;align-items:center;gap:12px; }
+.department-page--records .record-consultations { margin-top:0; }
+
+@media (max-width:1300px) and (min-width:901px) {
+  .department-page--emergency .er-desk--staff { grid-template-columns:minmax(0,34fr) minmax(0,38fr) minmax(0,28fr); }
+  .department-page--emergency .er-counts > li:not(.er-counts__scope) { min-width:78px;padding:4px 10px; }
+  .department-page--emergency .er-facts { grid-template-columns:1fr; }
+  .department-sign__note { display:none; }
+  .department-page--billing .cashier-import .hospital-form { grid-template-columns:1fr; }
+  .department-page--billing .cashier-import .hospital-form > * { grid-column:1 / -1 !important; }
+  .department-page--billing .cashier-balance { grid-template-columns:1fr 1fr; }
+  .department-page--billing .cashier-balance__due { grid-column:1 / -1; }
+  .department-page--records .dossier-room__body,.department-page--records .dossier-room--consultations.dossier-room--doctor { grid-template-columns:minmax(0,28fr) minmax(0,72fr); }
+  .department-page--records .dossier-room--doctor { grid-template-areas:"sign sign" "timeline sheet" "side sheet"; }
+  .department-page--records .dossier-room__body > .dossier-side { grid-column:1;grid-row:2; }
+  .department-page--records .dossier-room__body > .dossier-sheet { grid-row:1 / span 2; }
+}
+@media (max-width:900px) {
+  .department-sign { min-height:0;padding:10px 14px;gap:12px;flex-wrap:wrap; }
+  .department-sign__mark { width:42px;height:42px;border-radius:10px; }
+  .department-sign__name h1 { font-size:28px; }
+  .department-sign__aside { margin-left:0;flex-basis:100%; }
+  .department-sign__note { border-left:0;padding-left:0;max-width:none; }
+  .department-page--emergency .er-desk--staff,.department-page--emergency .er-desk--patient { grid-template-columns:minmax(0,1fr);grid-template-areas:none; }
+  .department-page--emergency :is(.er-desk--staff,.er-desk--patient) > * { grid-area:auto; }
+  .department-page--emergency .er-desk--staff > :is(.er-register,.er-case,.er-steps) { grid-area:auto; }
+  .department-page--emergency .er-desk--staff > .er-register { order:5;max-height:none; }
+  .department-page--emergency .er-counts { flex-wrap:wrap; }
+  .department-page--emergency .er-register__toggle { display:inline-flex; }
+  .department-page--emergency .er-register[data-open="false"] :is(.er-queue,.er-register__pages,.er-lookup) { display:none; }
+  .department-page--emergency .er-desk--patient .er-register[data-open="false"] .er-queue { display:grid; }
+  .department-page--emergency .er-desk--patient .er-register__toggle { display:none; }
+  .department-page--emergency .er-patient-requests { grid-area:auto; }
+  .department-page--emergency .er-facts { grid-template-columns:1fr; }
+  .department-page--billing .cashier-desk--staff,.department-page--billing .cashier-desk--patient { grid-template-columns:minmax(0,1fr);grid-template-areas:none; }
+  .department-page--billing .cashier-desk > *,.department-page--billing .cashier-desk--patient .cashier-register { grid-area:auto; }
+  .department-page--billing .cashier-desk--staff > .cashier-receipt { order:3; }
+  .department-page--billing .cashier-desk--staff > .cashier-left { order:4; }
+  .department-page--billing .cashier-context { flex-wrap:wrap; }
+  .department-page--billing .cashier-context dl { gap:8px 16px; }
+  .department-page--billing .cashier-context dl > div { padding-right:0;border-right:0; }
+  .department-page--billing .cashier-tabs { overflow-x:auto; }
+  .department-page--billing .cashier-tabs [role="tab"] { flex:none; }
+  .department-page--billing .cashier-import .hospital-form,.department-page--billing .cashier-receipt .hospital-form { grid-template-columns:1fr; }
+  .department-page--billing .cashier-import .hospital-form > *,.department-page--billing .cashier-receipt .hospital-form > * { grid-column:1 / -1 !important; }
+  .department-page--billing :is(.cashier-import,.cashier-receipt) .hospital-fields { grid-template-columns:1fr; }
+  .department-page--billing .cashier-balance { grid-template-columns:1fr 1fr; }
+  .department-page--billing .cashier-balance__due { grid-column:1 / -1; }
+  .department-page--billing .cashier-register { overflow-x:auto; }
+  .department-page--records .dossier-room__body,.department-page--records .dossier-room--consultations { grid-template-columns:minmax(0,1fr) !important;grid-template-areas:none !important; }
+  .department-page--records .dossier-room--consultations > * { grid-area:auto !important; }
+  .department-page--records .dossier-band { flex-wrap:wrap; }
+  .department-page--records .dossier-band__name { border-right:0; }
+  .department-page--records .dossier-timeline { max-height:none;overflow:visible; }
+  .department-page--records .visit-list { display:flex;gap:8px;padding:0 0 6px;overflow-x:auto; }
+  .department-page--records .visit-list::before,.department-page--records .visit-list > li::before { display:none; }
+  .department-page--records .visit-list > li { flex:0 0 200px; }
+  .department-page--records .dossier-sheet { padding:14px 16px; }
+  .department-page--records .dossier-header { flex-wrap:wrap; }
 }

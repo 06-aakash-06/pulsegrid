@@ -36,6 +36,21 @@
   --duration-fast: 180ms;
   --duration-panel: 280ms;
   --duration-scene: 450ms;
+  --text-secondary-size: 13px;
+  --text-body-size: 14px;
+  --select-teal: #10383e;
+  --select-teal-soft: #dde9e4;
+  --status-neutral-bg: #e8e2d8;
+  --status-neutral-fg: #3b4442;
+  --status-info-bg: #dce8f1;
+  --status-info-fg: #17435e;
+  --status-success-bg: #daebdc;
+  --status-success-fg: #075437;
+  --status-warning-bg: #f6e3bf;
+  --status-warning-fg: #6f420a;
+  --status-danger-bg: #f8dbd5;
+  --status-danger-fg: #8a1d15;
+  --emergency-red: #8f1a14;
   --environment: url("/environments/reception.webp");
 }
 body {

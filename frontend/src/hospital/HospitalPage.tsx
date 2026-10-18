@@ -28,6 +28,12 @@ export function HospitalPage({
   const route = page.path;
   const title = role === "/pharmacist" && route === "dashboard" ? "Pharmacy" : page.title;
   const pharmacyRoom = (role === "/patient" && route === "pharmacy") || role === "/pharmacist";
+  const subtitle = departmentDescriptions[departmentFor(role, route)];
+  const signed =
+    (role === "/patient" && ["records", "billing", "emergency"].includes(route)) ||
+    (role === "/doctor" && route === "consultations") ||
+    (role === "/billing" && ["dashboard", "invoices", "payments"].includes(route)) ||
+    role === "/emergency";
   let content;
   if (role === "/patient") {
     if (route === "dashboard") content = <PatientDashboard />;
@@ -37,15 +43,15 @@ export function HospitalPage({
     if (route === "check-in") content = <PatientCheckinPage />;
     if (route === "queue") content = <PatientQueuePage />;
     if (route === "journey") content = <PatientJourneyPage />;
-    if (route === "records") content = <RecordsPage />;
+    if (route === "records") content = <RecordsPage title={title} subtitle={subtitle} />;
     if (route === "prescriptions") content = <Prescriptions />;
     if (route === "pharmacy") content = <PatientPharmacy title={title} workspaceName={workspace.name} />;
-    if (route === "billing") content = <BillingPage />;
-    if (route === "emergency") content = <EmergencyPage />;
+    if (route === "billing") content = <BillingPage title={title} subtitle={subtitle} />;
+    if (route === "emergency") content = <EmergencyPage title={title} subtitle={subtitle} />;
   }
   if (role === "/doctor") {
     if (route === "dashboard") content = <DoctorDashboard />;
-    if (route === "consultations") content = <Consultations doctor />;
+    if (route === "consultations") content = <Consultations doctor title={title} subtitle="Consultation documents" />;
     if (route === "queue") content = <DoctorQueuePage />;
     if (route === "prescriptions")
       content = (
@@ -63,8 +69,8 @@ export function HospitalPage({
     role === "/billing" &&
     ["dashboard", "invoices", "payments"].includes(route)
   )
-    content = <BillingPage staff />;
-  if (role === "/emergency") content = <EmergencyPage staff />;
+    content = <BillingPage staff title={title} subtitle={subtitle} />;
+  if (role === "/emergency") content = <EmergencyPage staff title={title} subtitle={subtitle} />;
   if (role === "/billing" && route === "insurance") content = <InsurancePage />;
   if (role === "/admin") {
     if (route === "dashboard")
@@ -92,7 +98,7 @@ export function HospitalPage({
     return content;
   return (
     <div data-workspace={role} className={`page-stack department-page department-page--${departmentFor(role,route)} route-${route}`}>
-      {route!=="doctors"&&!pharmacyRoom&&<div className="page-heading">
+      {route!=="doctors"&&!pharmacyRoom&&!signed&&<div className="page-heading">
         <DepartmentIcon department={departmentFor(role,route)}/>
         <div>
           <p className="eyebrow">{workspace.name}</p>
