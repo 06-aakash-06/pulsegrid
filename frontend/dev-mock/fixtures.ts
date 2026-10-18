@@ -33,6 +33,8 @@ export const users: MockUser[] = [
   { id: "1004", email: "admin@mock.test", roles: ["hospital_admin"] },
   { id: "1005", email: "billing@mock.test", roles: ["billing_staff"] },
   { id: "1006", email: "emergency@mock.test", roles: ["emergency_staff"] },
+  { id: "1007", email: "receptionist@mock.test", roles: ["receptionist"] },
+  { id: "1008", email: "ops@mock.test", roles: ["ops"] },
 ];
 
 const now = Date.now();
@@ -132,19 +134,47 @@ export function createState() {
     { id: "8101", slug: "general-medicine", name: "General Medicine", version: 1 },
     { id: "8102", slug: "pulmonology", name: "Pulmonology", version: 1 },
     { id: "8103", slug: "dermatology", name: "Dermatology", version: 1 },
+    { id: "8104", slug: "cardiology", name: "Cardiology", version: 1 },
+    { id: "8105", slug: "pediatrics", name: "Pediatrics", version: 1 },
   ];
-
+  const doctor = (id: string, display_name: string, specialty: string): Doctor => {
+    const found = specialties.find((item) => item.id === specialty)!;
+    return { id, display_name, specialties: [{ id: found.id, name: found.name }], active: true, version: 1 };
+  };
   const doctors: Doctor[] = [
-    { id: "8001", display_name: "Dr. Meera Iyer", specialties: [{ id: "8101", name: "General Medicine" }], active: true, version: 1 },
-    { id: "8002", display_name: "Dr. Kabir Sethi", specialties: [{ id: "8102", name: "Pulmonology" }], active: true, version: 1 },
-    { id: "8003", display_name: "Dr. Nisha Pillai", specialties: [{ id: "8103", name: "Dermatology" }], active: true, version: 1 },
+    doctor("8001", "Dr. Meera Iyer", "8101"),
+    doctor("8002", "Dr. Kabir Sethi", "8102"),
+    doctor("8003", "Dr. Nisha Pillai", "8103"),
+    doctor("8004", "Dr. Arjun Menon", "8104"),
+    doctor("8005", "Dr. Farah Qureshi", "8105"),
+    doctor("8006", "Dr. Vikram Rao", "8101"),
+    doctor("8007", "Dr. Leela Thomas", "8104"),
+    doctor("8008", "Dr. Sanjay Gupta", "8102"),
   ];
+  const otherPatients: PatientProfile[] = [
+    { id: "2002", user_id: "1102", display_name: "Rohan Mehta", date_of_birth: "1985-11-02", synthetic_contact: "rohan.mehta@example.test", version: 1 },
+    { id: "2003", user_id: "1103", display_name: "Divya Nair", date_of_birth: "2001-06-21", version: 1 },
+  ];
+  const slotAt = (doctorId: string, daysFromToday: number, hhmm: string) => {
+    const date = new Date(`${day(daysFromToday)}T${hhmm.slice(0, 2)}:${hhmm.slice(2)}:00Z`);
+    const starts_at = date.toISOString().replace(/\.\d{3}Z$/, "Z");
+    const ends_at = new Date(date.getTime() + 30 * 60_000).toISOString().replace(/\.\d{3}Z$/, "Z");
+    return { slot_id: `${doctorId.slice(-1)}${starts_at.slice(0, 10).replaceAll("-", "")}${hhmm}`, starts_at, ends_at };
+  };
+  const booked = (id: string, doctorId: string, daysFromToday: number, hhmm: string, state: Appointment["state"] = "confirmed"): Appointment => ({
+    id, journey_id: null, patient_id: "2001", doctor_id: doctorId, ...slotAt(doctorId, daysFromToday, hhmm), state, version: 1,
+  });
 
   const appointments: Appointment[] = [
     {
       id: "5101", journey_id: null, patient_id: patient.id, doctor_id: "8001", slot_id: "9101",
       starts_at: minutes(40), ends_at: minutes(55), state: "confirmed", version: 1,
     },
+    booked("5107", "8004", 2, "1000"),
+    booked("5108", "8005", 5, "1430"),
+    booked("5109", "8002", -12, "0930"),
+    booked("5110", "8003", -40, "1100"),
+    booked("5111", "8006", 3, "1500", "cancelled"),
   ];
 
   const at = (date: string) => `${date}Z`;
@@ -242,6 +272,8 @@ export function createState() {
   ];
 
   return {
+    otherPatients,
+    surge: { state: "NORMAL", version: 4, changed_at: minutes(-180), expires_at: null as string | null, reason_code: "planned_recovery" as string | null },
     consultations,
     records,
     grants,

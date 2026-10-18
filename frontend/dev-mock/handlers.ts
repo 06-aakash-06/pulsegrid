@@ -1,6 +1,7 @@
-import type { Batch, Consultation, Dispensing, Emergency, Grant, Invoice, MedicalRecord, Medicine, Payment, Prescription, Reservation, Tariff } from "../src/hospital/models";
+import type { Appointment, Batch, Consultation, Dispensing, Emergency, Grant, Invoice, MedicalRecord, Medicine, Payment, Prescription, Reservation, Slot, Tariff } from "../src/hospital/models";
 import type { Fulfillment, OwnQueue, Workflow } from "../src/advanced/patient/contracts";
 import { createState, users, type MockUser } from "./fixtures";
+import { controlRoomSummary, traceList, traceSpans } from "./operations";
 
 export interface MockRequest {
   method: string;
@@ -147,6 +148,56 @@ const isEmergencyStaff = (user: MockUser) => user.roles.includes("emergency_staf
 const isPatient = (user: MockUser) => user.roles.includes("patient");
 const stamp = () => new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
 const DOCTOR_ID = "8001";
+const isReceptionist = (user: MockUser) => user.roles.includes("receptionist");
+const isOperations = (user: MockUser) => user.roles.includes("ops") || user.roles.includes("hospital_admin");
+const SLOT_TIMES = ["0900", "0930", "1000", "1030", "1100", "1130", "1400", "1430", "1500", "1530", "1600", "1630"];
+const OPS_ROOT = "/api/v1/appointments/operations";
+
+function slotFromId(id: string): Slot | null {
+  const match = /^([1-8])(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/.exec(id);
+  if (!match) return null;
+  const [, doctorDigit, year, month, date, hour, minute] = match;
+  const index = SLOT_TIMES.indexOf(`${hour}${minute}`);
+  if (index < 0) return null;
+  const start = Date.UTC(Number(year), Number(month) - 1, Number(date), Number(hour), Number(minute));
+  const retired = (Number(doctorDigit) * 7 + Number(date) * 3 + index) % 9 === 0;
+  return {
+    id, doctor_id: `800${doctorDigit}`, state: retired ? "retired" : "bookable", revision: 1,
+    starts_at: new Date(start).toISOString().replace(/\.\d{3}Z$/, "Z"),
+    ends_at: new Date(start + 30 * 60_000).toISOString().replace(/\.\d{3}Z$/, "Z"),
+  };
+}
+function slotTaken(id: string, except?: string) {
+  return state.appointments.some((item) => item.slot_id === id && item.state === "confirmed" && item.id !== except);
+}
+function slotsFor(doctorId: string, from: number, to: number): Slot[] {
+  const slots: Slot[] = [];
+  const first = new Date(from);
+  for (let dayStart = Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), first.getUTCDate()); dayStart < to; dayStart += 86_400_000) {
+    const stamp = new Date(dayStart).toISOString().slice(0, 10).replaceAll("-", "");
+    for (const hhmm of SLOT_TIMES) {
+      const slot = slotFromId(`${doctorId.slice(-1)}${stamp}${hhmm}`);
+      const start = slot ? Date.parse(slot.starts_at) : 0;
+      if (!slot || start < from || start >= to || start < Date.now() || slotTaken(slot.id)) continue;
+      slots.push(slot);
+    }
+  }
+  return slots;
+}
+function bookableSlot(slotId: string, revision: unknown, except?: string): Slot | MockResponse {
+  const slot = slotFromId(slotId);
+  if (!slot || !state.doctors.some((item) => item.id === slot.doctor_id)) return error(404, "not_found", "Slot not found.");
+  if (revision !== slot.revision) return error(409, "schedule_revision_changed", "The doctor's accepted schedule changed. Reload availability.");
+  if (slot.state !== "bookable" || Date.parse(slot.starts_at) < Date.now()) return error(409, "slot_unavailable", "This time is no longer available.");
+  if (slotTaken(slot.id, except)) return error(409, "slot_taken", "Another booking took this time.");
+  return slot;
+}
+function visibleAppointment(user: MockUser, id: string): Appointment | null {
+  const item = state.appointments.find((appointment) => appointment.id === id);
+  if (!item) return null;
+  if (isReceptionist(user) || (isPatient(user) && item.patient_id === state.patient.id) || (isDoctor(user) && item.doctor_id === DOCTOR_ID)) return item;
+  return null;
+}
 
 function emergencyView(item: Emergency, user: MockUser): Emergency {
   if (isEmergencyStaff(user)) return item;
@@ -621,18 +672,83 @@ const routes: Route[] = [
   }],
   ["GET", /^\/api\/v1\/appointments\/availability$/, (request) => {
     const doctorId = request.url.searchParams.get("doctor_id") ?? "8001";
-    const slots = [1, 2, 3, 4, 5, 6].map((index) => ({
-      id: `9${doctorId.slice(-2)}${index}`, doctor_id: doctorId, state: "bookable" as const, revision: 1,
-      starts_at: state.minutes(24 * 60 + index * 30), ends_at: state.minutes(24 * 60 + index * 30 + 15),
-    }));
-    return ok({ slots, accepted_revision: 1, observed_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z") });
+    const from = Date.parse(request.url.searchParams.get("from") ?? "") || Date.now();
+    const to = Date.parse(request.url.searchParams.get("to") ?? "") || from + 86_400_000;
+    if (!state.doctors.some((item) => item.id === doctorId)) return error(404, "not_found", "Doctor not found.");
+    if (to <= from || to - from > 31 * 86_400_000) return error(422, "validation_failed", "Use a range of at most 31 days.");
+    return ok({ slots: slotsFor(doctorId, from, to), accepted_revision: 1, observed_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z") });
   }],
-  ["GET", /^\/api\/v1\/appointments$/, (request, user) =>
-    isPatient(user) ? page(state.appointments, request.url) : isDoctor(user) ? page(state.appointments.filter((item) => item.doctor_id === DOCTOR_ID), request.url) : page([], request.url)],
+  ["GET", /^\/api\/v1\/appointments$/, (request, user) => {
+    const patientId = request.url.searchParams.get("patient_id");
+    const items = state.appointments.filter((item) => visibleAppointment(user, item.id) && (!patientId || item.patient_id === patientId));
+    return page(items, request.url);
+  }],
+  ["POST", /^\/api\/v1\/appointments$/, (request, user) => {
+    const body = request.body as { patient_id?: string; slot_id?: string; expected_schedule_revision?: number };
+    const patientIds = [state.patient.id, ...state.otherPatients.map((item) => item.id)];
+    if (!(isReceptionist(user) || (isPatient(user) && body.patient_id === state.patient.id))) return forbidden();
+    if (!body.patient_id || !patientIds.includes(body.patient_id)) return error(404, "not_found", "Patient not found.");
+    const slot = bookableSlot(body.slot_id ?? "", body.expected_schedule_revision);
+    if ("status" in slot) return slot;
+    const created: Appointment = { id: nextId(), journey_id: null, patient_id: body.patient_id, doctor_id: slot.doctor_id, slot_id: slot.id, starts_at: slot.starts_at, ends_at: slot.ends_at, state: "confirmed", version: 1 };
+    state.appointments.push(created);
+    return ok(created, created.version, 201);
+  }],
   ["GET", /^\/api\/v1\/appointments\/(\d+)$/, (_request, user, match) => {
-    const item = state.appointments.find((appointment) => appointment.id === match[1]);
-    if (!item || !(isPatient(user) || (isDoctor(user) && item.doctor_id === DOCTOR_ID))) return error(404, "not_found", "Appointment not found.");
+    const item = visibleAppointment(user, match[1]);
+    return item ? ok(item, item.version) : error(404, "not_found", "Appointment not found.");
+  }],
+  ["POST", /^\/api\/v1\/appointments\/(\d+)\/cancel$/, (request, user, match) => {
+    const item = isDoctor(user) ? null : visibleAppointment(user, match[1]);
+    if (!item) return error(404, "not_found", "Appointment not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    if (item.state !== "confirmed") return error(409, "invalid_state", "This appointment is already cancelled.");
+    if (!reasonOf(request.body)) return error(422, "validation_failed", "A reason is required.");
+    item.state = "cancelled";
+    item.version += 1;
     return ok(item, item.version);
+  }],
+  ["POST", /^\/api\/v1\/appointments\/(\d+)\/reschedule$/, (request, user, match) => {
+    const item = isDoctor(user) ? null : visibleAppointment(user, match[1]);
+    if (!item) return error(404, "not_found", "Appointment not found.");
+    const stale = versionMatches(request, item.version);
+    if (stale) return stale;
+    if (item.state !== "confirmed") return error(409, "invalid_state", "Only confirmed appointments can be rescheduled.");
+    const body = request.body as { target_slot_id?: string; expected_schedule_revision?: number };
+    const slot = bookableSlot(body.target_slot_id ?? "", body.expected_schedule_revision, item.id);
+    if ("status" in slot) return slot;
+    Object.assign(item, { doctor_id: slot.doctor_id, slot_id: slot.id, starts_at: slot.starts_at, ends_at: slot.ends_at, version: item.version + 1 });
+    return ok(item, item.version);
+  }],
+  ["GET", /^\/api\/v1\/patients$/, (request, user) => {
+    if (!(isReceptionist(user) || user.roles.includes("hospital_admin"))) return forbidden();
+    const q = request.url.searchParams.get("q")?.toLowerCase() ?? "";
+    return page([state.patient, ...state.otherPatients].filter((item) => item.display_name.toLowerCase().includes(q)), request.url);
+  }],
+  ["GET", new RegExp(`^${OPS_ROOT}/control-room/summary$`), (_request, user) =>
+    isOperations(user) ? ok(controlRoomSummary(state.surge.state, state.surge.changed_at)) : forbidden()],
+  ["GET", new RegExp(`^${OPS_ROOT}/control-room/traces$`), (_request, user) =>
+    isOperations(user) ? ok(traceList()) : forbidden()],
+  ["GET", new RegExp(`^${OPS_ROOT}/control-room/traces/([0-9a-f]{32})$`), (_request, user, match) => {
+    if (!isOperations(user)) return forbidden();
+    const spans = traceSpans(match[1]);
+    return spans ? ok(spans) : error(404, "not_found", "Trace not found.");
+  }],
+  ["GET", new RegExp(`^${OPS_ROOT}/surge-mode$`), (_request, user) =>
+    user.roles.includes("hospital_admin") ? ok(state.surge, state.surge.version) : forbidden()],
+  ["POST", new RegExp(`^${OPS_ROOT}/surge-mode$`), (request, user) => {
+    if (!user.roles.includes("hospital_admin")) return forbidden();
+    const body = request.body as { active?: boolean; reason_code?: string; override?: boolean };
+    if (typeof body.active !== "boolean" || !body.reason_code) return error(422, "validation_failed", "Operation and reason are required.");
+    Object.assign(state.surge, {
+      state: body.active ? "SURGE" : "RECOVERY",
+      version: state.surge.version + 1,
+      changed_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+      expires_at: body.active ? null : state.minutes(10),
+      reason_code: body.reason_code,
+    });
+    return ok(state.surge, state.surge.version);
   }],
   ["GET", /^\/api\/v1\/appointments\/(\d+)\/queue$/, (_request, _user, match) => {
     if (match[1] !== "5101") return error(404, "not_found", "No queue entry for this appointment.");
