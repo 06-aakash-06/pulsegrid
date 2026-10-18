@@ -1,0 +1,49 @@
+{
+  "audit_date": "2026-10-18",
+  "remote_commit": "698d31c11e087fe1572ce7e2c3f8c5c5eeb1ef8c",
+  "frontend_git_blob_comparison": {
+    "compared": 87,
+    "matched": 87,
+    "mismatches": 0
+  },
+  "runtime_checks": [
+    {
+      "check": "typecheck",
+      "chunk_id": "e0d73a",
+      "wall_time_seconds": 0.038945291,
+      "exit_code": 127,
+      "original_token_count": 21,
+      "output": "\n> pulsegrid-frontend@0.1.0 typecheck\n> tsc --noEmit\n\nsh: tsc: command not found\n"
+    },
+    {
+      "check": "test -- --reporter=dot",
+      "chunk_id": "69a943",
+      "wall_time_seconds": 0.038681875,
+      "exit_code": 127,
+      "original_token_count": 23,
+      "output": "\n> pulsegrid-frontend@0.1.0 test\n> vitest run --reporter=dot\n\nsh: vitest: command not found\n"
+    },
+    {
+      "check": "build",
+      "chunk_id": "c5a5cc",
+      "wall_time_seconds": 0.038976416,
+      "exit_code": 127,
+      "original_token_count": 23,
+      "output": "\n> pulsegrid-frontend@0.1.0 build\n> tsc --noEmit && vite build\n\nsh: tsc: command not found\n"
+    },
+    {
+      "check": "docker ps",
+      "chunk_id": "75c641",
+      "wall_time_seconds": 0,
+      "exit_code": 1,
+      "original_token_count": 30,
+      "output": "permission denied while trying to connect to the docker API at unix:///Users/aaditpraveennath/.docker/run/docker.sock\n"
+    }
+  ],
+  "dependency_install": {
+    "exit_code": 1,
+    "status": "failed",
+    "reason": "registry.npmjs.org ENOTFOUND; npm Exit handler never called",
+    "node_engine_warning": "@zxing/library@0.23.0 requires node >=24.0.0; local node v22.22.0"
+  }
+}

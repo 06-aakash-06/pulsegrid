@@ -1,0 +1,43 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "checked_at": "2026-10-18T07:44:25.495Z",
+  "viewport": "1536x1024",
+  "pages": [
+    {
+      "route": "/patient/pharmacy",
+      "email": "patient@mock.test",
+      "textNodes": 120,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "6.19",
+      "lowContrast": [],
+      "targets": 31,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/pharmacist/dashboard",
+      "email": "pharmacist@mock.test",
+      "textNodes": 78,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "6.85",
+      "lowContrast": [],
+      "targets": 32,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/pharmacist/prescriptions",
+      "email": "pharmacist@mock.test",
+      "textNodes": 81,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "5.40",
+      "lowContrast": [],
+      "targets": 36,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    }
+  ]
+}
