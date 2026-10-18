@@ -469,3 +469,117 @@
   .ops-table { min-width: 690px; }
   .ops-page-header h1 { font-size: 29px; }
 }
+
+/* Control Room console: compact sign with a dark wall monitor, KPI row, balanced service topology, alerts and bus/cache, trends and Surge Mode. */
+.ops-console { display:grid;gap:12px;color:var(--ink);font-size:var(--text-body-size); }
+.ops-console :is(button,a.button) { min-height:var(--target-min);font-size:14px; }
+.ops-console summary { display:flex;align-items:center;min-height:var(--target-min);cursor:pointer;font-weight:500;font-size:14px; }
+.ops-console .ops-sign { display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:10px 12px 10px 22px;background:linear-gradient(#f6eddf,#eadcc6);border:1px solid #fff7ea;border-bottom:4px solid #a77a4b;border-radius:4px;box-shadow:0 12px 16px -14px #3b2412; }
+.ops-console .ops-sign__mark { display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:12px;background:var(--accent);color:#f8eedb; }
+.ops-console .ops-sign__mark .department-icon { width:30px;height:30px;color:inherit; }
+.ops-console .ops-sign__name { flex:1 1 260px;min-width:0; }
+.ops-console .ops-sign__name h1 { margin:0;font-size:34px;line-height:1.05;letter-spacing:-.02em;color:var(--accent); }
+.ops-console .ops-sign__name p { margin:4px 0 0;font-size:14px;color:#33433f; }
+.ops-console .ops-updated { display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:var(--text-secondary-size); }
+.ops-console .ops-refresh-button { padding:6px 14px; }
+.ops-console .ops-wall-monitor { display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:4px;margin:0;padding:6px;background:#0d2a2f;border:6px solid #233238;border-radius:6px;box-shadow:inset 0 0 0 1px #3a5a5f,0 10px 16px -10px #000; }
+.ops-console .ops-wall-monitor > div { padding:8px 12px;background:linear-gradient(#123a40,#0f3136);border-radius:3px; }
+.ops-console .ops-wall-monitor dt { font-size:var(--text-secondary-size);color:#bfe0d9; }
+.ops-console .ops-wall-monitor dd { margin:2px 0 0;font-size:26px;font-weight:700;color:#f3fbf8;font-variant-numeric:tabular-nums; }
+.ops-console .ops-wall-monitor [data-alert="true"] dd { color:#ffb4a6; }
+.ops-console .ops-kpi-row { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px; }
+.ops-console .ops-kpi { display:grid;gap:2px;padding:12px 14px;background:#fbf6ee;border:1px solid #fff4e2;border-top:4px solid var(--select-teal);border-radius:4px;box-shadow:0 12px 18px -14px #3a2412; }
+.ops-console .ops-kpi--warning { border-top-color:#c58a1d; }
+.ops-console .ops-kpi--danger { border-top-color:var(--status-danger); }
+.ops-console .ops-kpi__label { margin:0;font-size:var(--text-secondary-size);font-weight:600;color:#3f4b48; }
+.ops-console .ops-kpi__value { display:flex;align-items:baseline;gap:4px;margin:0; }
+.ops-console .ops-kpi__value strong { font-size:26px;font-variant-numeric:tabular-nums; }
+.ops-console .ops-kpi__value span { font-size:14px;color:#3f4b48; }
+.ops-console .ops-kpi__detail { display:flex;align-items:center;gap:6px;margin:0;font-size:var(--text-secondary-size);color:#4a5250; }
+.ops-console .ops-kpi__trend { display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--select-teal-soft);color:var(--select-teal);font-weight:700; }
+.ops-console .ops-console-grid { display:grid;grid-template-columns:minmax(0,64fr) minmax(0,36fr);gap:12px;align-items:start; }
+.ops-console :is(.ops-topology,.ops-panel) { min-width:0;padding:14px 16px;background:#fbf6ee;border:1px solid #fff4e2;border-radius:4px;box-shadow:0 12px 18px -14px #3a2412; }
+.ops-console .ops-topology > header { display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px;margin-bottom:10px; }
+.ops-console .ops-topology h2,.ops-console .ops-panel-heading h2 { margin:0;font-size:17px; }
+.ops-console .ops-topology > header small,.ops-console .ops-panel-heading p { font-size:var(--text-secondary-size);color:#4a5250; }
+.ops-console .ops-tiles { display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;padding:10px;background:#1f3337;border-radius:6px; }
+.ops-console .ops-tile { grid-column:span 2;display:grid;gap:4px;justify-items:start;min-height:112px;padding:10px 12px;text-align:left;background:#f6f1e9;border:2px solid transparent;border-top:4px solid var(--status-success);border-radius:4px;color:var(--ink); }
+.ops-console .ops-tile:nth-child(5) { grid-column:2 / span 2; }
+.ops-console .ops-tile--degraded { border-top-color:#c58a1d;background:#fbf0de; }
+.ops-console .ops-tile--no_data { border-top-color:#8b8174; }
+.ops-console .ops-tile[aria-pressed="true"] { border-color:#7fd1c3;box-shadow:0 0 0 2px #7fd1c3; }
+.ops-console .ops-tile strong { font-size:15px;text-transform:capitalize; }
+.ops-console .ops-tile__metric { display:flex;gap:6px;font-size:var(--text-secondary-size); }
+.ops-console .ops-tile__metric span { color:#4a5250; }
+.ops-console .ops-inspector { margin-top:10px;padding:10px 12px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:4px; }
+.ops-console .ops-inspector p { margin:0;font-size:14px; }
+.ops-console .ops-inspector caption { text-align:left;font-weight:600;text-transform:capitalize;padding-bottom:6px; }
+.ops-console .ops-table :is(th,td) { font-size:13px;padding:6px 8px; }
+.ops-console .ops-service-details,.ops-console .ops-delivery-details { margin-top:10px;padding:4px 12px;font-size:14px;background:#f4e8d8;border-radius:4px; }
+.ops-console .ops-side { display:grid;gap:12px;min-width:0; }
+.ops-console .ops-alert-list li { padding:10px 0; }
+.ops-console .ops-alert-list li[data-severity="critical"] { box-shadow:inset 4px 0 0 var(--status-danger);padding-left:10px;background:#fcefeb; }
+.ops-console .ops-alert-list li[data-severity="warning"] { box-shadow:inset 4px 0 0 #c58a1d;padding-left:10px;background:#fcf5e6; }
+.ops-console .ops-alert-list strong { font-size:14px; }
+.ops-console .ops-alert-list small,.ops-console .ops-event-list small { font-size:var(--text-secondary-size); }
+.ops-console .ops-component-list h3 { font-size:14px; }
+.ops-console .ops-component-list li > span,.ops-console .ops-component-list li > strong { font-size:13px; }
+.ops-console .ops-component-list li small { font-size:12px; }
+.ops-console .ops-tools { display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px; }
+.ops-console .ops-tools a { display:inline-flex;align-items:center;min-height:var(--target-min);font-size:14px;font-weight:600;color:var(--select-teal); }
+.ops-console .ops-bottom { display:grid;grid-template-columns:minmax(0,64fr) minmax(0,36fr);gap:12px;align-items:start; }
+.ops-console .ops-trend-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.ops-console .ops-trend-panel h3 { font-size:15px; }
+.ops-console .ops-trend-chart { height:96px; }
+.ops-console .ops-chart-caption,.ops-console .ops-chart-unit { font-size:var(--text-secondary-size); }
+.ops-console .ops-chart-data { margin-top:6px; }
+.ops-console .ops-surge__state { display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:14px; }
+.ops-console .surge-console { margin-top:6px;font-size:14px; }
+.ops-console .surge-console label { font-size:var(--text-secondary-size); }
+.ops-console .ops-footnote { margin:0;font-size:var(--text-secondary-size); }
+.ops-console .ops-monitoring-banner { font-size:14px; }
+.ops-console .ops-trace-layout { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;align-items:start; }
+.ops-console .ops-trace-row { min-height:56px;padding:10px 12px;border-bottom:1px solid #e0d0b6; }
+.ops-console .ops-trace-row strong { font-size:14px; }
+.ops-console .ops-trace-row small { font-size:var(--text-secondary-size); }
+.ops-console .ops-trace-row[aria-pressed="true"] { background:var(--select-teal-soft);box-shadow:inset 4px 0 0 var(--select-teal); }
+.ops-console .ops-trace-list { max-height:max(360px,calc(100vh - 330px));overflow:auto; }
+.ops-console .ops-trace-empty { margin:0;padding:6px 0;font-size:14px;color:#3f4b48; }
+.ops-console .ops-span-list li { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #e0d0b6; }
+.ops-console .ops-span-copy { display:grid;gap:2px; }
+.ops-console .ops-span-copy strong { font-size:14px; }
+.ops-console .ops-span-copy small { font-size:var(--text-secondary-size); }
+.ops-console .ops-span-bar { position:relative;height:14px;background:#efe7da;border-radius:7px; }
+.ops-console .ops-span-bar i { position:absolute;top:0;bottom:0;border-radius:7px;background:var(--select-teal); }
+.ops-console .ops-span-bar i[data-service="records"] { background:#7a5a2c; }
+.ops-console .ops-span-bar i[data-service="pharmacy"] { background:#2f5d8c; }
+.ops-console .ops-span-bar i[data-service="billing"] { background:#8a1d15; }
+
+@media (max-width:1300px) and (min-width:901px) {
+  .ops-console .ops-kpi-row { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .ops-console .ops-console-grid,.ops-console .ops-bottom { grid-template-columns:minmax(0,1fr) minmax(280px,.6fr); }
+  .ops-console .ops-tiles { grid-template-columns:repeat(6,minmax(0,1fr)); }
+  .ops-console .ops-tile:nth-child(5) { grid-column:span 2; }
+  .ops-console .ops-tile:nth-child(7) { grid-column:3 / span 2; }
+  .ops-console .ops-trend-grid { grid-template-columns:1fr; }
+}
+@media (max-width:900px) {
+  .ops-console .ops-sign { padding:10px 14px; }
+  .ops-console .ops-sign__name h1 { font-size:28px; }
+  .ops-console .ops-wall-monitor { grid-template-columns:repeat(2,minmax(0,1fr));width:100%; }
+  .ops-console .ops-wall-monitor dd { font-size:22px; }
+  .ops-console .ops-kpi-row { grid-template-columns:repeat(2,minmax(0,1fr));order:3; }
+  .ops-console .ops-console-grid { display:contents; }
+  .ops-console .ops-side { order:1; }
+  .ops-console .ops-topology { order:2; }
+  .ops-console .ops-bottom { grid-template-columns:minmax(0,1fr);order:4; }
+  .ops-console .ops-delivery-details,.ops-console .ops-footnote { order:5; }
+  .ops-console .ops-tiles { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .ops-console .ops-tile,.ops-console .ops-tile:nth-child(5) { grid-column:span 1; }
+  .ops-console .ops-tile:nth-child(7) { grid-column:1 / -1; }
+  .ops-console .ops-trend-grid,.ops-console .ops-trace-layout { grid-template-columns:minmax(0,1fr); }
+  .ops-console .ops-span-list li { grid-template-columns:minmax(0,1fr); }
+}
+.workspace-content .ops-dashboard.ops-console[aria-labelledby] { display:grid;grid-template-columns:minmax(0,1fr);gap:12px; }
+.workspace-content .ops-dashboard.ops-console[aria-labelledby] > * { grid-column:1;grid-row:auto; }
+.ops-console .ops-queue-table tbody th { text-transform:none;font-weight:600; }
