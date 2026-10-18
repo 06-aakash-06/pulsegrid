@@ -1,0 +1,272 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "checked_at": "2026-10-18T14:28:35.547Z",
+  "results": [
+    {
+      "subject": "reception-patient",
+      "route": "/patient/dashboard",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "consultation-patient",
+      "route": "/patient/doctors",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "appointments-book",
+      "route": "/patient/appointments",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "appointments-manage",
+      "route": "/patient/appointments?view=upcoming",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "appointments-reschedule",
+      "route": "/patient/appointments?view=reschedule",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "appointments-walkin",
+      "route": "/receptionist/appointments?view=walk-in",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "waiting-patient",
+      "route": "/patient/queue",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "pharmacy-patient",
+      "route": "/patient/pharmacy",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "pharmacy-pharmacist",
+      "route": "/pharmacist/dashboard",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "billing-patient",
+      "route": "/patient/billing",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "billing-staff",
+      "route": "/billing/dashboard",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "emergency-patient",
+      "route": "/patient/emergency",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "emergency-staff",
+      "route": "/emergency/dashboard",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "records-patient",
+      "route": "/patient/records",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "records-doctor",
+      "route": "/doctor/consultations",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "control-admin",
+      "route": "/admin/control-room",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "control-ops",
+      "route": "/ops/dashboard",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "traces-admin",
+      "route": "/admin/traces",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    },
+    {
+      "subject": "traces-ops",
+      "route": "/ops/traces",
+      "regionOrder": [
+        "skip",
+        "header",
+        "directory",
+        "main"
+      ],
+      "logical": true,
+      "focusWithoutIndicator": [],
+      "searchEscape": true,
+      "drawerEscape": true
+    }
+  ]
+}
