@@ -588,7 +588,7 @@ describe("command safety and states", () => {
     );
     await command("Edit");
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Reload the resource",
+      "Refresh to load the latest version",
     );
     expect(writes(fetcher)).toHaveLength(1);
     expect(

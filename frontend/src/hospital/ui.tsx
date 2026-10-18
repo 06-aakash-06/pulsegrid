@@ -14,7 +14,7 @@ export function errorMessage(error: unknown): string {
   if (error instanceof ApiError) {
     const advice =
       error.status === 412
-        ? " Reload the resource and review your changes before submitting again."
+        ? " Refresh to load the latest version, then review your changes before submitting again."
         : "";
     const retry=error.retryAfterSeconds !== undefined ? ` Wait ${error.retryAfterSeconds} seconds before retrying.` : "";
     return `${error.message}${retry}${advice}${error.requestId ? ` Request ID: ${error.requestId}` : ""}`;
@@ -108,7 +108,7 @@ export function Resource<T>({
           disabled={resource.loading}
           onClick={resource.refresh}
         >
-          Reload resource
+          Refresh
         </button>
       )}
       {resource.response &&
@@ -127,7 +127,7 @@ export function Collection<T extends { id: string }>({
   revision = 0,
   onFirstItem,
   itemFilter,
-  sourceNote = "Owner service data",
+  sourceNote = null,
 }: {
   path: string | null;
   title: string;
@@ -396,6 +396,7 @@ export function CommandForm<T = unknown>({
   onSuccess,
   onLockChange,
   notice,
+  preview,
   children,
 }: {
   title: string;
@@ -408,6 +409,7 @@ export function CommandForm<T = unknown>({
   onSuccess?: (data: T, etag: string | null) => void;
   onLockChange?: (locked: boolean) => void;
   notice?: string;
+  preview?: (values: Values) => ReactNode;
   children?: ReactNode;
 }) {
   const { api } = useAuth();
@@ -505,6 +507,7 @@ export function CommandForm<T = unknown>({
         change={(name, value) => setValues({ ...values, [name]: value })}
         disabled={!!attempt || pending}
       />
+      {preview?.(values)}
       {error && <p role="alert">{error}</p>}
       {success && <m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{title}: confirmed by the service.</m.p>}
       {pending && <p role="status">Submitting {title.toLowerCase()}…</p>}

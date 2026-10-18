@@ -70,7 +70,7 @@ export async function sendCommand<T>(
 export function getErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.status === 412) {
-      return `${error.message} Reload the resource before trying again.`;
+      return `${error.message} Refresh to load the latest version before trying again.`;
     }
     return error.message;
   }

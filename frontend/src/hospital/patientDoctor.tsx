@@ -597,6 +597,7 @@ export function Appointments({
   const [targetSlot, setTargetSlot] = useState<{
     id: string;
     revision: number;
+    startsAt: string;
   } | null>(null);
   return (
     <div className="appointment-workspace">
@@ -690,7 +691,7 @@ export function Appointments({
                     doctorId={targetDoctor}
                     autoLoad
                     onClear={()=>setTargetSlot(null)}
-                    onSlot={(id, revision) => setTargetSlot({ id, revision })}
+                    onSlot={(id, revision, startsAt) => setTargetSlot({ id, revision, startsAt })}
                   />
                 )}
                 </fieldset>{targetSlot && (
@@ -705,7 +706,7 @@ export function Appointments({
                       target_slot_id: targetSlot.id,
                       expected_schedule_revision: targetSlot.revision,
                     })}
-                    notice={`Move appointment ${item.id} to slot ${targetSlot.id}.`}
+                    notice={`Move your visit on ${visitTime(item.starts_at)} to ${visitTime(targetSlot.startsAt)}.`}
                     onSuccess={() => {
                       refresh();
                       setRevision((v) => v + 1);
@@ -1070,4 +1071,7 @@ export function DoctorDashboard() {
       </Resource>
     </Panel>
   );
+}
+function visitTime(value: string) {
+  return `${new Date(value).toLocaleString("en-IN", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" })} UTC`;
 }
