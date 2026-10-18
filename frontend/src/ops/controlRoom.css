@@ -569,8 +569,11 @@
   .ops-console .ops-wall-monitor { grid-template-columns:repeat(2,minmax(0,1fr));width:100%; }
   .ops-console .ops-wall-monitor dd { font-size:22px; }
   .ops-console .ops-kpi-row { grid-template-columns:repeat(2,minmax(0,1fr));order:3; }
+  .ops-console .ops-sign { order:0; }
   .ops-console .ops-console-grid { display:contents; }
-  .ops-console .ops-side { order:1; }
+  .ops-console .ops-side { display:contents; }
+  .ops-console .ops-alerts { order:1; }
+  .ops-console .ops-bus { order:3; }
   .ops-console .ops-topology { order:2; }
   .ops-console .ops-bottom { grid-template-columns:minmax(0,1fr);order:4; }
   .ops-console .ops-delivery-details,.ops-console .ops-footnote { order:5; }
@@ -583,3 +586,5 @@
 .workspace-content .ops-dashboard.ops-console[aria-labelledby] { display:grid;grid-template-columns:minmax(0,1fr);gap:12px; }
 .workspace-content .ops-dashboard.ops-console[aria-labelledby] > * { grid-column:1;grid-row:auto; }
 .ops-console .ops-queue-table tbody th { text-transform:none;font-weight:600; }
+.ops-console .ops-trace-duration { font-size:13px; }
+.ops-console .ops-table thead th,.ops-console .ops-table th { font-size:12px; }

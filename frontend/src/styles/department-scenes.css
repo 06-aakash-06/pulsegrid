@@ -821,7 +821,7 @@
 :is(.appointment-workspace,.reference-booking-desk) .owner-state[data-state="upcoming"] { background:var(--status-success-bg);color:var(--status-success); }
 :is(.appointment-workspace,.reference-booking-desk) .owner-state[data-state="cancelled"] { background:var(--status-danger-bg);color:var(--status-danger); }
 .department-page--appointments .department-tabs { display:flex;flex-wrap:nowrap;gap:4px;width:max-content;max-width:100%;overflow-x:auto;padding:0 6px;background:none;border:0;border-radius:0; }
-.department-page--appointments .workspace-content .department-tabs button,.department-page--appointments .department-tabs button { display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 18px;background:#eadfcd;border:1px solid #d9c6a8;border-bottom:0;border-radius:8px 8px 0 0;color:var(--ink);font-weight:500;white-space:nowrap;box-shadow:none; }
+.workspace-content .department-page--appointments .department-tabs button {font-size:13px; display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 18px;background:#eadfcd;border:1px solid #d9c6a8;border-bottom:0;border-radius:8px 8px 0 0;color:var(--ink);font-weight:500;white-space:nowrap;box-shadow:none; }
 .department-page--appointments .department-tabs button .department-icon { width:18px;height:18px; }
 .department-page--appointments .department-tabs button[aria-pressed="true"] { background:#fbf6ee;color:var(--select-teal);box-shadow:inset 0 3px 0 var(--select-teal);font-weight:600; }
 .department-page--appointments :is(.appointment-booking,.appointment-manage,.reschedule-desk,.appointment-walkin) { padding:16px;background:#fbf6ee;border:1px solid #fff4e2;border-radius:0 6px 6px 6px;box-shadow:0 14px 20px -16px #3a2412; }
@@ -1015,3 +1015,4 @@
   .department-page--appointments .walkin-steps li { flex:none; }
   .department-page--appointments .walkin-entry .booking-composition { grid-template-columns:minmax(0,1fr); }
 }
+.department-page--appointments .receptionist-care > summary { display:flex;align-items:center;min-height:var(--target-min);cursor:pointer;font-weight:500; }

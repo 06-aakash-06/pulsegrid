@@ -3947,3 +3947,17 @@ button[type="submit"],
     animation: pg-select-pulse 0.45s ease-out 1;
   }
 }
+
+/* Shell readability: header and directory footer text at 12px or more; 40px header controls on small screens. */
+.hospital-tagline,
+.global-search kbd,
+.directory-help small,
+.reference-directory-tools summary,
+.workspace-switcher summary { font-size: 12px; }
+@media (max-width: 900px) {
+  .hospital-header .menu-toggle,
+  .hospital-header .notification-button { min-width: var(--target-min); min-height: var(--target-min); }
+  .hospital-header .brand,
+  .hospital-header .account-menu > summary { min-height: var(--target-min); }
+  .hospital-header .global-search { min-width: var(--target-min); min-height: var(--target-min); }
+}
