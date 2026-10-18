@@ -382,3 +382,89 @@ Captures are `verification/phase9-pharmacy/{before,after}-<role>-<w>x<h>.png`. T
 - The pharmacist reserve form labels still read "Quantity for item … (medicine …)" because `Field.label` is a string and an existing test depends on it. Names are shown in the adjacent prescription paper.
 - At 390 wide the visual order (Rx stand before cabinet) differs from the DOM order (cabinet first), which is kept so that the desktop Tab order runs cabinet, stand, counter. Screen-reader and mobile keyboard behavior were not tested.
 - Contrast was computed against the nearest opaque fill, using the darker and lighter stops of gradients. It is not a WCAG certification. 200% zoom, screen-reader output and touch behavior were not tested.
+
+## Fix pass 2 — Emergency, Billing, Medical Records and shared copy
+
+Branch `phase9/clinical-desks`, created from `phase9/pharmacy-composition`. This pass covers backlog rows 4 (Emergency), 8 (Billing), 9 (Records) and 5 (shared copy), plus the mobile ordering from row 3 for these three departments. **All runtime evidence is from `npm run dev:mock`, not from the retained backend.** Reception, Consultation, the directory, Waiting Room and Pharmacy layouts were not edited.
+
+### Mock additions
+
+The mock adds two logins, `billing@mock.test` and `emergency@mock.test`, and fixtures for all three departments:
+
+- **Emergency:** nine synthetic requests. They cover the submitted, triaged, claimed, processing, resolved and cancelled states, unassigned requests and priorities 1–5. One claim is held by the signed-in emergency user and one by another staff ID.
+- **Billing:** three invoices: unpaid, partly paid and paid. One has an imported consultation plus two pharmacy lines. There are consultation tariff revisions 1 (historical) and 2 (current), plus declined and successful simulated payments.
+- **Records:** one patient with five finalized visits and one amended record (revision 2 supersedes revision 1). The three prescriptions from the earlier fixtures are attached to visits, one of them revoked. The doctor has one draft consultation.
+
+Access grants are created through the existing POST. The contract has no grant list, so none appears until one is created. Mutations honour `If-Match` (returning 412 or 428) and `Idempotency-Key` replay, as before.
+
+### What changed
+
+- **Emergency** (`billingEmergency.tsx › EmergencyPage`)
+  - **Sign:** a compact red-cross department sign with counts computed only from the loaded list: Unassigned, Priority 1–2 and Claimed. The counts are labelled "in this list", or "in this list page" when the list is paginated.
+  - **Queue:** the register is a scrollable queue. Each row has a P1/P2/P3–5 chip with visible text, the description, the elapsed time since `created_at` and the state.
+  - **Case panel:** shows the description, submitted and updated times, advisory urgency, assigned priority, contact, and claim holder with the lease end. There are no vitals, orders, beds or disposition.
+  - **Next steps:** only legal actions are shown, and the most likely one is a dark-red primary.
+
+    | State | Primary | Secondary disclosures |
+    | --- | --- | --- |
+    | Submitted | Set priority | Cancel |
+    | Triaged | Claim | Change priority, Cancel |
+    | Own claim | Start processing | Release claim, Change priority, Cancel |
+    | Someone else's claim | None (shown as a note) | Change priority, Cancel |
+    | Own processing | Resolve | Change priority |
+    | Resolved or cancelled | None | None |
+
+    This is exactly the set the previous form stack allowed. Cancel and release still require a reason and confirmation.
+  - **Status colours:** submitted, claimed and processing are blue, resolved is green and cancelled is grey. Every status and priority also carries text.
+  - **Mobile:** the case and next steps come first, and the register is behind an "All requests (n)" toggle.
+  - **Patient view:** the intake form and "Your requests" are separate columns, and the synthetic-not-dispatch notice is always visible.
+  - **Motion:** the existing exemption is unchanged, so Emergency has no GSAP or scene delay.
+- **Billing** (`billingEmergency.tsx › BillingPage`)
+  - **Context band:** shows patient (the name for the patient themselves, an ID tail for staff), visit, invoice and a status chip. Status is Unpaid, Part paid or Paid, derived from `status` and `paid_minor`. "Change invoice" moves focus to the register.
+  - **Staff workbench:** tabs for Import charges (the existing conditional import), Tariff reference (read-only, with current and historical revisions labelled) and New invoice. Below the tabs is a compact invoice register table with the selected row highlighted in teal.
+  - **Receipt:** grouped into Consultation and Pharmacy, showing qty × unit and the line amount from the API. Total, Paid and Balance due sit in the pale-green strip.
+  - **Payment amount:** the field is now entered in rupees, with a live "₹500.00 → 50000 paise will be submitted" preview. The submitted `amount_minor` is the same integer as before, parsed from the decimal string without floating point.
+  - **Medicine names:** medicine charge codes resolve to Pharmacy names and fall back to the charge code.
+  - **Patient view:** receipt first, then their invoices, with no import or create controls.
+  - **Mobile:** context band, receipt, actions, then register.
+- **Medical Records** (`records.tsx › RecordsPage, History, Consultations`)
+  - **Patient band:** name, ID tail, last visit date and visit count. Records versions are grouped by consultation, so an amendment does not appear as a second visit.
+  - **Visit timeline:** a vertical spine with teal selection, replacing the blue `#2286cc`.
+  - **Dossier sheet:** a header with visit date, clinician and specialty (resolved from the consultation and the doctor directory) and a Current / Amended / Earlier version state. Summary, Assessment and Plan are sections on one sheet. Stored text is rendered with `white-space: pre-wrap`, never truncated or rewritten.
+  - **Prescribed medicines:** a per-visit table (medicine name, quantity, dosage, instructions) loaded with `patient_id` + `consultation_id`. Revoked prescriptions stay visible with a "Revoked" label and a retained-as-history note. The data has no separate dose, frequency or duration fields, so those columns are not invented.
+  - **Right column:** Record history (original and amendment versions, each openable), linked prescriptions, pharmacy and journey, access grants in a disclosure, and a single Details disclosure.
+  - **Doctor's Consultations:** uses the same register, sheet and side layout. Create, save-draft, finalize and amend flows are unchanged.
+  - **Mobile:** the timeline becomes a horizontal scroller above the dossier.
+- **Shared copy** (`ui.tsx`, `HospitalHeader.tsx`, `patientDoctor.tsx`, `advanced/patient/api.ts`)
+  - "Reload resource" is now "Refresh".
+  - The 412 advice now reads "Refresh to load the latest version…".
+  - "Owner service data" is no longer shown by default, and the touched panels use a single "Details" disclosure.
+  - The header shows the role label ("Pharmacist") instead of "Account …1002", and the account ID moves into the account menu ("Account ID …").
+  - The search placeholder is now "Find a department or workflow…".
+  - The reschedule review reads "Move your visit on [date] to [date]".
+  - Stale, error, ambiguous-retry and loading states are unchanged.
+- **Tokens:** `hospital.css :root` gains `--text-secondary-size`, `--text-body-size`, `--select-teal(-soft)`, the `--status-*` pairs and `--emergency-red`. They are used only in the new Emergency, Billing and Records sections.
+- **Legacy CSS:** the old Emergency, Billing and Records override blocks in `department-scenes.css` are deleted. `.prescription-revoked-note` is kept because Pharmacy uses it.
+
+### Checks
+
+| Check | Result |
+| --- | --- |
+| `npm run typecheck` | PASS |
+| `npm test -- --reporter=dot` | PASS, 11 files and 142 tests. Changed assertions: the design test's two header checks now expect "Account ID 21" in the menu and a "Patient account menu" label; the stale-version test now expects "Refresh to load the latest version". |
+| `npm run build` plus grep of `dist/` for mock code | PASS; no matches |
+| [Captures](verification/phase9-pass2/after-measurements.json): 6 subjects × 4 sizes, plus `/billing/invoices` and 5 regression routes | 0 failing. No horizontal overflow at any size. At 1536×1024 the Emergency primary next step ends at y=581, the Billing balance strip at 697 (staff) and 717 (patient), and the Records dossier header at 393 (patient) and 304 (doctor). |
+| [Readability](verification/phase9-pass2/readability-results.json) at 1536 on 6 routes | Minimum visible text 12px. Minimum computed contrast 5.95:1. Every control is at least 40px tall. |
+| [Interactions](verification/phase9-pass2/interaction-results.json) | 17/17 PASS, including a mock claim that moves the next step to Start processing, the paise preview (100.5 becomes 10050 paise), focus moving to the register, the amendment history and the revoked prescription. |
+| Regression at 1536 (Reception, Consultation, Waiting Room, both Pharmacy roles) | Layout unchanged. Differences are the intended header identity text and the mock's relative timestamps. |
+
+Composites: [Emergency](verification/phase9-pass2/compare-emergency-staff-1536x1024.jpg), [Billing](verification/phase9-pass2/compare-billing-staff-1536x1024.jpg), [Records](verification/phase9-pass2/compare-records-patient-1536x1024.jpg).
+
+### Still unverified or different from the reference
+
+- No real backend run. Real role scopes, field omissions (for example, whether a patient's emergency response omits the description) and pagination sizes may differ from the mock.
+- Emergency staff (1051px) and Billing (1172px) pages scroll slightly at 1536 because the register and payment form continue below the fold. The checked targets are above it.
+- The reference's patient photo, age and sex, triage vitals, active orders, disposition, retail medicine picker, discounts, draft/print, blood group, allergies, labs and imaging are deliberately absent.
+- The Records timeline cannot show doctor or visit type per entry, because the record summary does not return them; only the selected dossier resolves the clinician.
+- Access grants have no list endpoint, so previously created grants cannot be shown.
+- Screen-reader output, 200% zoom and touch behaviour were not tested.

@@ -202,7 +202,7 @@ export function createState() {
     emergency("7103", "triaged", "urgent", 1, 16, "Synthetic: difficulty breathing reported by a family member; speaking in short sentences.", "2003", null, null, "+91-90000-00003"),
     emergency("7104", "triaged", "urgent", 2, 23, "Synthetic: deep cut on the palm from a kitchen knife, bleeding controlled with pressure.", "2004"),
     emergency("7105", "triaged", "unspecified", 4, 38, "Synthetic: rash on both forearms since this morning, mildly itchy.", "2005"),
-    emergency("7106", "claimed", "urgent", 2, 27, "Synthetic: high fever and vomiting in a young adult since last night; unable to keep fluids down.", "2006", "1006", 12, "+91-90000-00006"),
+    emergency("7106", "claimed", "urgent", 2, 27, "Synthetic: high fever and vomiting in a young adult since last night; unable to keep fluids down.", "2006", "1099", 12, "+91-90000-00006"),
     emergency("7107", "processing", "unspecified", 3, 52, "Synthetic: twisted knee during football.", "2007", "1006", 9),
     emergency("7108", "resolved", "unspecified", 5, 140, "Synthetic: request for advice about a minor burn.", patient.id),
     emergency("7109", "cancelled", "urgent", null, 95, "Synthetic: test request cancelled by the patient.", patient.id),
