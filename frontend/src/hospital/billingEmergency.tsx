@@ -1,11 +1,13 @@
 import { DepartmentIcon } from "../design/DepartmentIcon";
+import { DepartmentSign } from "../design/DepartmentSign";
+import { useCursorPage } from "./pharmacyRoom";
 import { InsuranceEstimatePanel, InsuranceRefreshPanel } from "../phase4";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAuth } from "../auth/authContext";
 import type {
   Emergency,
   Invoice,
+  Medicine,
   PatientProfile,
   Payment,
   Tariff,
@@ -21,452 +23,637 @@ import {
   integer,
   Lookup,
   money,
-  Panel,
   reasonField,
   Resource,
-  Selected,
   textField,
+  useResource,
   type Field,
 } from "./ui";
-export function BillingPage({ staff = false }: { staff?: boolean }) {
-  const { state: authState, api }=useAuth();
-  const location = useLocation();
-  const [selected, setSelected] = useState<string | null>(null);
-  const [revision, setRevision] = useState(0);
-  const [payment, setPayment] = useState<Payment | null>(null);
-  return (
-    <div className="billing-workbench">
-      <p className="billing-service-note">
-        Payments are simulated. Do not enter card, bank or real payment
-        credentials. Invoice balances include only charges explicitly imported
-        by billing staff.
-      </p>
-      <section className="billing-source-desk">
-      {staff && (
-        <Panel title="Create invoice">
-          <CommandForm<Invoice>
-            title="Create invoice"
-            path="/api/v1/billing/invoices"
-            fields={[idField("appointment_id", "Appointment ID")]}
-            build={(values) => ({
-              appointment_id: id(values.appointment_id.trim()),
-              currency: "INR",
-            })}
-            onSuccess={(item) => {
-              setSelected(item.id);
-              setRevision((v) => v + 1);
-            }}
-          />
-        </Panel>
-      )}
-      {staff && <section className="cashier-price-book" aria-label="Owner tariff reference"><Collection<Tariff>
-        title="Charge pricing reference"
-        path="/api/v1/billing/tariffs"
-        renderItem={item=><div className="cashier-price-row"><div><strong>{item.charge_code === "consultation" ? "Consultation fee" : `Medicine …${item.charge_code.slice(-4)}`}</strong><small>Tariff revision {item.revision}</small><details className="owner-identifiers"><summary>Charge code</summary>{item.charge_code}</details></div><strong>{money(item.unit_amount_minor)}</strong></div>}
-      /><p>Billing sets the price at import. This reference includes historical revisions; it does not calculate or add invoice charges.</p></section>}
-      {staff && selected && <InvoiceChargeSources invoiceId={selected} revision={revision} onChange={()=>setRevision(v=>v+1)}/>}
-      <details className="invoice-register" open={!staff||location.pathname.endsWith("/invoices")||location.pathname.endsWith("/payments")}><summary>Invoice register</summary>
-      <Collection<Invoice>
-        title="Invoices"
-        path="/api/v1/billing/invoices"
-        revision={revision}
-        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
-        renderItem={(item) => (
-          <>
-            <div className="billing-ledger-row"><span>Invoice …{item.id.slice(-4)}</span><strong>{money(item.total_minor)}</strong><span className="owner-state">{item.status}</span><small>Balance {money(item.balance_minor)}</small></div>
-            <details className="owner-identifiers"><summary>Reference identifiers</summary><Facts values={{"Invoice ID":item.id,"Appointment ID":item.appointment_id}}/></details>
-            <button
-              aria-label={`View invoice ${item.id}`}
-              onClick={() => {
-                setSelected(item.id);
-                setPayment(null);
-              }}
-            >
-              Open invoice →
-            </button>
-          </>
-        )}
-      />
-      <Lookup
-        label="Invoice ID"
-        onSelect={(value) => {
-          setSelected(value);
-          setPayment(null);
-        }}
-      />
-      </details></section><aside className="invoice-receipt">{!selected && <Panel title="Current bill"><div className="resource-empty"><DepartmentIcon department="billing"/><strong>Open an invoice</strong><p>Choose an invoice to review its authoritative line items, insurance estimate and balance.</p></div></Panel>}
-      <Selected<Invoice>
-        path={selected ? `/api/v1/billing/invoices/${selected}` : null}
-        revision={revision}
-      >
-        {(invoice, etag, refresh) => {
-          const changed = () => {
-            refresh();
-            setRevision((v) => v + 1);
-          };
-          return (
-            <>
-              <div className="invoice-status-strip"><strong>Invoice …{invoice.id.slice(-4)}</strong><span className="owner-state">{invoice.status}</span></div>
-              <Facts values={{Total:money(invoice.total_minor),Paid:money(invoice.paid_minor),Balance:money(invoice.balance_minor)}}/>
-              <details className="owner-identifiers"><summary>Patient, visit and invoice references</summary><Facts values={{"Invoice ID":invoice.id,"Patient ID":invoice.patient_id,"Appointment ID":invoice.appointment_id}}/></details>
-              {invoice.items.length === 0 && (
-                <p>No charges have been imported.</p>
-              )}
-              <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items"><table className="invoice-lines"><caption>Itemized invoice</caption><thead><tr><th scope="col">Charge / source</th><th scope="col">Qty</th><th scope="col">Unit price</th><th scope="col">Amount</th></tr></thead><tbody>{invoice.items.map(item=><tr key={item.id}><th scope="row">{item.charge_code==="consultation"?"Consultation":"Medicine"}<small>{item.source_service}</small><details className="owner-identifiers"><summary>Source</summary>{item.charge_code} · {item.source_item_id} · Tariff {item.tariff_revision}</details></th><td>{item.quantity}</td><td>{money(item.unit_amount_minor)}</td><td>{money(item.quantity*item.unit_amount_minor)}</td></tr>)}</tbody></table></div>
-              <div className="invoice-total"><span>Balance due</span><strong>{money(invoice.balance_minor)}</strong></div>
-              {invoice.balance_minor > 0 && (
-                <CommandForm<Payment>
-                  title="Submit simulated payment"
-                  path={`/api/v1/billing/invoices/${invoice.id}/payments`}
-                  conditional
-                  etag={etag}
-                  fields={[
-                    {
-                      name: "amount_minor",
-                      label: "Amount in paise (integer)",
-                      kind: "number",
-                      required: true,
-                      min: 1,
-                      max: invoice.balance_minor,
-                      initial: String(invoice.balance_minor),
-                    },
-                    {
-                      name: "simulated_outcome",
-                      label: "Simulated outcome",
-                      kind: "select",
-                      required: true,
-                      options: ["success", "decline"],
-                      initial: "success",
-                    },
-                  ]}
-                  build={(values) => ({
-                    amount_minor: integer(
-                      values.amount_minor,
-                      1,
-                      invoice.balance_minor,
-                    ),
-                    currency: "INR",
-                    simulated_outcome: values.simulated_outcome,
-                  })}
-                  onSuccess={(result) => {
-                    setPayment(result);
-                    changed();
-                  }}
-                />
-              )}
-              <details className="insurance-receipt"><summary>Insurance estimates</summary><InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} /></details>
-              <details className="payment-history"><summary>Payment history</summary><Collection<Payment>
-                title="Invoice payments"
-                path={`/api/v1/billing/invoices/${invoice.id}/payments`}
-                renderItem={(item) => (
-                  <Facts
-                    values={{
-                      "Payment ID": item.id,
-                      Amount: money(item.amount_minor),
-                      Status: item.status,
-                    }}
-                  />
-                )}
-              /></details>
-            </>
-          );
-        }}
-      </Selected>
-      {payment && (
-        <p role="status">
-          Payment {payment.id}:{" "}
-          {payment.status === "declined"
-            ? "simulated decline recorded; balance was not paid"
-            : "simulated success recorded"}
-          . Amount {money(payment.amount_minor)}.
-        </p>
-      )}
-      </aside>
-      {staff && <details className="billing-tariff-desk"><summary>Tariffs and charge pricing</summary><Tariffs /></details>}
-    </div>
-  );
+function MedicineCharge({ code }: { code: string }) {
+  const medicineId = code.startsWith("medicine:") ? code.slice(9) : null;
+  const medicine = useResource<Medicine>(medicineId ? `/api/v1/pharmacy/medicines/${medicineId}` : null);
+  if (code === "consultation") return <>Consultation fee</>;
+  const name = medicine.response?.data.name;
+  return <>{name && !name.startsWith("Synthetic") ? name : code}</>;
 }
-function InvoiceChargeSources({invoiceId,revision,onChange}:{invoiceId:string;revision:number;onChange:()=>void}) {
-  return <Panel title="Charge sources"><div className="charge-source-tabs"><span>Consultation · Records</span><span>Medicines · Pharmacy</span></div><Resource<Invoice> path={`/api/v1/billing/invoices/${invoiceId}`} revision={revision}>{(invoice,etag)=>(
-<CommandForm
-                  title="Import charges manually"
-                  path={`/api/v1/billing/invoices/${invoice.id}/charges`}
-                  conditional
-                  etag={etag}
-                  fields={[
-                    idField(
-                      "consultation_id",
-                      "Finalized consultation ID",
-                      false,
-                    ),
-                    {
-                      name: "dispensing_ids",
-                      label: "Completed dispensing IDs (comma separated)",
-                    },
-                  ]}
-                  build={(values) => {
-                    const consultationId = values.consultation_id.trim();
-                    const dispensingIds = ids(values.dispensing_ids);
-                    if (!consultationId && !dispensingIds.length)
-                      throw new Error(
-                        "Select at least one consultation or dispensing source.",
-                      );
-                    return {
-                      ...(consultationId
-                        ? { consultation_id: id(consultationId) }
-                        : {}),
-                      dispensing_ids: dispensingIds,
-                    };
-                  }}
-                  onSuccess={onChange}
-                  notice="Source IDs must belong to this invoice's appointment and patient. Missing imports are not automatically detected. Prices come from Billing tariffs."
-                />
-  )}</Resource></Panel>;
+function InvoiceStatus({ invoice }: { invoice: Invoice }) {
+  const label = invoice.status === "paid" ? "Paid" : invoice.paid_minor > 0 ? "Part paid" : "Unpaid";
+  return <span className="owner-state" data-state={label.toLowerCase().replace(" ", "-")}>{label}</span>;
 }
-function Tariffs() {
-  const [revision, setRevision] = useState(0);
-  const fields: Field[] = [
-    {
-      name: "charge_code",
-      label: "Charge code (consultation or medicine:ID)",
-      required: true,
-      max: 128,
-    },
-    {
-      name: "unit_amount_minor",
-      label: "Unit amount in paise",
-      kind: "number",
-      required: true,
-      min: 0,
-    },
-  ];
+function rupees(minor: number) {
+  const amount = BigInt(minor);
+  return `${amount / 100n}.${String(amount % 100n).padStart(2, "0")}`;
+}
+function paiseFromRupees(value: string, max: number) {
+  const match = /^(\d{1,15})(?:\.(\d{1,2}))?$/.exec(value.trim());
+  if (!match) throw new Error("Enter the amount in rupees with up to two decimals, for example 500 or 500.50.");
+  return integer(String(Number(match[1]) * 100 + Number((match[2] ?? "").padEnd(2, "0"))), 1, max);
+}
+const chargeSources = [
+  { source: "records", label: "Consultation" },
+  { source: "pharmacy", label: "Pharmacy" },
+] as const;
+
+function InvoiceReceipt({
+  invoice,
+  etag,
+  loading,
+  onRefresh,
+  onChange,
+  payment,
+  onPayment,
+}: {
+  invoice: Invoice;
+  etag: string | null;
+  loading: boolean;
+  onRefresh: () => void;
+  onChange: () => void;
+  payment: Payment | null;
+  onPayment: (payment: Payment) => void;
+}) {
+  const { state: authState, api } = useAuth();
   return (
     <>
-      <Panel title="Tariff revisions">
-        <CommandForm
-          title="Create tariff revision"
-          path="/api/v1/billing/tariffs"
-          fields={fields}
-          build={(values) => {
-            const body = buildFields(fields, values);
-            const code = values.charge_code.trim();
-            if (code !== "consultation") {
-              if (!code.startsWith("medicine:"))
-                throw new Error("Use consultation or medicine:ID.");
-              id(code.slice(9));
+      <header className="cashier-receipt__header">
+        <div><h2 id="cashier-receipt-title">Receipt</h2><p>Invoice …{invoice.id.slice(-4)} · <InvoiceStatus invoice={invoice} /></p></div>
+        <button type="button" disabled={loading} onClick={onRefresh}>Refresh</button>
+      </header>
+      {invoice.items.length === 0 ? (
+        <p className="cashier-receipt__empty">No charges have been imported.</p>
+      ) : (
+        <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items">
+          <table className="cashier-lines">
+            <caption className="sr-only">Itemized invoice</caption>
+            <thead><tr><th scope="col">Charge</th><th scope="col">Qty × unit</th><th scope="col">Amount</th></tr></thead>
+            {chargeSources.map(({ source, label }) => {
+              const lines = invoice.items.filter((line) => line.source_service === source);
+              if (!lines.length) return null;
+              return (
+                <tbody key={source}>
+                  <tr className="cashier-lines__group"><th scope="colgroup" colSpan={3}>{label} <span>({lines.length} {lines.length === 1 ? "item" : "items"})</span></th></tr>
+                  {lines.map((line) => (
+                    <tr key={line.id}>
+                      <th scope="row"><MedicineCharge code={line.charge_code} /></th>
+                      <td>{line.quantity} × {money(line.unit_amount_minor)}</td>
+                      <td>{money(line.quantity * line.unit_amount_minor)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              );
+            })}
+          </table>
+        </div>
+      )}
+      <dl className="cashier-balance" data-check="billing-balance">
+        <div><dt>Total</dt><dd>{money(invoice.total_minor)}</dd></div>
+        <div><dt>Paid</dt><dd>{money(invoice.paid_minor)}</dd></div>
+        <div className="cashier-balance__due"><dt>Balance due</dt><dd>{money(invoice.balance_minor)}</dd></div>
+      </dl>
+      <p className="cashier-simulated">Payments are simulated. Do not enter card, bank or real payment credentials.</p>
+      {invoice.balance_minor > 0 && (
+        <CommandForm<Payment>
+          key={`${invoice.id}:${invoice.version}`}
+          title="Submit simulated payment"
+          path={`/api/v1/billing/invoices/${invoice.id}/payments`}
+          conditional
+          etag={etag}
+          fields={[
+            { name: "amount_rupees", label: "Payment amount (₹)", required: true, max: 20, initial: rupees(invoice.balance_minor) },
+            { name: "simulated_outcome", label: "Simulated outcome", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
+          ]}
+          preview={(values) => {
+            try {
+              const paise = paiseFromRupees(values.amount_rupees ?? "", invoice.balance_minor);
+              return <p className="paise-preview" aria-live="polite">{money(paise)} → {paise} paise will be submitted</p>;
+            } catch (problem) {
+              return <p className="paise-preview" aria-live="polite">{problem instanceof Error ? problem.message : "Enter an amount."}</p>;
             }
-            return { ...body, currency: "INR" };
           }}
-          onSuccess={() => setRevision((v) => v + 1)}
+          build={(values) => ({
+            amount_minor: paiseFromRupees(values.amount_rupees, invoice.balance_minor),
+            currency: "INR",
+            simulated_outcome: values.simulated_outcome,
+          })}
+          onSuccess={(result) => {
+            onPayment(result);
+            onChange();
+          }}
         />
-      </Panel>
-      <Collection<Tariff>
-        title="Tariffs"
-        path="/api/v1/billing/tariffs"
-        revision={revision}
-        renderItem={(item) => (
-          <Facts
-            values={{
-              "Tariff ID": item.id,
-              Code: item.charge_code,
-              Revision: item.revision,
-              "Unit amount": money(item.unit_amount_minor),
-            }}
-          />
-        )}
-      />
+      )}
+      {payment && payment.invoice_id === invoice.id && (
+        <p role="status" className="cashier-payment-result">
+          Payment …{payment.id.slice(-4)}:{" "}
+          {payment.status === "declined" ? "simulated decline recorded; balance was not paid" : "simulated success recorded"}. Amount {money(payment.amount_minor)}.
+        </p>
+      )}
+      <details className="cashier-more"><summary>Payment history</summary>
+        <Collection<Payment>
+          title="Invoice payments"
+          path={`/api/v1/billing/invoices/${invoice.id}/payments`}
+          renderItem={(item) => <div className="cashier-payment-row"><span>{money(item.amount_minor)}</span><span className="owner-state" data-state={item.status}>{item.status === "declined" ? "Declined" : "Succeeded"}</span><small>…{item.id.slice(-4)}</small></div>}
+        />
+      </details>
+      <details className="cashier-more"><summary>Insurance estimates</summary><InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} /></details>
+      <details className="owner-identifiers"><summary>Details</summary>
+        <Facts values={{ "Invoice ID": invoice.id, "Patient ID": invoice.patient_id, "Appointment ID": invoice.appointment_id, Version: invoice.version }} />
+        <ul className="cashier-sources">{invoice.items.map((line) => <li key={line.id}>{line.source_service} · source {line.source_item_id} · {line.charge_code} · tariff revision {line.tariff_revision}</li>)}</ul>
+      </details>
     </>
   );
 }
-export function EmergencyPage({ staff = false }: { staff?: boolean }) {
+
+function TariffReference() {
+  const [revision, setRevision] = useState(0);
+  const tariffs = useCursorPage<Tariff>("/api/v1/billing/tariffs", revision);
+  const latest = new Map<string, number>();
+  tariffs.items.forEach((item) => latest.set(item.charge_code, Math.max(latest.get(item.charge_code) ?? 0, item.revision)));
+  return (
+    <div className="cashier-tariffs">
+      <div className="cashier-panel-heading"><p>Billing sets prices when charges are imported. Historical revisions stay for reference; this list does not add charges.</p><button type="button" disabled={tariffs.loading} onClick={tariffs.refresh}>Refresh</button></div>
+      {tariffs.loading && <p role="status">Loading tariffs…</p>}
+      {tariffs.error && <p role="alert">{tariffs.error}</p>}
+      <table className="cashier-price-table">
+        <caption className="sr-only">Tariff reference</caption>
+        <thead><tr><th scope="col">Charge</th><th scope="col">Revision</th><th scope="col">Unit price</th></tr></thead>
+        <tbody>{tariffs.items.map((item) => {
+          const current = latest.get(item.charge_code) === item.revision;
+          return <tr key={item.id} data-historical={!current}><th scope="row"><MedicineCharge code={item.charge_code} /></th><td>{current ? `Current · revision ${item.revision}` : `Historical · revision ${item.revision}`}</td><td>{money(item.unit_amount_minor)}</td></tr>;
+        })}</tbody>
+      </table>
+      {(tariffs.hasPrevious || tariffs.hasNext) && <div className="cashier-pages"><button type="button" disabled={!tariffs.hasPrevious} onClick={tariffs.previous}>Previous page</button><button type="button" disabled={!tariffs.hasNext} onClick={tariffs.next}>Next page</button></div>}
+      <details className="cashier-more"><summary>Add a tariff revision</summary><Tariffs onCreated={() => setRevision((v) => v + 1)} /></details>
+    </div>
+  );
+}
+
+const cashierTabs = [
+  { key: "import", label: "Import charges" },
+  { key: "tariffs", label: "Tariff reference" },
+  { key: "new", label: "New invoice" },
+] as const;
+
+export function BillingPage({ staff = false, title, subtitle }: { staff?: boolean; title?: string; subtitle?: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
+  const [payment, setPayment] = useState<Payment | null>(null);
+  const [tab, setTab] = useState<(typeof cashierTabs)[number]["key"]>("import");
+  const registerRef = useRef<HTMLElement>(null);
+  const register = useCursorPage<Invoice>("/api/v1/billing/invoices", revision);
+  const firstId = register.items[0]?.id;
+  useEffect(() => {
+    if (!selected && firstId) setSelected(firstId);
+  }, [selected, firstId]);
+  const invoice = useResource<Invoice>(selected ? `/api/v1/billing/invoices/${selected}` : null, revision);
+  const profile = useResource<PatientProfile>(staff ? null : "/api/v1/patients/me");
+  const current = invoice.response?.data;
+  const etag = invoice.response?.etag ?? null;
+  const changed = () => setRevision((v) => v + 1);
+  const select = (value: string) => {
+    setSelected(value);
+    setPayment(null);
+  };
+  const ownName = profile.response && current && profile.response.data.id === current.patient_id && !profile.response.data.display_name.startsWith("Synthetic") ? profile.response.data.display_name : null;
+  const openRegister = () => {
+    registerRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    registerRef.current?.focus({ preventScroll: true });
+  };
+
+  const context = (
+    <section className="cashier-context" aria-label="Selected invoice">
+      {current ? (
+        <dl>
+          <div className="cashier-context__patient"><dt>Patient</dt><dd>{ownName ?? `Patient …${current.patient_id.slice(-4)}`}{ownName && <small>ID …{current.patient_id.slice(-4)}</small>}</dd></div>
+          <div><dt>Visit</dt><dd>Visit …{current.appointment_id.slice(-4)}</dd></div>
+          <div><dt>Invoice</dt><dd>Invoice …{current.id.slice(-4)}</dd></div>
+          <div><dt>Status</dt><dd><InvoiceStatus invoice={current} /></dd></div>
+        </dl>
+      ) : (
+        <p>{register.loading || invoice.loading ? "Loading invoice…" : "No invoice selected."}</p>
+      )}
+      <button type="button" onClick={openRegister}>Change invoice</button>
+    </section>
+  );
+  const registerTable = (
+    <section className="cashier-register" ref={registerRef} tabIndex={-1} aria-labelledby="cashier-register-title">
+      <div className="cashier-panel-heading"><h2 id="cashier-register-title">{staff ? "Invoice register" : "Your invoices"}</h2><button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button></div>
+      {register.loading && <p role="status">Loading invoices…</p>}
+      {register.error && <p role="alert">{register.error}</p>}
+      {register.loaded && !register.loading && register.items.length === 0 && <p>No invoices found.</p>}
+      {register.items.length > 0 && (
+        <table className="cashier-register__table">
+          <caption className="sr-only">Invoices</caption>
+          <thead><tr><th scope="col">Invoice</th><th scope="col">Visit</th><th scope="col">Status</th><th scope="col">Total</th><th scope="col">Balance</th><th scope="col"><span className="sr-only">Open</span></th></tr></thead>
+          <tbody>{register.items.map((item) => (
+            <tr key={item.id} data-selected={selected === item.id}>
+              <th scope="row">…{item.id.slice(-4)}</th>
+              <td>…{item.appointment_id.slice(-4)}</td>
+              <td><InvoiceStatus invoice={item} /></td>
+              <td>{money(item.total_minor)}</td>
+              <td>{money(item.balance_minor)}</td>
+              <td><button type="button" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
+            </tr>
+          ))}</tbody>
+        </table>
+      )}
+      {(register.hasPrevious || register.hasNext) && <div className="cashier-pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
+      <details className="cashier-more"><summary>Open an invoice by ID</summary><Lookup label="Invoice ID" onSelect={select} /></details>
+    </section>
+  );
+  const receipt = (
+    <aside className="cashier-receipt" aria-labelledby="cashier-receipt-title">
+      {!selected && !register.loading && <p className="cashier-receipt__empty"><DepartmentIcon department="billing" />Choose an invoice to review its line items and balance.</p>}
+      {invoice.loading && !current && <p role="status">Loading invoice…</p>}
+      {invoice.error && <p role="alert">{invoice.error}</p>}
+      {current && <InvoiceReceipt invoice={current} etag={etag} loading={invoice.loading} onRefresh={invoice.refresh} onChange={changed} payment={payment} onPayment={setPayment} />}
+    </aside>
+  );
+  return (
+    <div className={`cashier-desk cashier-desk--${staff ? "staff" : "patient"}`}>
+      {title && (
+        <DepartmentSign department="billing" title={title} subtitle={subtitle ?? ""}>
+          <p className="department-sign__note"><strong>Simulated payments</strong><span>Balances include only charges imported by Billing staff.</span></p>
+        </DepartmentSign>
+      )}
+      {context}
+      {staff ? (
+        <>
+          <div className="cashier-left">
+            <section className="cashier-workbench" aria-label="Cashier actions">
+              <div className="cashier-tabs" role="tablist" aria-label="Cashier actions">
+                {cashierTabs.map((item, index) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    role="tab"
+                    id={`cashier-tab-${item.key}`}
+                    aria-controls="cashier-tabpanel"
+                    aria-selected={tab === item.key}
+                    tabIndex={tab === item.key ? 0 : -1}
+                    onClick={() => setTab(item.key)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
+                      const next = cashierTabs[(index + (event.key === "ArrowRight" ? 1 : cashierTabs.length - 1)) % cashierTabs.length];
+                      setTab(next.key);
+                      document.getElementById(`cashier-tab-${next.key}`)?.focus();
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <div className="cashier-tabpanel" role="tabpanel" id="cashier-tabpanel" aria-labelledby={`cashier-tab-${tab}`}>
+                {tab === "import" && (current
+                  ? <ChargeImport invoice={current} etag={etag} onChange={changed} />
+                  : <p>Choose an invoice before importing charges.</p>)}
+                {tab === "tariffs" && <TariffReference />}
+                {tab === "new" && (
+                  <CommandForm<Invoice>
+                    title="Create invoice"
+                    path="/api/v1/billing/invoices"
+                    fields={[idField("appointment_id", "Appointment ID")]}
+                    build={(values) => ({ appointment_id: id(values.appointment_id.trim()), currency: "INR" })}
+                    onSuccess={(item) => {
+                      select(item.id);
+                      changed();
+                      setTab("import");
+                    }}
+                    notice="Creates an empty invoice for a visit. Charges are added by importing finalized sources."
+                  />
+                )}
+              </div>
+            </section>
+            {registerTable}
+          </div>
+          {receipt}
+        </>
+      ) : (
+        <>
+          {receipt}
+          {registerTable}
+        </>
+      )}
+    </div>
+  );
+}
+function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: string | null; onChange: () => void }) {
+  return (
+    <div className="cashier-import">
+      <p>Import finalized sources for <strong>Visit …{invoice.appointment_id.slice(-4)}</strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
+      <CommandForm
+        key={`${invoice.id}:${invoice.version}`}
+        title="Import charges manually"
+        path={`/api/v1/billing/invoices/${invoice.id}/charges`}
+        conditional
+        etag={etag}
+        fields={[
+          idField("consultation_id", "Finalized consultation ID", false),
+          { name: "dispensing_ids", label: "Completed dispensing IDs (comma separated)" },
+        ]}
+        build={(values) => {
+          const consultationId = values.consultation_id.trim();
+          const dispensingIds = ids(values.dispensing_ids);
+          if (!consultationId && !dispensingIds.length) throw new Error("Select at least one consultation or dispensing source.");
+          return { ...(consultationId ? { consultation_id: id(consultationId) } : {}), dispensing_ids: dispensingIds };
+        }}
+        onSuccess={onChange}
+        notice="Source IDs must belong to this invoice's appointment and patient. Missing imports are not detected automatically."
+      />
+    </div>
+  );
+}
+function Tariffs({ onCreated }: { onCreated: () => void }) {
+  const fields: Field[] = [
+    { name: "charge_code", label: "Charge code (consultation or medicine:ID)", required: true, max: 128 },
+    { name: "unit_amount_minor", label: "Unit amount in paise", kind: "number", required: true, min: 0 },
+  ];
+  return (
+    <CommandForm
+      title="Create tariff revision"
+      path="/api/v1/billing/tariffs"
+      fields={fields}
+      build={(values) => {
+        const body = buildFields(fields, values);
+        const code = values.charge_code.trim();
+        if (code !== "consultation") {
+          if (!code.startsWith("medicine:")) throw new Error("Use consultation or medicine:ID.");
+          id(code.slice(9));
+        }
+        return { ...body, currency: "INR" };
+      }}
+      onSuccess={onCreated}
+    />
+  );
+}
+function useNow(intervalMs = 30000) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), intervalMs);
+    return () => window.clearInterval(timer);
+  }, [intervalMs]);
+  return now;
+}
+function elapsed(from: string, now: number) {
+  const minutes = Math.max(0, Math.round((now - Date.parse(from)) / 60000));
+  if (minutes < 60) return `${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  return hours < 48 ? `${hours} h ${minutes % 60} min` : `${Math.floor(hours / 24)} days`;
+}
+function utcTime(value: string) {
+  return `${new Date(value).toLocaleString("en-IN", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" })} UTC`;
+}
+function PriorityChip({ priority }: { priority: number | null }) {
+  return (
+    <span className="priority-chip" data-priority={priority ?? "none"}>
+      {priority ? <><span className="sr-only">Priority </span>P{priority}</> : "No priority"}
+    </span>
+  );
+}
+function StateChip({ state }: { state: string }) {
+  return <span className="owner-state" data-state={state}>{state.replaceAll("_", " ")}</span>;
+}
+function requestTitle(item: Emergency) {
+  return item.description?.trim() || `Request …${item.id.slice(-4)}`;
+}
+const terminalStates = ["resolved", "cancelled"];
+
+function NextSteps({
+  item,
+  etag,
+  staff,
+  userId,
+  onChange,
+}: {
+  item: Emergency;
+  etag: string | null;
+  staff: boolean;
+  userId?: string;
+  onChange: () => void;
+}) {
+  const owned = !!userId && item.claimed_by_user_id === userId;
+  const transition = (title: string, target: Emergency["state"]) => (
+    <CommandForm
+      title={title}
+      path={`/api/v1/emergencies/${item.id}/transitions`}
+      conditional
+      etag={etag}
+      fields={[reasonField]}
+      build={(values) => ({ ...buildFields([reasonField], values), state: target })}
+      onSuccess={onChange}
+    />
+  );
+  const priority = (title: string) => (
+    <CommandForm
+      title={title}
+      path={`/api/v1/emergencies/${item.id}/priority`}
+      method="PATCH"
+      conditional
+      etag={etag}
+      fields={[
+        { name: "assigned_priority", label: "Assigned priority (1 highest, 5 lowest)", kind: "number", min: 1, max: 5, required: true },
+        reasonField,
+      ]}
+      onSuccess={onChange}
+    />
+  );
+  const claim = (
+    <CommandForm
+      title="Claim request"
+      path={`/api/v1/emergencies/${item.id}/claim`}
+      conditional
+      etag={etag}
+      onSuccess={onChange}
+      notice="Claims have a 15-minute lease. Refresh before processing to check the current claim."
+    />
+  );
+  const release = (
+    <CommandForm
+      title="Release claim"
+      path={`/api/v1/emergencies/${item.id}/release`}
+      conditional
+      etag={etag}
+      fields={[reasonField]}
+      onSuccess={onChange}
+    />
+  );
+  const cancel = transition("Cancel emergency request", "cancelled");
+  const claimUntil = item.claim_expires_at ? ` until ${utcTime(item.claim_expires_at)}` : "";
+
+  let primary: ReactNode = null;
+  let note = "";
+  const secondary: { label: string; form: ReactNode }[] = [];
+  if (terminalStates.includes(item.state)) {
+    note = `This request is ${item.state}. No further workflow actions are available.`;
+  } else if (!staff) {
+    if (["submitted", "triaged"].includes(item.state)) secondary.push({ label: "Cancel this request", form: cancel });
+    else note = "Emergency staff are handling this request. It can no longer be cancelled here.";
+  } else if (item.state === "submitted") {
+    primary = priority("Set priority");
+    secondary.push({ label: "Cancel request", form: cancel });
+  } else if (item.state === "triaged") {
+    primary = claim;
+    secondary.push({ label: "Change priority", form: priority("Set priority") }, { label: "Cancel request", form: cancel });
+  } else if (item.state === "claimed") {
+    if (owned) {
+      primary = transition("Start processing", "processing");
+      secondary.push({ label: "Release claim", form: release });
+    } else note = `Claimed by another staff member${claimUntil}. Only the claim holder can process or release it.`;
+    secondary.push({ label: "Change priority", form: priority("Set priority") }, { label: "Cancel request", form: cancel });
+  } else if (item.state === "processing") {
+    if (owned) primary = transition("Resolve request", "resolved");
+    else note = "Another staff member is processing this request.";
+    secondary.push({ label: "Change priority", form: priority("Set priority") });
+  }
+  return (
+    <aside className="er-steps" aria-labelledby="er-steps-title">
+      <h2 id="er-steps-title">{staff ? "Next steps" : "Request actions"}</h2>
+      {note && <p className="er-steps__note">{note}</p>}
+      {primary && <div className="er-primary" data-check="emergency-primary">{primary}</div>}
+      {secondary.map(({ label, form }) => (
+        <details className="er-secondary" key={label}>
+          <summary>{label}</summary>
+          {form}
+        </details>
+      ))}
+    </aside>
+  );
+}
+
+function EmergencyCase({ item, staff, userId, loading, onRefresh, now }: { item: Emergency; staff: boolean; userId?: string; loading: boolean; onRefresh: () => void; now: number }) {
+  const claimHolder = item.claimed_by_user_id ? (item.claimed_by_user_id === userId ? "You" : "Another staff member") : null;
+  return (
+    <section className="er-case" aria-labelledby="er-case-title">
+      <header className="er-case__header">
+        <div>
+          <p className="er-case__eyebrow">Emergency request <span>…{item.id.slice(-4)}</span></p>
+          <h2 id="er-case-title">{staff ? requestTitle(item) : `Your request from ${utcTime(item.created_at)}`}</h2>
+        </div>
+        <div className="er-case__chips"><StateChip state={item.state} /><PriorityChip priority={item.assigned_priority} /></div>
+        <button type="button" disabled={loading} onClick={onRefresh}>Refresh</button>
+      </header>
+      <dl className="er-facts">
+        <div><dt>Submitted</dt><dd><time dateTime={item.created_at}>{utcTime(item.created_at)}</time><small>{elapsed(item.created_at, now)} ago</small></dd></div>
+        <div><dt>Last updated</dt><dd><time dateTime={item.updated_at}>{utcTime(item.updated_at)}</time></dd></div>
+        <div><dt>Reported urgency (advisory)</dt><dd>{item.reported_urgency === "urgent" ? "Urgent" : "Not specified"}</dd></div>
+        <div><dt>Assigned priority</dt><dd>{item.assigned_priority ? `Priority ${item.assigned_priority} of 5` : "Priority not yet assigned"}</dd></div>
+        {staff && <div><dt>Contact</dt><dd>{item.synthetic_contact || "None provided"}</dd></div>}
+        {staff && <div><dt>Claim</dt><dd>{claimHolder ? <>{claimHolder}{item.claim_expires_at && <small>Lease ends <time dateTime={item.claim_expires_at}>{utcTime(item.claim_expires_at)}</time></small>}</> : "Not claimed"}</dd></div>}
+      </dl>
+      {staff && item.description && <section className="er-description"><h3>Request description</h3><p>{item.description}</p></section>}
+      <details className="owner-identifiers">
+        <summary>Details</summary>
+        <Facts values={{ "Request ID": item.id, Version: item.version, ...(staff ? { "Patient ID": item.patient_id, "Claimed by": item.claimed_by_user_id } : {}) }} />
+      </details>
+    </section>
+  );
+}
+
+export function EmergencyPage({ staff = false, title, subtitle }: { staff?: boolean; title?: string; subtitle?: string }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [revision, setRevision] = useState(0);
+  const [listOpen, setListOpen] = useState(false);
   const { state } = useAuth();
   const userId = state.status === "authenticated" ? state.user.id : undefined;
+  const now = useNow();
+  const register = useCursorPage<Emergency>("/api/v1/emergencies", revision);
+  const firstId = register.items[0]?.id;
+  useEffect(() => {
+    if (!selected && firstId) setSelected(firstId);
+  }, [selected, firstId]);
+  const request = useResource<Emergency>(selected ? `/api/v1/emergencies/${selected}` : null, revision);
+  const item = request.response?.data;
+  const changed = () => setRevision((v) => v + 1);
+  const open = register.items.filter((entry) => !terminalStates.includes(entry.state));
+  const paged = register.hasNext || register.hasPrevious;
+  const counts = [
+    { label: "Unassigned", value: open.filter((entry) => entry.assigned_priority === null).length, tone: "neutral" },
+    { label: "Priority 1–2", value: open.filter((entry) => (entry.assigned_priority ?? 9) <= 2).length, tone: "urgent" },
+    { label: "Claimed", value: register.items.filter((entry) => entry.state === "claimed").length, tone: "claimed" },
+  ];
+  const registerList = (
+    <section className="er-register" data-open={listOpen} aria-labelledby="er-register-title">
+      <header className="er-register__header">
+        <h2 id="er-register-title">{staff ? "Request queue" : "Your requests"} <span>({register.items.length}{paged ? " on this page" : ""})</span></h2>
+        <button type="button" className="er-register__toggle" aria-expanded={listOpen} onClick={() => setListOpen(!listOpen)}>{listOpen ? "Hide requests" : `All requests (${register.items.length})`}</button>
+        <button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button>
+      </header>
+      {register.loading && <p role="status">Loading emergency requests…</p>}
+      {register.error && <p role="alert">{register.error}</p>}
+      {register.loaded && !register.loading && register.items.length === 0 && <p>No emergency requests found.</p>}
+      <ol className="er-queue">
+        {register.items.map((entry) => (
+          <li key={entry.id}>
+            <button type="button" className="er-row" data-state={entry.state} aria-pressed={selected === entry.id} aria-label={`Track request ${entry.id}`} onClick={() => setSelected(entry.id)}>
+              <PriorityChip priority={entry.assigned_priority} />
+              <span className="er-row__main">
+                <strong>{staff ? requestTitle(entry) : `Request …${entry.id.slice(-4)}`}</strong>
+                <small>{entry.reported_urgency === "urgent" ? "Reported urgent" : "Urgency not specified"}</small>
+              </span>
+              <span className="er-row__meta"><StateChip state={entry.state} /><time dateTime={entry.created_at}>{elapsed(entry.created_at, now)}</time></span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      {paged && <div className="er-register__pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
+      <details className="er-lookup"><summary>Open a request by ID</summary><Lookup label="Emergency request ID" onSelect={setSelected} /></details>
+    </section>
+  );
+  const casePanel = (
+    <>
+      {!selected && !register.loading && <section className="er-case er-case--empty"><DepartmentIcon department="emergency" /><p>Select a request to see its owner-confirmed priority, claim and allowed next steps.</p></section>}
+      {request.loading && !item && <p role="status" className="er-case">Loading request…</p>}
+      {request.error && <p role="alert" className="er-case">{request.error}</p>}
+      {item && <EmergencyCase key={`${item.id}:${item.version}`} item={item} staff={staff} userId={userId} loading={request.loading} onRefresh={request.refresh} now={now} />}
+      {item && <NextSteps key={`steps:${item.id}:${item.version}`} item={item} etag={request.response?.etag ?? null} staff={staff} userId={userId} onChange={changed} />}
+    </>
+  );
   return (
-    <div className={`emergency-workbench emergency-workbench--${staff?"staff":"patient"}`}>
-      <p className="emergency-service-note">
-        Synthetic educational requests only. This prototype does not provide
-        emergency dispatch or certified clinical triage.
-      </p>
-      <section className="emergency-register">
+    <div className={`er-desk er-desk--${staff ? "staff" : "patient"}`}>
+      {title && (
+        <DepartmentSign department="emergency" title={title} subtitle={subtitle ?? ""}>
+          {staff && (
+            <ul className="er-counts" aria-label={paged ? "Counts in this list page" : "Counts in this list"}>
+              {counts.map((count) => <li key={count.label} data-tone={count.tone}><strong>{count.value}</strong><span>{count.label}</span></li>)}
+              <li className="er-counts__scope">in this list{paged ? " page" : ""}</li>
+            </ul>
+          )}
+        </DepartmentSign>
+      )}
+      <p className="er-notice" role="note">Synthetic educational requests only. This prototype does not provide emergency dispatch or certified clinical triage.</p>
       {!staff && (
-        <Panel title="Submit emergency request">
-          <Resource<PatientProfile> path="/api/v1/patients/me">
+        <section className="er-intake" aria-labelledby="er-intake-title">
+          <h2 id="er-intake-title">New request</h2>
+          <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>
             {(profile) => (
               <CommandForm<Emergency>
                 title="Submit emergency request"
                 path="/api/v1/emergencies"
                 fields={[
                   textField("description", "Synthetic request description"),
-                  {
-                    name: "reported_urgency",
-                    label: "Reported urgency (advisory)",
-                    kind: "select",
-                    required: true,
-                    options: ["unspecified", "urgent"],
-                    initial: "unspecified",
-                  },
-                  {
-                    name: "synthetic_contact",
-                    label: "Synthetic contact",
-                    max: 256,
-                  },
+                  { name: "reported_urgency", label: "Reported urgency (advisory)", kind: "select", required: true, options: ["unspecified", "urgent"], initial: "unspecified" },
+                  { name: "synthetic_contact", label: "Synthetic contact", max: 256 },
                 ]}
                 build={(values) => ({
                   ...buildFields(
                     [
                       textField("description", "Description"),
-                      {
-                        name: "reported_urgency",
-                        label: "Urgency",
-                        required: true,
-                        options: ["unspecified", "urgent"],
-                      },
-                      {
-                        name: "synthetic_contact",
-                        label: "Synthetic contact",
-                        max: 256,
-                      },
+                      { name: "reported_urgency", label: "Urgency", required: true, options: ["unspecified", "urgent"] },
+                      { name: "synthetic_contact", label: "Synthetic contact", max: 256 },
                     ],
                     values,
                   ),
                   patient_id: profile.id,
                 })}
-                onSuccess={(item) => {
-                  setSelected(item.id);
-                  setRevision((v) => v + 1);
+                onSuccess={(created) => {
+                  setSelected(created.id);
+                  changed();
                 }}
               />
             )}
           </Resource>
-        </Panel>
+        </section>
       )}
-      <Collection<Emergency>
-        title="Emergency requests"
-        path="/api/v1/emergencies"
-        revision={revision}
-        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
-        renderItem={(item) => (
-          <>
-            <div className="emergency-triage-row" data-priority={item.assigned_priority??"unassigned"} data-state={item.state}><DepartmentIcon department="reception"/><strong>Request …{item.id.slice(-4)}</strong><span className="owner-state">{item.state}</span><span>{item.assigned_priority?`Priority ${item.assigned_priority}`:item.reported_urgency}</span><time>{new Date(item.updated_at).toLocaleTimeString('en',{timeZone:'UTC',hour:'2-digit',minute:'2-digit'})} UTC</time></div>
-            <button aria-label={`Track request ${item.id}`} onClick={() => setSelected(item.id)}>
-              Review request →
-            </button>
-          </>
-        )}
-      />
-      <Lookup label="Emergency request ID" onSelect={setSelected} />
-      </section><section className="emergency-active">{!selected && <Panel title="Active request"><div className="resource-empty"><DepartmentIcon department="emergency"/><strong>Select an emergency request</strong><p>Review a request to see its owner-confirmed priority, claim and allowed next actions.</p></div></Panel>}
-      <Selected<Emergency>
-        path={selected ? `/api/v1/emergencies/${selected}` : null}
-      >
-        {(item, etag, refresh) => {
-          const changed = () => {
-            refresh();
-            setRevision((v) => v + 1);
-          };
-          const terminal = ["resolved", "cancelled"].includes(item.state);
-          const ownedClaim = !!userId && item.claimed_by_user_id === userId;
-          return (
-            <div className="emergency-case-layout">
-              <header className="emergency-case-header"><DepartmentIcon department="reception"/><div><strong>Request …{item.id.slice(-4)}</strong><span className="owner-state" data-priority={item.assigned_priority??"unassigned"}>{item.state.replaceAll("_"," ")}</span><p>{item.assigned_priority?`Assigned priority ${item.assigned_priority}`:"Awaiting assigned priority"}</p></div><time>{new Date(item.updated_at).toLocaleString("en",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})} UTC</time></header>
-              <section className="emergency-brief"><h3>Request details</h3>{staff&&<p className="request-description">{item.description}</p>}
-                <Facts values={{"Reported urgency":item.reported_urgency,"Created (UTC)":item.created_at,"Last updated (UTC)":item.updated_at}}/>
-                {staff&&<Facts values={{"Contact":item.synthetic_contact,"Claim expiry (UTC)":item.claim_expires_at}}/>}
-                <details className="owner-identifiers"><summary>Request references</summary><Facts values={{"Request ID":item.id,...(staff?{"Patient ID":item.patient_id,"Claimed by":item.claimed_by_user_id}:{})}}/></details>
-                {terminal&&<p className="terminal-request">This request is {item.state}. No further workflow actions are available.</p>}
-              </section><aside className="emergency-actions"><h3>{staff?"Authorized actions":"Request actions"}</h3>
-              {staff && !terminal && (
-                <CommandForm
-                  title="Set priority"
-                  path={`/api/v1/emergencies/${item.id}/priority`}
-                  method="PATCH"
-                  conditional
-                  etag={etag}
-                  fields={[
-                    {
-                      name: "assigned_priority",
-                      label: "Assigned priority (1 highest, 5 lowest)",
-                      kind: "number",
-                      min: 1,
-                      max: 5,
-                      required: true,
-                    },
-                    reasonField,
-                  ]}
-                  onSuccess={changed}
-                />
-              )}
-              {staff && item.state === "triaged" && (
-                <CommandForm
-                  title="Claim request"
-                  path={`/api/v1/emergencies/${item.id}/claim`}
-                  conditional
-                  etag={etag}
-                  onSuccess={changed}
-                  notice="Claims have a 15-minute lease. Reload before processing to check the current claim."
-                />
-              )}
-              {staff && ownedClaim && item.state === "claimed" && (
-                <CommandForm
-                  title="Release claim"
-                  path={`/api/v1/emergencies/${item.id}/release`}
-                  conditional
-                  etag={etag}
-                  fields={[reasonField]}
-                  onSuccess={changed}
-                />
-              )}
-              {staff && ownedClaim && item.state === "claimed" && (
-                <CommandForm
-                  title="Start processing"
-                  path={`/api/v1/emergencies/${item.id}/transitions`}
-                  conditional
-                  etag={etag}
-                  fields={[reasonField]}
-                  build={(values) => ({
-                    ...buildFields([reasonField], values),
-                    state: "processing",
-                  })}
-                  onSuccess={changed}
-                />
-              )}
-              {staff && ownedClaim && item.state === "processing" && (
-                <CommandForm
-                  title="Resolve request"
-                  path={`/api/v1/emergencies/${item.id}/transitions`}
-                  conditional
-                  etag={etag}
-                  fields={[reasonField]}
-                  build={(values) => ({
-                    ...buildFields([reasonField], values),
-                    state: "resolved",
-                  })}
-                  onSuccess={changed}
-                />
-              )}
-              {(["submitted", "triaged"].includes(item.state) ||
-                (staff && item.state === "claimed")) && (
-                <CommandForm
-                  title="Cancel emergency request"
-                  path={`/api/v1/emergencies/${item.id}/transitions`}
-                  conditional
-                  etag={etag}
-                  fields={[reasonField]}
-                  build={(values) => ({
-                    ...buildFields([reasonField], values),
-                    state: "cancelled",
-                  })}
-                  onSuccess={changed}
-                />
-              )}
-              </aside>
-            </div>
-          );
-        }}
-      </Selected>
-    </section></div>
+      {staff ? <>{registerList}{casePanel}</> : <div className="er-patient-requests">{registerList}<div className="er-patient-case">{casePanel}</div></div>}
+    </div>
   );
 }
 
