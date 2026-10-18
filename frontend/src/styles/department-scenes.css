@@ -4,20 +4,9 @@
 .workspace-shell:has(.cashier-desk) { --environment: url('/environments/billing-corrected.webp'); }
 .workspace-shell:has(.dossier-room) { --environment: url('/environments/records-corrected.webp'); }
 .workspace-shell:has(.er-desk) { --environment: url('/environments/emergency-corrected.webp'); }
-.workspace-shell:has(.reference-operations) { --environment: url('/environments/control-corrected.webp'); }
+.workspace-shell:has(.ops-console) { --environment: url('/environments/control-corrected.webp'); }
 .owner-state { display: inline-block; padding: 4px 10px; border-radius: 14px; background: #d2e3d1; color: #174d3b; font-size: 11px; text-transform: capitalize; }
 .owner-identifiers, .queue-source-details { font-size: 10px; margin-top: 8px; }
-.appointment-doctor-rail { min-width: 0; }
-.appointment-doctor-rail > label { display: grid; gap: 6px; font-size: 11px; }
-.appointment-doctor-rows { max-height: 370px; overflow: auto; margin-top: 12px; scrollbar-width: thin; }
-.workspace-content .appointment-doctor-rows > button { display: grid; grid-template-columns: 40px minmax(0,1fr) 12px; width: 100%; gap: 10px; align-items: center; padding: 8px; min-height: 64px; border: 0; border-bottom: 1px solid #cfbea680; border-radius: 2px; background: #fff8ef50; text-align: left; }
-.appointment-doctor-rows > button[aria-pressed=true] { background: #d9e0e3 !important; border-left: 2px solid #1689da !important; }
-.appointment-doctor-rows .reference-portrait { width: 34px; height: 51px; }
-.appointment-doctor-rows strong { font-size: 12px; display: block; }
-.appointment-doctor-rows small { display: block; font-size: 10px; margin-top: 4px; }
-.appointment-doctor-rail .demo-footnote { display: flex; font-size: 9px; margin-top: 12px; align-items: center; }
-.appointment-doctor-rail .demo-footnote input { width: auto; }
-.appointment-slip-entry { display: grid; grid-template-columns: minmax(140px,1fr) 100px minmax(100px,1fr) 100px; gap: 12px; align-items: center; font-size: 12px; }
 .queue-wall-table { overflow: auto; }
 .queue-wall-table table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
 .queue-wall-table caption { text-align: left; font-size: 23px; font-weight: 600; padding-block: 15px; }
@@ -30,17 +19,6 @@
 .queue-wait-sign p { font-size: 12px; line-height: 1.6; }
 .queue-wait-sign hr { border: 0; border-top: 1px solid #baa98c; margin-block: 25px; }
 .queue-wait-sign small { font-size: 9px; }
-.ops-service-map { min-width: 0; padding: 16px; background: #f4e9dae8; border: 1px solid #f9f1e4; border-radius: 5px; }
-.ops-service-map header { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
-.ops-service-map header h2 { font-size: 16px; margin: 0; }
-.ops-service-map header small,.ops-service-map footer { font-size: 10px; }
-.ops-map-rooms { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; background: #d3c2a8; padding: 20px; border: 8px solid #e5dac8; box-shadow: inset 0 0 0 2px #b29978; }
-.ops-map-room { display: grid; gap: 8px; padding: 16px; background: #ebe5d9; border: 1px solid #b6a687; box-shadow: 4px 5px 0 #937e5950; min-height: 115px; text-transform: capitalize; }
-.ops-map-room--healthy { background: #d6e5ce; }
-.ops-map-room--degraded,.ops-map-room--unhealthy { background: #f0cfc1; }
-.ops-map-room small { font-size: 9px; }
-.ops-map-room span { font-size: 11px; }
-.ops-service-map footer { padding-top: 15px; color: #5c665f; }
 .ops-service-details,.ops-delivery-details { background: #f4e8d8; padding: 12px; font-size: 12px; }
 
 @media (min-width: 901px) {
@@ -69,22 +47,6 @@
   .department-page--appointments > .page-heading .eyebrow,
   .department-page--waiting > .page-heading .eyebrow { display: none; }
   .department-page--appointments > .department-workspace { padding: 0; background: none; }
-  .appointment-workspace { gap: 0; }
-  .appointment-workspace > .department-tabs { width: 70%; margin: 0; height: 44px; border-bottom: 0; border-radius: 6px 6px 0 0; }
-  .appointment-workspace > .appointment-booking > .hospital-panel { padding: 12px 0; border-radius: 0 5px 5px 5px; background: #f4e9dbef; box-shadow: 0 7px 0 #af855940; border: 1px solid #fff3df; }
-  .appointment-booking [data-panel="new-booking"] > h2 { display: none; }
-  .appointment-booking .booking-composition { grid-template-columns: minmax(0,25%) minmax(0,48%) minmax(0,27%); gap: 0; align-items: stretch; }
-  .appointment-booking .booking-composition > * { min-width: 0; padding: 12px 16px; background: none; border-radius: 0; box-shadow: none; border: 0; }
-  .appointment-booking .booking-doctor,.appointment-booking .booking-schedule { border-right: 1px solid #cdbba1; }
-  .appointment-booking .booking-doctor fieldset > .phase4-autocomplete { font-size: 11px; }
-  .appointment-booking .booking-schedule .available-slots { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
-  .appointment-booking .booking-schedule button { font-size: 11px; min-height: 34px; padding: 7px; }
-  .appointment-booking .hospital-facts { grid-template-columns: 1fr; gap: 12px; font-size: 12px; }
-  .appointment-booking .hospital-fields { grid-template-columns: 1fr; }
-  .appointment-management { grid-template-columns: minmax(0,2.3fr) minmax(0,1fr); gap: 15px; background: #f2e5d4ee; padding: 15px; }
-  .appointment-management .hospital-items { max-height: 520px; overflow: auto; }
-  .appointment-management .hospital-item { border: 0; border-left: 3px solid #1788c5; border-bottom: 1px solid #d3c1a7; border-radius: 2px; padding: 15px 12px; }
-  .appointment-management .hospital-panel { background: #f8efe4b0; box-shadow: none; padding: 12px; }
   .department-page--waiting.route-queue > .page-heading { padding-left: 10vw; min-height: 185px; }
   .department-page--waiting.route-queue .page-description { font-size: 19px; }
   .queue-station { grid-template-columns: minmax(0,20%) minmax(0,53%) minmax(0,27%); gap: 14px !important; padding: 10px 0 0 4vw; }
@@ -118,28 +80,8 @@
   .dispensing-counter > .hospital-panel { min-height: 440px; background: #f5ebdfee; padding: 20px; border: 1px solid #fff0da; }
   .dispensing-counter .hospital-facts { grid-template-columns: 1fr; }
   .department-page--records > .page-heading { background: #f0e4d1e6; border-radius: 4px; }
-  .reference-operations { display: grid; grid-template-columns: minmax(0,2.1fr) minmax(0,1fr); gap: 14px; }
-  .reference-operations > .ops-page-header,.reference-operations > .ops-metric-grid,.reference-operations > .ops-monitoring-banner,.reference-operations > .ops-footnote { grid-column: 1/-1; }
-  .reference-operations .ops-page-header { min-height: 125px; padding: 20px; background: #f0e3d1e5; border-radius: 5px; }
-  .reference-operations .ops-metric-grid { grid-template-columns: repeat(6,minmax(0,1fr)); gap: 5px; }
-  .reference-operations .ops-metric-card { padding: 14px 12px; min-height: 90px; background: #f8eee1e8; border: 0; box-shadow: none; }
-  .reference-operations .ops-metric-value { font-size: 24px; }
-  .reference-operations .ops-metric-detail { font-size: 10px; }
-  .reference-operations .ops-component-and-alerts { display: contents; }
-  .reference-operations .ops-component-and-alerts > .ops-panel:first-child { grid-column: 1; grid-row: 5; }
-  .reference-operations .ops-component-and-alerts > .ops-panel:last-child { grid-column: 2; grid-row: 3 / 5; }
-  .reference-operations .ops-service-map { grid-column: 1; grid-row: 3; }
-  .reference-operations .ops-trend-grid { grid-column: 1; grid-row: 4; }
-  .reference-operations .ops-service-details { grid-column: 2; grid-row: 5; align-self: start; }
-  .reference-operations .ops-delivery-details { grid-column: 1/-1; }
-  .reference-operations .ops-component-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
-  .reference-operations .ops-panel { padding: 15px; border: 0; background: #f3e7d7ed; box-shadow: none; }
-  .reference-operations .ops-panel-heading h2 { font-size: 15px; }
-  .reference-operations .ops-panel-heading p { font-size: 10px; }
 }
 @media (max-width: 1100px) and (min-width: 901px) {
-  .appointment-booking .booking-composition { grid-template-columns: minmax(0,1fr) minmax(0,2fr); }
-  .appointment-booking .booking-receipt { grid-column: 1/-1; }
   .queue-station { padding-left: 0; grid-template-columns: 180px minmax(0,1fr); }
   .queue-wait-sign { grid-column: 2; min-height: 150px; }
   .queue-wait-sign > strong { font-size: 35px; padding-block: 5px; }
@@ -150,30 +92,8 @@
   .queue-wait-sign { min-height: 0; }
   .queue-wait-sign > strong { font-size: 40px; padding-block: 10px; }
   .queue-wall-table th,.queue-wall-table td { padding: 12px 8px; }
-  .appointment-slip-entry { grid-template-columns: minmax(0,1fr) auto; }
-  .ops-map-rooms { grid-template-columns: repeat(2,minmax(0,1fr)); padding: 10px; gap: 12px; }
-  .ops-map-room { padding: 12px; min-height: 115px; }
-  .ops-service-map header { display: block; }
 }
 /* Register surfaces are sharp cream, with architecture visible around them. */
-.advanced-doctor-search { font-size: 10px; margin-bottom: 12px; }
-.advanced-doctor-search > summary { cursor: pointer; }
-@media (min-width: 901px) {
-  .reference-departments .appointment-workspace { gap: 0; }
-  .reference-departments .appointment-booking [data-panel="new-booking"] { background: #f4e9dc; }
-  .reference-departments .appointment-doctor-rows { max-height: 340px; }
-  .reference-departments .appointment-doctor-rows > button { min-height: 58px; font-weight: 400; }
-  .reference-departments .booking-schedule .availability-note { font-size: 11px; margin-bottom: 10px; }
-  .reference-departments .booking-schedule .calendar-strip { gap: 5px; }
-  .reference-departments .booking-schedule .calendar-strip button { min-height: 58px; }
-  .reference-departments .booking-schedule .available-slot { padding: 0; background: none; border: 0; }
-  .reference-departments .booking-schedule .available-slot > time { display: none; }
-  .reference-departments .booking-schedule .available-slot > button { width: 100%; }
-  .reference-departments .booking-schedule [data-panel="accepted-availability"] > p:not(.availability-note) { font-size: 10px; overflow-wrap: anywhere; }
-  .reference-departments .booking-receipt .hospital-facts { font-size: 12px; }
-  .reference-departments .booking-receipt .hospital-form { margin-top: 18px; }
-  .reference-departments .booking-receipt { background: #f8f0e5; }
-}
 .reference-departments.environment-waiting { --environment: url('/environments/waiting-corrected.webp'); }
 .reference-departments.environment-records { --environment: url('/environments/records-corrected.webp'); }
 .reference-departments.environment-control { --environment: url('/environments/control-corrected.webp'); }
@@ -209,89 +129,7 @@
 .reference-departments .pharmacy-catalog > [data-panel="inventory-batches"] .hospital-items { display:block; }
 .reference-departments .pharmacy-catalog > [data-panel="inventory-batches"] .hospital-item { border:0; border-bottom:1px solid #cfbda4; border-radius:0; }
 @media(max-width:900px){.stock-ledger-row{grid-template-columns:repeat(2,minmax(0,1fr));}}
-.ops-runtime-signals { border-top:1px solid #d3bfa2; margin-top:16px; padding-top:14px; }
-.ops-runtime-signals h3 { font-size:14px; }
-.ops-runtime-signals dl>div { display:flex; justify-content:space-between;gap:15px;border-bottom:1px solid #d7c5ac;padding:9px 0;font-size:11px; }
-.ops-runtime-signals dd { margin:0;text-align:right; }
-.ops-runtime-signals nav { display:flex;gap:18px;margin-block:14px;font-size:12px; }
-.ops-runtime-signals small { font-size:10px; }
-@media(min-width:901px){
- .reference-operations .ops-page-header {background:#f1e5d3;min-height:110px;}
- .reference-operations .ops-service-map {background:#f1e5d3;}
- .reference-operations .ops-map-rooms {gap:12px;padding:14px;border-width:5px;}
- .reference-operations .ops-map-room {text-align:left;min-height:88px;padding:12px;gap:6px;font-weight:400;border-radius:0;}
- .reference-operations .ops-map-room:last-child {grid-column:1/-1;grid-template-columns:1fr 1fr 1fr;align-items:center;min-height:58px;}
- .reference-operations .ops-map-room:last-child small {grid-column:3;}
- .reference-operations .ops-component-and-alerts>.ops-panel:last-child {grid-row:3;align-self:start;background:#f5eadd;}
- .reference-operations .ops-trend-grid {gap:10px;}
- .reference-operations .ops-trend-card {padding:12px;background:#f4e9dc;}
- .reference-operations .ops-component-and-alerts>.ops-panel:first-child {grid-row:5;}
- .reference-operations .ops-service-details {grid-row:4;}
- .reference-operations .surge-console {grid-column:1/-1;}
- .reference-operations .ops-footnote {margin:0;font-size:10px;}
-}
-/* Override the older attribute-scoped monitor grid; keep trends out of the component panel. */
-@media(min-width:901px){
- .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]{grid-template-columns:minmax(0,2.1fr) minmax(0,1fr);}
- .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]>.ops-trend-grid{grid-column:1;grid-row:4;}
- .workspace-content .reference-operations .ops-trend-panel{background:#f4e9da;padding:14px;}
- .workspace-content .reference-operations .ops-trend-chart{height:105px;}
- .workspace-content .reference-operations .ops-component-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
-}
-@media(max-width:900px){
- .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]{grid-template-columns:minmax(0,1fr);}
- .workspace-content .reference-operations.ops-dashboard[aria-labelledby="control-room-title"]>*{grid-column:1;grid-row:auto;}
- .workspace-content .reference-operations .ops-component-and-alerts>.ops-panel{grid-column:1;grid-row:auto;}
- .workspace-content .reference-operations .ops-metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-}
-.reference-departments .ops-trace-desk>.ops-page-header{padding:18px;background:#f0e3d1;border-radius:4px;}
-.reference-departments .ops-trace-desk .ops-panel{background:#f4e9da;border-radius:3px;padding:18px;}
-.reference-departments .ops-trace-desk .ops-trace-list{max-height:440px;overflow:auto;}
-.reference-departments .ops-trace-desk .ops-trace-row{padding:12px;border-bottom:1px solid #cdbb9f;border-radius:0;}
-.appointment-specialties { display:flex;flex-wrap:wrap;gap:4px;margin-top:8px; }
-.workspace-content .appointment-specialties button { min-height:24px;padding:4px 7px;font-size:9px;background:#e1ddd7;border:0;border-radius:4px; }
-.workspace-content .appointment-specialties button[aria-pressed="true"] { background:#143c43;color:#fff; }
-.doctor-rail-pagination { display:flex;gap:6px; }
-.doctor-rail-pagination button { font-size:10px; }
-.appointment-share{padding:10px;background:#ece1d0;font-size:11px;}
-@media(min-width:901px){
- .reference-departments .appointment-management--selected{grid-template-columns:minmax(0,1fr);}
- .reference-departments .appointment-management--selected>[data-panel="appointments"] .hospital-items{max-height:200px;}
- .reference-departments .appointment-edit-desk{display:grid;grid-template-columns:minmax(200px,1fr) minmax(0,2fr);gap:12px 24px;align-items:start;}
- .reference-departments .appointment-edit-desk>.hospital-facts{grid-column:1;grid-row:1;grid-template-columns:1fr 1fr;font-size:11px;}
- .reference-departments .appointment-edit-desk>.owner-identifiers{grid-column:1;grid-row:2;}
- .reference-departments .appointment-edit-desk>.appointment-share{grid-column:1;grid-row:3;}
- .reference-departments .appointment-edit-desk>.hospital-form:first-of-type{grid-column:1;grid-row:4/6;padding:12px;}
- .reference-departments .appointment-edit-desk>.hospital-form:first-of-type textarea{min-height:70px;}
- .reference-departments .appointment-edit-desk>form:not(.hospital-form){grid-column:2;grid-row:1;}
- .reference-departments .appointment-edit-desk>[data-panel="accepted-availability"]{grid-column:2;grid-row:2/6;}
- .reference-departments .appointment-edit-desk>.hospital-form:last-of-type:not(:first-of-type){grid-column:2;grid-row:6;}
- .reference-departments .appointment-edit-desk .available-slots{grid-template-columns:repeat(4,minmax(0,1fr));}
- .reference-departments .appointment-edit-desk .available-slot{padding:0;background:none;border:0;}
- .reference-departments .appointment-edit-desk .available-slot>time{display:none;}
- .reference-departments .appointment-edit-desk .available-slot>button{width:100%;}
-}
-.workspace-content fieldset.reschedule-calendar{border:0;padding:0;margin:0;min-width:0;}
-@media(min-width:901px){
- .reference-departments .appointment-edit-desk>fieldset.reschedule-calendar{grid-column:2;grid-row:1/6;}
- .reference-departments .reschedule-calendar>[data-panel="accepted-availability"]{margin-top:12px;padding:12px;}
-}
-.walkin-patient-search {display:flex;align-items:end;flex-wrap:wrap;gap:12px;padding:14px;background:#efe2d0;}
-.walkin-patient-search>label{flex:1;min-width:180px;}
-.walkin-patient-strip{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px;background:#e1e6db;margin-top:12px;}
-.walkin-intake-note{padding:24px 14px;border-bottom:1px solid #cdbb9f;font-size:13px;}
 .receptionist-care{padding:14px 18px;background:#f2e5d4;font-size:12px;}
-@media(min-width:901px){
- .reference-departments .walkin-workspace{grid-template-columns:150px minmax(0,1fr) 200px;gap:18px;background:#f4e9da;padding:18px;}
- .reference-departments .walkin-entry>[data-panel="matching-patients"]{padding:12px;}
- .reference-departments .walkin-entry>[data-panel="matching-patients"] .hospital-items{display:block;max-height:210px;overflow:auto;}
- .reference-departments .walkin-entry .booking-composition{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);margin-top:12px;}
- .reference-departments .walkin-entry .booking-receipt{grid-column:1/-1;}
-}
-.appointment-slip-entry .reference-portrait{width:35px;height:50px;}
-.appointment-slip-entry small{display:block;font-size:10px;margin-top:5px;}
-@media(min-width:901px){.appointment-slip-entry{grid-template-columns:minmax(130px,1.1fr) 40px minmax(0,1.5fr) minmax(70px,.7fr) auto;}}
-@media(max-width:900px){.appointment-slip-entry{grid-template-columns:40px minmax(0,1fr) auto;}.appointment-slip-entry>time{grid-column:1/-1;}.appointment-slip-entry>.owner-state{grid-column:2;justify-self:start;}}
 @media(min-width:901px){
  .reference-departments .waitlist-register{display:grid!important;grid-template-columns:minmax(260px,1fr) minmax(0,1.7fr);gap:16px!important;align-items:start;}
  .reference-departments .waitlist-register>.patient-workflow__panel{padding:18px;background:#f3e7d5;}
@@ -302,11 +140,6 @@
  .reference-departments .waitlist-register .patient-workflow__facts{grid-template-columns:1fr 1fr;gap:10px;font-size:12px;}
  .reference-departments .department-page--waiting.route-waitlist>.page-heading{background:#f3e8d6;padding-left:22px;}
 }
-.booking-patient-details{padding:16px 0 0;margin-top:16px;border-top:1px solid #cfbaa0;}
-.booking-patient-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.booking-patient-details small{display:block;font-size:10px;margin-top:8px;}
-.booking-patient-details label{font-size:11px;}
-@media(max-width:580px){.booking-patient-fields{grid-template-columns:1fr;}}
 
 .prescription-revoked-note { font-size:11px; color:#8d2b26; margin:10px 0; }
 
@@ -971,4 +804,214 @@
   .department-page--records .visit-list > li { flex:0 0 200px; }
   .department-page--records .dossier-sheet { padding:14px 16px; }
   .department-page--records .dossier-header { flex-wrap:wrap; }
+}
+
+/* Appointments: desk tabs over one booking surface; numbered columns; truthful list, reschedule and walk-in desks. */
+.department-page--appointments:has(.appointment-workspace > .department-sign) > .department-workspace { display:block; }
+.department-page--appointments .appointment-workspace { display:grid;gap:0;color:var(--ink);font-size:var(--text-body-size); }
+.department-page--appointments .appointment-workspace > .department-sign { margin-bottom:12px; }
+:is(.appointment-workspace,.reference-booking-desk) :is(button,.button) { min-height:var(--target-min);font-size:14px;margin:0; }
+:is(.appointment-workspace,.reference-booking-desk) :is(input,select,textarea) { min-height:var(--target-min);font-size:14px; }
+:is(.appointment-workspace,.reference-booking-desk) :is(label,summary) { font-size:var(--text-secondary-size); }
+:is(.appointment-workspace,.reference-booking-desk) summary { display:flex;align-items:center;min-height:var(--target-min);cursor:pointer;font-weight:500; }
+:is(.appointment-workspace,.reference-booking-desk) .owner-identifiers { font-size:var(--text-secondary-size); }
+:is(.appointment-workspace,.reference-booking-desk) .hospital-facts { font-size:14px; }
+:is(.appointment-workspace,.reference-booking-desk) .hospital-facts dt { font-size:var(--text-secondary-size); }
+:is(.appointment-workspace,.reference-booking-desk) .owner-state { display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;background:var(--status-neutral-bg);color:var(--status-neutral); }
+:is(.appointment-workspace,.reference-booking-desk) .owner-state[data-state="upcoming"] { background:var(--status-success-bg);color:var(--status-success); }
+:is(.appointment-workspace,.reference-booking-desk) .owner-state[data-state="cancelled"] { background:var(--status-danger-bg);color:var(--status-danger); }
+.department-page--appointments .department-tabs { display:flex;flex-wrap:nowrap;gap:4px;width:max-content;max-width:100%;overflow-x:auto;padding:0 6px;background:none;border:0;border-radius:0; }
+.department-page--appointments .workspace-content .department-tabs button,.department-page--appointments .department-tabs button { display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 18px;background:#eadfcd;border:1px solid #d9c6a8;border-bottom:0;border-radius:8px 8px 0 0;color:var(--ink);font-weight:500;white-space:nowrap;box-shadow:none; }
+.department-page--appointments .department-tabs button .department-icon { width:18px;height:18px; }
+.department-page--appointments .department-tabs button[aria-pressed="true"] { background:#fbf6ee;color:var(--select-teal);box-shadow:inset 0 3px 0 var(--select-teal);font-weight:600; }
+.department-page--appointments :is(.appointment-booking,.appointment-manage,.reschedule-desk,.appointment-walkin) { padding:16px;background:#fbf6ee;border:1px solid #fff4e2;border-radius:0 6px 6px 6px;box-shadow:0 14px 20px -16px #3a2412; }
+
+:is(.appointment-workspace,.reference-booking-desk) .booking-composition { display:grid;grid-template-columns:minmax(0,26fr) minmax(0,46fr) minmax(0,28fr);gap:0;align-items:stretch; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-composition > * { min-width:0;padding:4px 16px;border:0;background:none;box-shadow:none; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-doctor,:is(.appointment-workspace,.reference-booking-desk) .booking-schedule { border-right:1px solid #dccab0; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-composition fieldset { min-width:0;margin:0;padding:0;border:0; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-composition h3 { display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:16px; }
+:is(.appointment-workspace,.reference-booking-desk) .step-number { width:26px;height:26px;font-size:13px;font-weight:700;background:var(--select-teal); }
+.appointment-doctor-rail > label { display:grid;gap:4px;font-size:var(--text-secondary-size); }
+.appointment-specialties { display:flex;flex-wrap:wrap;gap:6px;margin:8px 0; }
+.workspace-content .appointment-specialties button { min-height:var(--target-min);padding:6px 12px;font-size:13px;background:#ece3d5;border:1px solid #d9c9b0;border-radius:20px;color:var(--ink); }
+.workspace-content .appointment-specialties button[aria-pressed="true"] { background:var(--select-teal);border-color:var(--select-teal);color:#fff; }
+.appointment-doctor-rows { display:grid;gap:4px;max-height:360px;overflow:auto;scrollbar-width:thin; }
+.workspace-content .appointment-doctor-rows > button { display:grid;grid-template-columns:42px minmax(0,1fr) 14px;align-items:center;gap:10px;width:100%;min-height:58px;padding:6px 10px;text-align:left;background:#fffdf8;border:1px solid #e6d8c2;border-left:4px solid transparent;border-radius:4px;color:var(--ink);font-weight:400; }
+.workspace-content .appointment-doctor-rows > button[aria-pressed="true"] { background:var(--select-teal-soft);border-color:#b7cfc6;border-left-color:var(--select-teal); }
+.appointment-doctor-rows .reference-portrait { width:40px;height:48px; }
+.appointment-doctor-rows strong { display:block;font-size:14px; }
+.appointment-doctor-rows small { display:block;margin-top:2px;font-size:var(--text-secondary-size);color:#3f4b48; }
+.appointment-doctor-rail .demo-footnote { display:flex;align-items:center;gap:6px;margin-top:8px;font-size:var(--text-secondary-size); }
+.doctor-rail-pagination { display:flex;gap:6px;margin-top:8px; }
+:is(.appointment-workspace,.reference-booking-desk) .advanced-doctor-search,:is(.appointment-workspace,.reference-booking-desk) .manual-doctor-lookup { margin-top:8px;border-top:1px solid #e3d4bd; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-head { display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-head h4 { margin:0;font-size:15px; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-head h4 span { font-weight:500;color:#33433f; }
+.slot-legend { display:flex;gap:12px;margin:0;padding:0;list-style:none;font-size:var(--text-secondary-size); }
+.slot-legend li::before { content:"";display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:50%;background:#fff;border:2px solid var(--select-teal);vertical-align:-1px; }
+.slot-legend [data-kind="unavailable"]::before { background:#ddd6cb;border-color:#b5aa98; }
+.slot-legend [data-kind="selected"]::before { background:var(--select-teal); }
+:is(.appointment-workspace,.reference-booking-desk) .week-strip { display:grid;grid-template-columns:40px minmax(0,1fr) 40px;align-items:center;gap:6px;margin:10px 0; }
+:is(.appointment-workspace,.reference-booking-desk) .week-strip > button { min-width:40px;padding:0;background:#fff;border:1px solid #d9c9b0;border-radius:50%;font-size:20px; }
+:is(.appointment-workspace,.reference-booking-desk) .calendar-strip { display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:0; }
+.workspace-content :is(.appointment-workspace,.reference-booking-desk) .calendar-strip button { min-height:62px;padding:4px 2px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px;color:var(--ink); }
+:is(.appointment-workspace,.reference-booking-desk) .calendar-strip button small { font-size:12px; }
+.workspace-content :is(.appointment-workspace,.reference-booking-desk) .calendar-strip button[aria-pressed="true"] { background:var(--select-teal);border-color:var(--select-teal);color:#fff; }
+:is(.appointment-workspace,.reference-booking-desk) .slot-group h5 { margin:10px 0 6px;font-size:14px;font-weight:600; }
+:is(.appointment-workspace,.reference-booking-desk) .available-slots { display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin:0; }
+.workspace-content :is(.appointment-workspace,.reference-booking-desk) button.available-slot { min-height:var(--target-min);padding:6px 4px;font-size:14px;font-weight:500;background:#fff;border:1px solid #cfc0a6;border-radius:5px;color:var(--ink); }
+.workspace-content :is(.appointment-workspace,.reference-booking-desk) button.available-slot[aria-pressed="true"] { background:var(--select-teal);border-color:var(--select-teal);color:#fff; }
+.workspace-content :is(.appointment-workspace,.reference-booking-desk) button.available-slot:disabled { background:#ece7df;border-color:#ddd3c4;color:#5e5a52;text-decoration:line-through;opacity:1; }
+:is(.appointment-workspace,.reference-booking-desk) p.available-slot { margin:0;padding:8px;font-size:14px;background:#fff;border:1px solid #e3d4bd;border-radius:5px; }
+:is(.appointment-workspace,.reference-booking-desk) .slot-empty { margin:12px 0;font-size:14px; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-note { margin:10px 0 0;font-size:var(--text-secondary-size);color:#4a5250; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-range-form { display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 10px;margin-top:6px; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-range { flex:1 1 220px;min-width:0; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-range[open] { display:grid;gap:6px; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-range-form > button { background:#fff;border:1px solid #cfc0a6; }
+:is(.appointment-workspace,.reference-booking-desk) .availability-range .hospital-fields { grid-template-columns:1fr 1fr;gap:6px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-patient-details { margin-top:12px;padding-top:12px;border-top:1px solid #dccab0; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-patient-details h4 { margin:0 0 8px;font-size:15px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-patient-fields { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-patient-fields label { display:grid;gap:4px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-patient-fields input { background:#f6f1ea; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-patient-details small { display:block;margin-top:6px;font-size:var(--text-secondary-size); }
+:is(.appointment-workspace,.reference-booking-desk) .booking-receipt { padding:4px 16px;background:none;border:0;box-shadow:none; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-doctor-card { display:flex;align-items:center;gap:12px;padding:10px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-doctor-card .reference-portrait { width:52px;height:62px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-doctor-card strong { display:block;font-size:16px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-doctor-card small { font-size:var(--text-secondary-size);color:#3f4b48; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-summary-facts { display:grid;gap:8px;margin:12px 0; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-summary-facts > div { display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;padding-bottom:8px;border-bottom:1px dashed #d7c6aa; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-summary-facts dt { font-size:var(--text-secondary-size);color:#4a5250; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-summary-facts dd { margin:0;font-weight:600; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-hint,:is(.appointment-workspace,.reference-booking-desk) .reschedule-hint { margin:0;padding:10px;background:#f1ebe1;border-radius:4px;font-size:14px; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-receipt .hospital-form { padding:0; }
+:is(.appointment-workspace,.reference-booking-desk) .booking-receipt .hospital-form > p { font-size:var(--text-secondary-size); }
+:is(.appointment-workspace,.reference-booking-desk) .booking-receipt .hospital-form button[type="submit"],:is(.appointment-workspace,.reference-booking-desk) .reschedule-actions__confirm .hospital-form button[type="submit"],:is(.appointment-workspace,.reference-booking-desk) .hospital-confirm > button:first-of-type { width:100%;background:var(--select-teal);border-color:var(--select-teal);color:#fff;font-weight:600; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt { position:relative;display:grid;gap:6px;margin-top:14px;padding:16px 16px 20px;background:#fffefa;border:0;box-shadow:0 8px 14px -6px #4d321e55;transform:rotate(-1.2deg);
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,radial-gradient(circle at 6px 100%,transparent 5px,#000 5.5px) bottom/12px 8px repeat-x;
+  mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,radial-gradient(circle at 6px 100%,transparent 5px,#000 5.5px) bottom/12px 8px repeat-x; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt__brand { display:flex;align-items:center;gap:6px;margin:0;font-size:var(--text-secondary-size);font-weight:600;color:var(--select-teal); }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt__brand .department-icon { width:18px;height:18px; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt > strong { font-size:15px;letter-spacing:.06em;text-transform:uppercase; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt dl { display:grid;gap:4px;margin:0; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt dl > div { display:flex;justify-content:space-between;gap:10px;font-size:14px; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt dt { color:#4a5250; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt dd { margin:0;font-weight:600; }
+:is(.appointment-workspace,.reference-booking-desk) .printed-receipt > p { margin:0;font-size:var(--text-secondary-size); }
+
+.department-page--appointments .appointment-manage { display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:16px;align-items:start; }
+.department-page--appointments .appointment-subtabs { display:flex;align-items:center;gap:4px;margin-bottom:10px;border-bottom:1px solid #dccab0; }
+.department-page--appointments .appointment-subtabs [role="tab"] { margin-bottom:-1px;background:none;border:0;border-bottom:3px solid transparent;border-radius:0;color:#3a4442;font-weight:500; }
+.department-page--appointments .appointment-subtabs [role="tab"][aria-selected="true"] { border-bottom-color:var(--select-teal);color:var(--select-teal);font-weight:700; }
+.department-page--appointments .appointment-refresh { margin-left:auto !important;background:#fff;border:1px solid #d9c9b0; }
+.department-page--appointments .appointment-rows { display:grid;gap:8px;margin:0;padding:0;list-style:none; }
+.department-page--appointments .appointment-row { display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,1.5fr) auto auto;align-items:center;gap:8px 16px;padding:10px 12px 10px 16px;background:#fffdf8;border:1px solid #e3d4bd;border-left:5px solid var(--select-teal);border-radius:6px; }
+.department-page--appointments .appointment-row[data-kind="past"] { border-left-color:#8b8174; }
+.department-page--appointments .appointment-row[data-kind="cancelled"] { border-left-color:var(--status-danger); }
+.department-page--appointments .appointment-row__when { display:grid;gap:2px; }
+.department-page--appointments .appointment-row__when span,.department-page--appointments .appointment-row__doctor small { font-size:var(--text-secondary-size);color:#3f4b48; }
+.department-page--appointments .appointment-row__doctor { display:flex;align-items:center;gap:10px;min-width:0; }
+.department-page--appointments .appointment-row__doctor .reference-portrait { width:40px;height:48px;flex:none; }
+.department-page--appointments .appointment-row__doctor small { display:block; }
+.department-page--appointments .appointment-row__actions { display:flex;gap:6px; }
+.department-page--appointments .appointment-row__actions button { background:#fff;border:1px solid #cfc0a6; }
+.department-page--appointments .appointment-row__actions .button-danger-outline,.department-page--appointments .reschedule-actions__cancel .hospital-form button[type="submit"] { background:#fff;border:1px solid var(--status-danger);color:var(--status-danger); }
+.department-page--appointments .appointment-row__detail { grid-column:1 / -1;padding-top:8px;border-top:1px dashed #d7c6aa; }
+.department-page--appointments .appointment-empty { padding:12px;background:#f1ebe1;border-radius:4px; }
+.department-page--appointments .appointment-pages { display:flex;gap:8px;margin-top:10px; }
+.department-page--appointments .appointment-overview { display:grid;gap:10px;padding:14px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px; }
+.department-page--appointments .appointment-overview h3 { margin:0;font-size:16px; }
+.department-page--appointments .appointment-overview__scope { margin:0;font-size:var(--text-secondary-size);color:#4a5250; }
+.department-page--appointments .appointment-overview dl { display:grid;gap:8px;margin:0; }
+.department-page--appointments .appointment-overview dl > div { display:flex;align-items:baseline;justify-content:space-between;padding:8px 10px;background:#f6f1ea;border-left:4px solid var(--select-teal);border-radius:4px; }
+.department-page--appointments .appointment-overview dl > [data-kind="past"] { border-left-color:#8b8174; }
+.department-page--appointments .appointment-overview dl > [data-kind="cancelled"] { border-left-color:var(--status-danger); }
+.department-page--appointments .appointment-overview dd { margin:0;font-size:22px;font-weight:700; }
+.department-page--appointments .appointment-overview > button { background:var(--select-teal);border-color:var(--select-teal);color:#fff;font-weight:600; }
+
+.department-page--appointments .reschedule-columns { display:grid;grid-template-columns:minmax(0,28fr) minmax(0,34fr) minmax(0,38fr);gap:16px;align-items:start; }
+.department-page--appointments .reschedule-columns > section { min-width:0;padding:12px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px; }
+.department-page--appointments .reschedule-columns h3,.department-page--appointments .reschedule-pick h3 { margin:0 0 10px;font-size:16px; }
+.department-page--appointments .reschedule-current > button { width:100%;background:#fff;border:1px solid #cfc0a6; }
+.department-page--appointments .reschedule-doctor { min-width:0;margin:0 0 8px;padding:0;border:0; }
+.department-page--appointments .reschedule-pick { display:grid;gap:8px;max-width:640px; }
+.department-page--appointments .reschedule-pick__row { display:flex;justify-content:space-between;gap:12px;padding:10px 14px;text-align:left;background:#fffdf8;border:1px solid #e3d4bd;border-left:5px solid var(--select-teal);color:var(--ink); }
+.department-page--appointments .month-calendar__head { display:flex;align-items:center;justify-content:space-between;margin-bottom:6px; }
+.department-page--appointments .month-calendar__head button { min-width:40px;padding:0;background:#fff;border:1px solid #d9c9b0;border-radius:50%;font-size:20px; }
+.department-page--appointments .month-calendar__grid { display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center; }
+.department-page--appointments .month-calendar__grid > span { font-size:12px;color:#4a5250;padding:2px 0; }
+.department-page--appointments .month-calendar__grid button { min-width:0;padding:0;background:none;border:1px solid transparent;border-radius:50%;color:var(--ink);font-weight:500; }
+.department-page--appointments .month-calendar__grid button:disabled { color:#8a857c;opacity:1; }
+.department-page--appointments .month-calendar__grid button[aria-pressed="true"] { background:var(--select-teal);color:#fff; }
+.department-page--appointments .reschedule-slots .reschedule-calendar { margin:0;padding:0;border:0;min-width:0; }
+.department-page--appointments .reschedule-actions { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;padding-top:12px;border-top:1px solid #dccab0; }
+.department-page--appointments .reschedule-actions .hospital-form { display:block;margin:0;padding:0;background:none;border:0;box-shadow:none; }
+.department-page--appointments .reschedule-actions .hospital-form h3 { margin:0 0 6px;font-size:15px; }
+.department-page--appointments .reschedule-actions .hospital-form textarea { min-height:60px; }
+.department-page--appointments .reschedule-actions .hospital-form > p { font-size:14px; }
+.department-page--appointments .reschedule-closed { padding:12px;background:#f1ebe1; }
+
+.department-page--appointments .walkin-workspace { display:grid;grid-template-columns:180px minmax(0,1fr) 230px;gap:16px;align-items:start; }
+.department-page--appointments .walkin-steps { display:grid;gap:6px;margin:0;padding:0;list-style:none; }
+.department-page--appointments .walkin-steps li { display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 10px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px;font-weight:500; }
+.department-page--appointments .walkin-steps li .step-number { background:#8b8174; }
+.department-page--appointments .walkin-steps li[aria-current="step"] { background:var(--select-teal-soft);border-color:var(--select-teal);color:var(--select-teal);font-weight:700; }
+.department-page--appointments .walkin-steps li[aria-current="step"] .step-number,.department-page--appointments .walkin-steps li[data-done="true"] .step-number { background:var(--select-teal); }
+.department-page--appointments .walkin-entry { display:grid;gap:12px;min-width:0; }
+.department-page--appointments .walkin-find { padding:12px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px; }
+.department-page--appointments .walkin-find h3 { display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:16px; }
+.department-page--appointments .walkin-patient-search { display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px; }
+.department-page--appointments .walkin-patient-search > label { display:grid;flex:1;gap:4px;min-width:200px; }
+.department-page--appointments .walkin-patient-strip { display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px; }
+.department-page--appointments .walkin-patient-strip strong { display:block;font-size:16px; }
+.department-page--appointments .walkin-patient-strip small,.department-page--appointments .walkin-match small { display:block;font-size:var(--text-secondary-size);color:#3f4b48; }
+.department-page--appointments .walkin-match { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+.department-page--appointments .walkin-find .hospital-panel { margin-top:10px;padding:0;background:none;border:0;box-shadow:none; }
+.department-page--appointments .walkin-find .hospital-panel > h2 { font-size:15px; }
+.department-page--appointments .walkin-find .hospital-items { display:grid;gap:6px; }
+.department-page--appointments .walkin-find .hospital-item { padding:8px 10px;background:#fff;border:1px solid #e3d4bd;border-radius:4px;box-shadow:none; }
+.department-page--appointments .walkin-intake-note { margin:10px 0 0;font-size:14px; }
+.department-page--appointments .walkin-intake-note a { display:inline-flex;align-items:center;min-height:var(--target-min);color:var(--select-teal);font-weight:600; }
+.department-page--appointments .walkin-entry .booking-composition { grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);row-gap:12px; }
+.department-page--appointments .walkin-entry .booking-receipt { grid-column:1 / -1;border-top:1px solid #dccab0;padding-top:12px; }
+.department-page--appointments .walkin-entry .booking-schedule { border-right:0; }
+.department-page--appointments .walkin-guidance { padding:14px;background:#fffdf8;border:1px solid #e3d4bd;border-radius:6px; }
+.department-page--appointments .walkin-guidance h3 { margin:0 0 8px;font-size:16px; }
+.department-page--appointments .walkin-guidance ul { display:grid;gap:8px;margin:0;padding-left:18px;font-size:14px;line-height:1.45; }
+.department-page--appointments .receptionist-care { margin-top:12px;padding:10px 16px;background:#fbf6ee;font-size:14px; }
+
+@media (max-width:1300px) and (min-width:901px) {
+  :is(.appointment-workspace,.reference-booking-desk) .booking-composition { grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-receipt { grid-column:1 / -1;border-top:1px solid #dccab0;padding-top:12px; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-schedule { border-right:0; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-patient-fields { grid-template-columns:1fr 1fr; }
+  .department-page--appointments .appointment-row { grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);align-items:start; }
+  .department-page--appointments .appointment-row > .owner-state { justify-self:start; }
+  .department-page--appointments .reschedule-columns { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .department-page--appointments .reschedule-current { grid-column:1 / -1; }
+  .department-page--appointments .walkin-workspace { grid-template-columns:160px minmax(0,1fr); }
+  .department-page--appointments .walkin-guidance { grid-column:1 / -1; }
+}
+@media (max-width:900px) {
+  .department-page--appointments .department-tabs { width:auto; }
+  .department-page--appointments :is(.appointment-booking,.appointment-manage,.reschedule-desk,.appointment-walkin) { padding:12px;border-radius:0 0 6px 6px; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-composition { grid-template-columns:minmax(0,1fr);row-gap:14px; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-composition > * { padding:0;border-right:0; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-receipt { order:-1;padding-bottom:12px;border-bottom:1px solid #dccab0; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-schedule { order:0; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-doctor { order:1; }
+  :is(.appointment-workspace,.reference-booking-desk) .booking-patient-fields { grid-template-columns:1fr; }
+  :is(.appointment-workspace,.reference-booking-desk) .calendar-strip { overflow-x:auto;grid-template-columns:repeat(7,minmax(44px,1fr)); }
+  .department-page--appointments .appointment-manage { grid-template-columns:minmax(0,1fr); }
+  .department-page--appointments .appointment-row { grid-template-columns:minmax(0,1fr);gap:8px; }
+  .department-page--appointments .appointment-row > .owner-state { justify-self:start; }
+  .department-page--appointments .appointment-row__actions { flex-wrap:wrap; }
+  .department-page--appointments .reschedule-columns,.department-page--appointments .reschedule-actions { grid-template-columns:minmax(0,1fr); }
+  .department-page--appointments .walkin-workspace { grid-template-columns:minmax(0,1fr); }
+  .department-page--appointments .walkin-steps { display:flex;overflow-x:auto; }
+  .department-page--appointments .walkin-steps li { flex:none; }
+  .department-page--appointments .walkin-entry .booking-composition { grid-template-columns:minmax(0,1fr); }
 }

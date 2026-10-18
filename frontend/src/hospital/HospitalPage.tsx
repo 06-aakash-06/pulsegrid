@@ -30,7 +30,8 @@ export function HospitalPage({
   const pharmacyRoom = (role === "/patient" && route === "pharmacy") || role === "/pharmacist";
   const subtitle = departmentDescriptions[departmentFor(role, route)];
   const signed =
-    (role === "/patient" && ["records", "billing", "emergency"].includes(route)) ||
+    (role === "/patient" && ["records", "billing", "emergency", "appointments"].includes(route)) ||
+    (role === "/receptionist" && route === "appointments") ||
     (role === "/doctor" && route === "consultations") ||
     (role === "/billing" && ["dashboard", "invoices", "payments"].includes(route)) ||
     role === "/emergency";
@@ -38,7 +39,7 @@ export function HospitalPage({
   if (role === "/patient") {
     if (route === "dashboard") content = <PatientDashboard />;
     if (route === "doctors") content = <DoctorDirectory />;
-    if (route === "appointments") content = <Appointments />;
+    if (route === "appointments") content = <Appointments title={title} subtitle={subtitle} />;
     if (route === "waitlist") content = <><PatientWaitlistPage /><WaitlistOffers /></>;
     if (route === "check-in") content = <PatientCheckinPage />;
     if (route === "queue") content = <PatientQueuePage />;
@@ -91,7 +92,7 @@ export function HospitalPage({
   }
   if (role === "/receptionist")
     content =
-      route === "dashboard" ? <Demographics /> : <><Appointments reception /><details className="receptionist-care"><summary>Check-in and journey operations</summary><ReceptionWorkflowPanel /></details></>;
+      route === "dashboard" ? <Demographics /> : <><Appointments reception title={title} subtitle={subtitle} /><details className="receptionist-care"><summary>Check-in and journey operations</summary><ReceptionWorkflowPanel /></details></>;
   if (!content)
     return <PlaceholderPage page={page} workspaceName={workspace.name} />;
   if (role === "/ops" || (role === "/admin" && ["control-room", "traces"].includes(route)))
