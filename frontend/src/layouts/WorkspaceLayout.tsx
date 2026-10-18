@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { workspaces, type WorkspaceConfig } from "../navigation/workspaces";
 import { HospitalHeader } from "../design/HospitalHeader";
@@ -30,19 +30,20 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   const sidebar = useRef<HTMLElement>(null);
   const route = location.pathname.split("/").at(-1) ?? "dashboard";
   const department = departmentFor(workspace.basePath, route);
+  const receptionScene = workspace.basePath === "/patient" && route === "dashboard";
   useEffect(() => {
-    if (department === "emergency" || !window.matchMedia || !main.current)
+    if (department === "emergency" || receptionScene || !window.matchMedia || !main.current)
       return;
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
       gsap.fromTo(
         main.current,
         { opacity: 0.8, y: 8 },
-        { opacity: 1, y: 0, duration: 0.35, clearProps: "all" },
+        { opacity: 1, y: 0, duration: 0.3, clearProps: "all" },
       );
     });
     return () => media.revert();
-  }, [location.pathname, department]);
+  }, [location.pathname, department, receptionScene]);
   const allowed =
     state.status === "authenticated"
       ? workspaces.filter((w) =>
@@ -170,6 +171,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         ref={sidebar}
         className={`workspace-sidebar physical-directory${menuOpen ? " workspace-sidebar--open" : ""}`}
         aria-label="Hospital directory"
+        {...(menuOpen ? { role: "dialog", "aria-modal": true } : {})}
       >
         <div className="directory-heading">
           <strong>PULSEGRID</strong>
@@ -182,31 +184,52 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         >
           {referenceItems.length ? (
             <>
-              {referenceItems.map((item) => (
-                <NavLink
-                  key={item.department}
-                  end
-                  to={`${item.base}/${item.path}`}
-                  aria-label={departmentNames[item.department]}
-                  className={({ isActive }) =>
-                    `workspace-nav-link${isActive || department === item.department || (department === "appointments" && item.department === "reception") ? " workspace-nav-link--active" : ""}`
-                  }
-                >
-                  <span className="directory-number">
-                    {String(
-                      directoryOrder.indexOf(item.department) + 1,
-                    ).padStart(2, "0")}
-                  </span>
-                  <DepartmentIcon department={item.department} />
-                  <span className="directory-copy">
-                    <strong>{departmentNames[item.department]}</strong>
-                    <small>{departmentDescriptions[item.department]}</small>
-                  </span>
-                  <span className="directory-arrow" aria-hidden="true">
-                    →
-                  </span>
-                </NavLink>
-              ))}
+              {referenceItems.map((item) => {
+                const destination = `${item.base}/${item.path}`;
+                const aliasActive =
+                  location.pathname !== destination &&
+                  (department === item.department || (department === "appointments" && item.department === "reception"));
+                const content = (
+                  <>
+                    <span className="directory-number">
+                      {String(
+                        directoryOrder.indexOf(item.department) + 1,
+                      ).padStart(2, "0")}
+                    </span>
+                    <DepartmentIcon department={item.department} />
+                    <span className="directory-copy">
+                      <strong>{departmentNames[item.department]}</strong>
+                      <small>{departmentDescriptions[item.department]}</small>
+                    </span>
+                    <span className="directory-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </>
+                );
+                return aliasActive ? (
+                  <Link
+                    key={item.department}
+                    to={destination}
+                    aria-label={departmentNames[item.department]}
+                    aria-current="page"
+                    className="workspace-nav-link workspace-nav-link--active"
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <NavLink
+                    key={item.department}
+                    end
+                    to={destination}
+                    aria-label={departmentNames[item.department]}
+                    className={({ isActive }) =>
+                      `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}`
+                    }
+                  >
+                    {content}
+                  </NavLink>
+                );
+              })}
             </>
           ) : (
             <>
@@ -306,7 +329,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
           Sign out
         </button>
       </aside>
-      <div className="workspace-main">
+      <div className="workspace-main" inert={menuOpen} aria-hidden={menuOpen || undefined}>
         <main
           ref={main}
           tabIndex={-1}
