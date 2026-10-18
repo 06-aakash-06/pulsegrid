@@ -1,8 +1,12 @@
 import { DepartmentIcon } from "../design/DepartmentIcon";
-import { useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { DepartmentSign } from "../design/DepartmentSign";
+import { useCursorPage } from "./pharmacyRoom";
 import type {
   Consultation,
   Content,
+  Doctor,
   FinalizeResult,
   Grant,
   MedicalRecord,
@@ -27,6 +31,7 @@ import {
   Resource,
   Selected,
   textField,
+  useResource,
   utc,
   type Field,
   type Values,
@@ -123,16 +128,28 @@ function prescriptionItems(items: Values[]): PrescriptionItemInput[] {
     );
   return normalized;
 }
-export function ClinicalFacts({ value }: { value: Content }) {
+export function ClinicalSheet({ value }: { value: Content }) {
   return (
-    <div className="clinical-content"><Facts
-      values={{
-        Summary: value.summary,
-        Assessment: value.assessment,
-        Plan: value.plan,
-      }}
-    /></div>
+    <div className="dossier-clinical">
+      {(["summary", "assessment", "plan"] as const).map((key) => (
+        <section key={key}>
+          <h3>{key === "summary" ? "Summary" : key === "assessment" ? "Assessment" : "Plan"}</h3>
+          <p>{value[key]}</p>
+        </section>
+      ))}
+    </div>
   );
+}
+function MedicineName({ medicineId }: { medicineId: string }) {
+  const medicine = useResource<Medicine>(`/api/v1/pharmacy/medicines/${medicineId}`);
+  const name = medicine.response?.data.name;
+  return <>{name && !name.startsWith("Synthetic") ? name : `Medicine …${medicineId.slice(-4)}`}</>;
+}
+function longDate(value: string) {
+  return new Date(value).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "long", year: "numeric" });
+}
+function shortDateTime(value: string) {
+  return `${new Date(value).toLocaleString("en-IN", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" })} UTC`;
 }
 function ConsultationEditor({
   item,
@@ -147,7 +164,12 @@ function ConsultationEditor({
   const [finalized, setFinalized] = useState<FinalizeResult | null>(null);
   return (
     <>
-      <header className="record-document-heading"><DepartmentIcon department="records"/><div><h3>Consultation …{item.id.slice(-4)}</h3><p>{item.status} · Revision {item.revision}</p></div></header><details className="owner-identifiers"><summary>Clinical visit references</summary>      <Facts
+      <header className="dossier-header" data-check="records-dossier-header">
+        <div><p className="dossier-eyebrow">{item.status === "draft" ? "Draft consultation" : "Finalized consultation"}</p><h2>Consultation for visit …{item.appointment_id.slice(-4)}</h2><p>Revision {item.revision}</p></div>
+        <span className="owner-state" data-state={item.status}>{item.status === "draft" ? "Draft" : "Finalized"}</span>
+        <button type="button" onClick={refresh}>Refresh</button>
+      </header>
+      <details className="owner-identifiers"><summary>Details</summary>      <Facts
         values={{
           "Consultation ID": item.id,
           "Appointment ID": item.appointment_id,
@@ -157,7 +179,7 @@ function ConsultationEditor({
         }}
       />
 </details>
-      <ClinicalFacts value={item.clinical_content} />
+      <ClinicalSheet value={item.clinical_content} />
       {item.status === "draft" && !finalized && (
         <>
           <CommandForm
@@ -190,153 +212,241 @@ function ConsultationEditor({
             ID: {finalized.record.id}. Prescription ID:{" "}
             {finalized.prescription?.id ?? "None"}.
           </p>
-          <button onClick={refresh}>Reload finalized consultation</button>
+          <button onClick={refresh}>Refresh finalized consultation</button>
         </div>
       )}
     </>
   );
 }
-export function Consultations({ doctor = false }: { doctor?: boolean }) {
+export function Consultations({ doctor = false, title, subtitle }: { doctor?: boolean; title?: string; subtitle?: string }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
+  const register = useCursorPage<Consultation>("/api/v1/records/consultations", revision);
+  const firstId = register.items[0]?.id;
+  useEffect(() => {
+    if (!selected && firstId) setSelected(firstId);
+  }, [selected, firstId]);
+  const current = useResource<Consultation>(selected ? `/api/v1/records/consultations/${selected}` : null, revision);
+  const item = current.response?.data;
   return (
-    <div className="consultation-clinical">
+    <div className={`dossier-room dossier-room--consultations${doctor ? " dossier-room--doctor" : ""}`}>
+      {title && <DepartmentSign department="records" title={title} subtitle={subtitle ?? ""} />}
+      <section className="dossier-timeline" aria-labelledby="consultation-register-title">
+        <div className="dossier-panel-heading"><h2 id="consultation-register-title">{doctor ? "Your consultations" : "Consultations"}</h2><button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button></div>
+        {register.loading && <p role="status">Loading consultations…</p>}
+        {register.error && <p role="alert">{register.error}</p>}
+        {register.loaded && !register.loading && register.items.length === 0 && <p>No consultations found.</p>}
+        <ol className="visit-list">
+          {register.items.map((entry) => (
+            <li key={entry.id}>
+              <button type="button" className="visit-entry" aria-pressed={selected === entry.id} aria-label={`View consultation ${entry.id}`} onClick={() => setSelected(entry.id)}>
+                <strong>Visit …{entry.appointment_id.slice(-4)}</strong>
+                <span className="owner-state" data-state={entry.status}>{entry.status === "draft" ? "Draft" : "Finalized"}</span>
+                <small>Consultation …{entry.id.slice(-4)}</small>
+              </button>
+            </li>
+          ))}
+        </ol>
+        {(register.hasPrevious || register.hasNext) && <div className="dossier-pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
+        <details className="dossier-more"><summary>Open a consultation by ID</summary><Lookup label="Consultation ID" onSelect={setSelected} /></details>
+      </section>
+      <article className="dossier-sheet" aria-label="Consultation document">
+        {!selected && !register.loading && <div className="dossier-empty"><DepartmentIcon department="consultation" /><p>Select a consultation{doctor ? " or create one for an assigned appointment" : ""}.</p></div>}
+        {current.loading && !item && <p role="status">Loading consultation…</p>}
+        {current.error && <p role="alert">{current.error}</p>}
+        {item && (
+          <div key={`${item.id}:${item.version}`}>
+            {doctor ? (
+              <ConsultationEditor item={item} etag={current.response?.etag ?? null} refresh={() => { current.refresh(); setRevision((v) => v + 1); }} />
+            ) : (
+              <>
+                <header className="dossier-header"><div><p className="dossier-eyebrow">Consultation</p><h2>Visit …{item.appointment_id.slice(-4)}</h2></div><span className="owner-state" data-state={item.status}>{item.status === "draft" ? "Draft" : "Finalized"}</span></header>
+                <ClinicalSheet value={item.clinical_content} />
+                <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Consultation ID": item.id, "Appointment ID": item.appointment_id, Version: item.version }} /></details>
+              </>
+            )}
+          </div>
+        )}
+      </article>
       {doctor && (
-        <>
-          <div className="clinical-tools"><details className="assigned-appointments"><summary>Assigned appointments</summary><Appointments doctor /></details>
-          <details className="new-consultation" open={!selected}><summary>New consultation</summary><Panel title="Create assigned consultation">
+        <aside className="dossier-side" aria-label="Consultation tools">
+          <details className="dossier-more" open={!selected}><summary>New consultation</summary>
             <CommandForm<Consultation>
               title="Create consultation"
               path="/api/v1/records/consultations"
-              fields={[
-                idField("appointment_id", "Assigned appointment ID"),
-                ...clinicalFields(),
-              ]}
-              build={(values) => ({
-                appointment_id: id(values.appointment_id.trim()),
-                clinical_content: content(values),
-              })}
-              onSuccess={(item) => {
-                setSelected(item.id);
+              fields={[idField("appointment_id", "Assigned appointment ID"), ...clinicalFields()]}
+              build={(values) => ({ appointment_id: id(values.appointment_id.trim()), clinical_content: content(values) })}
+              onSuccess={(created) => {
+                setSelected(created.id);
                 setRevision((v) => v + 1);
               }}
             />
-          </Panel></details></div>
-        </>
+          </details>
+          <details className="dossier-more assigned-appointments"><summary>Assigned appointments</summary><Appointments doctor /></details>
+        </aside>
       )}
-      <section className="consultation-register">
-      <Collection<Consultation>
-        title="Consultations"
-        path="/api/v1/records/consultations"
-        revision={revision}
-        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
-        renderItem={(item) => (
-          <>
-            <div className="consultation-slip"><strong>Consultation …{item.id.slice(-4)}</strong><span className="owner-state">{item.status}</span></div><details className="owner-identifiers"><summary>Visit references</summary><Facts values={{"Consultation ID":item.id,"Appointment ID":item.appointment_id}}/></details>
-            <button aria-label={`View consultation ${item.id}`} onClick={() => setSelected(item.id)}>
-              Open clinical visit →
-            </button>
-          </>
-        )}
-      />
-      <Lookup label="Consultation ID" onSelect={setSelected} />
-      </section><section className="clinical-editor">{!selected && <Panel title="Consultation room"><div className="resource-empty"><DepartmentIcon department="consultation"/><strong>Open a consultation</strong><p>Select an authorized consultation or create one for an assigned appointment.</p></div></Panel>}
-      <Selected<Consultation>
-        path={selected ? `/api/v1/records/consultations/${selected}` : null}
-      >
-        {(item, etag, refresh) =>
-          doctor ? (
-            <ConsultationEditor
-              item={item}
-              etag={etag}
-              refresh={() => {
-                refresh();
-                setRevision((v) => v + 1);
-              }}
-            />
-          ) : (
-            <>
-              <Facts
-                values={{
-                  "Consultation ID": item.id,
-                  "Appointment ID": item.appointment_id,
-                  Status: item.status,
-                }}
-              />
-              <ClinicalFacts value={item.clinical_content} />
-            </>
-          )
-        }
-      </Selected>
-    </section></div>
+    </div>
+  );
+}
+type Visit = { consultationId: string; versions: RecordSummary[]; first: RecordSummary; latest: RecordSummary };
+function groupVisits(items: RecordSummary[]): Visit[] {
+  const byConsultation = new Map<string, RecordSummary[]>();
+  items.forEach((item) => byConsultation.set(item.consultation_id, [...(byConsultation.get(item.consultation_id) ?? []), item]));
+  return [...byConsultation.entries()]
+    .map(([consultationId, versions]) => {
+      const sorted = [...versions].sort((a, b) => a.revision - b.revision);
+      return { consultationId, versions: sorted, first: sorted[0], latest: sorted[sorted.length - 1] };
+    })
+    .sort((a, b) => b.first.created_at.localeCompare(a.first.created_at));
+}
+function VisitPrescriptions({ patientId, consultationId }: { patientId: string; consultationId: string }) {
+  const prescriptions = useCursorPage<Prescription>(query("/api/v1/records/prescriptions", { patient_id: patientId, consultation_id: consultationId }));
+  return (
+    <section className="dossier-prescriptions" aria-labelledby={`visit-rx-${consultationId}`}>
+      <h3 id={`visit-rx-${consultationId}`}>Prescribed medicines</h3>
+      {prescriptions.loading && <p role="status">Loading prescriptions from this visit…</p>}
+      {prescriptions.error && <p role="alert">{prescriptions.error}</p>}
+      {prescriptions.loaded && !prescriptions.loading && prescriptions.items.length === 0 && <p>No prescriptions were issued at this visit.</p>}
+      {prescriptions.items.map((prescription) => (
+        <div className="dossier-rx" key={prescription.id} data-state={prescription.state} tabIndex={0} role="region" aria-label={`${prescription.state === "revoked" ? "Revoked" : "Issued"} prescription …${prescription.id.slice(-4)}`}>
+          <p className="dossier-rx__status"><span className="owner-state" data-state={prescription.state}>{prescription.state === "revoked" ? "Revoked" : "Issued"}</span>{prescription.state === "revoked" ? "Revoked prescription. These instructions are retained as history and are not valid for new fulfilment." : `Prescription …${prescription.id.slice(-4)}`}</p>
+          <table>
+            <caption className="sr-only">Medicines on prescription …{prescription.id.slice(-4)}</caption>
+            <thead><tr><th scope="col">Medicine</th><th scope="col">Quantity</th><th scope="col">Dosage</th><th scope="col">Instructions</th></tr></thead>
+            <tbody>{prescription.items.map((line) => <tr key={line.id}><th scope="row"><MedicineName medicineId={line.medicine_id} /></th><td>{line.quantity}</td><td>{line.dosage}</td><td>{line.instructions}</td></tr>)}</tbody>
+          </table>
+        </div>
+      ))}
+    </section>
   );
 }
 function History({
   patientId,
   doctor,
+  patientName,
+  extra,
 }: {
   patientId: string;
   doctor: boolean;
+  patientName?: string;
+  extra?: ReactNode;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
+  const history = useCursorPage<RecordSummary>(`/api/v1/records/patients/${patientId}`, revision);
+  const visits = groupVisits(history.items);
+  const firstLatest = visits[0]?.latest.id;
+  useEffect(() => {
+    if (!selected && firstLatest) setSelected(firstLatest);
+  }, [selected, firstLatest]);
+  const record = useResource<MedicalRecord>(selected ? `/api/v1/records/${selected}` : null, revision);
+  const item = record.response?.data;
+  const visit = visits.find((entry) => entry.versions.some((version) => version.id === selected));
+  const consultation = useResource<Consultation>(item ? `/api/v1/records/consultations/${item.consultation_id}` : null);
+  const doctorId = consultation.response?.data.doctor_id;
+  const clinician = useResource<Doctor>(doctorId ? `/api/v1/doctors/${doctorId}` : null);
+  const paged = history.hasNext || history.hasPrevious;
+  const isLatest = !!visit && visit.latest.id === selected;
   return (
-    <div className="record-history"><aside className="visit-timeline">
-      <Collection<RecordSummary>
-        title="Medical history"
-        path={`/api/v1/records/patients/${patientId}`}
-        revision={revision}
-        onFirstItem={item=>{if(!selected)setSelected(item.id);}}
-        renderItem={(item) => (
-          <>
-            <time dateTime={item.created_at}>{new Date(item.created_at).toLocaleString('en',{timeZone:'UTC',dateStyle:'medium',timeStyle:'short'})} UTC</time><strong>Clinical record</strong><p>Revision {item.revision}</p>
-            <button aria-label={`View record ${item.id}`} onClick={() => setSelected(item.id)}>
-              Open clinical document →
-            </button>
-          </>
-        )}
-      />
-      <Lookup label="Medical record ID" onSelect={setSelected} />
-      </aside><section className="active-dossier">{!selected && <Panel title="Clinical dossier"><div className="resource-empty"><DepartmentIcon department="records"/><strong>Choose a visit</strong><p>Open a record from your timeline to read its authorized summary, assessment and plan.</p></div></Panel>}
-      <Selected<MedicalRecord>
-        path={selected ? `/api/v1/records/${selected}` : null}
-      >
-        {(record, etag, refresh) => (
-          <>
-            <header className="record-document-heading"><DepartmentIcon department="records"/><div><h3>Clinical record …{record.id.slice(-4)}</h3><p>Revision {record.revision} · Records service</p></div></header>
-            <div className="clinical-dossier-body"><ClinicalFacts value={record.content}/><aside className="record-document-index"><h3>Document history</h3><Facts values={{Revision:record.revision,Supersedes:record.supersedes_id?`Record …${record.supersedes_id.slice(-4)}`:"Original document"}}/><details className="owner-identifiers"><summary>Owner references</summary><Facts values={{"Record ID":record.id,"Consultation ID":record.consultation_id}}/></details>{!doctor&&<nav aria-label="Related care"><h3>Related care</h3><a href="/patient/prescriptions">Prescriptions →</a><a href="/patient/journey">Patient journey →</a></nav>}</aside></div>
-            {!doctor && <section className="dossier-prescriptions" key={record.consultation_id}><Collection<Prescription>
-              title="Prescriptions from this visit"
-              path={query("/api/v1/records/prescriptions", { patient_id: patientId, consultation_id: record.consultation_id })}
-              renderItem={prescription=><><div className="prescription-document-heading"><strong>Prescription …{prescription.id.slice(-4)}</strong><span className="owner-state">{prescription.state}</span><small>Revision {prescription.revision}</small></div>{prescription.state === "revoked" && <p className="prescription-revoked-note">Revoked prescription. These instructions are retained as history.</p>}<div className="prescription-instruction-list">{prescription.items.map(item=><dl key={item.id}><div><dt>Medicine reference</dt><dd>…{item.medicine_id.slice(-4)}<details className="owner-identifiers"><summary>Full reference</summary>{item.medicine_id}</details></dd></div><div><dt>Quantity</dt><dd>{item.quantity}</dd></div><div><dt>Dosage</dt><dd>{item.dosage}</dd></div><div><dt>Instructions</dt><dd>{item.instructions}</dd></div></dl>)}</div></>}
-            /></section>}
-            {doctor && (
-              <CommandForm<MedicalRecord>
-                title="Amend medical record"
-                path={`/api/v1/records/${record.id}/amendments`}
-                conditional
-                etag={etag}
-                fields={[...clinicalFields(record.content), reasonField]}
-                build={(values) => ({
-                  content: content(values),
-                  reason:
-                    values.reason.trim() ||
-                    (() => {
-                      throw new Error("Reason is required.");
-                    })(),
-                })}
-                onSuccess={(item) => {
-                  setSelected(item.id);
-                  setRevision((v) => v + 1);
-                  refresh();
-                }}
-                notice="Historical amendments require an active clinical hold or an unexpired patient records grant. Original text is preserved."
-              />
-            )}
-          </>
-        )}
-      </Selected>
-    </section></div>
+    <>
+      <section className="dossier-band" aria-label="Patient">
+        <DepartmentIcon department="reception" />
+        <div className="dossier-band__name"><strong>{patientName ?? "Patient"}</strong><small>Patient ID …{patientId.slice(-4)}</small></div>
+        <dl>
+          <div><dt>Last visit</dt><dd>{visits[0] ? longDate(visits[0].first.created_at) : history.loading ? "Loading…" : "None recorded"}</dd></div>
+          <div><dt>Visits</dt><dd>{visits.length}{paged ? " in this list" : ""}</dd></div>
+        </dl>
+      </section>
+      <div className={`dossier-room__body${doctor ? " dossier-room__body--doctor" : ""}`}>
+        <section className="dossier-timeline" aria-labelledby={`timeline-${patientId}`}>
+          <div className="dossier-panel-heading"><h2 id={`timeline-${patientId}`}>Visit timeline</h2><button type="button" disabled={history.loading} onClick={history.refresh}>Refresh</button></div>
+          {history.loading && <p role="status">Loading medical history…</p>}
+          {history.error && <p role="alert">{history.error}</p>}
+          {history.loaded && !history.loading && visits.length === 0 && <p>No medical records found.</p>}
+          <ol className="visit-list">
+            {visits.map((entry) => (
+              <li key={entry.consultationId}>
+                <button type="button" className="visit-entry" aria-pressed={entry.versions.some((version) => version.id === selected)} aria-label={`View record ${entry.latest.id}`} onClick={() => setSelected(entry.latest.id)}>
+                  <time dateTime={entry.first.created_at}>{shortDateTime(entry.first.created_at)}</time>
+                  <strong>Visit record</strong>
+                  <small>{entry.versions.length > 1 ? `Amended · revision ${entry.latest.revision}` : "Original record"}</small>
+                </button>
+              </li>
+            ))}
+          </ol>
+          {paged && <div className="dossier-pages"><button type="button" disabled={!history.hasPrevious} onClick={history.previous}>Previous page</button><button type="button" disabled={!history.hasNext} onClick={history.next}>Next page</button></div>}
+          <details className="dossier-more"><summary>Open a record by ID</summary><Lookup label="Medical record ID" onSelect={setSelected} /></details>
+        </section>
+        <article className="dossier-sheet" aria-labelledby="dossier-title">
+          {!selected && !history.loading && <div className="dossier-empty"><DepartmentIcon department="records" /><p>Choose a visit to read its summary, assessment and plan.</p></div>}
+          {record.loading && !item && <p role="status">Loading clinical document…</p>}
+          {record.error && <p role="alert">{record.error}</p>}
+          {item && (
+            <div key={`${item.id}:${item.version}`}>
+              <header className="dossier-header" data-check="records-dossier-header">
+                <div>
+                  <p className="dossier-eyebrow">Visit record</p>
+                  <h2 id="dossier-title">{visit ? longDate(visit.first.created_at) : "Clinical document"}</h2>
+                  <p>{clinician.response ? `${clinician.response.data.display_name}${clinician.response.data.specialties[0] ? ` · ${clinician.response.data.specialties[0].name}` : ""}` : "Clinician not returned"}</p>
+                </div>
+                <span className="owner-state" data-state={isLatest ? "current" : "earlier"}>{!isLatest ? "Earlier version" : item.revision > 1 ? "Amended" : "Current"}</span>
+                <button type="button" disabled={record.loading} onClick={record.refresh}>Refresh</button>
+              </header>
+              {!isLatest && visit && <p className="dossier-notice">You are reading an earlier version of this record. <button type="button" onClick={() => setSelected(visit.latest.id)}>Open the current version</button></p>}
+              <ClinicalSheet value={item.content} />
+              {!doctor && <VisitPrescriptions key={item.consultation_id} patientId={patientId} consultationId={item.consultation_id} />}
+              {doctor && (
+                <details className="dossier-more"><summary>Amend this record</summary>
+                  <CommandForm<MedicalRecord>
+                    title="Amend medical record"
+                    path={`/api/v1/records/${item.id}/amendments`}
+                    conditional
+                    etag={record.response?.etag ?? null}
+                    fields={[...clinicalFields(item.content), reasonField]}
+                    build={(values) => ({
+                      content: content(values),
+                      reason: values.reason.trim() || (() => { throw new Error("Reason is required."); })(),
+                    })}
+                    onSuccess={(amended) => {
+                      setSelected(amended.id);
+                      setRevision((v) => v + 1);
+                    }}
+                    notice="Historical amendments require an active clinical hold or an unexpired patient records grant. Original text is preserved."
+                  />
+                </details>
+              )}
+            </div>
+          )}
+        </article>
+        <aside className="dossier-side" aria-label="Record history and related care">
+          <section aria-labelledby="record-versions-title">
+            <h2 id="record-versions-title">Record history</h2>
+            {visit ? (
+              <ol className="record-versions">
+                {[...visit.versions].reverse().map((version) => (
+                  <li key={version.id}>
+                    <button type="button" aria-pressed={version.id === selected} onClick={() => setSelected(version.id)}>
+                      <strong>{version.revision === 1 ? "Original record" : `Amendment · revision ${version.revision}`}{version.id === visit.latest.id ? " (current)" : ""}</strong>
+                      <time dateTime={version.created_at}>{shortDateTime(version.created_at)}</time>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            ) : <p>Choose a visit to see its versions.</p>}
+          </section>
+          {!doctor && (
+            <nav aria-labelledby="linked-care-title" className="dossier-links">
+              <h2 id="linked-care-title">Linked prescriptions &amp; journey</h2>
+              <Link to="/patient/prescriptions">All prescriptions →</Link>
+              <Link to="/patient/pharmacy">Pharmacy reservations →</Link>
+              <Link to="/patient/journey">Care journey →</Link>
+            </nav>
+          )}
+          {extra}
+          {item && <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Record ID": item.id, "Consultation ID": item.consultation_id, Revision: item.revision, Version: item.version, Supersedes: item.supersedes_id ?? "None (original)" }} /></details>}
+        </aside>
+      </div>
+    </>
   );
 }
 function Grants({ patientId }: { patientId: string }) {
@@ -399,34 +509,30 @@ function Grants({ patientId }: { patientId: string }) {
     </Panel>
   );
 }
-export function RecordsPage({ doctor = false }: { doctor?: boolean }) {
+export function RecordsPage({ doctor = false, title, subtitle }: { doctor?: boolean; title?: string; subtitle?: string }) {
   const [patientId, setPatientId] = useState<string | null>(null);
   return (
-    <>
+    <div className="dossier-room dossier-room--records">
+      {title && <DepartmentSign department="records" title={title} subtitle={subtitle ?? ""} />}
       {doctor ? (
         <>
-          <Lookup
-            label="Patient ID for authorized history"
-            onSelect={setPatientId}
-          />
-          {patientId && (
-            <History key={patientId} patientId={patientId} doctor />
-          )}
+          <Lookup label="Patient ID for authorized history" onSelect={setPatientId} />
+          {patientId && <History key={patientId} patientId={patientId} doctor />}
         </>
       ) : (
         <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>
           {(profile) => (
-            <>
-              <div className="record-patient-strip"><DepartmentIcon department="reception"/><strong>{profile.display_name.startsWith("Synthetic")?"Your clinical dossier":profile.display_name}</strong><span>Authorized medical history</span><small>Synthetic hospital data</small></div>
-              <nav className="record-document-tabs" aria-label="Clinical documents"><span>Visit History</span><a href="/patient/prescriptions">Prescriptions</a><a href="/patient/journey">Care Journey</a></nav>
-              <History patientId={profile.id} doctor={false} />
-              <details className="record-grants"><summary>Record access permissions</summary><Grants patientId={profile.id} /></details>
-            </>
+            <History
+              patientId={profile.id}
+              doctor={false}
+              patientName={profile.display_name.startsWith("Synthetic") ? "Your clinical dossier" : profile.display_name}
+              extra={<details className="dossier-more record-grants"><summary>Record access permissions</summary><Grants patientId={profile.id} /></details>}
+            />
           )}
         </Resource>
       )}
-      <details className="record-consultations"><summary>Consultation register</summary><Consultations doctor={false} /></details>
-    </>
+      {!doctor && <details className="dossier-more record-consultations"><summary>Consultation register</summary><Consultations doctor={false} /></details>}
+    </div>
   );
 }
 export function PrescriptionDetail({
