@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { readFile } from "node:fs/promises";
+import { mockApiPlugin } from "./dev-mock/plugin";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
@@ -16,6 +17,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
+      ...(env.VITE_MOCK_API === "true" ? [mockApiPlugin()] : []),
       {
         name: "local-fictional-demo",
         apply: "serve",

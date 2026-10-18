@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "VITE_MOCK_API=true vite --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "tsc --noEmit && vite build",
