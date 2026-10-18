@@ -137,9 +137,12 @@ export function Collection<T extends { id: string }>({
   itemFilter?: (item: T) => boolean;
   sourceNote?: ReactNode;
 }) {
+  const shown = useRef(new Set<string>());
   return (
     <CollectionPage<T>
       key={`${path}:${revision}`}
+      animateEntry={!!path && !shown.current.has(path)}
+      onShown={() => { if (path) shown.current.add(path); }}
       path={path}
       title={title}
       renderItem={renderItem}
@@ -156,6 +159,8 @@ function CollectionPage<T extends { id: string }>({
   onFirstItem,
   itemFilter,
   sourceNote,
+  animateEntry,
+  onShown,
 }: {
   path: string | null;
   title: string;
@@ -163,7 +168,10 @@ function CollectionPage<T extends { id: string }>({
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
   sourceNote: ReactNode;
+  animateEntry: boolean;
+  onShown: () => void;
 }) {
+  const firstBatch = useRef<Set<string> | null>(null);
   const [cursor, setCursor] = useState<string | undefined>();
   const [history, setHistory] = useState<(string | undefined)[]>([]);
   const pagedPath = path
@@ -174,6 +182,11 @@ function CollectionPage<T extends { id: string }>({
     const first = resource.response?.data.items.find(item=>!itemFilter || itemFilter(item));
     if (first) onFirstItem?.(first);
   }, [resource.response, onFirstItem, itemFilter]);
+  if (resource.response && !firstBatch.current)
+    firstBatch.current = new Set(animateEntry ? resource.response.data.items.slice(0, 8).map((item) => item.id) : []);
+  useEffect(() => {
+    if (resource.response) onShown();
+  }, [resource.response, onShown]);
   return (
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}
@@ -191,8 +204,15 @@ function CollectionPage<T extends { id: string }>({
             <div className="resource-empty"><strong>No {title.toLowerCase()} found.</strong><p>Nothing to display for the current filters.</p></div>
           )}
           <div className="hospital-items">
-            {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).map((item) => (
-              <m.article initial={false} layout="position" transition={{duration:0.18}} className="hospital-item" key={item.id}>
+            {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).map((item, index) => (
+              <m.article
+                initial={firstBatch.current?.has(item.id) ? { opacity: 0, y: 6 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                layout="position"
+                transition={{ duration: 0.18, delay: firstBatch.current?.has(item.id) ? Math.min(index, 7) * 0.03 : 0 }}
+                className="hospital-item"
+                key={item.id}
+              >
                 {renderItem(item)}
               </m.article>
             ))}

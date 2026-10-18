@@ -51,6 +51,11 @@
   --status-danger-bg: #f8dbd5;
   --status-danger-fg: #8a1d15;
   --emergency-red: #8f1a14;
+  --status-success: #075437;
+  --status-warning: #6f420a;
+  --status-danger: #8a1d15;
+  --status-neutral: #3b4442;
+  --target-min: 40px;
   --environment: url("/environments/reception.webp");
 }
 body {
@@ -3925,3 +3930,20 @@ button[type="submit"],
 .pharmacy-search-counter .phase4-autocomplete{margin:0}
 .pharmacy-search-counter{padding:16px 20px;align-items:end}
 .pharmacy-search-counter>.hospital-panel{padding:0!important}
+
+/* Shared ui.tsx components: readable secondary text and a brief selection highlight after a user choice. */
+.workspace-content .status-badge { font-size: 12px; }
+.workspace-content .resource-toolbar,
+.workspace-content .command-receipt,
+.workspace-content .hospital-confirm > p { font-size: var(--text-secondary-size); }
+.workspace-content .hospital-actions button,
+.workspace-content .resource-toolbar button { min-height: var(--target-min); }
+@keyframes pg-select-pulse {
+  from { box-shadow: 0 0 0 0 rgb(16 56 62 / 45%); }
+  to { box-shadow: 0 0 0 8px rgb(16 56 62 / 0%); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(.appointment-doctor-rows > button, button.available-slot, .calendar-strip button, .month-calendar__grid button, .ops-tile, .visit-entry, .shelf-label, .er-row, .cashier-register__table button, .ops-trace-row)[aria-pressed="true"] {
+    animation: pg-select-pulse 0.45s ease-out 1;
+  }
+}

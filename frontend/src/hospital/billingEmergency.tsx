@@ -1,3 +1,4 @@
+import { m } from "motion/react";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { DepartmentSign } from "../design/DepartmentSign";
 import { useCursorPage } from "./pharmacyRoom";
@@ -141,10 +142,10 @@ function InvoiceReceipt({
         />
       )}
       {payment && payment.invoice_id === invoice.id && (
-        <p role="status" className="cashier-payment-result">
+        <m.p key={payment.id} initial={{ backgroundColor: "#f3dd9a" }} animate={{ backgroundColor: "#f1ebe1" }} transition={{ duration: 1.2 }} role="status" className="cashier-payment-result">
           Payment …{payment.id.slice(-4)}:{" "}
           {payment.status === "declined" ? "simulated decline recorded; balance was not paid" : "simulated success recorded"}. Amount {money(payment.amount_minor)}.
-        </p>
+        </m.p>
       )}
       <details className="cashier-more"><summary>Payment history</summary>
         <Collection<Payment>
