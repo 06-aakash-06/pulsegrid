@@ -3961,3 +3961,40 @@ button[type="submit"],
   .hospital-header .account-menu > summary { min-height: var(--target-min); }
   .hospital-header .global-search { min-width: var(--target-min); min-height: var(--target-min); }
 }
+
+/* Sign-in and registration: one centred two-panel card over the reception photo. */
+.workspace-shell.auth-route-layout,.auth-route-layout { padding:calc(var(--header-height) + 28px) 16px 32px; }
+.auth-route-layout .auth-page { box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-auto-rows:auto;gap:0;place-items:start center;align-content:start;width:100%;min-height:0;height:auto;max-width:none;margin:0;padding:0;background:none;border:0;box-shadow:none; }
+.auth-route-layout .auth-stage { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);width:min(100%,1000px);overflow:hidden;background:#fbf6ee;border:1px solid #fff4e2;border-radius:10px;box-shadow:0 24px 48px -24px #2b1a0c99; }
+.auth-route-layout .auth-welcome { display:flex;flex-direction:column;gap:14px;margin:0;padding:40px 40px 32px;background:linear-gradient(160deg,#10383e,#0b2a2f);color:#f3ebdd;border:0;border-radius:0;box-shadow:none; }
+.auth-route-layout .auth-welcome > .eyebrow { margin:0;color:#9fd3c9;font-size:12px;letter-spacing:.14em;text-transform:uppercase; }
+.auth-route-layout .auth-welcome > h2 { margin:0;font-size:clamp(30px,3vw,40px);line-height:1.08;letter-spacing:-.02em;color:#fff8ec; }
+.auth-route-layout .auth-welcome > p:not(.eyebrow) { margin:0;font-size:16px;color:#d7e6e1; }
+.auth-route-layout .auth-features { display:grid;gap:10px;margin:10px 0 0;padding:0;list-style:none; }
+.auth-route-layout .auth-features li { display:flex;align-items:center;gap:14px;padding:10px 12px;background:#ffffff12;border:1px solid #ffffff1f;border-radius:8px; }
+.auth-route-layout .auth-features__icon { display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:10px;background:#f8eedb;color:var(--accent); }
+.auth-route-layout .auth-features__icon .department-icon { width:22px;height:22px;color:inherit; }
+.auth-route-layout .auth-features strong { display:block;font-size:15px;color:#fff8ec; }
+.auth-route-layout .auth-features small { display:block;font-size:13px;color:#cfe0da; }
+.auth-route-layout .auth-welcome .auth-welcome__note { margin-top:auto;padding-top:14px;border-top:1px solid #ffffff26;font-size:13px;color:#cfe0da; }
+.auth-route-layout .auth-workspace { display:flex;flex-direction:column;justify-content:center;gap:12px;min-width:0;margin:0;padding:36px 36px 24px; }
+.auth-route-layout .auth-card { width:100%;max-width:none;margin:0;padding:0;background:none;border:0;border-radius:0;box-shadow:none; }
+.auth-route-layout .auth-card::before { display:none; }
+.auth-route-layout .auth-card h1 { margin:4px 0 6px;font-size:32px; }
+.auth-route-layout .auth-card .eyebrow { font-size:12px; }
+.auth-route-layout .auth-description { font-size:14px; }
+.auth-route-layout .auth-legal { margin:0;padding:0;background:none;border:0;font-size:12px;color:#4a5250; }
+.auth-route-layout .auth-demo { margin-top:16px;padding:14px;background:#f1e8da;border:1px dashed #c9b28d;border-radius:8px; }
+.auth-route-layout .auth-demo h2 { margin:0 0 4px;font-size:15px; }
+.auth-route-layout .auth-demo p { margin:0 0 10px;font-size:13px;color:#3f4b48; }
+.auth-route-layout .auth-demo__roles { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px; }
+.auth-route-layout .auth-demo__roles button { min-height:40px;padding:6px 4px;font-size:13px;font-weight:600;background:#fffdf8;border:1px solid #d6c4a7;border-radius:6px;color:var(--accent);cursor:pointer; }
+.auth-route-layout .auth-demo__roles button:hover { background:var(--accent);color:#fff8ec; }
+@media (max-width: 860px) {
+  .auth-route-layout { padding:calc(var(--header-height) + 8px) 12px 24px; }
+  .auth-route-layout .auth-stage { grid-template-columns:minmax(0,1fr);width:min(100%,520px); }
+  .auth-route-layout .auth-welcome { order:2;padding:24px 20px; }
+  .auth-route-layout .auth-workspace { order:1;padding:24px 20px 18px; }
+  .auth-route-layout .auth-demo__roles { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+.auth-route-layout .auth-demo-note { margin:12px 0 0;padding:10px 12px;background:#f1e8da;border:1px dashed #c9b28d;border-radius:8px;font-size:13px; }

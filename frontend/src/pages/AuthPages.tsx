@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ApiConfigurationError, ApiError } from "../api/client";
 import { createRegistrationAttempt, type RegistrationAttempt, type RegistrationInput } from "../api/authApi";
 import { useAuth } from "../auth/authContext";
+import { DepartmentIcon, type Department } from "../design/DepartmentIcon";
 
 import {
   getWorkspaceForPath,
@@ -162,6 +163,9 @@ export function LoginPage() {
         </button>
       </form>
       <p className="form-footnote">Access is granted only after the identity service responds successfully.</p>
+      {(import.meta.env.VITE_DEMO_MOCK === "true" || import.meta.env.VITE_MOCK_API === "true") && (
+        <DemoAccounts onPick={(picked) => { setEmail(picked); setPassword("demo"); setFieldErrors({}); setError(null); }} />
+      )}
       <p className="auth-switch">New to PulseGrid? <Link to="/register">Create a patient account</Link></p>
     </AuthFrame>
   );
@@ -349,6 +353,9 @@ export function RegistrationPage() {
         </form>
       )}
       <p className="form-footnote">Use synthetic information only. Registration does not sign you in automatically.</p>
+      {(import.meta.env.VITE_DEMO_MOCK === "true" || import.meta.env.VITE_MOCK_API === "true") && (
+        <p className="auth-demo-note">This demo runs on synthetic mock data, so new accounts are not created. <Link to="/login">Use a demo account to sign in.</Link></p>
+      )}
       <p className="auth-switch">Already registered? <Link to="/login">Sign in</Link></p>
     </AuthFrame>
   );
@@ -360,17 +367,63 @@ interface AuthFrameProps {
   children: ReactNode;
 }
 
+const authFeatures: { department: Department; title: string; detail: string }[] = [
+  { department: "appointments", title: "Appointments", detail: "Book, reschedule or cancel a visit" },
+  { department: "waiting", title: "Check-in & queue", detail: "Scan in and follow your place in line" },
+  { department: "pharmacy", title: "Pharmacy", detail: "Reserve your prescribed medicines" },
+  { department: "records", title: "Records & billing", detail: "Read visit notes and settle invoices" },
+];
+
+function DemoAccounts({ onPick }: { onPick: (email: string) => void }) {
+  const accounts = [
+    ["Patient", "patient@mock.test"],
+    ["Receptionist", "receptionist@mock.test"],
+    ["Doctor", "doctor@mock.test"],
+    ["Pharmacist", "pharmacist@mock.test"],
+    ["Billing", "billing@mock.test"],
+    ["Emergency", "emergency@mock.test"],
+    ["Admin", "admin@mock.test"],
+    ["Ops", "ops@mock.test"],
+  ];
+  return (
+    <section className="auth-demo" aria-labelledby="auth-demo-title">
+      <h2 id="auth-demo-title">Demo accounts</h2>
+      <p>This demo runs on synthetic mock data. Choose a role to fill the form; any password works.</p>
+      <div className="auth-demo__roles">
+        {accounts.map(([role, email]) => <button key={email} type="button" onClick={() => onPick(email)}>{role}</button>)}
+      </div>
+    </section>
+  );
+}
+
 function AuthFrame({ title, description, children }: AuthFrameProps) {
   return (
     <main className="auth-page">
-      <div className="auth-welcome"><p className="eyebrow">RECEPTION / ADMISSIONS</p><h2>Good care begins<br/>with connection.</h2><p>Your hospital, one secure sign-in away.</p></div><div className="auth-workspace">
-      <section className="auth-card" aria-labelledby="auth-title">
-        <p className="eyebrow">Patient and staff access</p>
-        <h1 id="auth-title">{title}</h1>
-        <p className="auth-description">{description}</p>
-        {children}
-      </section>
-      <p className="auth-legal">Synthetic educational prototype · Not for real clinical use</p></div>
+      <div className="auth-stage">
+        <aside className="auth-welcome" aria-label="About PulseGrid">
+          <p className="eyebrow">Reception / Admissions</p>
+          <h2>Good care begins with connection.</h2>
+          <p>Your hospital, one secure sign-in away.</p>
+          <ul className="auth-features">
+            {authFeatures.map((feature) => (
+              <li key={feature.department}>
+                <span className="auth-features__icon" aria-hidden="true"><DepartmentIcon department={feature.department} /></span>
+                <span><strong>{feature.title}</strong><small>{feature.detail}</small></span>
+              </li>
+            ))}
+          </ul>
+          <p className="auth-welcome__note">Patients and hospital staff use the same sign-in. PulseGrid opens the workspace your role allows.</p>
+        </aside>
+        <div className="auth-workspace">
+          <section className="auth-card" aria-labelledby="auth-title">
+            <p className="eyebrow">Patient and staff access</p>
+            <h1 id="auth-title">{title}</h1>
+            <p className="auth-description">{description}</p>
+            {children}
+          </section>
+          <p className="auth-legal">Synthetic educational prototype · Not for real clinical use</p>
+        </div>
+      </div>
     </main>
   );
 }
