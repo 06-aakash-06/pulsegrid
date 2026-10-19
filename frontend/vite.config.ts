@@ -18,6 +18,17 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       ...(env.VITE_MOCK_API === "true" ? [mockApiPlugin()] : []),
+      ...(env.VITE_DEMO_MOCK === "true"
+        ? [{
+            name: "pulsegrid-demo-mock-entry",
+            apply: "build" as const,
+            transformIndexHtml: {
+              order: "pre" as const,
+              handler: (html: string) =>
+                html.replace(/<script type="module"/, '<script type="module" src="/dev-mock/browser-entry.ts"></script>\n    <script type="module"'),
+            },
+          }]
+        : []),
       {
         name: "local-fictional-demo",
         apply: "serve",

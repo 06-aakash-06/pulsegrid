@@ -271,7 +271,25 @@ export function createState() {
     { id: "9753", invoice_id: "9703", amount_minor: 60000, currency: "INR", status: "success", version: 1 },
   ];
 
+  const queue = [
+    { id: "9299", appointment_id: "5120", doctor_id: "8001", local_date: day(0), token_number: 1, state: "in_consultation" as const, position: null, version: 2, patient_id: "2002" },
+    { id: "9300", appointment_id: "5121", doctor_id: "8001", local_date: day(0), token_number: 2, state: "waiting" as const, position: 1, version: 1, patient_id: "2003" },
+    { id: "9301", appointment_id: "5101", doctor_id: "8001", local_date: day(0), token_number: 3, state: "waiting" as const, position: 2, version: 1, patient_id: patient.id },
+    { id: "9302", appointment_id: "5122", doctor_id: "8001", local_date: day(0), token_number: 4, state: "waiting" as const, position: 3, version: 1, patient_id: "2002" },
+  ];
+  const waitlists = [
+    { id: "9501", slot_id: "8" + day(1).replaceAll("-", "") + "0930", patient_id: patient.id, state: "waiting" as "waiting" | "promoted" | "withdrawn" | "skipped", joined_at: minutes(-90), promoted_appointment_id: null, skip_reason: null, version: 1 },
+  ];
+  const proposals = [
+    { id: "8201", doctor_id: "8001", revision: 2, status: "accepted" as const, timezone: "Asia/Kolkata", slot_minutes: 30, intervals: [{ starts_at: `${day(1)}T09:00:00Z`, ends_at: `${day(1)}T12:00:00Z` }, { starts_at: `${day(1)}T14:00:00Z`, ends_at: `${day(1)}T17:00:00Z` }], conflicts: [], version: 2 },
+    { id: "8202", doctor_id: "8001", revision: 3, status: "pending" as const, timezone: "Asia/Kolkata", slot_minutes: 30, intervals: [{ starts_at: `${day(8)}T09:00:00Z`, ends_at: `${day(8)}T12:00:00Z` }], conflicts: [], version: 1 },
+  ];
+
   return {
+    queue,
+    waitlists,
+    proposals,
+    journeyVersion: 3,
     otherPatients,
     surge: { state: "NORMAL", version: 4, changed_at: minutes(-180), expires_at: null as string | null, reason_code: "planned_recovery" as string | null },
     consultations,

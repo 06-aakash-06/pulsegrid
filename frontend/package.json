@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "tsc --noEmit && vite build",
+    "build:demo": "tsc --noEmit && VITE_DEMO_MOCK=true vite build",
     "preview": "vite preview"
   },
   "dependencies": {
