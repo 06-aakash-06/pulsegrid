@@ -386,7 +386,7 @@ describe("Agent 6 patient workflows", () => {
       return undefined;
     };
     setup(<PatientFulfillmentPanel counter />, handler);
-    fireEvent.change(await screen.findByLabelText(/Item 72 quantity \(up to 4\)/), { target: { value: "2" } });
+    fireEvent.change(await screen.findByLabelText(/Catalog item …81 quantity \(up to 4\)/), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Request reservation" }));
     await screen.findByRole("button", { name: "Retry reservation request" });
     expect(screen.getByLabelText("Your prescription")).toBeDisabled();
@@ -396,7 +396,8 @@ describe("Agent 6 patient workflows", () => {
     expect(headers(request!).get("Idempotency-Key")).toMatch(/^[0-9a-f-]{36}$/);
     expect(headers(attempts[0]).get("Idempotency-Key")).toBe(headers(attempts[1]).get("Idempotency-Key"));
     expect(body(attempts[0])).toEqual(body(attempts[1]));
-    expect(await screen.findByText(/72: 2/)).toBeInTheDocument();
+    expect((await screen.findAllByText("× 2")).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Reservation …91 · reserved/)).toBeInTheDocument();
     expect(screen.queryByText(/All prescribed quantities dispensed/)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Your prescription")).toHaveValue("71");
     expect(screen.queryByRole("button", { name: /Dispense reservation/ })).not.toBeInTheDocument();

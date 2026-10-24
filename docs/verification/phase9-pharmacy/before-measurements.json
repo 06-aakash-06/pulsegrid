@@ -1,0 +1,731 @@
+{
+  "label": "before",
+  "base": "http://127.0.0.1:5173",
+  "captured_at": "2026-10-18T07:19:16.970Z",
+  "captures": [
+    {
+      "file": "before-patient-1536x1024.png",
+      "route": "/patient/pharmacy",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1565,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1512
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 319,
+          "right": 1126
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 319,
+          "right": 1099
+        },
+        "cabinet": {
+          "top": 438,
+          "bottom": 988,
+          "left": 319,
+          "right": 1099
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 422,
+          "left": 1115,
+          "right": 1505
+        },
+        "rxStand": {
+          "top": 1004,
+          "bottom": 1517,
+          "left": 319,
+          "right": 939
+        },
+        "rightLedger": {
+          "top": 438,
+          "bottom": 1407,
+          "left": 1115,
+          "right": 1505
+        },
+        "fulfilmentSlip": {
+          "top": 512,
+          "bottom": 1388,
+          "left": 1134,
+          "right": 1486
+        }
+      },
+      "rxPrimary": {
+        "top": 1130,
+        "bottom": 1172,
+        "left": 343,
+        "right": 915
+      },
+      "rxPrimaryLabel": "Prescription …6001 · issuedPrescription …6002 · issuedPrescr"
+    },
+    {
+      "file": "before-patient-1440x900.png",
+      "route": "/patient/pharmacy",
+      "width": 1440,
+      "height": 900,
+      "overflowX": false,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "scrollHeight": 1565,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1416
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 300,
+          "right": 1055
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 300,
+          "right": 1030
+        },
+        "cabinet": {
+          "top": 438,
+          "bottom": 988,
+          "left": 300,
+          "right": 1030
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 422,
+          "left": 1046,
+          "right": 1411
+        },
+        "rxStand": {
+          "top": 1004,
+          "bottom": 1517,
+          "left": 300,
+          "right": 920
+        },
+        "rightLedger": {
+          "top": 438,
+          "bottom": 1437,
+          "left": 1046,
+          "right": 1411
+        },
+        "fulfilmentSlip": {
+          "top": 512,
+          "bottom": 1418,
+          "left": 1065,
+          "right": 1392
+        }
+      },
+      "rxPrimary": {
+        "top": 1130,
+        "bottom": 1172,
+        "left": 324,
+        "right": 896
+      },
+      "rxPrimaryLabel": "Prescription …6001 · issuedPrescription …6002 · issuedPrescr"
+    },
+    {
+      "file": "before-patient-1280x800.png",
+      "route": "/patient/pharmacy",
+      "width": 1280,
+      "height": 800,
+      "overflowX": false,
+      "scrollWidth": 1280,
+      "innerWidth": 1280,
+      "scrollHeight": 1587,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1256
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 266,
+          "right": 938
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 266,
+          "right": 914
+        },
+        "cabinet": {
+          "top": 460,
+          "bottom": 1011,
+          "left": 266,
+          "right": 914
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 444,
+          "left": 930,
+          "right": 1254
+        },
+        "rxStand": {
+          "top": 1027,
+          "bottom": 1539,
+          "left": 266,
+          "right": 886
+        },
+        "rightLedger": {
+          "top": 460,
+          "bottom": 1507,
+          "left": 930,
+          "right": 1254
+        },
+        "fulfilmentSlip": {
+          "top": 551,
+          "bottom": 1488,
+          "left": 949,
+          "right": 1235
+        }
+      },
+      "rxPrimary": {
+        "top": 1153,
+        "bottom": 1195,
+        "left": 290,
+        "right": 862
+      },
+      "rxPrimaryLabel": "Prescription …6001 · issuedPrescription …6002 · issuedPrescr"
+    },
+    {
+      "file": "before-patient-390x844.png",
+      "route": "/patient/pharmacy",
+      "width": 390,
+      "height": 844,
+      "overflowX": false,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "scrollHeight": 2859,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 62,
+          "left": 6,
+          "right": 384
+        },
+        "pageHeading": {
+          "top": 78,
+          "bottom": 193,
+          "left": 10,
+          "right": 380
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 209,
+          "bottom": 390,
+          "left": 10,
+          "right": 380
+        },
+        "cabinet": {
+          "top": 412,
+          "bottom": 1067,
+          "left": 10,
+          "right": 380
+        },
+        "medicineDetails": {
+          "top": 1089,
+          "bottom": 1268,
+          "left": 10,
+          "right": 380
+        },
+        "rxStand": {
+          "top": 1290,
+          "bottom": 1836,
+          "left": 10,
+          "right": 380
+        },
+        "rightLedger": {
+          "top": 1858,
+          "bottom": 2827,
+          "left": 10,
+          "right": 380
+        },
+        "fulfilmentSlip": {
+          "top": 1933,
+          "bottom": 2808,
+          "left": 29,
+          "right": 361
+        }
+      },
+      "rxPrimary": {
+        "top": 1416,
+        "bottom": 1458,
+        "left": 28,
+        "right": 362
+      },
+      "rxPrimaryLabel": "Prescription …6001 · issuedPrescription …6002 · issuedPrescr"
+    },
+    {
+      "file": "before-regression-reception-1536x1024.png",
+      "route": "/patient/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1148,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 48,
+          "right": 1488
+        },
+        "pageHeading": {
+          "top": 84,
+          "bottom": 85,
+          "left": 318,
+          "right": 319
+        },
+        "wallSign": null,
+        "searchPanel": null,
+        "cabinet": null,
+        "medicineDetails": null,
+        "rxStand": null,
+        "rightLedger": null,
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": null,
+      "rxPrimaryLabel": null
+    },
+    {
+      "file": "before-regression-consultation-1536x1024.png",
+      "route": "/patient/doctors",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1057,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 48,
+          "right": 1488
+        },
+        "pageHeading": null,
+        "wallSign": null,
+        "searchPanel": null,
+        "cabinet": null,
+        "medicineDetails": null,
+        "rxStand": null,
+        "rightLedger": null,
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": null,
+      "rxPrimaryLabel": null
+    },
+    {
+      "file": "before-regression-waiting-1536x1024.png",
+      "route": "/patient/queue",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1024,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1512
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 270,
+          "left": 319,
+          "right": 1505
+        },
+        "wallSign": null,
+        "searchPanel": null,
+        "cabinet": null,
+        "medicineDetails": null,
+        "rxStand": null,
+        "rightLedger": null,
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": null,
+      "rxPrimaryLabel": null
+    },
+    {
+      "file": "before-pharmacist-1536x1024.png",
+      "route": "/pharmacist/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1335,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1512
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 319,
+          "right": 1126
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 319,
+          "right": 1099
+        },
+        "cabinet": {
+          "top": 464,
+          "bottom": 1015,
+          "left": 319,
+          "right": 1099
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 448,
+          "left": 1115,
+          "right": 1505
+        },
+        "rxStand": {
+          "top": 1031,
+          "bottom": 1223,
+          "left": 319,
+          "right": 939
+        },
+        "rightLedger": {
+          "top": 464,
+          "bottom": 968,
+          "left": 1115,
+          "right": 1505
+        },
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": {
+        "top": 1123,
+        "bottom": 1164,
+        "left": 343,
+        "right": 585
+      },
+      "rxPrimaryLabel": "Open dispensing workspace →"
+    },
+    {
+      "file": "before-pharmacist-1440x900.png",
+      "route": "/pharmacist/dashboard",
+      "width": 1440,
+      "height": 900,
+      "overflowX": false,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "scrollHeight": 1335,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1416
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 300,
+          "right": 1055
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 300,
+          "right": 1030
+        },
+        "cabinet": {
+          "top": 464,
+          "bottom": 1015,
+          "left": 300,
+          "right": 1030
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 448,
+          "left": 1046,
+          "right": 1411
+        },
+        "rxStand": {
+          "top": 1031,
+          "bottom": 1223,
+          "left": 300,
+          "right": 920
+        },
+        "rightLedger": {
+          "top": 464,
+          "bottom": 968,
+          "left": 1046,
+          "right": 1411
+        },
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": {
+        "top": 1123,
+        "bottom": 1164,
+        "left": 324,
+        "right": 565
+      },
+      "rxPrimaryLabel": "Open dispensing workspace →"
+    },
+    {
+      "file": "before-pharmacist-1280x800.png",
+      "route": "/pharmacist/dashboard",
+      "width": 1280,
+      "height": 800,
+      "overflowX": false,
+      "scrollWidth": 1280,
+      "innerWidth": 1280,
+      "scrollHeight": 1358,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1256
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 266,
+          "right": 938
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 266,
+          "right": 914
+        },
+        "cabinet": {
+          "top": 487,
+          "bottom": 1037,
+          "left": 266,
+          "right": 914
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 471,
+          "left": 930,
+          "right": 1254
+        },
+        "rxStand": {
+          "top": 1053,
+          "bottom": 1245,
+          "left": 266,
+          "right": 886
+        },
+        "rightLedger": {
+          "top": 487,
+          "bottom": 990,
+          "left": 930,
+          "right": 1254
+        },
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": {
+        "top": 1145,
+        "bottom": 1186,
+        "left": 290,
+        "right": 531
+      },
+      "rxPrimaryLabel": "Open dispensing workspace →"
+    },
+    {
+      "file": "before-pharmacist-390x844.png",
+      "route": "/pharmacist/dashboard",
+      "width": 390,
+      "height": 844,
+      "overflowX": false,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "scrollHeight": 2169,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 62,
+          "left": 6,
+          "right": 384
+        },
+        "pageHeading": {
+          "top": 78,
+          "bottom": 193,
+          "left": 10,
+          "right": 380
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 209,
+          "bottom": 390,
+          "left": 10,
+          "right": 380
+        },
+        "cabinet": {
+          "top": 412,
+          "bottom": 1067,
+          "left": 10,
+          "right": 380
+        },
+        "medicineDetails": {
+          "top": 1089,
+          "bottom": 1295,
+          "left": 10,
+          "right": 380
+        },
+        "rxStand": {
+          "top": 1913,
+          "bottom": 2137,
+          "left": 10,
+          "right": 380
+        },
+        "rightLedger": {
+          "top": 1387,
+          "bottom": 1891,
+          "left": 10,
+          "right": 380
+        },
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": {
+        "top": 2023,
+        "bottom": 2064,
+        "left": 28,
+        "right": 269
+      },
+      "rxPrimaryLabel": "Open dispensing workspace →"
+    },
+    {
+      "file": "before-pharmacist-inventory-1536x1024.png",
+      "route": "/pharmacist/inventory",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1335,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1512
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 319,
+          "right": 1126
+        },
+        "wallSign": null,
+        "searchPanel": {
+          "top": 246,
+          "bottom": 385,
+          "left": 319,
+          "right": 1099
+        },
+        "cabinet": {
+          "top": 464,
+          "bottom": 1015,
+          "left": 319,
+          "right": 1099
+        },
+        "medicineDetails": {
+          "top": 246,
+          "bottom": 448,
+          "left": 1115,
+          "right": 1505
+        },
+        "rxStand": {
+          "top": 1031,
+          "bottom": 1223,
+          "left": 319,
+          "right": 939
+        },
+        "rightLedger": {
+          "top": 464,
+          "bottom": 968,
+          "left": 1115,
+          "right": 1505
+        },
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": {
+        "top": 1123,
+        "bottom": 1164,
+        "left": 343,
+        "right": 585
+      },
+      "rxPrimaryLabel": "Open dispensing workspace →"
+    },
+    {
+      "file": "before-pharmacist-prescriptions-1536x1024.png",
+      "route": "/pharmacist/prescriptions",
+      "width": 1536,
+      "height": 1024,
+      "overflowX": false,
+      "scrollWidth": 1536,
+      "innerWidth": 1536,
+      "scrollHeight": 1125,
+      "regions": {
+        "header": {
+          "top": 0,
+          "bottom": 76,
+          "left": 24,
+          "right": 1512
+        },
+        "pageHeading": {
+          "top": 90,
+          "bottom": 230,
+          "left": 319,
+          "right": 1126
+        },
+        "wallSign": null,
+        "searchPanel": null,
+        "cabinet": null,
+        "medicineDetails": null,
+        "rxStand": {
+          "top": 306,
+          "bottom": 581,
+          "left": 319,
+          "right": 928
+        },
+        "rightLedger": null,
+        "fulfilmentSlip": null
+      },
+      "rxPrimary": {
+        "top": 496,
+        "bottom": 536,
+        "left": 362,
+        "right": 424
+      },
+      "rxPrimaryLabel": "Open"
+    }
+  ]
+}

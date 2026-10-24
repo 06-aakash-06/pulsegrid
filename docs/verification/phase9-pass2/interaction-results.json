@@ -1,0 +1,91 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "checked_at": "2026-10-18T11:30:25.643Z",
+  "results": [
+    {
+      "name": "header counts are derived from the loaded list",
+      "pass": true,
+      "detail": "unassigned/P1–2/claimed = 2,3,1"
+    },
+    {
+      "name": "submitted request offers Set priority as the primary step",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "triaged request offers Claim as the primary step, with change priority and cancel secondary",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "after an owner-confirmed claim the next step becomes Start processing (mock write)",
+      "pass": true,
+      "detail": "release claim offered as secondary"
+    },
+    {
+      "name": "another holder's claim shows no primary step",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "own processing request offers Resolve as the primary step",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resolved request shows no actions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "receipt groups consultation and pharmacy charges",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "medicine charges show the Pharmacy name",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "selecting an invoice updates the context band",
+      "pass": true,
+      "detail": "Invoice …9702 · Part paid"
+    },
+    {
+      "name": "rupee input previews the exact paise submitted",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "tariff reference labels historical revisions",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "Change invoice moves focus to the register",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "patient band shows last visit and visit count",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "amended visit lists both versions in record history",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "opening the earlier version shows the earlier-version notice",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "revoked prescription stays visible with a Revoked label",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

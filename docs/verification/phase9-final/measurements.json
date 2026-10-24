@@ -1,0 +1,5729 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "captured_at": "2026-10-18T14:33:29.627Z",
+  "captures": [
+    {
+      "subject": "reception-patient",
+      "department": "Reception",
+      "route": "/patient/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "file": "reception-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1148,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main small",
+          "size": 9.984,
+          "text": "Doctors & specialties"
+        },
+        {
+          "at": "main small",
+          "size": 9.984,
+          "text": "Your live queue"
+        },
+        {
+          "at": "main small",
+          "size": 9.984,
+          "text": "Prescription fulfillment"
+        },
+        {
+          "at": "main small",
+          "size": 9.984,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "main p.welcome-motto",
+          "size": 8,
+          "text": "CARE · COORDINATION · CLARITY"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Hello"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Asha"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Find your way with the hospital director"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Find a doctor and schedule your visit"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "View and manage your upcoming visits"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Use your secure QR code or check-in link"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Access your authorized medical history"
+        },
+        {
+          "at": "main p.eyebrow",
+          "size": 8,
+          "text": "YOUR VISIT TODAY"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Confirmed visits"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Consulting doctors"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "In this queue"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Your authorized appointments"
+        },
+        {
+          "at": "main small",
+          "size": 7,
+          "text": "YOUR TOKEN"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "Consultation"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "waiting"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "Oct 18, 2026"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Your next consultation"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "View your appointment →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "YOUR QUEUE TOKEN"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "4 waiting in this queue"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "View the latest status of your visit in"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Patient journey"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Use"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Check In"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "for your secure appointment token."
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Hospital announcements feed is not conne"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 836,
+      "failures": [
+        "42 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "reception-patient",
+      "department": "Reception",
+      "route": "/patient/dashboard",
+      "width": 1440,
+      "height": 900,
+      "file": "reception-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main small",
+          "size": 9.36,
+          "text": "Doctors & specialties"
+        },
+        {
+          "at": "main small",
+          "size": 9.36,
+          "text": "Your live queue"
+        },
+        {
+          "at": "main small",
+          "size": 9.36,
+          "text": "Prescription fulfillment"
+        },
+        {
+          "at": "main small",
+          "size": 9.36,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "main p.welcome-motto",
+          "size": 8,
+          "text": "CARE · COORDINATION · CLARITY"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Hello"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Asha"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Find your way with the hospital director"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Find a doctor and schedule your visit"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "View and manage your upcoming visits"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Use your secure QR code or check-in link"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Access your authorized medical history"
+        },
+        {
+          "at": "main p.eyebrow",
+          "size": 8,
+          "text": "YOUR VISIT TODAY"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Confirmed visits"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Consulting doctors"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "In this queue"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Your authorized appointments"
+        },
+        {
+          "at": "main small",
+          "size": 7,
+          "text": "YOUR TOKEN"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "Consultation"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "waiting"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "Oct 18, 2026"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Your next consultation"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "View your appointment →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "YOUR QUEUE TOKEN"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "4 waiting in this queue"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "View the latest status of your visit in"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Patient journey"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Use"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Check In"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "for your secure appointment token."
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Hospital announcements feed is not conne"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "42 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "reception-patient",
+      "department": "Reception",
+      "route": "/patient/dashboard",
+      "width": 1280,
+      "height": 800,
+      "file": "reception-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 924,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Patient history"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Consultation"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Doctors & specialties"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Waiting Room"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Your live queue"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Pharmacy"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Prescription fulfillment"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Emergency"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "main p.welcome-motto",
+          "size": 8,
+          "text": "CARE · COORDINATION · CLARITY"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Hello"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Asha"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Find your way with the hospital director"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Find a doctor and schedule your visit"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "View and manage your upcoming visits"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Use your secure QR code or check-in link"
+        },
+        {
+          "at": "main p",
+          "size": 11,
+          "text": "Access your authorized medical history"
+        },
+        {
+          "at": "main p.eyebrow",
+          "size": 8,
+          "text": "YOUR VISIT TODAY"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Confirmed visits"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Consulting doctors"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "In this queue"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Your authorized appointments"
+        },
+        {
+          "at": "main small",
+          "size": 7,
+          "text": "YOUR TOKEN"
+        },
+        {
+          "at": "main span",
+          "size": 8,
+          "text": "Consultation"
+        },
+        {
+          "at": "main span",
+          "size": 8,
+          "text": "waiting"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "Oct 18, 2026"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Your next consultation"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "View your appointment →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "YOUR QUEUE TOKEN"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "4 waiting in this queue"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "View the latest status of your visit in"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Patient journey"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Use"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Check In"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "for your secure appointment token."
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Hospital announcements feed is not conne"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "46 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "reception-patient",
+      "department": "Reception",
+      "route": "/patient/dashboard",
+      "width": 390,
+      "height": 844,
+      "file": "reception-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1417,
+      "smallText": [
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Consultation"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Doctors & specialties"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Waiting Room"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Your live queue"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Pharmacy"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Prescription fulfillment"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Emergency"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "main p.welcome-motto",
+          "size": 6,
+          "text": "CARE · COORDINATION · CLARITY"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Hello"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Asha"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Find your way with the hospital director"
+        },
+        {
+          "at": "main p.reception-counter-label",
+          "size": 9,
+          "text": "RECEPTION"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Find a doctor and schedule your visit"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "View and manage your upcoming visits"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Use your secure QR code or check-in link"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Access your authorized medical history"
+        },
+        {
+          "at": "main p.eyebrow",
+          "size": 8,
+          "text": "YOUR VISIT TODAY"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Confirmed visits"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Consulting doctors"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "In this queue"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Your authorized appointments"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "Oct 18, 2026"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Your next consultation"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "View your appointment →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "YOUR QUEUE TOKEN"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "4 waiting in this queue"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "View the latest status of your visit in"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Patient journey"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "."
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "Use"
+        },
+        {
+          "at": "main a",
+          "size": 9,
+          "text": "Check In"
+        },
+        {
+          "at": "main p",
+          "size": 9,
+          "text": "for your secure appointment token."
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Hospital announcements feed is not conne"
+        }
+      ],
+      "smallTargets": [
+        {
+          "at": "main a",
+          "width": 110,
+          "height": 11,
+          "text": "View your appointment →"
+        },
+        {
+          "at": "main a",
+          "width": 64,
+          "height": 12,
+          "text": "Patient journey"
+        },
+        {
+          "at": "main a",
+          "width": 38,
+          "height": 12,
+          "text": "Check In"
+        },
+        {
+          "at": "main summary",
+          "width": 324,
+          "height": 30,
+          "text": "Your profile"
+        }
+      ],
+      "primaryBottom": null,
+      "failures": [
+        "36 text nodes < 12px",
+        "4 targets < 40px"
+      ]
+    },
+    {
+      "subject": "consultation-patient",
+      "department": "Consultation",
+      "route": "/patient/doctors",
+      "width": 1536,
+      "height": 1024,
+      "file": "consultation-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1090,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "CONSULT"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "DIAGNOSE"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "TREAT"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "TOGETHER"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Doctors"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Appointments"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Medical Records"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Prescriptions"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Find a specialty"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Search"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "doctors on this page"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Refresh"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Previous page"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Next page"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "●"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open times"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Schedule days"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Accepted revision"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "About"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Schedule"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Details"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Sun, Oct 18"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "· UTC"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "11:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Nisha Pillai"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "09:30 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Kabir Sethi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "03:04 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Meera Iyer"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "10:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Arjun Menon"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "02:30 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Farah Qureshi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Review and coordinate visits"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Open your authorized history"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Review issued prescriptions"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Advanced directory search & autocomplete"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 340,
+      "failures": [
+        "90 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "consultation-patient",
+      "department": "Consultation",
+      "route": "/patient/doctors",
+      "width": 1440,
+      "height": 900,
+      "file": "consultation-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 998,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "CONSULT"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "DIAGNOSE"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "TREAT"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "TOGETHER"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Doctors"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Appointments"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Medical Records"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Prescriptions"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Find a specialty"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Search"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "doctors on this page"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Refresh"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Previous page"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Next page"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "●"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open times"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Schedule days"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Accepted revision"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "About"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Schedule"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Details"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Sun, Oct 18"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "· UTC"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "11:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Nisha Pillai"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "09:30 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Kabir Sethi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "03:04 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Meera Iyer"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "10:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Arjun Menon"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "02:30 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Farah Qureshi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Manage appointments"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Review and coordinate visits"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "View medical records"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open your authorized history"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "View prescriptions"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Review issued prescriptions"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Advanced directory search & autocomplete"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "93 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "consultation-patient",
+      "department": "Consultation",
+      "route": "/patient/doctors",
+      "width": 1280,
+      "height": 800,
+      "file": "consultation-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 874,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 8,
+          "text": "Patient history"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "CONSULT"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "DIAGNOSE"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "TREAT"
+        },
+        {
+          "at": "main span",
+          "size": 9,
+          "text": "TOGETHER"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Doctors"
+        },
+        {
+          "at": "main a",
+          "size": 10,
+          "text": "Appointments"
+        },
+        {
+          "at": "main a",
+          "size": 10,
+          "text": "Medical Records"
+        },
+        {
+          "at": "main a",
+          "size": 10,
+          "text": "Prescriptions"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "›"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Find a specialty"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Search"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "doctors on this page"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Refresh"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Pulmonology"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Dermatology"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Cardiology"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Pediatrics"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Cardiology"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Pulmonology"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Previous page"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Next page"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "●"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 10,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open times"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Schedule days"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Accepted revision"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "About"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Schedule"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Details"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Sun, Oct 18"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "· UTC"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "11:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Nisha Pillai"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "09:30 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Kabir Sethi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "03:04 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Meera Iyer"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "10:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Arjun Menon"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "02:30 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Farah Qureshi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Manage appointments"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Review and coordinate visits"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "View medical records"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open your authorized history"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "View prescriptions"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Review issued prescriptions"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Advanced directory search & autocomplete"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "101 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "consultation-patient",
+      "department": "Consultation",
+      "route": "/patient/doctors",
+      "width": 390,
+      "height": 844,
+      "file": "consultation-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1726,
+      "smallText": [
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Doctors"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Appointments"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Medical Records"
+        },
+        {
+          "at": "main a",
+          "size": 11,
+          "text": "Prescriptions"
+        },
+        {
+          "at": "main button.is-selected",
+          "size": 10,
+          "text": "All Specialties"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Pulmonology"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Dermatology"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Cardiology"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Pediatrics"
+        },
+        {
+          "at": "main summary",
+          "size": 10,
+          "text": "Find a specialty"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Search"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "8"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "doctors on this page"
+        },
+        {
+          "at": "main button",
+          "size": 10,
+          "text": "Refresh"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Pulmonology"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Dermatology"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Cardiology"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Pediatrics"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Cardiology"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Pulmonology"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Previous page"
+        },
+        {
+          "at": "main button",
+          "size": 9,
+          "text": "Next page"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "●"
+        },
+        {
+          "at": "main span.profile-active",
+          "size": 10,
+          "text": "Active clinician"
+        },
+        {
+          "at": "main strong",
+          "size": 9,
+          "text": "Next available"
+        },
+        {
+          "at": "main small",
+          "size": 8,
+          "text": "03:00 PM · Oct 18 UTC"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open times"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Schedule days"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Accepted revision"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "About"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Schedule"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Details"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "General Medicine"
+        },
+        {
+          "at": "main span",
+          "size": 8,
+          "text": "Sun, Oct 18"
+        },
+        {
+          "at": "main span",
+          "size": 8,
+          "text": "· UTC"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "11:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Nisha Pillai"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "09:30 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Kabir Sethi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "03:04 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Meera Iyer"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "10:00 AM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Arjun Menon"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main time",
+          "size": 9,
+          "text": "02:30 PM"
+        },
+        {
+          "at": "main span",
+          "size": 11,
+          "text": "Authorized patient"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Dr. Farah Qureshi"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "↗"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "Manage appointments"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Review and coordinate visits"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "View medical records"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Open your authorized history"
+        },
+        {
+          "at": "main strong",
+          "size": 11,
+          "text": "View prescriptions"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Review issued prescriptions"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Advanced directory search & autocomplete"
+        }
+      ],
+      "smallTargets": [
+        {
+          "at": "main button.is-selected",
+          "width": 84,
+          "height": 30,
+          "text": "All Specialties 8"
+        },
+        {
+          "at": "main button",
+          "width": 101,
+          "height": 30,
+          "text": "General Medicine›"
+        },
+        {
+          "at": "main button",
+          "width": 80,
+          "height": 30,
+          "text": "Pulmonology›"
+        },
+        {
+          "at": "main button",
+          "width": 79,
+          "height": 30,
+          "text": "Dermatology›"
+        },
+        {
+          "at": "main button",
+          "width": 69,
+          "height": 30,
+          "text": "Cardiology›"
+        },
+        {
+          "at": "main button",
+          "width": 65,
+          "height": 30,
+          "text": "Pediatrics›"
+        },
+        {
+          "at": "main summary",
+          "width": 85,
+          "height": 15,
+          "text": "Find a specialty"
+        },
+        {
+          "at": "main input",
+          "width": 254,
+          "height": 30,
+          "text": ""
+        },
+        {
+          "at": "main button",
+          "width": 48,
+          "height": 25,
+          "text": "Search"
+        },
+        {
+          "at": "main button",
+          "width": 49,
+          "height": 22,
+          "text": "Refresh"
+        },
+        {
+          "at": "main button",
+          "width": 78,
+          "height": 24,
+          "text": "Previous page"
+        },
+        {
+          "at": "main button",
+          "width": 60,
+          "height": 24,
+          "text": "Next page"
+        },
+        {
+          "at": "main button",
+          "width": 96,
+          "height": 39,
+          "text": "About"
+        },
+        {
+          "at": "main button",
+          "width": 96,
+          "height": 39,
+          "text": "Schedule"
+        },
+        {
+          "at": "main button",
+          "width": 96,
+          "height": 39,
+          "text": "Details"
+        },
+        {
+          "at": "main summary",
+          "width": 332,
+          "height": 17,
+          "text": "Advanced directory search & autocomplete"
+        }
+      ],
+      "primaryBottom": null,
+      "failures": [
+        "89 text nodes < 12px",
+        "16 targets < 40px"
+      ]
+    },
+    {
+      "subject": "appointments-book",
+      "department": "Appointments",
+      "route": "/patient/appointments",
+      "width": 1536,
+      "height": 1024,
+      "file": "appointments-book-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1044,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 501,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-book",
+      "department": "Appointments",
+      "route": "/patient/appointments",
+      "width": 1440,
+      "height": 900,
+      "file": "appointments-book-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1044,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-book",
+      "department": "Appointments",
+      "route": "/patient/appointments",
+      "width": 1280,
+      "height": 800,
+      "file": "appointments-book-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1250,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-book",
+      "department": "Appointments",
+      "route": "/patient/appointments",
+      "width": 390,
+      "height": 844,
+      "file": "appointments-book-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 2108,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "appointments-manage",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=upcoming",
+      "width": 1536,
+      "height": 1024,
+      "file": "appointments-manage-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 360,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-manage",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=upcoming",
+      "width": 1440,
+      "height": 900,
+      "file": "appointments-manage-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 900,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-manage",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=upcoming",
+      "width": 1280,
+      "height": 800,
+      "file": "appointments-manage-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 800,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-manage",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=upcoming",
+      "width": 390,
+      "height": 844,
+      "file": "appointments-manage-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1290,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "appointments-reschedule",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=reschedule",
+      "width": 1536,
+      "height": 1024,
+      "file": "appointments-reschedule-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 337,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-reschedule",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=reschedule",
+      "width": 1440,
+      "height": 900,
+      "file": "appointments-reschedule-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 900,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-reschedule",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=reschedule",
+      "width": 1280,
+      "height": 800,
+      "file": "appointments-reschedule-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 800,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-reschedule",
+      "department": "Appointments",
+      "route": "/patient/appointments?view=reschedule",
+      "width": 390,
+      "height": 844,
+      "file": "appointments-reschedule-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 844,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "appointments-walkin",
+      "department": "Appointments",
+      "route": "/receptionist/appointments?view=walk-in",
+      "width": 1536,
+      "height": 1024,
+      "file": "appointments-walkin-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 404,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-walkin",
+      "department": "Appointments",
+      "route": "/receptionist/appointments?view=walk-in",
+      "width": 1440,
+      "height": 900,
+      "file": "appointments-walkin-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 900,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-walkin",
+      "department": "Appointments",
+      "route": "/receptionist/appointments?view=walk-in",
+      "width": 1280,
+      "height": 800,
+      "file": "appointments-walkin-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 809,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "appointments-walkin",
+      "department": "Appointments",
+      "route": "/receptionist/appointments?view=walk-in",
+      "width": 390,
+      "height": 844,
+      "file": "appointments-walkin-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1160,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "waiting-patient",
+      "department": "Waiting Room",
+      "route": "/patient/queue",
+      "width": 1536,
+      "height": 1024,
+      "file": "waiting-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Camera opens only when you scan. Review "
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "Manual check-in →"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Patient check-in"
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "View waitlist →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Live"
+        },
+        {
+          "at": "main label",
+          "size": 11,
+          "text": "Appointment"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Your token"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Patient"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Position"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Status"
+        },
+        {
+          "at": "main span.owner-state",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Queue details and freshness"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Refresh queue now"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "PulseGrid · Consultation queue"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "Observed"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "10/18/2026, 2:34:19 PM UTC"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "QUEUE POSITION"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Wait estimates are not supplied by the s"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 721,
+      "failures": [
+        "26 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "waiting-patient",
+      "department": "Waiting Room",
+      "route": "/patient/queue",
+      "width": 1440,
+      "height": 900,
+      "file": "waiting-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 960,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Camera opens only when you scan. Review "
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "Manual check-in →"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Patient check-in"
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "View waitlist →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Live"
+        },
+        {
+          "at": "main label",
+          "size": 11,
+          "text": "Appointment"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Your token"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Patient"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Position"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Status"
+        },
+        {
+          "at": "main span.owner-state",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Queue details and freshness"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Refresh queue now"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "PulseGrid · Consultation queue"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "Observed"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "10/18/2026, 2:34:21 PM UTC"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "QUEUE POSITION"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Wait estimates are not supplied by the s"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "26 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "waiting-patient",
+      "department": "Waiting Room",
+      "route": "/patient/queue",
+      "width": 1280,
+      "height": 800,
+      "file": "waiting-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 940,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Camera opens only when you scan. Review "
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "Manual check-in →"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Patient check-in"
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "View waitlist →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Live"
+        },
+        {
+          "at": "main label",
+          "size": 11,
+          "text": "Appointment"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Your token"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Patient"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Position"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Status"
+        },
+        {
+          "at": "main span.owner-state",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Queue details and freshness"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Refresh queue now"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "PulseGrid · Consultation queue"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "Observed"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "10/18/2026, 2:34:23 PM UTC"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "QUEUE POSITION"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Wait estimates are not supplied by the s"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "26 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "waiting-patient",
+      "department": "Waiting Room",
+      "route": "/patient/queue",
+      "width": 390,
+      "height": 844,
+      "file": "waiting-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1667,
+      "smallText": [
+        {
+          "at": "main p.eyebrow",
+          "size": 10,
+          "text": "Patient workspace"
+        },
+        {
+          "at": "main p",
+          "size": 10,
+          "text": "Camera opens only when you scan. Review "
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "Manual check-in →"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "Patient check-in"
+        },
+        {
+          "at": "main a.text-link",
+          "size": 11,
+          "text": "View waitlist →"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "Live"
+        },
+        {
+          "at": "main label",
+          "size": 11,
+          "text": "Appointment"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Your token"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Patient"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Position"
+        },
+        {
+          "at": "main th",
+          "size": 11,
+          "text": "Status"
+        },
+        {
+          "at": "main span.owner-state",
+          "size": 11,
+          "text": "waiting"
+        },
+        {
+          "at": "main summary",
+          "size": 11,
+          "text": "Queue details and freshness"
+        },
+        {
+          "at": "main button",
+          "size": 11,
+          "text": "Refresh queue now"
+        },
+        {
+          "at": "main span",
+          "size": 10,
+          "text": "PulseGrid · Consultation queue"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "Observed"
+        },
+        {
+          "at": "main time",
+          "size": 10,
+          "text": "10/18/2026, 2:34:25 PM UTC"
+        },
+        {
+          "at": "main small",
+          "size": 10,
+          "text": "QUEUE POSITION"
+        },
+        {
+          "at": "main small",
+          "size": 9,
+          "text": "Wait estimates are not supplied by the s"
+        }
+      ],
+      "smallTargets": [
+        {
+          "at": "main a.text-link",
+          "width": 102,
+          "height": 17,
+          "text": "Manual check-in →"
+        },
+        {
+          "at": "main a.text-link",
+          "width": 81,
+          "height": 17,
+          "text": "View waitlist →"
+        },
+        {
+          "at": "main summary",
+          "width": 326,
+          "height": 17,
+          "text": "Queue details and freshness"
+        }
+      ],
+      "primaryBottom": null,
+      "failures": [
+        "19 text nodes < 12px",
+        "3 targets < 40px"
+      ]
+    },
+    {
+      "subject": "pharmacy-patient",
+      "department": "Pharmacy",
+      "route": "/patient/pharmacy",
+      "width": 1536,
+      "height": 1024,
+      "file": "pharmacy-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 823,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "pharmacy-patient",
+      "department": "Pharmacy",
+      "route": "/patient/pharmacy",
+      "width": 1440,
+      "height": 900,
+      "file": "pharmacy-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1016,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "pharmacy-patient",
+      "department": "Pharmacy",
+      "route": "/patient/pharmacy",
+      "width": 1280,
+      "height": 800,
+      "file": "pharmacy-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1038,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "pharmacy-patient",
+      "department": "Pharmacy",
+      "route": "/patient/pharmacy",
+      "width": 390,
+      "height": 844,
+      "file": "pharmacy-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 2659,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "pharmacy-pharmacist",
+      "department": "Pharmacy",
+      "route": "/pharmacist/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "file": "pharmacy-pharmacist-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 854,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "pharmacy-pharmacist",
+      "department": "Pharmacy",
+      "route": "/pharmacist/dashboard",
+      "width": 1440,
+      "height": 900,
+      "file": "pharmacy-pharmacist-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 976,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "pharmacy-pharmacist",
+      "department": "Pharmacy",
+      "route": "/pharmacist/dashboard",
+      "width": 1280,
+      "height": 800,
+      "file": "pharmacy-pharmacist-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 976,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "pharmacy-pharmacist",
+      "department": "Pharmacy",
+      "route": "/pharmacist/dashboard",
+      "width": 390,
+      "height": 844,
+      "file": "pharmacy-pharmacist-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 2213,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "billing-patient",
+      "department": "Billing",
+      "route": "/patient/billing",
+      "width": 1536,
+      "height": 1024,
+      "file": "billing-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1172,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 717,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "billing-patient",
+      "department": "Billing",
+      "route": "/patient/billing",
+      "width": 1440,
+      "height": 900,
+      "file": "billing-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1172,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "billing-patient",
+      "department": "Billing",
+      "route": "/patient/billing",
+      "width": 1280,
+      "height": 800,
+      "file": "billing-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1231,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "billing-patient",
+      "department": "Billing",
+      "route": "/patient/billing",
+      "width": 390,
+      "height": 844,
+      "file": "billing-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1862,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "billing-staff",
+      "department": "Billing",
+      "route": "/billing/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "file": "billing-staff-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1172,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 697,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "billing-staff",
+      "department": "Billing",
+      "route": "/billing/dashboard",
+      "width": 1440,
+      "height": 900,
+      "file": "billing-staff-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1172,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "billing-staff",
+      "department": "Billing",
+      "route": "/billing/dashboard",
+      "width": 1280,
+      "height": 800,
+      "file": "billing-staff-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1273,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "billing-staff",
+      "department": "Billing",
+      "route": "/billing/dashboard",
+      "width": 390,
+      "height": 844,
+      "file": "billing-staff-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 2396,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "emergency-patient",
+      "department": "Emergency",
+      "route": "/patient/emergency",
+      "width": 1536,
+      "height": 1024,
+      "file": "emergency-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 702,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "emergency-patient",
+      "department": "Emergency",
+      "route": "/patient/emergency",
+      "width": 1440,
+      "height": 900,
+      "file": "emergency-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1008,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "emergency-patient",
+      "department": "Emergency",
+      "route": "/patient/emergency",
+      "width": 1280,
+      "height": 800,
+      "file": "emergency-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1113,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "emergency-patient",
+      "department": "Emergency",
+      "route": "/patient/emergency",
+      "width": 390,
+      "height": 844,
+      "file": "emergency-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1673,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "emergency-staff",
+      "department": "Emergency",
+      "route": "/emergency/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "file": "emergency-staff-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1051,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 581,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "emergency-staff",
+      "department": "Emergency",
+      "route": "/emergency/dashboard",
+      "width": 1440,
+      "height": 900,
+      "file": "emergency-staff-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1049,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "emergency-staff",
+      "department": "Emergency",
+      "route": "/emergency/dashboard",
+      "width": 1280,
+      "height": 800,
+      "file": "emergency-staff-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1117,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "emergency-staff",
+      "department": "Emergency",
+      "route": "/emergency/dashboard",
+      "width": 390,
+      "height": 844,
+      "file": "emergency-staff-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1616,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "records-patient",
+      "department": "Medical Records",
+      "route": "/patient/records",
+      "width": 1536,
+      "height": 1024,
+      "file": "records-patient-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1283,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 393,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "records-patient",
+      "department": "Medical Records",
+      "route": "/patient/records",
+      "width": 1440,
+      "height": 900,
+      "file": "records-patient-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1304,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "records-patient",
+      "department": "Medical Records",
+      "route": "/patient/records",
+      "width": 1280,
+      "height": 800,
+      "file": "records-patient-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1439,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Appointments & check-in"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Invoices & payments"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Urgent care requests"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "8 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "records-patient",
+      "department": "Medical Records",
+      "route": "/patient/records",
+      "width": 390,
+      "height": 844,
+      "file": "records-patient-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 2309,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "records-doctor",
+      "department": "Medical Records",
+      "route": "/doctor/consultations",
+      "width": 1536,
+      "height": 1024,
+      "file": "records-doctor-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1369,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 304,
+      "failures": [
+        "5 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "records-doctor",
+      "department": "Medical Records",
+      "route": "/doctor/consultations",
+      "width": 1440,
+      "height": 900,
+      "file": "records-doctor-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1369,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "5 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "records-doctor",
+      "department": "Medical Records",
+      "route": "/doctor/consultations",
+      "width": 1280,
+      "height": 800,
+      "file": "records-doctor-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1369,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Doctors & patient care"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Live queue & status"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Prescriptions & medicines"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "Patient history"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "5 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "records-doctor",
+      "department": "Medical Records",
+      "route": "/doctor/consultations",
+      "width": 390,
+      "height": 844,
+      "file": "records-doctor-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 1803,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "control-admin",
+      "department": "Control Room",
+      "route": "/admin/control-room",
+      "width": 1536,
+      "height": 1024,
+      "file": "control-admin-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1457,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 541,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "control-admin",
+      "department": "Control Room",
+      "route": "/admin/control-room",
+      "width": 1440,
+      "height": 900,
+      "file": "control-admin-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1457,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "control-admin",
+      "department": "Control Room",
+      "route": "/admin/control-room",
+      "width": 1280,
+      "height": 800,
+      "file": "control-admin-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1824,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "control-admin",
+      "department": "Control Room",
+      "route": "/admin/control-room",
+      "width": 390,
+      "height": 844,
+      "file": "control-admin-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 3255,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "control-ops",
+      "department": "Control Room",
+      "route": "/ops/dashboard",
+      "width": 1536,
+      "height": 1024,
+      "file": "control-ops-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1457,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 541,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "control-ops",
+      "department": "Control Room",
+      "route": "/ops/dashboard",
+      "width": 1440,
+      "height": 900,
+      "file": "control-ops-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 1457,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "control-ops",
+      "department": "Control Room",
+      "route": "/ops/dashboard",
+      "width": 1280,
+      "height": 800,
+      "file": "control-ops-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 1824,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "control-ops",
+      "department": "Control Room",
+      "route": "/ops/dashboard",
+      "width": 390,
+      "height": 844,
+      "file": "control-ops-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 3177,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "traces-admin",
+      "department": "Control Room",
+      "route": "/admin/traces",
+      "width": 1536,
+      "height": 1024,
+      "file": "traces-admin-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 332,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "traces-admin",
+      "department": "Control Room",
+      "route": "/admin/traces",
+      "width": 1440,
+      "height": 900,
+      "file": "traces-admin-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 900,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "traces-admin",
+      "department": "Control Room",
+      "route": "/admin/traces",
+      "width": 1280,
+      "height": 800,
+      "file": "traces-admin-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 800,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "traces-admin",
+      "department": "Control Room",
+      "route": "/admin/traces",
+      "width": 390,
+      "height": 844,
+      "file": "traces-admin-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 844,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    },
+    {
+      "subject": "traces-ops",
+      "department": "Control Room",
+      "route": "/ops/traces",
+      "width": 1536,
+      "height": 1024,
+      "file": "traces-ops-1536x1024.png",
+      "overflowX": false,
+      "scrollHeight": 1024,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": 332,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "traces-ops",
+      "department": "Control Room",
+      "route": "/ops/traces",
+      "width": 1440,
+      "height": 900,
+      "file": "traces-ops-1440x900.png",
+      "overflowX": false,
+      "scrollHeight": 900,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "traces-ops",
+      "department": "Control Room",
+      "route": "/ops/traces",
+      "width": 1280,
+      "height": 800,
+      "file": "traces-ops-1280x800.png",
+      "overflowX": false,
+      "scrollHeight": 800,
+      "smallText": [
+        {
+          "at": "directory span",
+          "size": 11,
+          "text": "GENERAL HOSPITAL"
+        },
+        {
+          "at": "directory small",
+          "size": 9,
+          "text": "System health & operations"
+        }
+      ],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": [
+        "2 text nodes < 12px"
+      ]
+    },
+    {
+      "subject": "traces-ops",
+      "department": "Control Room",
+      "route": "/ops/traces",
+      "width": 390,
+      "height": 844,
+      "file": "traces-ops-390x844.png",
+      "overflowX": false,
+      "scrollHeight": 844,
+      "smallText": [],
+      "smallTargets": [],
+      "primaryBottom": null,
+      "failures": []
+    }
+  ]
+}

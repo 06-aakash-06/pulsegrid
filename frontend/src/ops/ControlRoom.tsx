@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { StatusBadge } from "../components/StatusBadge";
+import { DepartmentIcon } from "../design/DepartmentIcon";
 import "./controlRoom.css";
 
 const API_ROOT = "/api/v1/appointments/operations/control-room";
@@ -127,19 +128,47 @@ function toneForHealth(value: string): "success" | "warning" | "danger" | "neutr
   return "danger";
 }
 
-function MetricCard({ label, value, detail, tone = "neutral" }: {
+function trendOf(points: MetricPoint[]): { arrow: string; label: string } | null {
+  if (points.length < 4) return null;
+  const head = points.slice(0, 3).reduce((sum, point) => sum + point.value, 0) / 3;
+  const tail = points.slice(-3).reduce((sum, point) => sum + point.value, 0) / 3;
+  const change = head === 0 ? (tail === 0 ? 0 : 1) : (tail - head) / Math.abs(head);
+  if (change > 0.05) return { arrow: "↑", label: "Rising over the window" };
+  if (change < -0.05) return { arrow: "↓", label: "Falling over the window" };
+  return { arrow: "→", label: "Steady over the window" };
+}
+
+function KpiCard({ label, value, unit, detail, points, tone = "neutral" }: {
   label: string;
   value: string;
-  detail?: string;
+  unit?: string;
+  detail: string;
+  points?: MetricPoint[];
   tone?: "success" | "warning" | "danger" | "neutral";
 }) {
+  const trend = points ? trendOf(points) : null;
   return (
-    <article className={`ops-metric-card ops-metric-card--${tone}`}>
-      <p className="ops-metric-label">{label}</p>
-      <strong className="ops-metric-value">{value}</strong>
-      {detail ? <span className="ops-metric-detail">{detail}</span> : null}
+    <article className={`ops-kpi ops-kpi--${tone}`}>
+      <p className="ops-kpi__label">{label}</p>
+      <p className="ops-kpi__value"><strong>{value}</strong>{unit && value !== "No data" ? <span>{unit}</span> : null}</p>
+      <p className="ops-kpi__detail">
+        {trend ? <span className="ops-kpi__trend" title={trend.label}><span aria-hidden="true">{trend.arrow}</span><span className="sr-only">{trend.label}</span></span> : null}
+        {detail}
+      </p>
     </article>
   );
+}
+
+function segments(points: MetricPoint[]) {
+  if (points.length < 2) return [points];
+  const gaps = points.slice(1).map((point, index) => point.timestamp - points[index].timestamp).sort((a, b) => a - b);
+  const step = gaps[Math.floor(gaps.length / 2)] || 1;
+  const runs: MetricPoint[][] = [[points[0]]];
+  points.slice(1).forEach((point, index) => {
+    if (point.timestamp - points[index].timestamp > step * 1.5) runs.push([point]);
+    else runs[runs.length - 1].push(point);
+  });
+  return runs;
 }
 
 function TrendChart({ title, unit, points, description }: {
@@ -148,18 +177,22 @@ function TrendChart({ title, unit, points, description }: {
   points: MetricPoint[];
   description: string;
 }) {
-  const path = useMemo(() => {
-    if (!points.length) return "";
+  const runs = useMemo(() => segments(points), [points]);
+  const gapCount = runs.length - 1;
+  const paths = useMemo(() => {
+    if (!points.length) return [];
     const values = points.map((point) => point.value);
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min || 1;
-    return points.map((point, index) => {
-      const x = points.length === 1 ? 120 : (index / (points.length - 1)) * 240;
+    const first = points[0].timestamp;
+    const span = points[points.length - 1].timestamp - first || 1;
+    return runs.map((run) => run.map((point, index) => {
+      const x = ((point.timestamp - first) / span) * 240;
       const y = 40 - ((point.value - min) / range) * 32;
       return `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(" ");
-  }, [points]);
+    }).join(" "));
+  }, [points, runs]);
 
   return (
     <article className="ops-panel ops-trend-panel">
@@ -168,12 +201,24 @@ function TrendChart({ title, unit, points, description }: {
         <span className="ops-chart-unit">{unit}</span>
       </div>
       {points.length ? (
-        <svg className="ops-trend-chart" viewBox="0 0 240 48" role="img" aria-label={`${title} over the last 30 minutes`}>
+        <svg className="ops-trend-chart" viewBox="0 0 240 48" role="img" aria-label={`${title} over the last 30 minutes${gapCount ? `, with ${gapCount} missing sample${gapCount === 1 ? "" : "s"}` : ""}`}>
           <path d="M0,44 H240" className="ops-chart-axis" />
-          <path d={path} className="ops-chart-line" />
+          {paths.map((path, index) => <path key={index} d={path} className="ops-chart-line" />)}
         </svg>
       ) : <p className="ops-no-data">No metric samples in this window.</p>}
-      <div className="ops-chart-caption"><span>30 minutes ago</span><span>Now</span></div>
+      <div className="ops-chart-caption"><span>30 minutes ago</span>{gapCount ? <span>Gap = no data</span> : null}<span>Now</span></div>
+      {points.length ? (
+        <details className="ops-chart-data">
+          <summary>View data</summary>
+          <div className="ops-table-wrap" tabIndex={0} role="region" aria-label={`${title} samples`}>
+            <table className="ops-table">
+              <caption className="sr-only">{title} samples ({unit})</caption>
+              <thead><tr><th scope="col">Time</th><th scope="col">{unit}</th></tr></thead>
+              <tbody>{points.map((point) => <tr key={point.timestamp}><th scope="row">{new Date(point.timestamp * 1000).toLocaleTimeString()}</th><td>{number(point.value, 2)}</td></tr>)}</tbody>
+            </table>
+          </div>
+        </details>
+      ) : null}
     </article>
   );
 }
@@ -185,7 +230,7 @@ function EmptyRows({ children }: { children: string }) {
 export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" | "/admin" }) {
   const { api } = useAuth();
   const [summary, setSummary] = useState<ControlRoomSummary | null>(null);
-  const [serviceDetailsOpen,setServiceDetailsOpen] = useState(false);
+  const [inspected, setInspected] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -215,21 +260,33 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
   const system = summary?.system;
   const trendRates = summary?.trends.request_rate ?? [];
   const trendErrors = summary?.trends.error_rate ?? [];
+  const services = summary?.services ?? [];
+  const ready = services.filter((service) => service.instance_count > 0 && service.healthy_instances === service.instance_count).length;
+  const queues = summary?.messaging.queues ?? [];
+  const backlog = queues.length ? queues.reduce((total, queue) => total + queue.ready + queue.unacknowledged, 0) : null;
+  const cache = summary?.components.cache ?? [];
+  const hits = cache.filter((item) => item.outcome === "hit").reduce((total, item) => total + item.value, 0);
+  const misses = cache.filter((item) => item.outcome === "miss").reduce((total, item) => total + item.value, 0);
+  const hitRate = hits + misses > 0 ? (hits / (hits + misses)) * 100 : null;
+  const percent = (value: number | null | undefined) => value === null || value === undefined ? "No data" : `${number(value)}%`;
+  const ms = (value: number | null | undefined) => value === null || value === undefined ? "No data" : `${number(value, 0)} ms`;
+  const inspectedService = services.find((service) => service.name === inspected);
 
   return (
-    <section className="ops-dashboard reference-operations" aria-labelledby="control-room-title">
-      <header className="ops-page-header">
-        <div>
-          <p className="eyebrow">Operations · Live telemetry</p>
+    <section className="ops-dashboard ops-console" aria-labelledby="control-room-title">
+      <header className="ops-sign">
+        <span className="ops-sign__mark" aria-hidden="true"><DepartmentIcon department="control" /></span>
+        <div className="ops-sign__name">
           <h1 id="control-room-title">Control Room</h1>
-          <p className="ops-page-description">Service health, delivery signals, and recent operational changes.</p>
+          <p>Distributed-systems telemetry · not a hospital census</p>
+          <p className="ops-updated">{summary ? `Updated ${time(summary.observed_at)}` : "Waiting for monitoring"} <button className="ops-refresh-button" type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</button></p>
         </div>
-        <div className="ops-header-actions">
-          <span className="ops-updated">{summary ? `Updated ${time(summary.observed_at)}` : "Waiting for monitoring"}</span>
-          <button className="ops-refresh-button" type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>
-            {loading ? "Refreshing…" : "Refresh"}
-          </button>
-        </div>
+        <dl className="ops-wall-monitor" aria-label="Headline figures">
+          <div><dt>Services ready</dt><dd>{summary ? `${ready}/${services.length}` : "No data"}</dd></div>
+          <div><dt>p95 latency</dt><dd>{summary ? ms(system?.p95_latency_ms) : "No data"}</dd></div>
+          <div><dt>HTTP 5xx</dt><dd>{summary ? percent(system?.error_rate_percent) : "No data"}</dd></div>
+          <div data-alert={(summary?.alerts.length ?? 0) > 0}><dt>Firing alerts</dt><dd>{summary ? String(summary.alerts.length) : "No data"}</dd></div>
+        </dl>
       </header>
 
       {error ? (
@@ -243,51 +300,108 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
       {!summary && loading ? <p className="ops-loading" role="status">Loading live monitoring data…</p> : null}
       {summary ? (
         <>
-          <div className="ops-metric-grid" aria-label="System overview">
-            <MetricCard label="System status" value={system?.health ?? "No data"} tone={toneForHealth(system?.health ?? "unknown")} />
-            <MetricCard label="Requests / second" value={number(system?.request_rate_per_second, 2)} detail="5 minute rate" />
-            <MetricCard label="HTTP 5xx rate" value={system?.error_rate_percent === null ? "No data" : `${number(system?.error_rate_percent)}%`} tone={(system?.error_rate_percent ?? 0) > 5 ? "danger" : "neutral"} />
-            <MetricCard label="P95 latency" value={system?.p95_latency_ms === null ? "No data" : `${number(system?.p95_latency_ms)} ms`} />
-            <MetricCard label="Active alerts" value={String(system?.active_alert_count ?? 0)} tone={(system?.active_alert_count ?? 0) > 0 ? "warning" : "success"} />
-            <MetricCard label="Surge Mode" value={system?.surge_mode.state ?? "UNKNOWN"} detail={system?.surge_mode.changed_at ? `Since ${time(system.surge_mode.changed_at)}` : "Shared admission state"} tone={toneForHealth(system?.surge_mode.state ?? "unknown")} />
+          <div className="ops-kpi-row" aria-label="System overview">
+            <KpiCard label="Throughput" value={number(system?.request_rate_per_second, 2)} unit="req/s" detail="5 minute rate" points={trendRates} />
+            <KpiCard label="p95 latency" value={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No data" : number(system.p95_latency_ms, 0)} unit="ms" detail="No latency series returned" tone={(system?.p95_latency_ms ?? 0) > 150 ? "warning" : "neutral"} />
+            <KpiCard label="HTTP 5xx rate" value={system?.error_rate_percent === null || system?.error_rate_percent === undefined ? "No data" : number(system.error_rate_percent)} unit="%" detail="Observed status classes" points={trendErrors} tone={(system?.error_rate_percent ?? 0) > 5 ? "danger" : "neutral"} />
+            <KpiCard label="RabbitMQ backlog" value={backlog === null ? "No data" : String(backlog)} unit="msgs" detail={`${queues.length} queues · ready + unacked`} tone={(backlog ?? 0) > 50 ? "warning" : "neutral"} />
+            <KpiCard label="Redis hit rate" value={hitRate === null ? "No data" : number(hitRate)} unit="%" detail={hitRate === null ? "No cache samples" : `${number(hits, 2)} hits · ${number(misses, 2)} misses /s`} />
           </div>
 
-          <section className="ops-service-map" aria-labelledby="service-map-title"><header><h2 id="service-map-title">Hospital Service Map</h2><small>Live service topology · Not a bed census</small></header><div className="ops-map-rooms">{summary.services.map(service=><button type="button" aria-label={`Inspect ${service.name} service`} aria-controls="detailed-service-health" onClick={()=>setServiceDetailsOpen(true)} className={`ops-map-room ops-map-room--${service.health}`} key={service.name}><strong>{service.name}</strong><StatusBadge tone={toneForHealth(service.health)}>{service.health.replaceAll('_',' ')}</StatusBadge><span>{service.healthy_instances} / {service.instance_count} ready</span><small>{number(service.request_rate_per_second,2)} requests / sec</small></button>)}</div><footer>Readiness and measurements from each owning service.</footer></section>
-          <div className="ops-trend-grid">
-            <TrendChart title="Request throughput" unit="requests / sec" points={trendRates} description="Collected from service request counters." />
-            <TrendChart title="HTTP 5xx rate" unit="percent" points={trendErrors} description="Computed from observed HTTP status classes." />
+          <div className="ops-console-grid">
+            <section className="ops-topology" aria-labelledby="service-map-title">
+              <header><h2 id="service-map-title">Service topology</h2><small>Seven owner services · readiness probed per replica</small></header>
+              <div className="ops-tiles">
+                {services.map((service) => (
+                  <button
+                    type="button"
+                    key={service.name}
+                    className={`ops-tile ops-tile--${service.health}`}
+                    aria-label={`Inspect ${service.name} service`}
+                    aria-pressed={inspected === service.name}
+                    aria-controls="ops-service-inspector"
+                    onClick={() => setInspected(inspected === service.name ? null : service.name)}
+                  >
+                    <strong>{service.name}</strong>
+                    <StatusBadge tone={toneForHealth(service.health)}>{service.health.replaceAll("_", " ")}</StatusBadge>
+                    <span className="ops-tile__metric"><span>p95</span>{ms(service.p95_latency_ms)}</span>
+                    <span className="ops-tile__metric"><span>Replicas</span>{service.instance_count ? `${service.healthy_instances}/${service.instance_count} ready` : "No data"}</span>
+                  </button>
+                ))}
+              </div>
+              <div id="ops-service-inspector" className="ops-inspector" aria-live="polite">
+                {inspectedService ? (
+                  <table className="ops-table">
+                    <caption>{inspectedService.name} replica measurements</caption>
+                    <thead><tr><th scope="col">Replicas ready</th><th scope="col">Req/s</th><th scope="col">5xx</th><th scope="col">p95</th><th scope="col">Activity</th></tr></thead>
+                    <tbody><tr><td>{inspectedService.healthy_instances} of {inspectedService.instance_count}</td><td>{number(inspectedService.request_rate_per_second, 2)}</td><td>{percent(inspectedService.error_rate_percent)}</td><td>{ms(inspectedService.p95_latency_ms)}</td><td>{inspectedService.recent_activity.replace("_", " ")}</td></tr></tbody>
+                  </table>
+                ) : <p>Select a service tile to inspect its replica measurements.</p>}
+              </div>
+              <details className="ops-service-details" id="detailed-service-health"><summary>All services table</summary>
+                <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Service health table">
+                  <table className="ops-table">
+                    <thead><tr><th scope="col">Service</th><th scope="col">Health</th><th scope="col">Instances</th><th scope="col">Req/s</th><th scope="col">5xx</th><th scope="col">P95</th><th scope="col">Recent activity</th></tr></thead>
+                    <tbody>
+                      {services.map((service) => (
+                        <tr key={service.name}>
+                          <th scope="row">{service.name}</th>
+                          <td><StatusBadge tone={toneForHealth(service.health)}>{service.health.replace("_", " ")}</StatusBadge></td>
+                          <td>{service.instance_count ? `${service.healthy_instances}/${service.instance_count} ready` : "No data"}</td>
+                          <td>{number(service.request_rate_per_second, 2)}</td>
+                          <td>{percent(service.error_rate_percent)}</td>
+                          <td>{ms(service.p95_latency_ms)}</td>
+                          <td>{service.recent_activity.replace("_", " ")}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            </section>
+
+            <aside className="ops-side">
+              <section className="ops-panel ops-alerts" aria-labelledby="ops-alerts-title">
+                <div className="ops-panel-heading"><div><h2 id="ops-alerts-title">Live alerts</h2><p>Prometheus rule evaluations.</p></div></div>
+                {summary.alerts.length ? (
+                  <ul className="ops-alert-list">
+                    {summary.alerts.map((alert, index) => <li key={`${alert.name}-${alert.service ?? "all"}-${index}`} data-severity={alert.severity}><StatusBadge tone={alert.severity === "critical" ? "danger" : alert.severity === "warning" ? "warning" : "neutral"}>{alert.severity}</StatusBadge><span><strong>{alert.name}</strong><small>{alert.service ?? "System"}</small></span></li>)}
+                  </ul>
+                ) : <EmptyRows>There are no firing alerts.</EmptyRows>}
+              </section>
+              <section className="ops-panel ops-bus" aria-labelledby="ops-bus-title">
+                <div className="ops-panel-heading"><div><h2 id="ops-bus-title">Message bus &amp; cache</h2><p>RabbitMQ queues and Redis samples.</p></div></div>
+                {queues.length ? (
+                  <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="RabbitMQ queues">
+                    <table className="ops-table ops-queue-table">
+                      <thead><tr><th scope="col">Queue</th><th scope="col">Ready</th><th scope="col">Unacked</th><th scope="col">Consumers</th></tr></thead>
+                      <tbody>{queues.map((queue) => <tr key={queue.name}><th scope="row">{queue.name.replace("pulsegrid.", "")}</th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
+                    </table>
+                  </div>
+                ) : <EmptyRows>No RabbitMQ queue samples.</EmptyRows>}
+                <ComponentList title="Redis cache samples" items={cache} primary="owner" secondary="outcome" />
+                <nav aria-label="Monitoring tools" className="ops-tools"><Link to={`${workspaceBasePath}/traces`}>Distributed traces →</Link>{import.meta.env.DEV&&<a href="http://127.0.0.1:3000" target="_blank" rel="noreferrer">Local Grafana →</a>}</nav>
+              </section>
+            </aside>
           </div>
 
-          <details className="ops-service-details" id="detailed-service-health" open={serviceDetailsOpen} onToggle={e=>setServiceDetailsOpen(e.currentTarget.open)}><summary>Detailed service health and replica measurements</summary><section className="ops-panel">
-            <div className="ops-panel-heading">
-              <div><h2>Service health</h2><p>Readiness is probed per running instance; service values aggregate replicas.</p></div>
+          <div className="ops-bottom">
+            <div className="ops-trend-grid">
+              <TrendChart title="Request throughput" unit="requests / sec" points={trendRates} description="Collected from service request counters." />
+              <TrendChart title="HTTP 5xx rate" unit="percent" points={trendErrors} description="Computed from observed HTTP status classes." />
             </div>
-            <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Service health table">
-              <table className="ops-table">
-                <thead><tr><th scope="col">Service</th><th scope="col">Health</th><th scope="col">Instances</th><th scope="col">Req/s</th><th scope="col">5xx</th><th scope="col">P95</th><th scope="col">Recent activity</th></tr></thead>
-                <tbody>
-                  {summary.services.map((service) => (
-                    <tr key={service.name}>
-                      <th scope="row">{service.name}</th>
-                      <td><StatusBadge tone={toneForHealth(service.health)}>{service.health.replace("_", " ")}</StatusBadge></td>
-                      <td>{service.instance_count ? `${service.healthy_instances}/${service.instance_count} ready` : "No data"}</td>
-                      <td>{number(service.request_rate_per_second, 2)}</td>
-                      <td>{service.error_rate_percent === null ? "No data" : `${number(service.error_rate_percent)}%`}</td>
-                      <td>{service.p95_latency_ms === null ? "No data" : `${number(service.p95_latency_ms)} ms`}</td>
-                      <td>{service.recent_activity.replace("_", " ")}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+            <section className="ops-panel ops-surge" aria-labelledby="ops-surge-title">
+              <div className="ops-panel-heading"><div><h2 id="ops-surge-title">Surge Mode</h2><p>Shared admission state for Appointment.</p></div></div>
+              <p className="ops-surge__state"><StatusBadge tone={toneForHealth(system?.surge_mode.state ?? "unknown")}>{system?.surge_mode.state ?? "UNKNOWN"}</StatusBadge><span>{system?.surge_mode.changed_at ? `Since ${time(system.surge_mode.changed_at)}` : "Change time not reported"}</span></p>
+              <SurgeModeControls onChange={()=>void refresh()}/>
+            </section>
+          </div>
 
-          </details><div className="ops-two-column ops-component-and-alerts">
+          <details className="ops-delivery-details"><summary>Distributed components, event delivery and operational audit</summary><div className="ops-two-column ops-messaging-and-events">
             <section className="ops-panel">
               <div className="ops-panel-heading"><div><h2>Distributed components</h2><p>Only recorded component metrics are shown.</p></div></div>
               <div className="ops-component-grid">
                 <ComponentList title="Rate limiting" items={summary.components.rate_limiter} primary="owner" secondary="outcome" />
-                <ComponentList title="Cache" items={summary.components.cache} primary="owner" secondary="outcome" />
                 <ComponentList title="Hash topology epoch" items={summary.components.consistent_hashing.topology_epoch} primary="owner" valueLabel="epoch" />
                 <ComponentList title="Configured cache nodes" items={summary.components.consistent_hashing.configured_nodes} primary="owner" valueLabel="nodes" />
                 <ComponentList title="Circuit breakers" items={summary.components.circuit_breakers} primary="dependency" secondary="state" />
@@ -295,45 +409,21 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
               </div>
             </section>
             <section className="ops-panel">
-              <div className="ops-panel-heading"><div><h2>Operational alerts</h2><p>Prometheus rule evaluations.</p></div></div>
-              {summary.alerts.length ? (
-                <ul className="ops-alert-list">
-                  {summary.alerts.map((alert, index) => <li key={`${alert.name}-${alert.service ?? "all"}-${index}`}><StatusBadge tone={alert.severity === "critical" ? "danger" : "warning"}>{alert.severity}</StatusBadge><span><strong>{alert.name}</strong><small>{alert.service ?? "System"}</small></span></li>)}
-                </ul>
-              ) : <EmptyRows>There are no firing alerts.</EmptyRows>}
-              <section className="ops-runtime-signals"><h3>Infrastructure signals</h3><dl><div><dt>RabbitMQ queues observed</dt><dd>{summary.messaging.queues.length||"No data"}</dd></div><div><dt>Messages ready</dt><dd>{summary.messaging.queues.length?summary.messaging.queues.reduce((total,q)=>total+q.ready,0):"No data"}</dd></div><div><dt>Redis cache observations</dt><dd>{summary.components.cache.length?summary.components.cache.map(m=>`${m.outcome??"sample"}: ${number(m.value,2)}`).join(" · "):"No data"}</dd></div></dl><nav aria-label="Monitoring tools"><Link to={`${workspaceBasePath}/traces`}>Distributed traces →</Link>{import.meta.env.DEV&&<a href="http://127.0.0.1:3000" target="_blank" rel="noreferrer">Local Grafana →</a>}</nav><small>Prometheus metrics · Missing samples remain unavailable.</small></section>
-            </section>
-          </div>
-
-          <details className="ops-delivery-details"><summary>Event delivery and operational audit</summary><div className="ops-two-column ops-messaging-and-events">
-            <section className="ops-panel">
-              <div className="ops-panel-heading"><div><h2>Event delivery</h2><p>RabbitMQ queue state and producer-owned outbox measurements.</p></div></div>
-              <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="Event delivery table">
-                <table className="ops-table ops-queue-table">
-                  <thead><tr><th scope="col">Queue</th><th scope="col">Ready</th><th scope="col">Unacked</th><th scope="col">Consumers</th></tr></thead>
-                  <tbody>{summary.messaging.queues.map((queue) => <tr key={queue.name}><th scope="row">{queue.name.replace("pulsegrid.", "")}</th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
-                </table>
-              </div>
+              <div className="ops-panel-heading"><div><h2>Event delivery</h2><p>Producer-owned outbox measurements.</p></div></div>
               <ComponentList title="Pending outbox" items={summary.messaging.outbox_pending_by_owner} primary="owner" valueLabel="pending" />
               <ComponentList title="Oldest pending age" items={summary.messaging.outbox_oldest_seconds_by_owner} primary="owner" valueLabel="seconds" />
               <ComponentList title="Publisher failures · 15m" items={summary.messaging.publisher_failures_15m} primary="owner" secondary="outcome" />
-            </section>
-            <section className="ops-panel">
-              <div className="ops-panel-heading">
-                <div><h2>Recent operational events</h2><p>Appointment Surge Mode transitions from its existing audit chain.</p></div>
-              </div>
+              <h3>Recent operational events</h3>
               {summary.recent_events.available ? summary.recent_events.items.length ? (
                 <ul className="ops-event-list">
                   {summary.recent_events.items.map((event, index) => <li key={`${event.action}-${event.occurred_at ?? index}`}><span className="ops-event-mark" aria-hidden="true" /><span><strong>{event.previous_state ?? "Unknown"} → {event.new_state ?? "Unknown"}</strong><small>{event.reason_code ?? event.action} · {time(event.occurred_at)}</small></span></li>)}
                 </ul>
               ) : <EmptyRows>No recent Surge Mode transitions.</EmptyRows> : <EmptyRows>Operational audit events are unavailable.</EmptyRows>}
-              <Link className="ops-text-link" to={`${workspaceBasePath}/traces`}>Explore recent traces <span aria-hidden="true">→</span></Link>
             </section>
           </div>
           </details><p className="ops-footnote">Metrics update every 30 seconds. Missing measurements remain marked as no data.</p>
         </>
-      ) : null}
-      <SurgeModeControls onChange={()=>void refresh()}/>
+      ) : <SurgeModeControls onChange={()=>void refresh()}/>}
     </section>
   );
 }
@@ -397,26 +487,36 @@ export function TraceExplorer() {
     }
   }, [api]);
 
+  const traceStart = spans.length ? Math.min(...spans.map((span) => span.start_time_unix_nano)) : 0;
+  const traceEnd = spans.length ? Math.max(...spans.map((span) => span.start_time_unix_nano + span.duration_ms * 1_000_000)) : 1;
+  const traceSpan = traceEnd - traceStart || 1;
+  const selectedTrace = traces.find((trace) => trace.trace_id === selected);
   return (
-    <section className="ops-dashboard ops-trace-desk" aria-labelledby="trace-explorer-title">
-      <header className="ops-page-header">
-        <div><p className="eyebrow">Operations · Distributed traces</p><h1 id="trace-explorer-title">Trace Explorer</h1><p className="ops-page-description">Recent trace summaries from the last hour. Sensitive span attributes are not returned.</p></div>
+    <section className="ops-dashboard ops-console ops-trace-desk" aria-labelledby="trace-explorer-title">
+      <header className="ops-sign">
+        <span className="ops-sign__mark" aria-hidden="true"><DepartmentIcon department="control" /></span>
+        <div className="ops-sign__name"><h1 id="trace-explorer-title">Trace Explorer</h1><p>Recent trace summaries from the last hour. Sensitive span attributes are not returned.</p></div>
         <button className="ops-refresh-button" type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}>Refresh traces</button>
       </header>
       {error ? <div className="ops-monitoring-banner" role="status"><strong>Trace data is temporarily unavailable.</strong><span>Service requests continue if the trace backend is offline.</span></div> : null}
-      <div className="ops-trace-layout">
+      <div className={`ops-trace-layout${selected ? " ops-trace-layout--selected" : ""}`}>
         <section className="ops-panel" aria-label="Recent traces">
           <div className="ops-panel-heading"><div><h2>Recent traces</h2><p>Service and operation summaries are allowlisted by the server.</p></div></div>
           {loading && !traces.length ? <p className="ops-loading" role="status">Loading recent traces…</p> : null}
           {!loading && !traces.length && !error ? <EmptyRows>No traces found in the last hour.</EmptyRows> : null}
-          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
+          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
         </section>
-        <section className="ops-panel" aria-label="Selected trace details">
-          <div className="ops-panel-heading"><div><h2>Trace details</h2><p>{selected ? `Trace ID ${selected}` : "Select a trace to inspect its service path."}</p></div></div>
-          {detailLoading ? <p className="ops-loading" role="status">Loading trace spans…</p> : null}
-          {!selected && !detailLoading ? <EmptyRows>No trace selected.</EmptyRows> : null}
-          {selected && !detailLoading && !spans.length ? <EmptyRows>No safe span details are available.</EmptyRows> : null}
-          {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-rail" aria-hidden="true" /><span className="ops-span-copy"><strong>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span></li>)}</ol> : null}
+        <section className="ops-panel ops-trace-detail" aria-label="Selected trace details">
+          {!selected && !detailLoading ? (
+            <p className="ops-trace-empty">Select a trace to see its service path and span timings.</p>
+          ) : (
+            <>
+              <div className="ops-panel-heading"><div><h2>{selectedTrace?.operation ?? "Trace details"}</h2><p>{`Trace ID ${selected}`}</p></div></div>
+              {detailLoading ? <p className="ops-loading" role="status">Loading trace spans…</p> : null}
+              {selected && !detailLoading && !spans.length ? <EmptyRows>No safe span details are available.</EmptyRows> : null}
+              {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
+            </>
+          )}
         </section>
       </div>
       <p className="ops-footnote">Trace results include safe service, operation, and timing fields only.</p>

@@ -1,4 +1,5 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { m } from "motion/react";
 import { DepartmentIcon } from "../../design/DepartmentIcon";
 import {
   buildQuery,
@@ -128,22 +129,110 @@ function ReservationStatus({
   const allDispensed = !!fulfillment.data && fulfillment.data.items.length > 0 && fulfillment.data.items.every(
     (item) => item.dispensed_quantity === item.prescribed_quantity,
   );
-  const HistorySection = compact ? "details" : "section";
+  const statusText = !fulfillment.data ? "" : fulfillment.data.review_required ? "Review required" : allDispensed ? "All prescribed quantities dispensed" : fulfillment.data.prescription_state === "revoked" ? "Revoked" : "In progress";
+  const unreserved = (item: Fulfillment["items"][number]) => Math.max(0, item.prescribed_quantity - item.dispensed_quantity - item.reserved_quantity);
+
+  if (compact) {
+    const active = reservations.items.filter((reservation) => reservation.state === "reserved");
+    const hintId = `reserve-help-${prescription.id}`;
+    return <>
+      <section className="counter-upper reservation-slip-panel" aria-labelledby={`reservation-slip-${prescription.id}`}>
+        <header className="counter-heading"><h2 id={`reservation-slip-${prescription.id}`}>Reservation</h2><button type="button" disabled={fulfillment.loading || reservations.loading} onClick={() => { fulfillment.reload(); reservations.reload(); }}>Refresh</button></header>
+        {reservations.loading && <p role="status">Loading reservation records…</p>}
+        {reservations.error && <div role="alert"><p>{reservations.error}</p><button type="button" onClick={reservations.reload}>Retry reservation records</button></div>}
+        <m.div key={created?.id ?? "current"} className="reservation-slip-card" initial={created ? { backgroundColor: "#f3dd9a" } : false} animate={{ backgroundColor: "#f3dd9a00" }} transition={{ duration: 1.2 }}>
+          {active.map((reservation) => <div className="reservation-ticket" key={reservation.id}>
+            <p><strong>Reserved</strong> · expires <time dateTime={reservation.expires_at}>{formatTime(reservation.expires_at)}</time></p>
+            <ul>{reservation.items.map((line) => <li key={line.prescription_item_id}><PrescribedMedicineName api={api} medicineId={line.medicine_id}/><span>× {line.quantity}</span></li>)}</ul>
+          </div>)}
+          {!active.length && !reservations.loading && !reservations.error && <p>No active reservation for this prescription.</p>}
+        </m.div>
+        {created && <p role="status">Pharmacy returned reservation {created.id}, state {created.state}, expiring <time dateTime={created.expires_at}>{formatTime(created.expires_at)}</time>.</p>}
+        {isIssued && fulfillment.data && <form className="reservation-request" onSubmit={(event) => void reserve(event)} noValidate>
+          <fieldset disabled={pending || !!attempt || fulfillment.data.review_required}>
+            <legend>Request a Pharmacy reservation</legend>
+            {fulfillment.data.items.map((item) => <label className="reservation-request__line" key={item.prescription_item_id} htmlFor={`reserve-${prescription.id}-${item.prescription_item_id}`}>
+              <span><PrescribedMedicineName api={api} medicineId={item.medicine_id}/> quantity (up to {unreserved(item)})</span>
+              <input
+                id={`reserve-${prescription.id}-${item.prescription_item_id}`}
+                inputMode="numeric"
+                min={1}
+                max={unreserved(item)}
+                value={quantities[item.prescription_item_id] ?? ""}
+                onChange={(event) => setQuantities((current) => ({ ...current, [item.prescription_item_id]: event.target.value }))}
+                aria-describedby={hintId}
+              />
+            </label>)}
+            <p className="patient-workflow__hint" id={hintId}>Leave a line blank to omit it. Pharmacy rechecks stock and the prescription allowance.</p>
+          </fieldset>
+          <button type="submit" disabled={pending || fulfillment.data.items.every((item) => unreserved(item) <= 0)}>
+            {pending ? "Submitting…" : attempt ? "Retry reservation request" : "Request reservation"}
+          </button>
+          {attempt && <p role="status">The response was uncertain. Retry uses the same idempotency key and quantities.</p>}
+        </form>}
+        {prescription.state === "revoked" && <p>This prescription is revoked, so it cannot be reserved.</p>}
+        {error && <p role="alert">{error}</p>}
+      </section>
+      <section className="counter-lower" aria-labelledby={`prescription-summary-${prescription.id}`}>
+        <h2 id={`prescription-summary-${prescription.id}`}>Prescription summary</h2>
+        {fulfillment.loading && <p role="status">Loading current Pharmacy summary…</p>}
+        {fulfillment.error && <div role="alert"><p>{fulfillment.error}</p><button type="button" onClick={fulfillment.reload}>Retry fulfillment status</button></div>}
+        {fulfillment.data && <>
+          <dl className="patient-workflow__facts">
+            <div><dt>Fulfillment</dt><dd>{statusText}</dd></div>
+            <div><dt>Updated</dt><dd><time dateTime={fulfillment.data.observed_at}>{formatTime(fulfillment.data.observed_at)}</time></dd></div>
+          </dl>
+          <div className="pharmacy-allowance-table" tabIndex={0} role="region" aria-label="Prescribed medicine quantities"><table><thead><tr><th scope="col">Medicine</th><th scope="col">Prescribed</th><th scope="col">Reserved</th><th scope="col">Dispensed</th></tr></thead><tbody>{fulfillment.data.items.map(item=><tr key={item.prescription_item_id}><th scope="row"><PrescribedMedicineName api={api} medicineId={item.medicine_id}/></th><td>{item.prescribed_quantity}</td><td>{item.reserved_quantity}</td><td>{item.dispensed_quantity}</td></tr>)}</tbody></table></div>
+          {fulfillment.data.review_required && <p role="alert">Pharmacy reports a review requirement. This panel cannot clear it.</p>}
+          {fulfillment.data.items.some((item) => item.reserved_quantity > 0) && <p>Reserved quantities are not counted as dispensed.</p>}
+        </>}
+        <details aria-label={`Reservation status for prescription ${prescription.id}`}>
+          <summary>Reservation history</summary>
+          {reservations.items.length === 0 && !reservations.error && !reservations.loading && <p>No reservation records were returned.</p>}
+          <ul className="reservation-history">{reservations.items.map((reservation) => <li key={reservation.id}>
+            <span>Reservation …{reservation.id.slice(-4)} · {reservation.state} · expires <time dateTime={reservation.expires_at}>{formatTime(reservation.expires_at)}</time></span>
+            <span>{reservation.items.map((line) => <span key={line.prescription_item_id}><PrescribedMedicineName api={api} medicineId={line.medicine_id}/> × {line.quantity}</span>)}</span>
+          </li>)}</ul>
+          {reservations.nextCursor && <button type="button" disabled={reservations.loadingMore} onClick={() => void reservations.loadMore()}>{reservations.loadingMore ? "Loading reservations…" : "Load more reservations"}</button>}
+          {reservations.loadMoreError && <div role="alert"><p>{reservations.loadMoreError}</p><button type="button" onClick={() => void reservations.loadMore()}>Retry loading reservations</button></div>}
+        </details>
+        <details aria-label={`Dispensing status for prescription ${prescription.id}`}>
+          <summary>Dispensing status</summary>
+          {fulfillment.data?.dispensings.length === 0 && !fulfillment.error && !fulfillment.loading && <p>No dispensing records were returned.</p>}
+          {fulfillment.data?.dispensings.map((dispensing) => <p key={dispensing.id}>Dispensing …{dispensing.id.slice(-4)} recorded by Pharmacy.</p>)}
+        </details>
+        <details className="owner-identifiers">
+          <summary>Details</summary>
+          <dl className="patient-workflow__facts">
+            <div><dt>Prescription ID</dt><dd>{prescription.id}</dd></div>
+            <div><dt>Prescription revision</dt><dd>{prescription.revision}</dd></div>
+            {fulfillment.data && <>
+              <div><dt>Appointment ID</dt><dd>{fulfillment.data.appointment_id}</dd></div>
+              <div><dt>Prescription source revision</dt><dd>{fulfillment.data.prescription_revision}</dd></div>
+              <div><dt>Fulfillment snapshot version</dt><dd>{fulfillment.data.version}</dd></div>
+            </>}
+            {reservations.items.map((reservation) => <div key={reservation.id}><dt>Reservation {reservation.id}</dt><dd>Version {reservation.version} · {reservation.items.map((line) => `item ${line.prescription_item_id} × ${line.quantity}`).join(", ")}</dd></div>)}
+            {fulfillment.data?.dispensings.map((dispensing) => <div key={dispensing.id}><dt>Dispensing {dispensing.id}</dt><dd>Version {dispensing.version}; source item IDs {dispensing.source_item_ids.length ? dispensing.source_item_ids.join(", ") : "none reported"}</dd></div>)}
+          </dl>
+        </details>
+      </section>
+    </>;
+  }
 
   return (
     <article className="patient-workflow__item" aria-labelledby={`fulfillment-${prescription.id}`}>
-      <h3 id={`fulfillment-${prescription.id}`}>Prescription {compact ? `…${prescription.id.slice(-4)}` : prescription.id}</h3>
+      <h3 id={`fulfillment-${prescription.id}`}>Prescription {prescription.id}</h3>
       <p>Prescription status: <strong>{prescription.state}</strong> · Revision {prescription.revision}</p>
       {fulfillment.loading && <p role="status">Loading current Pharmacy summary…</p>}
       {fulfillment.error && <div role="alert"><p>{fulfillment.error}</p><button type="button" onClick={fulfillment.reload}>Retry fulfillment status</button></div>}
       {fulfillment.data && <>
         <dl className="patient-workflow__facts">
-          <div><dt>Appointment</dt><dd>{compact ? `Visit …${fulfillment.data.appointment_id.slice(-4)}` : fulfillment.data.appointment_id}</dd></div>
+          <div><dt>Appointment</dt><dd>{fulfillment.data.appointment_id}</dd></div>
           <div><dt>Prescription source revision</dt><dd>{fulfillment.data.prescription_revision}</dd></div>
-          <div><dt>Fulfillment status</dt><dd>{fulfillment.data.review_required ? "Review required" : allDispensed ? "All prescribed quantities dispensed" : fulfillment.data.prescription_state === "revoked" ? "Revoked" : "In progress"}</dd></div>
+          <div><dt>Fulfillment status</dt><dd>{statusText}</dd></div>
           <div><dt>Snapshot observed</dt><dd><time dateTime={fulfillment.data.observed_at}>{formatTime(fulfillment.data.observed_at)}</time></dd></div>
         </dl>
-        {compact ? <div className="pharmacy-allowance-table" tabIndex={0} role="region" aria-label="Prescribed medicine quantities"><table><thead><tr><th scope="col">Medicine</th><th scope="col">Prescribed</th><th scope="col">Reserved</th><th scope="col">Dispensed</th></tr></thead><tbody>{fulfillment.data.items.map(item=><tr key={item.prescription_item_id}><th scope="row"><PrescribedMedicineName api={api} medicineId={item.medicine_id}/></th><td>{item.prescribed_quantity}</td><td>{item.reserved_quantity}</td><td>{item.dispensed_quantity}</td></tr>)}</tbody></table></div> : fulfillment.data.items.map((item) => {
+        {fulfillment.data.items.map((item) => {
           const available = Math.max(0, item.prescribed_quantity - item.dispensed_quantity - item.reserved_quantity);
           return <div className="patient-workflow__item" key={item.prescription_item_id}>
             <h4>Prescription item {item.prescription_item_id}</h4>
@@ -188,8 +277,8 @@ function ReservationStatus({
       {error && <p role="alert">{error}</p>}
       {created && <p role="status">Pharmacy returned reservation {created.id}, state {created.state}, expiring <time dateTime={created.expires_at}>{formatTime(created.expires_at)}</time>.</p>}
 
-      <HistorySection aria-label={`Reservation status for prescription ${prescription.id}`}>
-        {compact ? <summary>Reservations</summary> : <h4>Reservations</h4>}
+      <section aria-label={`Reservation status for prescription ${prescription.id}`}>
+        <h4>Reservations</h4>
         {reservations.loading && <p role="status">Loading reservation records…</p>}
         {reservations.error && <div role="alert"><p>{reservations.error}</p><button type="button" onClick={reservations.reload}>Retry reservation records</button></div>}
         {reservations.items.length === 0 && !reservations.error && !reservations.loading && <p>No reservation records were returned.</p>}
@@ -201,17 +290,17 @@ function ReservationStatus({
         </dl>)}
         {reservations.nextCursor && <button type="button" disabled={reservations.loadingMore} onClick={() => void reservations.loadMore()}>{reservations.loadingMore ? "Loading reservations…" : "Load more reservations"}</button>}
         {reservations.loadMoreError && <div role="alert"><p>{reservations.loadMoreError}</p><button type="button" onClick={() => void reservations.loadMore()}>Retry loading reservations</button></div>}
-      </HistorySection>
+      </section>
 
-      <HistorySection aria-label={`Dispensing status for prescription ${prescription.id}`}>
-        {compact ? <summary>Dispensing status</summary> : <h4>Dispensing status</h4>}
+      <section aria-label={`Dispensing status for prescription ${prescription.id}`}>
+        <h4>Dispensing status</h4>
         {fulfillment.loading && <p role="status">Loading dispensing status…</p>}
         {fulfillment.data?.dispensings.length === 0 && !fulfillment.error && !fulfillment.loading && <p>No dispensing records were returned.</p>}
         {fulfillment.data?.dispensings.map((dispensing) => <p key={dispensing.id}>
           Dispensing {dispensing.id}, version {dispensing.version}; source item IDs {dispensing.source_item_ids.length ? dispensing.source_item_ids.join(", ") : "none reported"}.
         </p>)}
         {fulfillment.data?.items.some((item) => item.reserved_quantity > 0) && <p>Reserved quantities are not counted as dispensed.</p>}
-      </HistorySection>
+      </section>
     </article>
   );
 }
@@ -221,7 +310,13 @@ function PrescribedMedicineName({api,medicineId}:{api:ReturnType<typeof usePatie
   return <span>{typeof medicine.data?.name === "string" && !medicine.data.name.startsWith("Synthetic") ? medicine.data.name : `Catalog item …${medicineId.slice(-4)}`}</span>;
 }
 
-export function PatientFulfillmentPanel({ counter = false }: { counter?: boolean }) {
+export interface PharmacyCounterSlots {
+  stand: ReactNode;
+  tray: ReactNode;
+  right: ReactNode;
+}
+
+export function PatientFulfillmentPanel({ counter = false, room }: { counter?: boolean; room?: (slots: PharmacyCounterSlots) => ReactNode }) {
   const { api, gate } = usePatientAccess();
   const profile = useLoad<PatientProfile>(api, gate === "ready" ? "/api/v1/patients/me" : null, gate === "ready");
   const prescriptionsPath = profile.data
@@ -232,25 +327,38 @@ export function PatientFulfillmentPanel({ counter = false }: { counter?: boolean
   const [selectionLocked,setSelectionLocked]=useState(false);
   const selected=prescriptions.items.find(item=>item.id===selectedId) ?? prescriptions.items[0];
   if (gate !== "ready") return <PatientGate state={gate} />;
-  if (counter) return <div className="pharmacy-prescription-desk">
-    <section className="prescription-stand" aria-labelledby="patient-prescription-stand-title">
-      <header><DepartmentIcon department="records"/><h2 id="patient-prescription-stand-title">Patient & Prescription</h2><span aria-hidden="true">Rx</span></header>
-      <p>{profile.data?.display_name?.startsWith("Synthetic") ? "Your patient account" : profile.data?.display_name ?? "Your patient account"}</p>
+  if (counter) {
+    const medicineCount = (item: Prescription) => `${item.items.length} medicine${item.items.length === 1 ? "" : "s"}`;
+    const stand = <section className="prescription-stand" aria-labelledby="patient-prescription-stand-title">
+      <header><DepartmentIcon department="records"/><h2 id="patient-prescription-stand-title">Prescription stand</h2><span aria-hidden="true">Rx</span></header>
+      <p className="stand-patient">{profile.data?.display_name && !profile.data.display_name.startsWith("Synthetic") ? `For ${profile.data.display_name}` : "Your patient account"}</p>
       {profile.loading && <p role="status">Loading your profile…</p>}
       {profile.error && <div role="alert"><p>{profile.error}</p><button type="button" onClick={profile.reload}>Retry profile</button></div>}
       {prescriptions.loading && <p role="status">Loading your prescriptions…</p>}
       {prescriptions.error && <div role="alert"><p>{prescriptions.error}</p><button type="button" onClick={prescriptions.reload}>Retry prescriptions</button></div>}
       {!prescriptions.loading && !prescriptions.error && prescriptions.items.length===0 && <p>No prescriptions were returned for this patient.</p>}
-      {selected && <><label htmlFor="counter-prescription">Your prescription</label><select id="counter-prescription" value={selected.id} disabled={selectionLocked} onChange={event=>setSelectedId(event.target.value)}>{prescriptions.items.map(item=><option key={item.id} value={item.id}>Prescription …{item.id.slice(-4)} · {item.state}</option>)}</select>
-        <p className="prescription-source-line">Records · {selected.state} · Revision {selected.revision}</p>
+      {selected && <>
+        <label htmlFor="counter-prescription">Your prescription</label>
+        <select id="counter-prescription" data-rx-primary value={selected.id} disabled={selectionLocked} onChange={event=>setSelectedId(event.target.value)}>{prescriptions.items.map(item=><option key={item.id} value={item.id}>{item.state === "issued" ? "Issued" : "Revoked"} · {medicineCount(item)} · ref …{item.id.slice(-4)}</option>)}</select>
+        <p className="prescription-source-line"><span className="owner-state" data-state={selected.state}>{selected.state === "issued" ? "Issued" : "Revoked"}</span>{medicineCount(selected)} · from Records</p>
         {selected.state==="revoked" && <p className="prescription-revoked-note">Revoked prescription. Instructions are retained as history.</p>}
-        <div className="prescribed-document-lines">{selected.items.map(item=><article key={item.id}><strong><PrescribedMedicineName api={api} medicineId={item.medicine_id}/></strong><span>Quantity {item.quantity}</span><p>{item.dosage}</p><p>{item.instructions}</p></article>)}</div>
-        <details className="owner-identifiers"><summary>Prescription references</summary>Prescription {selected.id} · Consultation {selected.consultation_id}</details></>}
+        {selectionLocked && <p className="stand-lock" role="status">Locked while a reservation request is pending.</p>}
+        <details className="owner-identifiers"><summary>Details</summary>Prescription {selected.id} · Consultation {selected.consultation_id} · Revision {selected.revision}</details>
+      </>}
       {prescriptions.nextCursor && <button type="button" disabled={prescriptions.loadingMore||selectionLocked} onClick={()=>void prescriptions.loadMore()}>Load more prescriptions</button>}
       {prescriptions.loadMoreError && <div role="alert"><p>{prescriptions.loadMoreError}</p><button type="button" disabled={selectionLocked} onClick={()=>void prescriptions.loadMore()}>Retry loading prescriptions</button></div>}
-    </section>
-    <aside className="patient-dispensing-workspace" aria-label="Prescription and Pharmacy status"><h2>Pharmacy fulfillment</h2><p>Reservations and dispensing are confirmed by Pharmacy.</p>{selected && profile.data ? <ReservationStatus key={`${selected.id}:${selected.revision}`} api={api} profile={profile.data} prescription={selected} compact onLockChange={setSelectionLocked}/> : <p>Choose one of your prescriptions to see its fulfillment and permitted actions.</p>}</aside>
-  </div>;
+    </section>;
+    const tray = selected
+      ? <article className="prescription-paper" aria-labelledby="patient-prescription-paper-title">
+          <header><h2 id="patient-prescription-paper-title">Prescription details</h2><span>{selected.state === "issued" ? "Issued" : "Revoked"}</span></header>
+          <ol className="prescribed-document-lines">{selected.items.map(item=><li key={item.id}><strong><PrescribedMedicineName api={api} medicineId={item.medicine_id}/></strong><span>Quantity {item.quantity}</span><p>{item.dosage}</p><p>{item.instructions}</p></li>)}</ol>
+        </article>
+      : <div className="counter-tray__empty"><DepartmentIcon department="records"/><p>Your prescription details appear here once Records returns a prescription.</p></div>;
+    const right = selected && profile.data
+      ? <ReservationStatus key={`${selected.id}:${selected.revision}`} api={api} profile={profile.data} prescription={selected} compact onLockChange={setSelectionLocked}/>
+      : <section className="counter-upper" aria-labelledby="reservation-empty-title"><h2 id="reservation-empty-title">Reservation</h2><p>Choose one of your prescriptions to see its fulfillment and permitted actions.</p></section>;
+    return room ? room({ stand, tray, right }) : <div className="pharmacy-prescription-desk">{stand}{tray}<aside aria-label="Prescription and Pharmacy status">{right}</aside></div>;
+  }
   return <section className="patient-workflow__panel" aria-labelledby="patient-fulfillment-title">
     <h2 id="patient-fulfillment-title">Prescription and Pharmacy status</h2>
     <p>Prescription authority stays with Records; Pharmacy confirms reservations and dispensing. A reservation does not count as dispensed.</p>

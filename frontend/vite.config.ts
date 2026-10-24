@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { readFile } from "node:fs/promises";
+import { mockApiPlugin } from "./dev-mock/plugin";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
@@ -16,6 +17,18 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
+      ...(env.VITE_MOCK_API === "true" ? [mockApiPlugin()] : []),
+      ...(env.VITE_DEMO_MOCK === "true"
+        ? [{
+            name: "pulsegrid-demo-mock-entry",
+            apply: "build" as const,
+            transformIndexHtml: {
+              order: "pre" as const,
+              handler: (html: string) =>
+                html.replace(/<script type="module"/, '<script type="module" src="/dev-mock/browser-entry.ts"></script>\n    <script type="module"'),
+            },
+          }]
+        : []),
       {
         name: "local-fictional-demo",
         apply: "serve",

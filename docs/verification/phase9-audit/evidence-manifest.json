@@ -1,0 +1,200 @@
+[
+  {
+    "department": "reception",
+    "reference": "references/home.png",
+    "actual_source": "../phase9-fidelity/directory-reception-1536.jpg",
+    "actual_source_sha256": "a1c3f1f2d25d4541dd323ebcd7d7689954d64b022ad32807cb6ca4778c281754",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-reception.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "61df7705eaa6164db3a9e95aa72eacf5fafa6e4df168d820474a14114d2d328b",
+    "reference_sha256": "b90ecad6489efc24a0dc43474ac66e20ffdadc673789f223a72754d968c89549"
+  },
+  {
+    "department": "consultation",
+    "reference": "references/consultation.png",
+    "actual_source": "../phase9-fidelity/directory-consultation-1536.jpg",
+    "actual_source_sha256": "b3be49cbf90e825e506302662cf1e4f934f271a662b0a8b37f12340ab7d71eab",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-consultation.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "9e353538ae138a0b0f7fdcb4f57f7dd609b45929a250429cb9b6f4397d66b3b1",
+    "reference_sha256": "dff5d6e0bee850374b6404d25534805dc27bf258c7d844f3dcfd9b763d470e2b"
+  },
+  {
+    "department": "appointments",
+    "reference": "references/appointment.png",
+    "actual_source": "../phase9-resume/appointments-final-1536.jpg",
+    "actual_source_sha256": "454276bfeec69bd3579d67759a534bc5052801f17cadd6f57ca62f3f461c453a",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-appointments.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "6701fff8a512f449af341fa210bf4cb0a50f5b2337f9236921945bc9428c7a4e",
+    "reference_sha256": "91b81a84dfdd2ddef3036849187005bc4694d2fb6337d63a6cb96269032c9ccd"
+  },
+  {
+    "department": "appointments-management",
+    "reference": "references/resehduele waiting and walkin.png",
+    "actual_source": "../phase9-resume/my-appointments-1536.jpg",
+    "actual_source_sha256": "2db1d6ccf890d540a1ea96181e07c460ff92eefc56a302249934d1aded865ff4",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-appointments-management.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "be167d45c228bd7b0f8be8aec98dba735e67585138c737733707902f867aba22",
+    "reference_sha256": "a8221e44993963446d1b62cdcc9d1d11c6830b325ba1cc8851521790fd5728a0"
+  },
+  {
+    "department": "waiting",
+    "reference": "references/waiting room.png",
+    "actual_source": "../phase9-fidelity/waiting-after-1536.jpg",
+    "actual_source_sha256": "ed1da54432b1ad4fd54fa4388f217d48dd1471391663c5c36448cc85307e102b",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-waiting.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "22bf469cbf38cb4e8fb75323d9ff45b4c815e03945213fb09ce0137561cc042b",
+    "reference_sha256": "6c13da475f301c9f4941c37187d80d1872bca89c4692bb09fa9522c81d32675a"
+  },
+  {
+    "department": "pharmacy",
+    "reference": "references/pharmacy.png",
+    "actual_source": "../phase9-fidelity/pharmacy-pharmacist-after-1536.jpg",
+    "actual_source_sha256": "a0e16f5c12ee680adcbed6b01a5cae181519c14dc5a797722725866c00daee15",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-pharmacy.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "3c1e319ae30fa4b4ea8a65d8093fc9fa34d8f2abfa776fca9eb82af64cb3dce7",
+    "reference_sha256": "8737818c91ac89bb9054968826c32ba62b07c373f5713f68221d220b72530b9d"
+  },
+  {
+    "department": "pharmacy-patient",
+    "reference": "references/pharmacy.png",
+    "actual_source": "../phase9-resume/pharmacy-patient-final-1536.jpg",
+    "actual_source_sha256": "4d03a29d3dae60633efae9c5f1faab757eb2edbcf06d9564eaa6ba9382956260",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-pharmacy-patient.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "f9e56b472c3c35be06901e6959315b5a8bd2d33f15f361a683a28eae45c2a1ad",
+    "reference_sha256": "8737818c91ac89bb9054968826c32ba62b07c373f5713f68221d220b72530b9d"
+  },
+  {
+    "department": "billing",
+    "reference": "references/billing.png",
+    "actual_source": "../phase9-resume/billing-price-book-1536x1024.jpg",
+    "actual_source_sha256": "c6bc6ce16b478bb4653a6923788789c8b7dbcedf04b0d23f40d3b804a0af5237",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-billing.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "fa08466d651e2ccb792c4fb16e3c75b15967b0f9b5134efab083d6972d31450f",
+    "reference_sha256": "2dafa21158329a9998ea0b4b391f7a2e757130858cb81ec2952b65b908041450"
+  },
+  {
+    "department": "emergency",
+    "reference": "references/emergency.png",
+    "actual_source": "../phase9-resume/emergency-staff-1536.jpg",
+    "actual_source_sha256": "637a342016f41f36e5014cb59c9ae0a4f5bb0d1fe394ec70d921a6fd3a3dc744",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-emergency.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "c12568134846051613a6a5750e22b08afc195f744558703c54ee8fe546e95717",
+    "reference_sha256": "dd605cfeaf7f4c7ba5ea3199747b7c97fec48861ee5c7fafdbb5951896fa80d2"
+  },
+  {
+    "department": "records",
+    "reference": "references/medicalrecords.png",
+    "actual_source": "../phase9-resume/records-visit-prescription-1536x1024.jpg",
+    "actual_source_sha256": "faedf04f5e819cfbfbd562402fbb9636df82a7ec16f278dc142f7f054ac3fef5",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-records.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "0eff6e94f1f47dfba7d1711eb7c2069fa373ae9bd1ec4f7360330345aa3fbfce",
+    "reference_sha256": "da81074ce70bcaa278713e409f6ea17584dfa6d77bdc72be7c7b97af318f7dda"
+  },
+  {
+    "department": "control-room",
+    "reference": "references/controlroom.png",
+    "actual_source": "../phase9-resume/control-room-1536.jpg",
+    "actual_source_sha256": "96a13a94bb5184dec8f8196b4a9618bfa6d3dab7cad9543f0d3abbf0e2f85725",
+    "capture_status": "HISTORICAL; not captured in this audit",
+    "composite": "compare-control-room.jpg",
+    "canvas": [
+      3072,
+      1024
+    ],
+    "each_side": [
+      1536,
+      1024
+    ],
+    "composite_sha256": "6329d93d7bee3730c6e09838900f5906a52f3f7a8546b55d93d0595b744945a8",
+    "reference_sha256": "fb2f1d31b0dd83fb080b8337f7142d3ce211b504eca90d4136a0e446371ba23e"
+  }
+]

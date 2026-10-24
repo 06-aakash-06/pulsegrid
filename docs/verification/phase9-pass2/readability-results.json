@@ -1,0 +1,79 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "checked_at": "2026-10-18T11:30:00.348Z",
+  "viewport": "1536x1024",
+  "pages": [
+    {
+      "route": "/emergency/dashboard",
+      "email": "emergency@mock.test",
+      "textNodes": 98,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "5.95",
+      "lowContrast": [],
+      "targets": 16,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/patient/emergency",
+      "email": "patient@mock.test",
+      "textNodes": 52,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "6.69",
+      "lowContrast": [],
+      "targets": 11,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/billing/dashboard",
+      "email": "billing@mock.test",
+      "textNodes": 113,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "6.63",
+      "lowContrast": [],
+      "targets": 19,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/patient/billing",
+      "email": "patient@mock.test",
+      "textNodes": 102,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "6.63",
+      "lowContrast": [],
+      "targets": 13,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/patient/records",
+      "email": "patient@mock.test",
+      "textNodes": 68,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "7.25",
+      "lowContrast": [],
+      "targets": 15,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    },
+    {
+      "route": "/doctor/consultations",
+      "email": "doctor@mock.test",
+      "textNodes": 51,
+      "minFontSize": 12,
+      "belowTwelve": [],
+      "minContrast": "6.77",
+      "lowContrast": [],
+      "targets": 12,
+      "minTargetHeight": 40,
+      "targetsBelow40": []
+    }
+  ]
+}

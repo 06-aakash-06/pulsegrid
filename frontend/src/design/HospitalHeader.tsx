@@ -57,7 +57,7 @@ export function HospitalHeader({
   }, [state.status]);
   const identity =
     state.status === "authenticated"
-      ? (displayName?.startsWith("Synthetic") ? `${roleLabel ?? "Demo"} account` : displayName ?? `Account …${state.user.id?.slice(-6) ?? "signed in"}`)
+      ? (displayName?.startsWith("Synthetic") ? `${roleLabel ?? "Demo"} account` : displayName ?? roleLabel ?? "Signed in")
       : "Welcome";
   return (
     <header className="hospital-header">
@@ -125,13 +125,13 @@ export function HospitalHeader({
               </span>
               <span>
                 <strong title={identity}>{identity}</strong>
-                <small>{roleLabel ?? "Signed in"}</small>
+                <small>{displayName && !displayName.startsWith("Synthetic") ? roleLabel ?? "Signed in" : "Signed in"}</small>
               </span>
               <span aria-hidden="true">⌄</span>
             </summary>
             <div className="header-popover">
               <p>Signed in as {roleLabel ?? "hospital user"}</p>
-              <p className="account-subject">{state.user.id}</p>
+              {state.user.id && <p className="account-subject">Account ID {state.user.id}</p>}
               {allowed.map((w) => (
                 <Link key={w.basePath} to={`${w.basePath}/dashboard`}>
                   {w.name} →
@@ -178,7 +178,7 @@ export function HospitalHeader({
             autoFocus
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Appointments, medicines, records…"
+            placeholder="Find a department or workflow…"
           />
         </label>
         <p>Search within a department using its existing search tools.</p>

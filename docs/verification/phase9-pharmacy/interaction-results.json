@@ -1,0 +1,66 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "checked_at": "2026-10-18T07:44:43.191Z",
+  "results": [
+    {
+      "name": "first shelf medicine auto-selected",
+      "pass": true,
+      "detail": "Paracetamol 500 mg tablets"
+    },
+    {
+      "name": "carton selection updates right counter with that medicine's batches",
+      "pass": true,
+      "detail": "2 batch rows"
+    },
+    {
+      "name": "availability filter shows only matching medicines on the page",
+      "pass": true,
+      "detail": "2 slots"
+    },
+    {
+      "name": "pagination moves to shelf page 2",
+      "pass": true,
+      "detail": "2 medicines on page 2"
+    },
+    {
+      "name": "pagination returns to shelf page 1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "autocomplete selection updates right counter",
+      "pass": true,
+      "detail": "Pantoprazole 40 mg enteric-coated tablets"
+    },
+    {
+      "name": "keyboard order runs cabinet → Rx stand → right counter",
+      "pass": true,
+      "detail": "cabinet > stand > counter"
+    },
+    {
+      "name": "dispensing workspace opens and places the looked-up prescription on the counter",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "current reservation appears in the right counter",
+      "pass": true,
+      "detail": "Reservation …7001"
+    },
+    {
+      "name": "patient reservation request returns an owner-confirmed slip (mock write)",
+      "pass": true,
+      "detail": "Pharmacy returned reservation 9500, state reserved, expiring 10/18/2026, 8:13:41 AM UTC."
+    },
+    {
+      "name": "reservation slip lists the new reservation alongside the existing one",
+      "pass": true,
+      "detail": "2 active reservations"
+    },
+    {
+      "name": "patient sees no dispensing controls",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

@@ -64,7 +64,8 @@ describe("hospital design integration", () => {
       this.removeAttribute("open");
     };
     mount(<HospitalHeader roleLabel="Patient" />);
-    await screen.findByText("Account …21");
+    expect(await screen.findByText("Account ID 21")).toBeInTheDocument();
+    expect(screen.getByLabelText("Patient account menu")).toBeInTheDocument();
     fireEvent.click(
       screen.getByRole("button", {
         name: "Search hospital departments and workflows",
@@ -95,7 +96,8 @@ describe("hospital design integration", () => {
   it("uses only an owner-confirmed identity for the same subject without another request", async () => {
     const fetcher = vi.fn(async () => new Response("{}"));
     mount(<HospitalHeader roleLabel="Patient" />, fetcher);
-    await screen.findByText("Account …21");
+    expect(await screen.findByText("Account ID 21")).toBeInTheDocument();
+    expect(screen.getByLabelText("Patient account menu")).toBeInTheDocument();
     act(() => publishHospitalIdentity("999", "Another account"));
     expect(screen.queryByText("Another account")).not.toBeInTheDocument();
     act(() => publishHospitalIdentity("21", "Anika Shah"));

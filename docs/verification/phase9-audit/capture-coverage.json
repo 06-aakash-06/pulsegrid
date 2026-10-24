@@ -1,0 +1,1099 @@
+{
+  "fresh_captures": 0,
+  "requested_route_viewport_combinations": 84,
+  "additional_states": "Booking, My Appointments and reschedule tabs also require later live verification.",
+  "entries": [
+    {
+      "department": "reception",
+      "role": "public",
+      "route": "/",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "public",
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "public",
+      "route": "/",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "public",
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "reception",
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "consultation",
+      "role": "patient",
+      "route": "/patient/doctors",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "consultation",
+      "role": "patient",
+      "route": "/patient/doctors",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "consultation",
+      "role": "patient",
+      "route": "/patient/doctors",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "consultation",
+      "role": "patient",
+      "route": "/patient/doctors",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "patient",
+      "route": "/patient/appointments",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "patient",
+      "route": "/patient/appointments",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "patient",
+      "route": "/patient/appointments",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "patient",
+      "route": "/patient/appointments",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "appointments",
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/queue",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/queue",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/queue",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/queue",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/check-in",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/check-in",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/check-in",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "waiting",
+      "role": "patient",
+      "route": "/patient/check-in",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "pharmacy",
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "patient",
+      "route": "/patient/billing",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "patient",
+      "route": "/patient/billing",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "patient",
+      "route": "/patient/billing",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "patient",
+      "route": "/patient/billing",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/dashboard",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/dashboard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/dashboard",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/dashboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/invoices",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/invoices",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/invoices",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "billing",
+      "role": "billing_staff",
+      "route": "/billing/invoices",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "patient",
+      "route": "/patient/emergency",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "patient",
+      "route": "/patient/emergency",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "patient",
+      "route": "/patient/emergency",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "patient",
+      "route": "/patient/emergency",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "emergency_staff",
+      "route": "/emergency/dashboard",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "emergency_staff",
+      "route": "/emergency/dashboard",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "emergency_staff",
+      "route": "/emergency/dashboard",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "emergency",
+      "role": "emergency_staff",
+      "route": "/emergency/dashboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "patient",
+      "route": "/patient/records",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "patient",
+      "route": "/patient/records",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "patient",
+      "route": "/patient/records",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "patient",
+      "route": "/patient/records",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "records",
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/control-room",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/control-room",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/control-room",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/control-room",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/traces",
+      "viewport": {
+        "width": 1536,
+        "height": 1024
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/traces",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/traces",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    },
+    {
+      "department": "control-room",
+      "role": "hospital_admin",
+      "route": "/admin/traces",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "fresh_capture_status": "unavailable",
+      "horizontal_overflow": null,
+      "above_fold_dom_measurement": null,
+      "reason": "No running app; npm dependency installation failed; Docker socket denied; no supplied retained account session."
+    }
+  ]
+}

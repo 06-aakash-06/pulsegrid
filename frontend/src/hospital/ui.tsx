@@ -14,7 +14,7 @@ export function errorMessage(error: unknown): string {
   if (error instanceof ApiError) {
     const advice =
       error.status === 412
-        ? " Reload the resource and review your changes before submitting again."
+        ? " Refresh to load the latest version, then review your changes before submitting again."
         : "";
     const retry=error.retryAfterSeconds !== undefined ? ` Wait ${error.retryAfterSeconds} seconds before retrying.` : "";
     return `${error.message}${retry}${advice}${error.requestId ? ` Request ID: ${error.requestId}` : ""}`;
@@ -108,7 +108,7 @@ export function Resource<T>({
           disabled={resource.loading}
           onClick={resource.refresh}
         >
-          Reload resource
+          Refresh
         </button>
       )}
       {resource.response &&
@@ -127,6 +127,7 @@ export function Collection<T extends { id: string }>({
   revision = 0,
   onFirstItem,
   itemFilter,
+  sourceNote = null,
 }: {
   path: string | null;
   title: string;
@@ -134,15 +135,20 @@ export function Collection<T extends { id: string }>({
   revision?: number;
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
+  sourceNote?: ReactNode;
 }) {
+  const shown = useRef(new Set<string>());
   return (
     <CollectionPage<T>
       key={`${path}:${revision}`}
+      animateEntry={!!path && !shown.current.has(path)}
+      onShown={() => { if (path) shown.current.add(path); }}
       path={path}
       title={title}
       renderItem={renderItem}
       onFirstItem={onFirstItem}
       itemFilter={itemFilter}
+      sourceNote={sourceNote}
     />
   );
 }
@@ -152,13 +158,20 @@ function CollectionPage<T extends { id: string }>({
   renderItem,
   onFirstItem,
   itemFilter,
+  sourceNote,
+  animateEntry,
+  onShown,
 }: {
   path: string | null;
   title: string;
   renderItem: (item: T) => ReactNode;
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
+  sourceNote: ReactNode;
+  animateEntry: boolean;
+  onShown: () => void;
 }) {
+  const firstBatch = useRef<Set<string> | null>(null);
   const [cursor, setCursor] = useState<string | undefined>();
   const [history, setHistory] = useState<(string | undefined)[]>([]);
   const pagedPath = path
@@ -169,11 +182,16 @@ function CollectionPage<T extends { id: string }>({
     const first = resource.response?.data.items.find(item=>!itemFilter || itemFilter(item));
     if (first) onFirstItem?.(first);
   }, [resource.response, onFirstItem, itemFilter]);
+  if (resource.response && !firstBatch.current)
+    firstBatch.current = new Set(animateEntry ? resource.response.data.items.slice(0, 8).map((item) => item.id) : []);
+  useEffect(() => {
+    if (resource.response) onShown();
+  }, [resource.response, onShown]);
   return (
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}
       {resource.error && <p role="alert">{resource.error}</p>}
-      <div className="resource-toolbar"><span>Owner service data</span><button
+      <div className="resource-toolbar">{sourceNote && <span>{sourceNote}</span>}<button
         type="button"
         onClick={resource.refresh}
         disabled={!path || resource.loading}
@@ -186,8 +204,15 @@ function CollectionPage<T extends { id: string }>({
             <div className="resource-empty"><strong>No {title.toLowerCase()} found.</strong><p>Nothing to display for the current filters.</p></div>
           )}
           <div className="hospital-items">
-            {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).map((item) => (
-              <m.article initial={false} layout="position" transition={{duration:0.18}} className="hospital-item" key={item.id}>
+            {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).map((item, index) => (
+              <m.article
+                initial={firstBatch.current?.has(item.id) ? { opacity: 0, y: 6 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                layout="position"
+                transition={{ duration: 0.18, delay: firstBatch.current?.has(item.id) ? Math.min(index, 7) * 0.03 : 0 }}
+                className="hospital-item"
+                key={item.id}
+              >
                 {renderItem(item)}
               </m.article>
             ))}
@@ -391,6 +416,7 @@ export function CommandForm<T = unknown>({
   onSuccess,
   onLockChange,
   notice,
+  preview,
   children,
 }: {
   title: string;
@@ -403,6 +429,7 @@ export function CommandForm<T = unknown>({
   onSuccess?: (data: T, etag: string | null) => void;
   onLockChange?: (locked: boolean) => void;
   notice?: string;
+  preview?: (values: Values) => ReactNode;
   children?: ReactNode;
 }) {
   const { api } = useAuth();
@@ -500,6 +527,7 @@ export function CommandForm<T = unknown>({
         change={(name, value) => setValues({ ...values, [name]: value })}
         disabled={!!attempt || pending}
       />
+      {preview?.(values)}
       {error && <p role="alert">{error}</p>}
       {success && <m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{title}: confirmed by the service.</m.p>}
       {pending && <p role="status">Submitting {title.toLowerCase()}…</p>}

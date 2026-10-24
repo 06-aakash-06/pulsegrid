@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { PulseGridRoutes } from "../src/app/App";
@@ -159,5 +159,42 @@ describe("Phase 4 authentication handoff", () => {
     fireEvent.change(screen.getByLabelText("Password"),{target:{value:"test-only-password"}});
     fireEvent.click(screen.getByRole("button",{name:"Sign in"}));
     expect(await screen.findByText(/Wait 7 seconds before retrying/)).toBeInTheDocument();
+  });
+});
+
+describe("directory accessibility", () => {
+  it("marks the department link as the current page on an alias route", async () => {
+    render(
+      <AuthProvider client={authClientFor("patient")}>
+        <MemoryRouter initialEntries={["/patient/check-in"]}>
+          <PulseGridRoutes />
+        </MemoryRouter>
+      </AuthProvider>,
+    );
+    fireEvent.change(await screen.findByLabelText("Email address"), { target: { value: "synthetic@example.test" } });
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "test-only-password" } });
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(await screen.findByRole("heading", { name: "QR check-in", level: 1 })).toBeInTheDocument();
+    const directory = screen.getByRole("complementary", { name: "Hospital directory" });
+    expect(within(directory).getByRole("link", { name: "Waiting Room" })).toHaveAttribute("aria-current", "page");
+    expect(within(directory).getByRole("link", { name: "Reception" })).not.toHaveAttribute("aria-current");
+  });
+
+  it("makes the open directory a modal dialog, isolates the workspace and restores focus on Escape", async () => {
+    await signInAs("patient");
+    const menu = await screen.findByRole("button", { name: "Open navigation menu" });
+    menu.focus();
+    fireEvent.click(menu);
+    const dialog = screen.getByRole("dialog", { name: "Hospital directory" });
+    expect(dialog).toHaveAttribute("aria-modal", "true");
+    const workspace = document.getElementById("hospital-main")!.parentElement!;
+    expect(workspace).toHaveAttribute("inert");
+    expect(workspace).toHaveAttribute("aria-hidden", "true");
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    fireEvent.keyDown(document, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Hospital directory" })).not.toBeInTheDocument());
+    expect(workspace).not.toHaveAttribute("inert");
+    expect(workspace).not.toHaveAttribute("aria-hidden");
+    expect(menu).toHaveFocus();
   });
 });

@@ -406,13 +406,13 @@ describe("patient profiles and appointment commands", () => {
     fill("To (UTC)", "2027-01-02T00:00:00Z");
     fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     fireEvent.click(
-      await screen.findByRole("button", { name: "Select slot 41" }),
+      await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
     expect(screen.getByRole("button",{name:"Review Book appointment"})).toBeInTheDocument();
     fill("From (UTC)", "2027-01-02T00:00:00Z");
     expect(screen.queryByRole("button",{name:"Review Book appointment"})).not.toBeInTheDocument();
     fill("From (UTC)", "2027-01-01T00:00:00Z");
-    fireEvent.click(await screen.findByRole("button",{name:"Select slot 41"}));
+    fireEvent.click(await screen.findByRole("button",{name:/^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i}));
     await command("Book appointment");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expect(lastBody(fetcher)).toEqual({
@@ -460,9 +460,9 @@ describe("patient profiles and appointment commands", () => {
         return undefined;
       },
     );
-    fireEvent.click(await screen.findByRole("button", { name: "My Appointments / Reschedule / Cancel" }));
+    fireEvent.click(await screen.findByRole("button", { name: "My Appointments" }));
     fireEvent.click(
-      await screen.findByRole("button", { name: "View appointment 51" }),
+      await screen.findByRole("button", { name: "Cancel appointment 51" }),
     );
     expect(fetcher.mock.calls.some(([url])=>String(url).includes("patient_id=11"))).toBe(true);
     await screen.findByLabelText("Reason");
@@ -486,9 +486,9 @@ describe("patient profiles and appointment commands", () => {
         return undefined;
       },
     );
-    fireEvent.click(await screen.findByRole("button", { name: "My Appointments / Reschedule / Cancel" }));
+    fireEvent.click(await screen.findByRole("button", { name: "My Appointments" }));
     fireEvent.click(
-      await screen.findByRole("button", { name: "View appointment 51" }),
+      await screen.findByRole("button", { name: "Reschedule appointment 51" }),
     );
     await screen.findByLabelText("Target doctor ID");
     fill("Target doctor ID", "21");
@@ -499,7 +499,7 @@ describe("patient profiles and appointment commands", () => {
     fill("To (UTC)", "2027-01-02T00:00:00Z");
     fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     fireEvent.click(
-      await screen.findByRole("button", { name: "Select slot 41" }),
+      await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
     await command("Reschedule appointment");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
@@ -588,7 +588,7 @@ describe("command safety and states", () => {
     );
     await command("Edit");
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Reload the resource",
+      "Refresh to load the latest version",
     );
     expect(writes(fetcher)).toHaveLength(1);
     expect(
@@ -633,10 +633,11 @@ describe("command safety and states", () => {
     expect(screen.getByRole("button", { name: "Review Edit" })).toBeDisabled();
   });
   it("shows empty lists and deferred workflows without commands", async () => {
-    const { fetcher, view } = setup("/patient/appointments", "patient");
+    const { fetcher, view } = setup("/patient/appointments?view=upcoming", "patient");
     expect(
-      await screen.findByText("No appointments found."),
+      await screen.findByText("No upcoming appointments in this list."),
     ).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Upcoming (0)" })).toHaveAttribute("aria-selected", "true");
     view.unmount();
     const deferred = setup("/patient/check-in", "patient");
     expect(

@@ -122,6 +122,10 @@ Open **http://127.0.0.1:5173**. Vite proxies API requests to the loopback gatewa
 
 See [infrastructure](docs/infrastructure.md) and [authentication integration](docs/authentication-integration.md) for configuration, bootstrap, migrations and troubleshooting. Production frontend builds need an API reverse proxy; the static build does not start backend services.
 
+#### UI development without the backend
+
+`npm run dev:mock` (from `frontend/`) starts Vite with a dev-only fixture API that answers `/api/*` in memory instead of proxying to the gateway. Sign in with any password; the email picks the role: `patient@`, `doctor@`, `receptionist@`, `pharmacist@`, `billing@`, `emergency@`, `admin@` or `ops@mock.test`. Every page shows a MOCK DATA ribbon. The fixtures in `frontend/dev-mock/` are synthetic, are served only by the dev server and are excluded from `npm run build`. Mock mode is for layout work; it does not verify real API behaviour. `npm run build:demo` produces a separate static demo (used for the Vercel preview, configured in `frontend/vercel.json`) that runs the same fixtures in the browser; the normal `npm run build` never includes them.
+
 ## Validation
 
 ```sh
