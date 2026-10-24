@@ -13,6 +13,20 @@ Implemented for the synthetic single-hospital prototype. Patient owns accounts, 
 | POST `/api/v1/auth/logout` | Allowed Origin, CSRF header/cookie, credentials | 204, session-family revocation and cookie deletion |
 | GET `/api/v1/patients/me` | Bearer access token; current Patient account and patient role | PatientProfile and ETag |
 
+Registration returns a generic 409 `conflict` for an unavailable email so the
+response does not confirm whether a particular address has an account. A 409
+`idempotency_conflict` instead means the same registration key was replayed with
+different form content; the browser clears that attempt so the next submission
+can start with a fresh key. Same-key, same-body retries replay the original
+sanitized 201 response.
+
+Before sending registration fields, the browser checks that the Patient
+readiness endpoint returns a ready Patient service. A static demo deployment
+without the API reports that account creation is unavailable and does not send
+the user's registration fields to a missing route. Production frontend hosting
+must proxy the Patient readiness and authentication routes to a configured
+service-backed environment.
+
 TokenSet is `{access_token,token_type:"Bearer",expires_in}`. PatientProfile is `{id,user_id,display_name,version,date_of_birth?,synthetic_contact?}`. IDs are decimal strings. Error envelopes expose only safe code/message/request ID. Unknown registration fields, including privileged roles, are rejected. GET me is available through the authenticated API client; dashboard business data remains an empty shell, with no new profile editor.
 
 ## Browser lifecycle and CSRF

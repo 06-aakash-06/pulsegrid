@@ -133,14 +133,16 @@ def test_registration_and_atomic_duplicate_idempotency(setup):
             assert results[0].json() == results[1].json()
             profile = results[0].json()
             changed = {**body, "display_name": "Another name"}
-            assert (
-                await c.post("/api/v1/auth/register", json=changed, headers=headers)
-            ).status_code == 409
-            assert (
-                await c.post(
-                    "/api/v1/auth/register", json=body, headers=registration_headers()
-                )
-            ).status_code == 409
+            replay = await c.post(
+                "/api/v1/auth/register", json=changed, headers=headers
+            )
+            assert replay.status_code == 409
+            assert replay.json()["error"]["code"] == "idempotency_conflict"
+            duplicate_email = await c.post(
+                "/api/v1/auth/register", json=body, headers=registration_headers()
+            )
+            assert duplicate_email.status_code == 409
+            assert duplicate_email.json()["error"]["code"] == "conflict"
             assert (
                 await c.post(
                     "/api/v1/auth/register",

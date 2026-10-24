@@ -31,6 +31,7 @@ from .authorization import (
     valid_id,
 )
 from .database import get_database_session
+from .errors import APIError
 from .models import (
     users,
     patient_profiles,
@@ -414,7 +415,11 @@ async def register(
                 )
                 if old:
                     if not hmac.compare_digest(old["request_hash"], fingerprint):
-                        raise HTTPException(409)
+                        raise APIError(
+                            409,
+                            "idempotency_conflict",
+                            "This registration request conflicts with an earlier attempt. Submit again to start a fresh request.",
+                        )
                     return old["response"]
                 user_id, profile_id = new_id(), new_id()
                 await session.execute(
