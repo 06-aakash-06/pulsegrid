@@ -115,7 +115,7 @@ export function ReceptionScene({
                 ? `${name.split(" ")[0]}.`
                 : "Your hospital."}
           </h2>
-          <p className="welcome-motto">CARE · COORDINATION · CLARITY</p>
+
         </div>
         {publicView && (
           <aside className="reception-guidance">

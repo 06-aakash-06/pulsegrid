@@ -332,24 +332,6 @@ export function ReferenceConsultation({
       : "/patient/appointments";
   return (
     <div className="reference-consultation">
-      <div className="consultation-wall-heading">
-        <div>
-          <h1>Consultation</h1>
-          <p>Expert care across specialties.</p>
-        </div>
-        <div className="consultation-wall-mark">
-          <DepartmentIcon department="consultation" />
-          <span>
-            CONSULT
-            <br />
-            DIAGNOSE
-            <br />
-            TREAT
-            <br />
-            TOGETHER
-          </span>
-        </div>
-      </div>
       <nav className="consultation-tabs" aria-label="Consultation department">
         <span aria-current="page">
           <DepartmentIcon department="consultation" />

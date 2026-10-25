@@ -1,6 +1,5 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { useAuth } from "../auth/authContext";
-import { DepartmentIcon } from "../design/DepartmentIcon";
 import { MedicineAutocomplete } from "../phase4";
 import type { Medicine, Page } from "./models";
 import { Inputs, query, useResource, type Values } from "./ui";
@@ -42,8 +41,6 @@ export function useCursorPage<T>(path: string | null, revision = 0) {
 }
 
 export function PharmacyRoom({
-  title,
-  workspaceName,
   cabinet,
   stand,
   tray,
@@ -56,17 +53,9 @@ export function PharmacyRoom({
   tray: ReactNode;
   right: ReactNode;
 }) {
-  const primary = title === "Pharmacy";
+
   return (
     <div className="pharmacy-room">
-      <header className="pharmacy-wall-sign">
-        <span className="pharmacy-wall-sign__mark" aria-hidden="true"><DepartmentIcon department="pharmacy" /></span>
-        <div className="pharmacy-wall-sign__name">
-          {primary ? <h1>Pharmacy</h1> : <p className="pharmacy-wall-sign__word" aria-hidden="true">Pharmacy</p>}
-          {primary ? <p>Prescriptions &amp; medicines</p> : <h1 className="pharmacy-wall-sign__page">{title}</h1>}
-        </div>
-        <p className="pharmacy-wall-sign__note"><strong>{workspaceName}</strong><span>Reservations and dispensing are confirmed by Pharmacy.</span></p>
-      </header>
       <div className="pharmacy-room__cabinet">{cabinet}</div>
       <div className="pharmacy-room__counter">
         {stand}

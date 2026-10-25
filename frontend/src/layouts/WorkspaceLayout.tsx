@@ -1,6 +1,5 @@
-import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { workspaces, type WorkspaceConfig } from "../navigation/workspaces";
 import { useResource } from "../hospital/ui";
@@ -8,21 +7,8 @@ import { HospitalHeader } from "../design/HospitalHeader";
 import {
   DepartmentIcon,
   departmentFor,
-  departmentNames,
-  departmentDescriptions,
   pageSubtitle,
 } from "../design/DepartmentIcon";
-const directoryOrder = [
-  "reception",
-  "consultation",
-  "waiting",
-  "pharmacy",
-  "billing",
-  "emergency",
-  "records",
-  "control",
-  "appointments",
-];
 export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
@@ -36,72 +22,12 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   const sidebar = useRef<HTMLElement>(null);
   const route = location.pathname.split("/").at(-1) ?? "dashboard";
   const department = departmentFor(workspace.basePath, route);
-  const receptionScene = workspace.basePath === "/patient" && route === "dashboard";
-  useEffect(() => {
-    if (department === "emergency" || receptionScene || !window.matchMedia || !main.current)
-      return;
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(
-        main.current,
-        { opacity: 0.8, y: 8 },
-        { opacity: 1, y: 0, duration: 0.3, clearProps: "all" },
-      );
-    });
-    return () => media.revert();
-  }, [location.pathname, department, receptionScene]);
   const allowed =
     state.status === "authenticated"
       ? workspaces.filter((w) =>
           w.roles.some((r) => state.roleHints.includes(r)),
         )
       : [];
-  const referenceMode =
-    (workspace.basePath === "/patient" && route === "dashboard") ||
-    route === "doctors" || ["appointments","waiting","pharmacy","billing","emergency","records","control"].includes(department);
-  // Only the patient workspace has the department-signboard directory; staff keep their own grouped pages.
-  const referenceItems =
-    referenceMode && workspace.basePath === "/patient"
-      ? [
-          "dashboard",
-          "doctors",
-          "queue",
-          "pharmacy",
-          "billing",
-          "emergency",
-          "records",
-        ].map((path) => ({
-          path,
-          base: "/patient",
-          department: departmentFor("/patient", path),
-        }))
-      : [];
-  const navDepartment = (path: string) =>
-    path === "appointments"
-      ? "reception"
-      : departmentFor(workspace.basePath, path);
-  const preferred = [
-    "dashboard",
-    "doctors",
-    "queue",
-    "pharmacy",
-    "billing",
-    "emergency",
-    "records",
-    "control-room",
-  ];
-  const groups = directoryOrder
-    .map((d) => ({
-      department: d,
-      items: workspace.navigation
-        .filter((p) => navDepartment(p.path) === d)
-        .sort(
-          (a, b) =>
-            (preferred.includes(a.path) ? 0 : 1) -
-            (preferred.includes(b.path) ? 0 : 1),
-        ),
-    }))
-    .filter((g) => g.items.length);
   async function handleLogout() {
     setLogoutError(null);
     try {
@@ -149,7 +75,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
     return () => document.removeEventListener("keydown", handler);
   }, [menuOpen]);
   return (
-    <div className={`workspace-shell environment-${department}${referenceMode ? ' reference-departments' : ''}`}>
+    <div className={`workspace-shell environment-${department}`}>
       <a className="skip-link" href="#hospital-main">
         Skip to workspace
       </a>
@@ -174,92 +100,21 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
           className="workspace-nav"
           id="workspace-navigation"
         >
-          {referenceItems.length ? (
-            <>
-              {referenceItems.map((item, index) => {
-                const destination = `${item.base}/${item.path}`;
-                const aliasActive =
-                  location.pathname !== destination &&
-                  (department === item.department || (department === "appointments" && item.department === "reception"));
-                const content = (
-                  <>
-                    <span className="directory-number">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <DepartmentIcon department={item.department} />
-                    <span className="directory-copy">
-                      <strong>{departmentNames[item.department]}</strong>
-                      <small>{departmentDescriptions[item.department]}</small>
-                    </span>
-                    <span className="directory-arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </>
-                );
-                return aliasActive ? (
-                  <Link
-                    key={item.department}
-                    to={destination}
-                    aria-label={departmentNames[item.department]}
-                    aria-current="page"
-                    className="workspace-nav-link workspace-nav-link--active"
-                  >
-                    {content}
-                  </Link>
-                ) : (
-                  <NavLink
-                    key={item.department}
-                    end
-                    to={destination}
-                    aria-label={departmentNames[item.department]}
-                    className={({ isActive }) =>
-                      `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}`
-                    }
-                  >
-                    {content}
-                  </NavLink>
-                );
-              })}
-            </>
-          ) : (
-            <>
-              {" "}
-              {groups.map((group, groupIndex) => (
-                <div className="directory-department" key={group.department}>
-                  {group.items.map((item, i) => (
-                    <NavLink
-                      aria-label={item.label}
-                      end
-                      key={item.path}
-                      to={`${workspace.basePath}/${item.path}`}
-                      className={({ isActive }) =>
-                        `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}${i ? " directory-subroute" : ""}`
-                      }
-                    >
-                      {(
-                        <>
-                          <span className="directory-number">
-                            {String(groups.slice(0, groupIndex).reduce((n, g) => n + g.items.length, 0) + i + 1).padStart(2, "0")}
-                          </span>
-                          <DepartmentIcon
-                            department={navDepartment(item.path)}
-                          />
-                        </>
-                      )}
-                      <span className="directory-copy">
-                        <strong>{item.label}</strong>
-                        {!i && <small>{pageSubtitle(workspace.basePath, item.path)}</small>}
-                      </span>
-                      <span className="directory-arrow" aria-hidden="true">
-                        →
-                      </span>
-                    </NavLink>
-                  ))}
-                </div>
-              ))}
-            </>
-          )}
+          {workspace.navigation.map((item, index) => {
+            const itemDepartment = departmentFor(workspace.basePath, item.path);
+            const subtitle = pageSubtitle(workspace.basePath, item.path);
+            const subroute = index > 0 && itemDepartment === departmentFor(workspace.basePath, workspace.navigation[index - 1].path);
+            return <NavLink key={item.path} end to={`${workspace.basePath}/${item.path}`}
+              aria-label={item.label}
+              className={({ isActive }) => `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}${subroute ? " directory-subroute" : ""}`}>
+              <span className="directory-number">{String(index + 1).padStart(2, "0")}</span>
+              <DepartmentIcon department={itemDepartment} />
+              <span className="directory-copy"><strong title={item.label}>{item.label}</strong><small title={subtitle}>{subtitle}</small></span>
+              <span className="directory-arrow" aria-hidden="true">→</span>
+            </NavLink>;
+          })}
         </nav>
+        <footer className="directory-footer">
         <div className="directory-help">
           <span aria-hidden="true">ⓘ</span>
           <div>
@@ -277,28 +132,6 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
             ))}
           </details>
         )}
-        {referenceItems.length > 0 && (
-          <details className="reference-directory-tools">
-            <summary>More workspace tools</summary>
-            {workspace.navigation
-              .filter(
-                (item) =>
-                  !referenceItems.some(
-                    (r) =>
-                      `${r.base}/${r.path}` ===
-                      `${workspace.basePath}/${item.path}`,
-                  ),
-              )
-              .map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={`${workspace.basePath}/${item.path}`}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-          </details>
-        )}
         <span className="workspace-context">{workspace.name}</span>
         <button
           className="sign-out-button"
@@ -307,6 +140,8 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         >
           Sign out
         </button>
+        {(import.meta.env.VITE_MOCK_API === "true" || import.meta.env.VITE_DEMO_MOCK === "true") && <span className="mock-data-pill" role="note">Mock data</span>}
+        </footer>
       </aside>
       <div className="workspace-main" inert={menuOpen} aria-hidden={menuOpen || undefined}>
         <main

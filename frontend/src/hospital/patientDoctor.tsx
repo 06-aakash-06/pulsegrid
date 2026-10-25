@@ -1,3 +1,4 @@
+import { PageGrid } from "../components/PageGrid";
 import { AppointmentDoctorRail } from "../design/AppointmentDoctorRail";
 import { DoctorPortrait, useLocalDemo } from "../design/localDemo";
 import { ReceptionVisit } from "../design/ReceptionVisit";
@@ -135,7 +136,7 @@ export function Demographics({ admin = false }: { admin?: boolean }) {
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
   return (
-    <div className="patient-register">
+    <PageGrid preset={selected ? "main+aside" : "main"} className="patient-register">
       <Panel title="Patient demographics">
         <form
           onSubmit={(e) => {
@@ -195,7 +196,7 @@ export function Demographics({ admin = false }: { admin?: boolean }) {
           Demographic edits do not change permissions.
         </p>
       )}
-    </div>
+    </PageGrid>
   );
 }
 export function StaffManagement() {
@@ -205,7 +206,7 @@ export function StaffManagement() {
   const [draft, setDraft] = useState<Values>({});
   const [error, setError] = useState("");
   return (
-    <div className="account-register">
+    <PageGrid preset={selected ? "main+aside" : "main"} className="account-register">
       <Panel title="Filter accounts">
         <form
           onSubmit={(e) => {
@@ -334,7 +335,7 @@ export function StaffManagement() {
           );
         }}
       </Selected>
-    </div>
+    </PageGrid>
   );
 }
 const dayMs = 86400000;
@@ -541,7 +542,7 @@ export function Booking({
   };
   const specialty = doctorInfo?.specialties.map((item) => item.name).join(", ");
   return (
-    <div className="booking-composition">
+    <PageGrid preset="three" className="booking-composition">
       <section className="booking-doctor" aria-labelledby="booking-step-doctor"><fieldset disabled={locked}>
         <h3 id="booking-step-doctor"><span className="step-number">1</span>Select Doctor</h3>
         {!doctorId && <AppointmentDoctorRail selected={doctor} onSelect={(item) => { if (!locked) chooseDoctor(item.id, item.display_name, item); }} />}
@@ -634,7 +635,7 @@ export function Booking({
           </>
         )}
       </aside>
-    </div>
+    </PageGrid>
   );
 }
 export function DoctorDirectory({admin=false}:{admin?:boolean}) {
