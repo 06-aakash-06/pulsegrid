@@ -419,7 +419,6 @@ describe("patient profiles and appointment commands", () => {
     );
     fill("From (UTC)", "2027-01-01T00:00:00Z");
     fill("To (UTC)", "2027-01-02T00:00:00Z");
-    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     fireEvent.click(
       await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
@@ -455,11 +454,9 @@ describe("patient profiles and appointment commands", () => {
     await waitFor(() => expect(fetcher.mock.calls.some(([url]) => String(url).includes("/availability"))).toBe(true));
     const availabilityCalls = fetcher.mock.calls.filter(([url]) => String(url).includes("/availability")).length;
     fill("From (UTC)", "2027-01-01T00:00:00+05:30");
-    fill("To (UTC)", "2027-03-02T00:00:00Z");
-    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("UTC timestamp");
+    fill("To (UTC)", "2027-03-02T00:00:00Z");
     fill("From (UTC)", "2027-01-01T00:00:00Z");
-    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "at most 31 days",
     );
@@ -519,7 +516,6 @@ describe("patient profiles and appointment commands", () => {
     );
     fill("From (UTC)", "2027-01-01T00:00:00Z");
     fill("To (UTC)", "2027-01-02T00:00:00Z");
-    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     fireEvent.click(
       await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );

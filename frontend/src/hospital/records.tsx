@@ -1,5 +1,5 @@
 import { VisitLabel, PrescriptionDate, PrescriptionDoctor, MedicineNames } from "../components/HumanLabels";
-import { PageRefresh, ItemDetails, AdvancedLookup } from "../components/PageTools";
+import { PageRefresh, ItemDetails, AdvancedLookup, HeaderAction } from "../components/PageTools";
 import { PageGrid } from "../components/PageGrid";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { useEffect, useState, type ReactNode } from "react";
@@ -201,7 +201,7 @@ function ConsultationEditor({
             build={(values) => ({ clinical_content: content(values) })}
             onSuccess={refresh}
           />
-          <div className="consultation-finalize">
+          <div className="consultation-finalize" data-sticky-footer>
           <CommandForm<FinalizeResult>
             title="Finalize consultation"
             reviewLabel="Review finalization"
@@ -433,15 +433,16 @@ function History({
             </div>
           )}
         </article>
-        <aside className="dossier-side" aria-label="Record history and related care">
+        <aside className="dossier-side dossier-related" aria-labelledby="related-care-title">
+          <h2 id="related-care-title">Related</h2>
           <section aria-labelledby="record-versions-title">
-            <h2 id="record-versions-title">Record history</h2>
+            <h3 id="record-versions-title">Earlier versions</h3>
             {visit ? (
               <ol className="record-versions">
                 {[...visit.versions].reverse().map((version) => (
                   <li key={version.id}>
                     <button type="button" aria-pressed={version.id === selected} onClick={() => setSelected(version.id)}>
-                      <strong>{version.revision === 1 ? "Original record" : `Amendment · revision ${version.revision}`}{version.id === visit.latest.id ? " (current)" : ""}</strong>
+                      <strong>{version.revision === 1 ? "Original record" : `Amendment ${version.revision - 1}`}{version.id === visit.latest.id ? " (current)" : ""}</strong>
                       <time dateTime={version.created_at}>{shortDateTime(version.created_at)}</time>
                     </button>
                   </li>
@@ -451,7 +452,7 @@ function History({
           </section>
           {!doctor && (
             <nav aria-labelledby="linked-care-title" className="dossier-links">
-              <h2 id="linked-care-title">Linked prescriptions &amp; journey</h2>
+              <h3 id="linked-care-title">Prescriptions &amp; journey</h3>
               <Link to="/patient/prescriptions">All prescriptions →</Link>
               <Link to="/patient/pharmacy">Pharmacy reservations →</Link>
               <Link to="/patient/journey">Care journey →</Link>
@@ -597,7 +598,7 @@ export function Prescriptions({
   const [revision, setRevision] = useState(0);
   return (
     <div className="prescription-workspace">
-      {doctor && <p className="prescription-author-link"><Link className="button" to="/doctor/consultations">Author prescription in a consultation →</Link></p>}
+      {doctor && <HeaderAction><Link className="button" to="/doctor/consultations">Write a prescription</Link></HeaderAction>}
       {!pharmacist && (
         <Collection<Prescription>
           title="Prescriptions"

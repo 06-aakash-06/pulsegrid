@@ -1,0 +1,238 @@
+/* Reception */
+.workspace-content .reception-scene { grid-template-columns:minmax(0,1fr); }
+.workspace-content .reception-scene .welcome-wall { grid-column:1; grid-row:auto; display:flex; align-items:center; justify-content:space-between; gap:32px; padding:24px 32px; border:1px solid var(--line); box-shadow:var(--shadow); }
+.workspace-content .reception-scene .welcome-wall>div { min-width:0; }
+.workspace-content .reception-scene .welcome-wall h2 { margin:0; }
+.workspace-content .reception-scene .welcome-wall .reception-hospital-today { flex:0 1 560px; min-width:0; padding:0; background:transparent; border:0; box-shadow:none; border-radius:0; }
+.workspace-content .reception-hospital-today>.eyebrow { margin:0 0 12px; font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+.workspace-content .reception-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin:0; }
+.workspace-content .reception-stats>div { display:grid; grid-template-columns:24px minmax(0,1fr); grid-template-rows:auto auto; column-gap:12px; row-gap:2px; align-items:center; padding:12px 16px; margin:0; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+.workspace-content .reception-stats .department-icon { grid-row:1/3; width:24px; height:24px; }
+.workspace-content .reception-scene .reception-stats strong { font-size:20px; line-height:1.2; font-weight:700; }
+.workspace-content .reception-scene .reception-stats span { font-size:13px; line-height:1.3; }
+.workspace-content .reception-hospital-today>small { display:block; margin-top:8px; font-size:12px; color:var(--muted); }
+.workspace-content .reception-counter-label { margin:0 0 16px; font-size:16px; font-weight:600; letter-spacing:0; text-transform:none; text-align:left; }
+.workspace-content .reception-scene .appointment-slips { grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; align-items:stretch; }
+.workspace-content .reception-scene .appointment-slip { display:flex !important; flex-direction:column; gap:8px; min-height:136px; padding:20px 24px 48px !important; margin:0 !important; border-radius:12px; text-align:left; overflow:hidden; }
+.workspace-content .reception-scene .appointment-slip::before,.workspace-content .reception-scene .appointment-slip::after { display:none !important; }
+.workspace-content .reception-scene .appointment-slip :is(strong,p) { position:static; width:auto; max-width:none; margin:0; padding:0; transform:none; text-align:left; }
+.workspace-content .reception-scene .appointment-slip strong { font-size:17px; line-height:1.25; }
+.workspace-content .reception-scene .appointment-slip p { font-size:13px; line-height:1.4; }
+.workspace-content .reception-scene .appointment-slip .slip-arrow { position:absolute; right:20px; bottom:16px; left:auto; top:auto; margin:0; transform:none; }
+.workspace-content .reception-scene .appointment-slip .department-icon { display:none; }
+.workspace-content .reception-scene .reception-information-rail { margin-top:0; padding:0; align-items:stretch; }
+.workspace-content .reception-scene .reception-information-rail>* { display:flex; flex-direction:column; gap:12px; box-shadow:var(--shadow); }
+.workspace-content .reception-queue-display>span:first-child { font-size:12px; letter-spacing:.08em; text-transform:uppercase; }
+.workspace-content .reception-queue-display--empty>strong,.workspace-content .reception-queue-display--done>strong { font-size:20px; }
+.workspace-content .reception-queue-display :is(.button) { align-self:flex-start; margin-top:auto; }
+.workspace-content .reception-queue-display .queue-flaps { display:flex; gap:6px; }
+.workspace-content .reception-queue-display .queue-flaps strong { display:grid; place-items:center; width:40px; height:48px; border-radius:6px; background:#17324a; color:#fff !important; font-size:24px; font-weight:700; }
+.workspace-content .reception-queue-display>b { align-self:flex-end; }
+.workspace-content .reception-announcements h3 { margin:0; }
+.workspace-content .reception-announcements ul { display:grid; gap:8px; margin:0; padding-left:20px; font-size:14px; }
+.workspace-content .reception-announcements li { display:list-item; }
+.workspace-content .reception-announcements>small { font-size:12px; color:var(--muted); }
+.workspace-content .wayfinding-sign small { white-space:nowrap; }
+@media(max-width:1199px) {
+ .workspace-content .reception-scene .welcome-wall { flex-direction:column; align-items:stretch; gap:16px; }
+ .workspace-content .reception-scene .welcome-wall .reception-hospital-today { flex:none; }
+ .workspace-content .reception-scene .appointment-slips { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:899px) {
+ .workspace-content .reception-scene .reception-counter { order:0; }
+ .workspace-content .reception-scene .welcome-wall { order:-1; padding:20px; }
+ .workspace-content .reception-scene .reception-information-rail { order:1; grid-template-columns:minmax(0,1fr); }
+ .workspace-content .reception-scene .appointment-slips { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ .workspace-content .reception-scene .appointment-slip { min-height:120px; padding:16px 16px 40px !important; }
+ .workspace-content .reception-scene .appointment-slip strong { font-size:15px; }
+ .workspace-content .reception-stats { grid-template-columns:minmax(0,1fr); gap:8px; }
+ .workspace-content .reception-stats>div { grid-template-columns:24px 40px minmax(0,1fr); grid-template-rows:auto; padding:8px 12px; }
+ .workspace-content .reception-stats .department-icon { grid-row:auto; }
+}
+.workspace-content .reception-scene .reception-stats { padding:0; border:0; }
+.workspace-content .reception-scene .appointment-slips { padding:0; }
+.workspace-content .reception-scene .appointment-slip { box-shadow:0 1px 2px #1026381a,0 4px 12px #10263812 !important; }
+.workspace-content .reception-scene .reception-queue-display { align-items:flex-start; text-align:left; }
+.workspace-content .reception-scene .reception-queue-display>div:not(.queue-flaps) { display:grid; gap:2px; text-align:left; }
+
+/* Consultation directory */
+.workspace-content .consultation-board { grid-template-rows:auto; align-items:start; }
+.workspace-content .consultation-board>* { grid-row:1; align-self:start; }
+.workspace-content .reference-portrait--large { width:64px !important; height:64px !important; min-width:64px; flex:none; border-radius:50% !important; font-size:20px !important; }
+.workspace-content .reference-profile-top { align-items:center; gap:16px; height:auto; }
+.workspace-content .reference-profile-top h2 { font-size:20px; line-height:1.25; margin:4px 0 2px; }
+.workspace-content .doctor-availability small { white-space:nowrap; }
+.workspace-content .profile-schedule-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-items:stretch; }
+.workspace-content .profile-schedule-metrics>span { display:grid; align-content:start; gap:4px; padding:12px; text-align:left; border:1px solid var(--line); border-radius:8px; }
+.workspace-content .profile-schedule-metrics>span strong { font-size:16px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.workspace-content .profile-schedule-metrics>span small { font-size:12px; }
+.workspace-content .reference-doctor-list { --row:84px; height:auto; max-height:calc(var(--row) * 5 + 8px * 4 + 2px); }
+.workspace-content .reference-doctor-list:has(>:nth-child(6)) { -webkit-mask-image:linear-gradient(#000 85%,#0000); mask-image:linear-gradient(#000 85%,#0000); }
+.workspace-content .roster-more { margin:4px 0 0; font-size:12px; color:var(--muted); text-align:center; }
+.workspace-content .reference-book-button { margin-top:24px !important; }
+.workspace-content .profile-schedule-metrics { grid-template-columns:minmax(0,1fr); gap:0; border:1px solid var(--line); border-radius:8px; }
+.workspace-content .profile-schedule-metrics>span { display:flex; flex-direction:row-reverse; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 12px; border:0; border-radius:0; }
+.workspace-content .profile-schedule-metrics>span+span { border-top:1px solid var(--line); }
+.workspace-content .profile-schedule-metrics>span small { font-size:13px; white-space:nowrap; }
+.workspace-content .profile-schedule-metrics>span strong { font-size:14px; }
+
+/* Appointments */
+.workspace-content .appointment-doctor-rows { max-height:calc(62px * 6 + 4px * 5 + 2px); }
+.workspace-content .appointment-doctor-rows:has(>:nth-child(7)) { -webkit-mask-image:linear-gradient(#000 88%,#0000); mask-image:linear-gradient(#000 88%,#0000); }
+.workspace-content .booking-patient-facts { display:grid; gap:0; margin:0 0 8px; border:1px solid var(--line); border-radius:8px; }
+.workspace-content .booking-patient-facts>div { display:grid; grid-template-columns:140px minmax(0,1fr); gap:12px; padding:8px 12px; }
+.workspace-content .booking-patient-facts>div+div { border-top:1px solid var(--line); }
+.workspace-content .booking-patient-facts :is(dt,dd) { margin:0; font-size:14px; }
+.workspace-content .booking-patient-facts dt { color:var(--muted); }
+.workspace-content .booking-patient-facts dd { font-weight:600; overflow-wrap:anywhere; }
+.workspace-content .booking-receipt { display:flex; flex-direction:column; }
+.workspace-content .printed-receipt--pending { flex:1 1 auto; display:grid; align-content:center; justify-items:center; gap:8px; min-height:160px; margin-top:16px; padding:24px; text-align:center; border:2px dashed var(--line); border-radius:8px; background:transparent; box-shadow:none; color:var(--muted); font-size:14px; }
+.workspace-content .printed-receipt--pending p { margin:0; }
+.workspace-content .appointment-row__when :is(strong,span) { white-space:nowrap; }
+.workspace-content .printed-receipt--pending { flex:0 0 auto; transform:none !important; rotate:none; clip-path:none; -webkit-mask:none; mask:none; }
+.workspace-content .printed-receipt--pending::before,.workspace-content .printed-receipt--pending::after { display:none !important; }
+
+/* Waiting room */
+@media(min-width:1200px) {
+ .workspace-content .queue-station { grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,3fr) !important; grid-template-rows:auto !important; align-items:stretch; }
+ .workspace-content .queue-station>* { grid-column:auto !important; grid-row:1 !important; min-height:0; height:auto; }
+ .workspace-content .queue-station .checkin-kiosk .scanner-frame { height:auto; }
+ .workspace-content .queue-station .checkin-kiosk :is(video,.scanner-viewport,.scanner-placeholder) { max-height:200px; }
+}
+.workspace-content .queue-station .checkin-kiosk { max-height:none; overflow:visible; }
+.workspace-content .queue-station .checkin-kiosk .scanner-frame>* { min-height:0; }
+@media(min-width:1200px) {
+ .workspace-content .queue-station .checkin-kiosk .kiosk-brand { display:none; }
+ .workspace-content .queue-station .checkin-kiosk { padding:20px 24px; gap:8px; }
+ .workspace-content .queue-station .checkin-kiosk>h2 { margin:0; }
+ .workspace-content .queue-station .checkin-kiosk .scanner-viewport { max-height:170px; margin-inline:auto; }
+ .workspace-content .queue-station .checkin-kiosk .staff-advanced-scanner { gap:8px; }
+ .workspace-content .queue-station .checkin-kiosk .staff-advanced-scanner p { margin:4px 0; }
+ .workspace-content .queue-station .queue-monitor-footer { margin-top:auto; }
+}
+@media(min-width:900px) {
+ .workspace-content .waiting-station:not(.queue-station) { align-items:start; }
+ .workspace-content .waiting-station:not(.queue-station) .checkin-kiosk { padding:20px 24px; gap:8px; }
+ .workspace-content .waiting-station:not(.queue-station) .checkin-kiosk .scanner-viewport { max-height:220px; margin-inline:auto; }
+}
+
+/* Pharmacy shelf */
+.workspace-content .pharmacy-room .shelf-grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)) !important; grid-template-rows:none !important; grid-auto-rows:auto !important; gap:16px 12px; padding:16px; }
+.workspace-content .pharmacy-room .shelf-slot { display:flex !important; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:8px; padding:8px 0 !important; grid-column:auto !important; grid-row:auto !important; }
+.workspace-content .pharmacy-room .carton { align-self:center; width:72px; height:40px; padding:0; }
+.workspace-content .pharmacy-room .shelf-label { min-height:72px; padding:8px 10px; align-content:start; }
+.workspace-content .pharmacy-room .shelf-label strong { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; font-size:13px !important; line-height:1.3; overflow-wrap:normal; }
+.workspace-content .pharmacy-room .shelf-label>span { font-size:12px; }
+.workspace-content .pharmacy-room .shelf-bays { display:none; }
+.workspace-content .cabinet-rail__row { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.workspace-content .cabinet-rail__search { flex:1 1 260px; min-width:0; }
+.workspace-content .cabinet-rail__pages { display:inline-flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--surface-solid); }
+.workspace-content .cabinet-rail__pages>* { display:flex; align-items:center; margin:0; padding:6px 12px; border:0; border-radius:0; background:transparent; font-size:13px; }
+.workspace-content .cabinet-rail__pages>span { border-inline:1px solid var(--line); font-weight:600; }
+.workspace-content .cabinet-rail__filters { display:flex; flex-wrap:wrap; gap:8px; flex:1 1 auto; }
+.workspace-content .cabinet-rail__filters button { min-height:32px; padding:4px 12px; border-radius:999px; font-size:13px; }
+.workspace-content .cabinet-rail__options { position:relative; margin-left:auto; }
+.workspace-content .cabinet-rail__options>summary { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid var(--line); border-radius:8px; list-style:none; font-size:18px; line-height:1; background:var(--surface-solid); }
+.workspace-content .cabinet-rail__options>summary::-webkit-details-marker { display:none; }
+.workspace-content .cabinet-rail__options[open] { flex-basis:100%; }
+.workspace-content .cabinet-rail__options[open]>summary { margin-left:auto; }
+
+/* Disclosures keep a visible open/closed cue where summaries are flex rows. */
+.workspace-content :is(.pharmacy-room,.er-desk,.cashier-desk,.dossier-room,.appointment-workspace,.reference-booking-desk,.receptionist-care) details:not(.cabinet-rail__options)>summary::before,
+.workspace-content .receptionist-care>summary::before { content:"▸"; display:inline-block; width:12px; flex:none; transition:transform .15s; }
+.workspace-content :is(.pharmacy-room,.er-desk,.cashier-desk,.dossier-room,.appointment-workspace,.reference-booking-desk,.receptionist-care) details[open]:not(.cabinet-rail__options)>summary::before,
+.workspace-content .receptionist-care[open]>summary::before { transform:rotate(90deg); }
+.workspace-content .prescription-source-line { margin-top:8px; }
+.workspace-content .pharmacy-room__cabinet>.more-actions { margin:0; padding:16px 24px; border:1px solid var(--line); border-radius:12px; background:var(--surface-solid); box-shadow:var(--shadow); }
+.workspace-content .pharmacy-room__cabinet>.more-actions>summary { font-size:14px; }
+
+/* Medical records */
+.workspace-content .dossier-room--records { grid-template-columns:minmax(0,1fr) !important; grid-template-rows:none !important; grid-template-areas:none !important; align-items:start; }
+.workspace-content .dossier-room--records>* { grid-column:1 !important; grid-row:auto !important; height:auto !important; min-height:0 !important; }
+.workspace-content .dossier-room--records .dossier-band { display:flex; flex-wrap:wrap; align-items:center; gap:16px 32px; width:fit-content; max-width:100%; padding:16px 24px; }
+.workspace-content .dossier-room--records .dossier-band dl { display:flex; gap:32px; margin:0; }
+.workspace-content .dossier-room--records .dossier-room__body { display:grid; grid-template-columns:minmax(0,3fr) minmax(0,6fr) minmax(0,3fr) !important; grid-template-areas:none !important; gap:24px; align-items:start; }
+.workspace-content .dossier-room--records .dossier-room__body>* { grid-column:auto !important; grid-row:auto !important; max-height:none; }
+.workspace-content .dossier-related { display:grid; gap:16px; padding:24px; background:var(--surface-solid); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); }
+.workspace-content .dossier-related>h2 { margin:0; font-size:18px; }
+.workspace-content .dossier-related>:is(section,nav,details) { margin:0; padding:16px 0 0 !important; border:0 !important; border-top:1px solid var(--line) !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; }
+.workspace-content .dossier-related :is(h3) { margin:0 0 8px; font-size:14px; font-weight:600; }
+.workspace-content .dossier-related .dossier-links { display:grid; gap:8px; }
+.workspace-content .dossier-prescriptions table { table-layout:auto; width:100%; }
+.workspace-content .dossier-prescriptions :is(.task-table-wrap,.dossier-rx) { overflow-x:auto; }
+@media(max-width:1199px) {
+ .workspace-content .dossier-room--records .dossier-room__body { grid-template-columns:minmax(0,4fr) minmax(0,8fr) !important; }
+ .workspace-content .dossier-room--records .dossier-room__body>.dossier-related { grid-column:1/-1 !important; }
+}
+@media(max-width:899px) {
+ .workspace-content .dossier-room--records .dossier-room__body { grid-template-columns:minmax(0,1fr) !important; }
+ .workspace-content .dossier-room--records .dossier-band { width:auto; }
+}
+.workspace-content :is(.pharmacy-room,.er-desk,.cashier-desk,.dossier-room,.appointment-workspace,.reference-booking-desk,.receptionist-care) details:not(.cabinet-rail__options)>summary,
+.workspace-content .receptionist-care>summary { list-style:none; }
+.workspace-content :is(.pharmacy-room,.er-desk,.cashier-desk,.dossier-room,.appointment-workspace,.reference-booking-desk,.receptionist-care) details>summary::-webkit-details-marker { display:none; }
+.workspace-content .dossier-related>h2 { padding:0 !important; background:transparent !important; box-shadow:none !important; border:0 !important; }
+
+/* Billing */
+.workspace-content .cashier-tabs { display:flex !important; flex-wrap:wrap; gap:4px; margin:0 0 16px; padding:0; border:0; border-bottom:1px solid var(--line) !important; }
+.workspace-content .cashier-tabs [role="tab"] { display:inline-flex !important; align-items:center; min-height:40px; margin:0 0 -1px; padding:8px 16px !important; background:transparent !important; border:0 !important; border-bottom:2px solid transparent !important; border-radius:0 !important; color:var(--ink) !important; font-size:14px; font-weight:500; box-shadow:none !important; }
+.workspace-content .cashier-tabs [role="tab"]::before { content:none !important; display:none !important; }
+.workspace-content .cashier-tabs [role="tab"][aria-selected="true"] { border-bottom-color:var(--accent) !important; color:var(--accent) !important; font-weight:600; }
+.workspace-content .cashier-import__hint { margin:8px 0 0; font-size:13px; color:var(--muted); }
+.workspace-content .cashier-left { align-content:start; align-self:start; }
+.workspace-content .cashier-workbench { height:auto !important; min-height:0 !important; flex:none !important; }
+
+/* Emergency */
+.workspace-content .er-row__main strong { display:-webkit-box !important; white-space:normal !important; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:clip; }
+.workspace-content .er-counts { flex-wrap:wrap; }
+.workspace-content .er-counts .er-counts__scope { flex-basis:100%; order:99; margin:0; padding:0; border:0; background:transparent; font-size:12px; color:var(--muted); }
+
+/* Doctor consultation */
+@media(min-width:900px) {
+ .workspace-content .dossier-room--doctor .consultation-finalize { position:sticky; bottom:0; z-index:2; margin:24px -24px -24px !important; padding:16px 24px !important; background:var(--surface-solid) !important; border-top:1px solid var(--line); border-radius:0 0 12px 12px; box-shadow:0 -6px 16px #1026380f !important; }
+ .workspace-content .dossier-room--doctor .consultation-finalize :is(h3,h4) { margin:0 0 4px; }
+ .workspace-content .dossier-room--doctor .consultation-finalize p { margin:0 0 8px; }
+}
+@media(min-width:900px) {
+ .workspace-content .dossier-room--doctor .consultation-finalize>form { display:flex; flex-wrap:wrap; align-items:center; gap:4px 16px; padding:0; }
+ .workspace-content .dossier-room--doctor .consultation-finalize>form>:is(h3,p,[role],.command-receipt) { flex:1 0 100%; }
+ .workspace-content .dossier-room--doctor .consultation-finalize>form>.hospital-fields:empty { display:none; }
+ .workspace-content .dossier-room--doctor .consultation-finalize>form>fieldset { flex:1 1 auto; margin:0; }
+ .workspace-content .dossier-room--doctor .consultation-finalize>form>button { flex:none; margin:0 0 0 auto; }
+ .workspace-content .dossier-room--doctor .consultation-finalize .finalize-prescription[open] { max-height:40vh; overflow:auto; }
+}
+.page-header__slot { display:contents; }
+.workspace-content .prescription-workspace>.dossier-room:empty { display:none; }
+.workspace-content .prescription-workspace:has(>.dossier-room:empty) { grid-template-columns:minmax(0,1fr) !important; }
+.workspace-content .prescription-workspace>.dossier-room--records { display:block; padding:24px; background:var(--surface-solid); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); }
+
+/* Control room */
+.workspace-content .ops-queue-table { table-layout:auto; width:100%; }
+.workspace-content .ops-queue-table thead th { text-transform:none; letter-spacing:0; font-size:12px; white-space:nowrap; word-break:normal; overflow-wrap:normal; }
+.workspace-content .ops-queue-table :is(th,td) { word-break:normal; overflow-wrap:normal; vertical-align:top; }
+.workspace-content .ops-queue-table td { white-space:nowrap; text-align:right; font-variant-numeric:tabular-nums; }
+.workspace-content .ops-queue-table thead th:not(:first-child) { text-align:right; }
+.workspace-content .ops-queue-table tbody th .item-details { margin-top:4px; padding-top:4px; border-top:0; }
+.workspace-content .ops-queue-name { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; overflow-wrap:normal; word-break:normal; }
+.workspace-content .ops-queue-table .item-details__body { overflow-wrap:normal; }
+.workspace-content .ops-console .ops-kpi-row { align-items:stretch; }
+.workspace-content .ops-console .ops-kpi { display:grid; grid-template-rows:40px auto 1fr; align-content:start; height:100%; }
+.workspace-content .ops-console .ops-kpi__label { display:flex; align-items:center; gap:8px; margin:0; min-height:40px; }
+.workspace-content .ops-console .ops-kpi__value { align-self:end; margin:4px 0; }
+.workspace-content .ops-console .ops-kpi__value strong { line-height:1.1; }
+.workspace-content .ops-wall-monitor { grid-template-columns:repeat(auto-fit,minmax(200px,1fr)) !important; }
+
+/* Filter rows above full-width tables */
+.workspace-content .filter-row { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px 16px; }
+.workspace-content .filter-row>.hospital-fields { display:grid; grid-template-columns:minmax(200px,2fr) minmax(160px,1fr) minmax(160px,1fr); gap:16px; flex:1 1 560px; margin:0; }
+.workspace-content .filter-row>.hospital-fields>* { margin:0; }
+.workspace-content .filter-row>button { flex:none; min-height:40px; }
+.workspace-content .filter-row>[role="alert"] { flex-basis:100%; margin:0; }
+.workspace-content .account-register>.hospital-panel:first-child { padding-block:16px; }
+.workspace-content .account-register>.hospital-panel:first-child>h2 { margin-bottom:12px; }
+.workspace-content .task-table td:last-child>.item-details:not([open]) { display:inline-block; vertical-align:middle; margin:0 0 0 16px; padding:0; border:0; }
+.workspace-content .task-table td:last-child>.item-details[open] { margin-top:8px; padding-top:0; border:0; }
+@media(max-width:899px) {
+ .workspace-content .filter-row>.hospital-fields { grid-template-columns:minmax(0,1fr); flex-basis:100%; }
+}
+.workspace-content .receptionist-care:not(:has(>:not(h2))) { display:none; }

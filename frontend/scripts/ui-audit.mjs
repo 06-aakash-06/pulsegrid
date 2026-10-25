@@ -72,6 +72,8 @@ const inspectLayout = () => {
      const elements=[...document.querySelectorAll('button,a,input,select,textarea,.hospital-panel,.patient-workflow__panel,.ops-panel,.dossier-sheet,.dossier-timeline,.dossier-side,.page-header')].filter(e=>visible(e) && !e.matches('.sidebar-scrim'));
      for(let i=0;i<elements.length;i++)for(let j=i+1;j<elements.length;j++) {
       const a=elements[i],b=elements[j];if(a.contains(b)||b.contains(a))continue;
+      // Sticky footers float over the content they summarise; covered-control checks still apply.
+      if(a.closest('[data-sticky-footer]')||b.closest('[data-sticky-footer]'))continue;
       const ar=paintedRect(a),br=paintedRect(b);
       if(clipped(ar,a)||clipped(br,b))continue;
       if(Math.min(ar.right,br.right)-Math.max(ar.left,br.left)>4 && Math.min(ar.bottom,br.bottom)-Math.max(ar.top,br.top)>4)errors.push(`overlap: ${describe(a)} / ${describe(b)}`);

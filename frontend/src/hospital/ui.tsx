@@ -51,6 +51,13 @@ export function formatDateTime(
   const minutes = String(utc ? date.getUTCMinutes() : date.getMinutes()).padStart(2, "0");
   return `${dateText}, ${hours}:${minutes}${utc ? " UTC" : ""}`;
 }
+export function formatSlot(value: string | number | Date | null | undefined): string {
+  if (value === null || value === undefined || value === "") return "—";
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return "—";
+  const time = `${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")}`;
+  return `${date.getUTCDate()} ${monthNames[date.getUTCMonth()]} · ${time}`;
+}
 const ReloadContext = createContext<(() => void) | null>(null);
 const FlashContext = createContext<((message: string) => void) | null>(null);
 export function FlashArea({ resetKey, children }: { resetKey?: string | null; children: ReactNode }) {
