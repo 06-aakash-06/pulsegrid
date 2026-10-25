@@ -1,0 +1,2 @@
+PASS dev:mock: all eight demo buttons fill both fields; sign out survives immediate reload
+PASS VITE_DEMO_MOCK: all eight demo buttons fill both fields; sign out survives immediate reload

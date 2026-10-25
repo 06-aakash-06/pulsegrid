@@ -1,0 +1,182 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "pages": [
+    {
+      "role": "admin",
+      "route": "/admin/dashboard",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/staff",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/doctors",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/control-room",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/traces",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/settings",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/dashboard",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/staff",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/doctors",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/control-room",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/traces",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/settings",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/dashboard",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/staff",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/doctors",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/control-room",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/traces",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/settings",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/dashboard",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/traces",
+      "width": 1536,
+      "height": 864,
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/dashboard",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/traces",
+      "width": 1280,
+      "height": 800,
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/dashboard",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/traces",
+      "width": 390,
+      "height": 844,
+      "failures": []
+    }
+  ],
+  "regressions": [
+    "admin/1536: demo autofill and sign out survive reload",
+    "admin/1280: demo autofill and sign out survive reload",
+    "admin/390: demo autofill and sign out survive reload",
+    "ops/1536: demo autofill and sign out survive reload",
+    "ops/1280: demo autofill and sign out survive reload",
+    "ops/390: demo autofill and sign out survive reload"
+  ],
+  "failures": []
+}
