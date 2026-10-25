@@ -22,7 +22,7 @@ try {
   await page.goto(`${base}/login`);await page.locator('#login-email').waitFor();
   for(const role of ['Patient','Receptionist','Doctor','Pharmacist','Billing','Emergency','Admin','Ops']) {
    await page.getByRole('button',{name:role,exact:true}).click();
-   if(await page.locator('#login-email').inputValue()!==`${role.toLowerCase()}@mock.test` || await page.locator('#login-password').inputValue()!=='demo')throw Error(`${build}: ${role} autofill`);
+   if(await page.locator('#login-email').inputValue()!==`${role.toLowerCase()}@pulsegrid.test` || await page.locator('#login-password').inputValue()!=='demo')throw Error(`${build}: ${role} autofill`);
   }
   await page.getByRole('button',{name:'Patient',exact:true}).click();await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL('**/patient/dashboard');await page.locator('.sign-out-button').waitFor();
   await page.locator('.sign-out-button').click();await page.waitForURL('**/login');await page.reload();await page.locator('#login-email').waitFor();

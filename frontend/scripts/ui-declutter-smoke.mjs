@@ -5,7 +5,7 @@ const browser=await chromium.launch();
 const results=[];
 async function session(role,route){
  const context=await browser.newContext({viewport:{width:1536,height:864},reducedMotion:'reduce'});
- const page=await context.newPage();await page.goto('http://127.0.0.1:5173/login');await page.locator('#login-email').fill(`${role}@mock.test`);await page.locator('#login-password').fill('demo');await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(`**/${role}/dashboard`);
+ const page=await context.newPage();await page.goto('http://127.0.0.1:5173/login');await page.locator('#login-email').fill(`${role}@pulsegrid.test`);await page.locator('#login-password').fill('demo');await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(`**/${role}/dashboard`);
  await page.goto(`http://127.0.0.1:5173/${role}/${route}`);await page.locator('.workspace-content').waitFor();await page.waitForTimeout(700);
  return{page,context};
 }

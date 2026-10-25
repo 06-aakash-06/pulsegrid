@@ -16,7 +16,7 @@ it.each(["VITE_MOCK_API", "VITE_DEMO_MOCK"])("demo buttons fill both fields unde
   await screen.findByLabelText("Email address");
   for (const role of ["Patient","Receptionist","Doctor","Pharmacist","Billing","Emergency","Admin","Ops"]) {
     fireEvent.click(screen.getByRole("button", { name: role }));
-    expect(screen.getByLabelText("Email address")).toHaveValue(`${role.toLowerCase()}@mock.test`);
+    expect(screen.getByLabelText("Email address")).toHaveValue(`${role.toLowerCase()}@pulsegrid.test`);
     expect(screen.getByLabelText("Password")).toHaveValue("demo");
   }
 });

@@ -27,7 +27,7 @@ function requestErrorMessage(error: unknown, action: "login" | "register"): stri
       return "This registration conflicted with an earlier attempt. Submit again to start a fresh request.";
     }
     if (action === "register" && error.code === "identity_service_unavailable") {
-      return "New accounts are unavailable on this deployment because the Patient service is not connected. Use a demo account or a service-backed PulseGrid installation.";
+      return "New accounts are unavailable on this deployment because the Patient service is not connected. Try again later or ask the hospital to create your account.";
     }
     if (action === "register" && error.status === 409 && ["conflict", "email_unavailable", "email_exists", "duplicate_email"].includes(error.code)) {
       return "An account with this email address may already exist. Try signing in or use a different email address.";
@@ -242,7 +242,6 @@ export function RegistrationPage() {
 
   return (
     <AuthFrame title="Create a patient account" description="Registration is for patient accounts. Staff roles are assigned by hospital administrators.">
-      {(import.meta.env.VITE_DEMO_MOCK === "true" || import.meta.env.VITE_MOCK_API === "true") && <p className="form-message">{import.meta.env.VITE_DEMO_MOCK === "true" ? "Demo accounts and activity are saved in this browser only." : "Demo accounts and activity reset when this development server restarts."} Use fictional details and a password you do not use elsewhere.</p>}
       {submitted ? (
         <div className="form-message form-message--success" role="status">
           Your registration was accepted by the identity service. <Link to="/login">Sign in to continue.</Link>
@@ -304,7 +303,7 @@ export function RegistrationPage() {
             value={dateOfBirth}
           />
 
-          <label className="field-label" htmlFor="register-contact">Synthetic contact <span className="field-optional">Optional</span></label>
+          <label className="field-label" htmlFor="register-contact">Contact number or email <span className="field-optional">Optional</span></label>
           <input
             autoComplete="off"
             id="register-contact"
@@ -363,10 +362,7 @@ export function RegistrationPage() {
           </button>
         </form>
       )}
-      <p className="form-footnote">Use synthetic information only. Registration does not sign you in automatically.</p>
-      {(import.meta.env.VITE_DEMO_MOCK === "true" || import.meta.env.VITE_MOCK_API === "true") && (
-        <p className="auth-demo-note">This demo runs on synthetic mock data, so new accounts are not created. <Link to="/login">Use a demo account to sign in.</Link></p>
-      )}
+      <p className="form-footnote">Registration does not sign you in automatically.</p>
       <p className="auth-switch">Already registered? <Link to="/login">Sign in</Link></p>
     </AuthFrame>
   );
@@ -387,19 +383,19 @@ const authFeatures: { department: Department; title: string; detail: string }[] 
 
 function DemoAccounts({ onPick }: { onPick: (email: string) => void }) {
   const accounts = [
-    ["Patient", "patient@mock.test"],
-    ["Receptionist", "receptionist@mock.test"],
-    ["Doctor", "doctor@mock.test"],
-    ["Pharmacist", "pharmacist@mock.test"],
-    ["Billing", "billing@mock.test"],
-    ["Emergency", "emergency@mock.test"],
-    ["Admin", "admin@mock.test"],
-    ["Ops", "ops@mock.test"],
+    ["Patient", "patient@pulsegrid.test"],
+    ["Receptionist", "receptionist@pulsegrid.test"],
+    ["Doctor", "doctor@pulsegrid.test"],
+    ["Pharmacist", "pharmacist@pulsegrid.test"],
+    ["Billing", "billing@pulsegrid.test"],
+    ["Emergency", "emergency@pulsegrid.test"],
+    ["Admin", "admin@pulsegrid.test"],
+    ["Ops", "ops@pulsegrid.test"],
   ];
   return (
     <section className="auth-demo" aria-labelledby="auth-demo-title">
-      <h2 id="auth-demo-title">Demo accounts</h2>
-      <p>This demo runs on synthetic mock data. Choose a role to fill the form; any password works.</p>
+      <h2 id="auth-demo-title">Quick sign-in</h2>
+      <p>Choose a role to fill in its sign-in details.</p>
       <div className="auth-demo__roles">
         {accounts.map(([role, email]) => <button key={email} type="button" onClick={() => onPick(email)}>{role}</button>)}
       </div>

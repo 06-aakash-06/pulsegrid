@@ -31,7 +31,7 @@ const labels: Record<string, { review: string; confirm: string; success: string 
   "Book appointment": { review: "Review booking", confirm: "Confirm booking", success: "Appointment booked." },
   "Cancel appointment": { review: "Review cancellation", confirm: "Cancel appointment", success: "Appointment cancelled." },
   "Reschedule appointment": { review: "Review new time", confirm: "Confirm new time", success: "" },
-  "Submit simulated payment": { review: "Review payment", confirm: "Pay (simulated)", success: "Simulated payment submitted." },
+  "Submit payment": { review: "Review payment", confirm: "Pay", success: "Payment submitted." },
   "Import charges manually": { review: "Review import", confirm: "Import charges", success: "Charges imported. The receipt shows the new lines." },
   "Create invoice": { review: "Review invoice", confirm: "Create invoice", success: "Invoice created." },
   "Create tariff revision": { review: "Review tariff", confirm: "Create tariff revision", success: "Tariff revision created." },

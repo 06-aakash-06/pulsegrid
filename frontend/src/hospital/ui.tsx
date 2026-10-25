@@ -423,7 +423,7 @@ export function Inputs({
       {primary.map((field) => field.choiceButtons ? <fieldset key={field.name}><legend>{field.label}</legend><div className="priority-choices" role="group" aria-label={field.label}>{field.options?.map(option=><button type="button" key={option} aria-label={`Priority ${option}`} disabled={disabled} aria-pressed={values[field.name]===option} onClick={()=>change(field.name,option)}>{option}</button>)}</div></fieldset> : (
         <label key={field.name}>
           {field.name !== "simulated_outcome" && field.label}
-          {field.name === "simulated_outcome" ? <details><summary>Demo options</summary><select aria-label="Demo payment result" value={values[field.name]??""} onChange={e=>change(field.name,e.target.value)} disabled={disabled}>{field.options?.map(option=><option key={option} value={option}>{option}</option>)}</select></details> : field.kind === "select" ? (
+          {field.name === "simulated_outcome" ? <details><summary>Outcome options</summary><select aria-label="Payment result" value={values[field.name]??""} onChange={e=>change(field.name,e.target.value)} disabled={disabled}>{field.options?.map(option=><option key={option} value={option}>{option}</option>)}</select></details> : field.kind === "select" ? (
             <select
               title={values[field.name] || field.label}
               value={values[field.name] ?? ""}

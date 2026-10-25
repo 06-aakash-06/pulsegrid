@@ -141,7 +141,6 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         >
           Sign out
         </button>
-        {(import.meta.env.VITE_MOCK_API === "true" || import.meta.env.VITE_DEMO_MOCK === "true") && <span className="mock-data-pill" role="note">Mock data</span>}
         </footer>
       </aside>
       <div className="workspace-main" inert={menuOpen} aria-hidden={menuOpen || undefined}>

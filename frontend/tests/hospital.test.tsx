@@ -926,13 +926,13 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "View invoice 111" }),
     );
-    fireEvent.click(await screen.findByText("Demo options", {selector:"summary"}));
-    await screen.findByLabelText("Demo payment result");
-    fill("Demo payment result", "decline");
-    await command("Submit simulated payment");
+    fireEvent.click(await screen.findByText("Outcome options", {selector:"summary"}));
+    await screen.findByLabelText("Payment result");
+    fill("Payment result", "decline");
+    await command("Submit payment");
     expect(
       await screen.findByText(
-        /simulated decline recorded; balance was not paid/,
+        /decline recorded; balance was not paid/,
       ),
     ).toBeInTheDocument();
     expectConditional(

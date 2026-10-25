@@ -114,13 +114,13 @@ function InvoiceReceipt({
         <div><dt>Paid</dt><dd>{money(invoice.paid_minor)}</dd></div>
         <div className="cashier-balance__due"><dt>Balance due</dt><dd>{money(invoice.balance_minor)}</dd></div>
       </dl>
-      <p className="cashier-simulated">Payments are simulated. Do not enter card, bank or real payment credentials.</p>
+      <p className="cashier-simulated">No card is charged here. Never enter card or bank details.</p>
       {invoice.balance_minor > 0 && (
         <CommandForm<Payment>
-          title="Submit simulated payment"
+          title="Submit payment"
           reviewLabel="Review payment"
-          confirmLabel="Pay (simulated)"
-          successMessage="Simulated payment submitted."
+          confirmLabel="Pay"
+          successMessage="Payment submitted."
           onReload={onRefresh}
           reloadLabel="Reload invoice"
           path={`/api/v1/billing/invoices/${invoice.id}/payments`}
@@ -128,7 +128,7 @@ function InvoiceReceipt({
           etag={etag}
           fields={[
             { name: "amount_rupees", label: "Payment amount (₹)", required: true, max: 20, initial: rupees(invoice.balance_minor) },
-            { name: "simulated_outcome", label: "Demo payment result", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
+            { name: "simulated_outcome", label: "Payment result", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
           ]}
           preview={(values) => {
             try {
@@ -152,7 +152,7 @@ function InvoiceReceipt({
       {payment && payment.invoice_id === invoice.id && (
         <m.p key={payment.id} initial={{ backgroundColor: "#f3dd9a" }} animate={{ backgroundColor: "#f1ebe1" }} transition={{ duration: 1.2 }} role="status" className="cashier-payment-result">
           Payment result:{" "}
-          {payment.status === "declined" ? "simulated decline recorded; balance was not paid" : "simulated success recorded"}. Amount {money(payment.amount_minor)}.
+          {payment.status === "declined" ? "decline recorded; balance was not paid" : "payment recorded"}. Amount {money(payment.amount_minor)}.
         </m.p>
       )}
       <MoreActions>
@@ -282,7 +282,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
     <div className={`cashier-desk cashier-desk--${staff ? "staff" : "patient"}`}>
       {title && (
         <DepartmentSign department="billing" title={title} subtitle={subtitle ?? ""}>
-          <p className="department-sign__note"><strong>Simulated payments</strong><span>Balances include only charges imported by Billing staff.</span></p>
+          <p className="department-sign__note"><strong>Balances</strong><span>Balances include only charges imported by Billing staff.</span></p>
         </DepartmentSign>
       )}
       {context}
@@ -679,7 +679,7 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
           )}
         </DepartmentSign>
       )}
-      <p className="er-notice" role="note">Demo only, not real emergency dispatch.</p>
+      <p className="er-notice" role="note">This desk does not dispatch ambulances. In a life-threatening emergency, call your local emergency number.</p>
       {!staff && (
         <section className="er-intake" aria-labelledby="er-intake-title">
           <h2 id="er-intake-title">New request</h2>

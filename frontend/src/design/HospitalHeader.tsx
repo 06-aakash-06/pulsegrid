@@ -89,7 +89,7 @@ export function HospitalHeader({
   }, [state.status]);
   const identity =
     state.status === "authenticated"
-      ? (displayName?.startsWith("Synthetic") ? `${roleLabel ?? "Demo"} account` : displayName ?? roleLabel ?? "Signed in")
+      ? (displayName?.startsWith("Synthetic") ? `${roleLabel ?? "Your"} account` : displayName ?? roleLabel ?? "Signed in")
       : "Welcome";
   return (
     <header className="hospital-header">
