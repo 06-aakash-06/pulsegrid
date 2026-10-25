@@ -1208,7 +1208,7 @@ export function DoctorManagement({
             : undefined
         }
       />
-      <AvailabilityPicker doctorId={doctor.id} />
+      <AvailabilityPicker doctorId={doctor.id} autoLoad />
       {doctor.active && (
         <ScheduleForm
           doctor={doctor}

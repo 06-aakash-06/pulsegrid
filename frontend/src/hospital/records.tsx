@@ -382,7 +382,7 @@ function History({
             {visits.map((entry) => (
               <li key={entry.consultationId}>
                 <button type="button" className="visit-entry" aria-pressed={entry.versions.some((version) => version.id === selected)} aria-label={`View record ${entry.latest.id}`} onClick={() => setSelected(entry.latest.id)}>
-                  <time dateTime={entry.first.created_at}>{shortDateTime(entry.first.created_at)}</time>
+                  <time className="visit-date-chip" dateTime={entry.first.created_at}>{shortDateTime(entry.first.created_at)}</time>
                   <strong>Visit record</strong>
                   <small>{entry.versions.length > 1 ? `Amended · revision ${entry.latest.revision}` : "Original record"}</small>
                 </button>

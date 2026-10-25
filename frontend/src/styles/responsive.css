@@ -113,3 +113,40 @@
 .roster-scroll-hint { margin: 4px 12px; font-size: var(--text-min); color: var(--ink); }
 .doctor-availability strong { white-space: nowrap; }
 .ops-console .ops-table th { white-space: normal; overflow-wrap: anywhere; }
+
+/* Contained visual corrections from the reference comparison. */
+.reference-portrait--initials { color: #fffaf0; background: #176963; border: 1px solid #0e4946; border-radius: 50%; font-weight: 650; }
+.reference-portrait--initials.reference-portrait--large { font-size: 30px; border-radius: 12px; }
+.availability-picker .week-strip { display: grid; grid-template-columns: 40px repeat(7, minmax(0, 1fr)) 40px; gap: 4px; }
+.availability-picker .week-strip > button { min-width: 0; }
+.department-page--pharmacy .shelf-grid { grid-template-rows: none; }
+.department-page--pharmacy .shelf-face { min-height: 0; }
+.department-page--records .visit-date-chip { display: inline-block; padding: 4px 8px; border-radius: 4px; background: #e8e2d8; color: var(--ink); font-size: var(--text-min); }
+.department-page--emergency .er-counts > li:not(.er-counts__scope) { background: #fbf6eeeb; border-color: #fff4e1; box-shadow: var(--shadow); }
+.department-page--emergency .er-case { min-height: 0; }
+.department-page--emergency .er-row__main strong { display: block; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.ops-console .ops-kpi__label { display: flex; align-items: center; gap: 8px; }
+.ops-console .ops-kpi__icon { display: inline-grid; place-items: center; width: 24px; height: 24px; flex: 0 0 auto; border-radius: 5px; background: var(--select-teal-soft); color: var(--select-teal); font-size: 17px; }
+.ops-console .ops-main { align-items: start; }
+.workspace-shell .queue-station { padding-left: 0; align-items: end; }
+.workspace-shell .queue-station > .queue-monitor { background: #f1e7d7ed; color: var(--ink); border-color: #faf3e7; }
+.workspace-shell .queue-monitor :is(label,.queue-monitor-heading > span,.queue-monitor-footer,.queue-wall-table caption,.queue-wall-table th) { color: var(--ink); }
+.workspace-shell .queue-monitor select { background: var(--surface-solid); color: var(--ink); }
+.department-page--billing .cashier-payment-row { padding: 12px; background: var(--select-teal); color: #fff8ec; border-radius: 6px; flex-wrap: wrap; }
+.department-page--billing .cashier-payment-row button { margin-left: auto; background: #fff8ec; color: var(--select-teal); }
+.department-page--billing .cashier-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 0; }
+.department-page--billing .cashier-tabs [role="tab"] { display: grid; place-items: center; gap: 6px; padding: 12px 8px; border-radius: 6px; white-space: normal; }
+.department-page--billing .cashier-tabs [role="tab"]::before { content: '▤'; font-size: 20px; }
+@media (min-width: 901px) and (max-width: 1199px) {
+  .workspace-shell .directory-number { display: inline; }
+  .workspace-shell .workspace-nav-link,
+  .workspace-shell.reference-departments .workspace-nav-link { grid-template-columns: 20px 20px minmax(0, 1fr); gap: 5px; padding-inline: 4px; }
+}
+@media (max-width: 767px) {
+  .availability-picker .week-strip { grid-template-columns: 32px repeat(7, minmax(0, 1fr)) 32px; gap: 1px; }
+  .availability-picker .week-strip > button { padding-inline: 2px; }
+  .department-page--billing .cashier-tabs { grid-template-columns: 1fr; }
+  .workspace-shell .queue-station { align-items: start; }
+  .workspace-shell .queue-station .checkin-kiosk { margin-top: 0; }
+  .medicine-table .hospital-items { max-height: none; }
+}

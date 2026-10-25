@@ -147,7 +147,7 @@ function KpiCard({ label, value, unit, detail, points, tone = "neutral" }: {
   const trend = points ? trendOf(points) : null;
   return (
     <article className={`ops-kpi ops-kpi--${tone}`}>
-      <p className="ops-kpi__label">{label}</p>
+      <p className="ops-kpi__label"><span className="ops-kpi__icon" aria-hidden="true">{({ Throughput: "↗", "p95 latency": "◷", "HTTP 5xx rate": "!", "RabbitMQ backlog": "≋", "Redis hit rate": "◈" } as Record<string, string>)[label]}</span>{label}</p>
       <p className="ops-kpi__value"><strong>{value}</strong>{unit && value !== "No data" ? <span>{unit}</span> : null}</p>
       <p className="ops-kpi__detail">
         {trend ? <span className="ops-kpi__trend" title={trend.label}><span aria-hidden="true">{trend.arrow}</span><span className="sr-only">{trend.label}</span></span> : null}
