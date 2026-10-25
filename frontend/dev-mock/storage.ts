@@ -1,5 +1,11 @@
 import { exportMockState, handleMockRequest, importMockState, type MockRequest, type MockResponse } from "./handlers";
 
+export const MOCK_SESSION_KEY = "pulsegrid_mock_session";
+/** Session credentials are separate from the persisted synthetic hospital data. */
+export function clearMockSession(storage: Pick<Storage, "removeItem">) {
+  storage.removeItem(MOCK_SESSION_KEY);
+}
+
 export const DEMO_STORE_KEY = "pulsegrid_demo_database_v1";
 type DemoStorage = Pick<Storage, "getItem" | "setItem">;
 

@@ -240,8 +240,14 @@ export function AuthProvider({
 
   const logout = useCallback(async () => {
     ++sessionEpochRef.current;
-    updateState({ status: "anonymous" });
-    await client.logout();
+    // Revoke local access immediately; finish navigation after cookie revocation
+    // so the sign-in page cannot race a still-pending mock/server logout.
+    stateRef.current = { status: "anonymous" };
+    try {
+      await client.logout();
+    } finally {
+      updateState({ status: "anonymous" });
+    }
   }, [client, updateState]);
 
   const authenticatedApi = useMemo(() => createAuthenticatedApiClient(domainApiClient, {
