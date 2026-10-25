@@ -46,7 +46,7 @@
 
 @media (min-width: 901px) and (max-width: 1299px) {
   .reception-scene { height: auto; min-height: 900px; }
-  .reception-scene .counter-token-stand { display: none; }
+  .reception-scene .counter-token-stand { display: grid; top: 250px; left: auto; right: 4%; width: 105px; min-height: 125px; transform: none; }
   .reception-scene .reception-counter { top: 400px; height: auto; }
   .reception-scene .reception-counter-label { position: static; width: 100%; margin: 0 0 10px; text-align: center; }
   .reception-scene .appointment-slips { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; padding: 0 4% 12px; }
@@ -117,7 +117,7 @@
 /* Contained visual corrections from the reference comparison. */
 .reference-portrait--initials { color: #fffaf0; background: #176963; border: 1px solid #0e4946; border-radius: 50%; font-weight: 650; }
 .reference-portrait--initials.reference-portrait--large { font-size: 30px; border-radius: 12px; }
-.availability-picker .week-strip { display: grid; grid-template-columns: 40px repeat(7, minmax(0, 1fr)) 40px; gap: 4px; }
+.availability-picker .week-strip { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; gap: 4px; }
 .availability-picker .week-strip > button { min-width: 0; }
 .department-page--pharmacy .shelf-grid { grid-template-rows: none; }
 .department-page--pharmacy .shelf-face { min-height: 0; }
@@ -143,10 +143,23 @@
   .workspace-shell.reference-departments .workspace-nav-link { grid-template-columns: 20px 20px minmax(0, 1fr); gap: 5px; padding-inline: 4px; }
 }
 @media (max-width: 767px) {
-  .availability-picker .week-strip { grid-template-columns: 32px repeat(7, minmax(0, 1fr)) 32px; gap: 1px; }
+  .availability-picker .week-strip { grid-template-columns: 32px minmax(0, 1fr) 32px; gap: 1px; }
   .availability-picker .week-strip > button { padding-inline: 2px; }
   .department-page--billing .cashier-tabs { grid-template-columns: 1fr; }
   .workspace-shell .queue-station { align-items: start; }
   .workspace-shell .queue-station .checkin-kiosk { margin-top: 0; }
   .medicine-table .hospital-items { max-height: none; }
 }
+
+.availability-picker .calendar-strip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); min-width: 0; }
+.availability-picker .calendar-strip > button { min-width: 0; padding-inline: 2px; }
+
+/* Text inside the previously tiny reception signs stays readable on small screens. */
+.reception-scene :is(.welcome-motto,.reception-hospital-today > small,.reception-hospital-today > .eyebrow) { color: var(--ink); }
+@media (max-width: 767px) {
+  .workspace-shell :is(.pharmacy-room__counter,.pharmacy-room__right,.prescription-stand,.counter-tray,.counter-upper,.counter-lower,.reservation-current,.reservation-panel,.dossier-sheet,.consultation-board,.reference-doctor-list,.appointment-doctor-rows) { height: auto; max-height: none; overflow: visible; }
+  .reception-scene .reception-hospital-today { position: relative; top: auto; left: auto; width: 100%; padding: 12px 5%; }
+}
+
+.prescription-workspace > .prescription-author-link { grid-column: 1 / -1; grid-row: 1; margin: 0; }
+.prescription-workspace:has(> .prescription-author-link) > [data-panel="prescriptions"] { grid-row: 2 / 5; }

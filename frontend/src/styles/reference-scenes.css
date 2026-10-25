@@ -1605,7 +1605,7 @@
     font-size: 31px !important;
   }
   .reception-scene .welcome-motto {
-    font-size: 6px;
+    font-size: var(--text-min);
     letter-spacing: 2px;
     margin-top: 10px;
   }
@@ -1624,7 +1624,7 @@
   .reception-hospital-today > .eyebrow {
     width: 100%;
     margin: 0;
-    font-size: 7px;
+    font-size: var(--text-min);
   }
   .reception-hospital-today > div {
     grid-template-columns: 16px auto 1fr;
@@ -1643,7 +1643,7 @@
   .reception-hospital-today > small {
     margin: 0;
     width: 100%;
-    font-size: 7px;
+    font-size: var(--text-min);
   }
   .reception-scene .robot-conversation {
     top: 330px;
@@ -1876,7 +1876,7 @@
   color: #102638;
 }
 .counter-token-stand > small {
-  font-size: 7px;
+  font-size: var(--text-min);
   letter-spacing: 1px;
 }
 .counter-token-stand > strong {

@@ -57,8 +57,8 @@ export function HospitalPage({
     if (route === "prescriptions")
       content = (
         <>
-          <MedicineCatalog />
           <Prescriptions doctor />
+          <MedicineCatalog />
         </>
       );
   }

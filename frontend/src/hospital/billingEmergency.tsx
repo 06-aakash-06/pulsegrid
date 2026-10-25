@@ -446,8 +446,10 @@ function NextSteps({
   onChange: () => void;
 }) {
   const owned = !!userId && item.claimed_by_user_id === userId;
-  const [openAction, setOpenAction] = useState<string | null>(null);
-  useEffect(() => setOpenAction(null), [item.state, item.claimed_by_user_id]);
+  const workflow = `${item.state}:${item.claimed_by_user_id ?? ""}`;
+  const [action, setAction] = useState<{ label: string; workflow: string } | null>(null);
+  const openAction = action?.workflow === workflow ? action.label : null;
+  const setOpenAction = (label: string | null) => setAction(label ? { label, workflow } : null);
   const transition = (title: string, target: Emergency["state"], labels: { review: string; confirm: string; success: string; reason: string }) => {
     const reason = { ...reasonField, label: labels.reason };
     return (

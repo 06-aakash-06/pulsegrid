@@ -1,3 +1,4 @@
+import { sortEmergencyQueue } from "../src/hospital/billingEmergency";
 import { commandLabels } from "./commandLabels";
 import {
   fireEvent,
@@ -389,14 +390,19 @@ describe("patient profiles and appointment commands", () => {
     expect(screen.queryByRole('button',{name:'Book Appointment'})).not.toBeInTheDocument();
     expect(fetcher.mock.calls.some(([url])=>String(url).startsWith('/api/v1/appointments?'))).toBe(false);
   });
-  it("books accepted availability with own profile ID rather than token subject", async () => {
+  it("books accepted availability with own profile ID, clears selection and reloads the available slots", async () => {
+    let booked = false;
     const { fetcher } = setup(
       "/patient/appointments",
       "patient",
-      (path, init) =>
-        path === "/api/v1/appointments" && init.method === "POST"
-          ? json(appointment, 201)
-          : undefined,
+      (path, init) => {
+        if (path === "/api/v1/appointments" && init.method === "POST") {
+          booked = true;
+          return json(appointment, 201);
+        }
+        if (path === "/api/v1/appointments/availability") return json({ slots: booked ? [] : [slot], accepted_revision: 4, observed_at: slot.starts_at });
+        return undefined;
+      },
     );
     await screen.findByLabelText("Doctor ID for availability");
     fill("Doctor ID for availability", "21");
@@ -424,6 +430,12 @@ describe("patient profiles and appointment commands", () => {
     expect(
       await screen.findByText("Appointment booked"),
     ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Review booking" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /Booked 09:00 am UTC/i })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /^Select 09:00 am/i })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Book another appointment" }));
+    expect(screen.queryByRole("button", { name: "Review booking" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Confirm booking" })).not.toBeInTheDocument();
   });
   it("rejects non-UTC and overlong availability windows without a request", async () => {
     const { fetcher } = setup("/patient/appointments", "patient");
@@ -469,6 +481,7 @@ describe("patient profiles and appointment commands", () => {
     await screen.findByLabelText("Reason for cancelling");
     fill("Reason for cancelling", "Synthetic cancellation");
     await command("Cancel appointment");
+    await screen.findByText("Appointment cancelled.");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/appointments/51/cancel", "POST", '"5"');
     expect(lastBody(fetcher)).toEqual({ reason: "Synthetic cancellation" });
@@ -503,6 +516,7 @@ describe("patient profiles and appointment commands", () => {
       await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
     await command("Reschedule appointment");
+    await screen.findByText(/^Appointment moved to /);
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(
       fetcher,
@@ -684,21 +698,24 @@ describe("clinical and pharmacy workflows", () => {
       clinical_content: clinicalContent,
     });
   });
-  it("finalizes a consultation with prescribed item fields", async () => {
+  it("finalizes a consultation with prescribed item fields and refreshes the register and dossier", async () => {
+    let finalized = false;
     const { fetcher } = setup(
       "/doctor/consultations",
       "doctor",
       (path, init) => {
         if (path === "/api/v1/records/consultations")
-          return json({ items: [consultation], next_cursor: null });
+          return json({ items: [{ ...consultation, status: finalized ? "finalized" : "draft" }], next_cursor: null });
         if (path === "/api/v1/records/consultations/61")
-          return json(consultation);
-        if (path.endsWith("/finalize") && init.method === "POST")
+          return json({ ...consultation, status: finalized ? "finalized" : "draft", revision: finalized ? 2 : 1 });
+        if (path.endsWith("/finalize") && init.method === "POST") {
+          finalized = true;
           return json({
             consultation: { ...consultation, status: "finalized" },
             record: medicalRecord,
             prescription,
           });
+        }
         return undefined;
       },
     );
@@ -714,6 +731,11 @@ describe("clinical and pharmacy workflows", () => {
     fill("Instructions 1", "Synthetic instructions");
     await command("Finalize consultation");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
+    await waitFor(() => expect(screen.getAllByText("Finalized")).toHaveLength(2));
+    expect(screen.queryByText("Draft")).not.toBeInTheDocument();
+    for (const path of ["/api/v1/records/consultations", "/api/v1/records/consultations/61"]) {
+      expect(fetcher.mock.calls.filter(([url, init]) => new URL(String(url), "http://test").pathname === path && init?.method === "GET").length).toBeGreaterThanOrEqual(2);
+    }
     expectConditional(fetcher, "/api/v1/records/consultations/61/finalize");
     expect(lastBody(fetcher)).toEqual({
       prescription_items: [
@@ -941,6 +963,7 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fill("Finalized consultation ID", "61");
     fill("Completed dispensing IDs (comma separated)", "92");
     await command("Import charges manually");
+    await screen.findByText("Charges imported. The receipt shows the new lines.");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(
       fetcher,
@@ -963,6 +986,9 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fill("Synthetic request description", "Synthetic request");
     fill("Reported urgency (advisory)", "urgent");
     await command("Submit emergency request");
+    await screen.findByText("Request sent. It now appears in Your requests.");
+    expect(screen.getByLabelText("Synthetic request description")).toHaveValue("");
+    expect(screen.getByLabelText("Reported urgency (advisory)")).toHaveValue("unspecified");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expect(lastBody(fetcher)).toEqual({
       patient_id: "11",
@@ -1008,6 +1034,7 @@ describe("billing, emergency, doctor and administration workflows", () => {
     );
     await screen.findByRole("button", { name: commandLabels("Claim request").review });
     await command("Claim request");
+    await screen.findByText("Request claimed. You hold it for 15 minutes.");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/emergencies/121/claim", "POST", '"3"');
     expect(lastBody(fetcher)).toEqual({});
@@ -1121,5 +1148,76 @@ describe("large integer currency display", () => {
   it("preserves paise at the frozen safe-integer limit", () => {
     expect(money(Number.MAX_SAFE_INTEGER)).toBe("₹9,00,71,99,25,47,409.91");
     expect(money(1)).toBe("₹0.01");
+  });
+});
+
+
+describe("final audit regressions", () => {
+  it("orders emergency priority first, unassigned last, and older requests first within a priority", () => {
+    const entries = [
+      { ...emergency, id: "1", assigned_priority: null, created_at: "2026-10-25T01:00:00Z" },
+      { ...emergency, id: "2", assigned_priority: 2, created_at: "2026-10-25T01:00:00Z" },
+      { ...emergency, id: "3", assigned_priority: 1, created_at: "2026-10-25T03:00:00Z" },
+      { ...emergency, id: "4", assigned_priority: 1, created_at: "2026-10-25T02:00:00Z" },
+    ];
+    expect(sortEmergencyQueue(entries).map(item => item.id)).toEqual(["4", "3", "2", "1"]);
+    expect(entries.map(item => item.id)).toEqual(["1", "2", "3", "4"]);
+  });
+  it("keeps closed emergency cases below the open queue", async () => {
+    const items = [
+      { ...emergency, id: "10", state: "resolved", assigned_priority: 1 },
+      { ...emergency, id: "11", state: "triaged", assigned_priority: 2 },
+      { ...emergency, id: "12", state: "submitted", assigned_priority: null },
+    ];
+    setup("/emergency/requests", "emergency_staff", path => path === "/api/v1/emergencies" ? json({ items, next_cursor: null }) : undefined);
+    await screen.findByRole("button", { name: "Track request 10" });
+    const rows = document.querySelectorAll(".er-queue > li");
+    expect(Array.from(rows).map(row => row.textContent)).toEqual([
+      expect.stringContaining("P2"), expect.stringContaining("No priority"), "Closed", expect.stringContaining("P1"),
+    ]);
+  });
+  it("shows every admin directory page, consecutive numbers and the active route", async () => {
+    setup("/admin/staff", "hospital_admin");
+    const nav = await screen.findByRole("navigation", { name: "Hospital administrator navigation" });
+    const links = within(nav).getAllByRole("link");
+    expect(links.map(link => link.getAttribute("href")).sort()).toEqual([
+      "/admin/dashboard", "/admin/staff", "/admin/doctors", "/admin/control-room", "/admin/traces", "/admin/settings",
+    ].sort());
+    expect(links.map(link => link.querySelector(".directory-number")?.textContent)).toEqual(["01", "02", "03", "04", "05", "06"]);
+    expect(within(nav).getByRole("link", { name: "Staff & roles" })).toHaveAttribute("aria-current", "page");
+  });
+});
+
+
+describe("emergency command receipts after version refresh", () => {
+  it("retains priority and release confirmations while refreshing the case version", async () => {
+    let current: Emergency = { ...emergency, state: "claimed", patient_id: "11", description: "Synthetic case", claimed_by_user_id: "101", claim_expires_at: "2027-01-01T10:00:00Z" };
+    const { fetcher } = setup("/emergency/requests", "emergency_staff", (path, init) => {
+      if (path === "/api/v1/emergencies") return json({ items: [current], next_cursor: null });
+      if (path === "/api/v1/emergencies/121") return json(current, 200, `"${current.version}"`);
+      if (path.endsWith("/priority") && init.method === "PATCH") {
+        current = { ...current, assigned_priority: 1, version: current.version + 1 };
+        return json(current, 200, `"${current.version}"`);
+      }
+      if (path.endsWith("/release") && init.method === "POST") {
+        current = { ...current, state: "triaged", claimed_by_user_id: null, claim_expires_at: null, version: current.version + 1 };
+        return json(current, 200, `"${current.version}"`);
+      }
+      return undefined;
+    });
+    fireEvent.click(await screen.findByRole("button", { name: "Change priority" }));
+    fill("Assigned priority (1 highest, 5 lowest)", "1");
+    fill("Reason for priority", "Synthetic priority review");
+    await command("Set priority");
+    await screen.findByText("Priority set to P1.");
+    await waitFor(() => expect(document.querySelector(".er-case")).toHaveTextContent("P1"));
+    expectConditional(fetcher, "/api/v1/emergencies/121/priority", "PATCH", '"3"');
+    fireEvent.click(screen.getByRole("button", { name: "Release claim" }));
+    fill("Reason for releasing", "Synthetic handoff");
+    await command("Release claim");
+    await screen.findByText("Claim released.");
+    await waitFor(() => expect(document.querySelector(".er-case")).toHaveTextContent("triaged"));
+    expect(screen.getByText("Claim released.")).toBeInTheDocument();
+    expectConditional(fetcher, "/api/v1/emergencies/121/release", "POST", '"4"');
   });
 });

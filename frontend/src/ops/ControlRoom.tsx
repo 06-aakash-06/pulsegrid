@@ -436,7 +436,7 @@ function ComponentList({ title, items, primary, secondary, valueLabel = "rate" }
   return (
     <div className="ops-component-list">
       <h3>{title}</h3>
-      {items.length ? <ul>{items.slice(0, 8).map((item, index) => <li key={`${String(item[primary])}-${String(secondary ? item[secondary] : "")}-${index}`}><span>{item[primary] ?? "Component"}{secondary && item[secondary] ? ` · ${item[secondary]}` : ""}</span><strong>{number(item.value, 2)} <small>{valueLabel}</small></strong></li>)}</ul> : <p className="ops-no-data">No samples collected.</p>}
+      {items.length ? <ul>{items.slice(0, 8).map((item, index) => <li key={`${String(item[primary])}-${String(secondary ? item[secondary] : "")}-${index}`}><span title={`${String(item[primary] ?? "Component")}${secondary && item[secondary] ? ` · ${item[secondary]}` : ""}`}>{item[primary] ?? "Component"}{secondary && item[secondary] ? ` · ${item[secondary]}` : ""}</span><strong>{number(item.value, 2)} <small>{valueLabel}</small></strong></li>)}</ul> : <p className="ops-no-data">No samples collected.</p>}
     </div>
   );
 }

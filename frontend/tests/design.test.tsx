@@ -98,14 +98,37 @@ describe("hospital design integration", () => {
     mount(<HospitalHeader roleLabel="Patient" />, fetcher);
     expect(await screen.findByText("Account ID 21")).toBeInTheDocument();
     expect(screen.getByLabelText("Patient account menu")).toBeInTheDocument();
-    act(() => publishHospitalIdentity("999", "Another account"));
+    await act(async () => publishHospitalIdentity("999", "Another account"));
     expect(screen.queryByText("Another account")).not.toBeInTheDocument();
-    act(() => publishHospitalIdentity("21", "Anika Shah"));
+    await act(async () => publishHospitalIdentity("21", "Anika Shah"));
     expect(screen.getByText("Anika Shah")).toBeInTheDocument();
-    act(() => publishHospitalIdentity("21", "Synthetic Phase29 Patient"));
+    await act(async () => publishHospitalIdentity("21", "Synthetic Phase29 Patient"));
     expect(screen.getByText("Patient account")).toBeInTheDocument();
     expect(screen.queryByText("Synthetic Phase29 Patient")).not.toBeInTheDocument();
     expect(fetcher).not.toHaveBeenCalled();
+  });
+  it("closes notifications and account popovers on Escape or outside pointerdown and restores trigger focus", async () => {
+    mount(<HospitalHeader roleLabel="Patient" />);
+    const account = await screen.findByLabelText("Patient account menu");
+    const notifications = screen.getByRole("button", { name: "Notifications" });
+    fireEvent.click(notifications);
+    expect(screen.getByText("Hospital updates")).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByText("Hospital updates")).not.toBeInTheDocument();
+    expect(notifications).toHaveFocus();
+    fireEvent.click(notifications);
+    fireEvent.pointerDown(document.body);
+    expect(screen.queryByText("Hospital updates")).not.toBeInTheDocument();
+    expect(notifications).toHaveFocus();
+    const details = account.closest("details")!;
+    details.open = true;
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(details.open).toBe(false);
+    expect(account).toHaveFocus();
+    details.open = true;
+    fireEvent.pointerDown(document.body);
+    expect(details.open).toBe(false);
+    expect(account).toHaveFocus();
   });
   it("date selection sets a UTC interval without making a booking or fetching prematurely", async () => {
     const fetcher = vi.fn(

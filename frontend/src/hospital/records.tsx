@@ -597,6 +597,7 @@ export function Prescriptions({
   const [revision, setRevision] = useState(0);
   return (
     <div className="prescription-workspace">
+      {doctor && <p className="prescription-author-link"><Link className="button" to="/doctor/consultations">Author prescription in a consultation →</Link></p>}
       {!pharmacist && (
         <Collection<Prescription>
           title="Prescriptions"

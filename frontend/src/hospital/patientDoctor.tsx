@@ -361,7 +361,9 @@ export function AvailabilityPicker({
   day: chosenDay,
   showWeek = true,
   revision = 0,
+  bookedAppointments = [],
 }: {
+  bookedAppointments?: Appointment[];
   revision?: number;
   doctorId: string;
   autoLoad?: boolean;
@@ -428,6 +430,9 @@ export function AvailabilityPicker({
         {(data) => (
           <div className="slot-board">
             {!data.slots.length && <p className="slot-empty">No available slots in this interval.</p>}
+            {bookedAppointments.filter(visit => visit.doctor_id === doctorId && Date.parse(visit.starts_at) >= Date.parse(values.from ?? "") && Date.parse(visit.starts_at) < Date.parse(values.to ?? "")).map(visit => (
+              <button key={visit.id} type="button" className="available-slot booked-slot" disabled aria-label={`Booked ${clock(visit.starts_at)} UTC`}>{clock(visit.starts_at)} · Booked</button>
+            ))}
             {slotGroups.map(({ label, test }) => {
               const slots = data.slots.filter((slot) => test(new Date(slot.starts_at).getUTCHours()));
               if (!slots.length) return null;
@@ -526,6 +531,7 @@ export function Booking({
   const [locked,setLocked] = useState(false);
   const [confirmed,setConfirmed] = useState<{ appointment: Appointment; doctor: string } | null>(null);
   const [availabilityRevision, setAvailabilityRevision] = useState(0);
+  const [bookedAppointments, setBookedAppointments] = useState<Appointment[]>([]);
   const chooseDoctor = (value: string, label: string, info: Doctor | null) => {
     setDoctor(value);
     setDoctorLabel(label);
@@ -547,6 +553,7 @@ export function Booking({
         {!doctor && <div className="resource-empty"><DepartmentIcon department="appointments"/><strong>Choose a doctor first</strong><p>Their accepted dates and slots will appear here.</p></div>}
         {doctor && (
           <AvailabilityPicker
+            bookedAppointments={bookedAppointments}
             key={doctor}
             doctorId={doctor}
             doctorName={doctorLabel ? `${doctorLabel}${specialty ? ` (${specialty})` : ""}` : undefined}
@@ -614,6 +621,7 @@ export function Booking({
                     expected_schedule_revision: slot.revision,
                   })}
                   onSuccess={(item) => {
+                    setBookedAppointments(visits => [...visits, item]);
                     setConfirmed({ appointment: item, doctor: doctorLabel });
                     setSlot(null);
                     setAvailabilityRevision((value) => value + 1);

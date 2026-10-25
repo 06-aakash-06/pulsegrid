@@ -14,6 +14,7 @@ import type {
   Reservation,
 } from "./models";
 import {
+  formatDateTime,
   buildFields,
   Collection,
   CommandForm,
@@ -194,7 +195,7 @@ export function MedicineCatalog({
             })}
             revision={revision}
             renderItem={(batch) => (
-              <><div className="stock-ledger-row"><strong>{batch.batch_code}</strong><time>{batch.expires_on}</time><span>{batch.on_hand} on hand</span><span>{batch.reserved} reserved</span><strong>{batch.available} available</strong></div><details className="owner-identifiers"><summary>Batch identifiers and version</summary><Facts values={{"Batch ID":batch.id,"Medicine ID":batch.medicine_id,"Batch version":batch.version}}/></details></>
+              <><div className="stock-ledger-row"><strong>{batch.batch_code}</strong><time dateTime={batch.expires_on}>{formatDateTime(batch.expires_on, { utc: true, time: false })}</time><span>{batch.on_hand} on hand</span><span>{batch.reserved} reserved</span><strong>{batch.available} available</strong></div><details className="owner-identifiers"><summary>Batch identifiers and version</summary><Facts values={{"Batch ID":batch.id,"Medicine ID":batch.medicine_id,"Batch version":batch.version}}/></details></>
             )}
           />
           <details className="pharmacy-stock-tools"><summary>Adjust batch stock</summary><StockAdjustment onSuccess={() => setRevision((v) => v + 1)} /></details>
@@ -325,7 +326,7 @@ function BatchShelfLedger({ medicineId, revision }: { medicineId: string; revisi
         <table>
           <caption className="sr-only">Batch quantities reported by Pharmacy</caption>
           <thead><tr><th scope="col">Batch</th><th scope="col">Expires</th><th scope="col">On hand</th><th scope="col">Reserved</th><th scope="col">Available</th></tr></thead>
-          <tbody>{batches.items.map((batch) => <tr key={batch.id}><th scope="row">{batch.batch_code}</th><td><time dateTime={batch.expires_on}>{batch.expires_on}</time></td><td>{batch.on_hand}</td><td>{batch.reserved}</td><td><strong>{batch.available}</strong></td></tr>)}</tbody>
+          <tbody>{batches.items.map((batch) => <tr key={batch.id}><th scope="row">{batch.batch_code}</th><td><time dateTime={batch.expires_on}>{formatDateTime(batch.expires_on, { utc: true, time: false })}</time></td><td>{batch.on_hand}</td><td>{batch.reserved}</td><td><strong>{batch.available}</strong></td></tr>)}</tbody>
         </table>
       )}
       {(batches.hasPrevious || batches.hasNext) && <div className="batch-ledger__pages"><button type="button" disabled={!batches.hasPrevious} onClick={batches.previous}>Previous batches</button><button type="button" disabled={!batches.hasNext} onClick={batches.next}>More batches</button></div>}
