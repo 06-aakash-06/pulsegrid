@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       host: "127.0.0.1",
+      fs: { allow: [".", "../docs"] },
       proxy: {
         "/api": { target: gatewayUrl, changeOrigin: false },
         "/s/": { target: gatewayUrl, changeOrigin: false },

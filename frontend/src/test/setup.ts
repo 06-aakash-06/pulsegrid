@@ -6,3 +6,5 @@ afterEach(() => cleanup());
 
 // Browser geometry and dialogs are exercised in live visual QA. jsdom supplies no implementations.
 window.scrollTo = vi.fn();
+
+window.scrollBy = vi.fn();

@@ -39,11 +39,7 @@ export function TourPicker() {
               <small>About {stepCount(tour)} steps · 2 min{tour.role && roles.includes(tour.role) ? " · your role" : ""}</small>
             </button>
           ))}
-          <div className="simulation-picker__tour simulation-picker__tour--soon" aria-disabled="true">
-            <strong>System design tour</strong>
-            <span>Walk through the System design playground's widgets.</span>
-            <small>Opens once the playground is added</small>
-          </div>
+
         </div>
         {live && (
           <label className="simulation-picker__allow">

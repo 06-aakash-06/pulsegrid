@@ -115,6 +115,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
               <span className="directory-arrow" aria-hidden="true">→</span>
             </NavLink>;
           })}
+          {(workspace.basePath === "/admin" || workspace.basePath === "/ops") && <NavLink to="/system-design" className="workspace-nav-link" data-tour="nav-system-design"><span className="directory-number">{String(workspace.navigation.length + 1).padStart(2, "0")}</span><DepartmentIcon department="control" /><span className="directory-copy"><strong>System Design Lab</strong><small>Algorithms and lab evidence</small></span></NavLink>}
         </nav>
         <footer className="directory-footer">
         <div className="directory-help">

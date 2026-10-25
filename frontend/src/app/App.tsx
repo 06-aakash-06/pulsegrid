@@ -13,6 +13,7 @@ import { workspaces } from "../navigation/workspaces";
 import { LoginPage, RegistrationPage } from "../pages/AuthPages";
 import { HomePage } from "../pages/HomePage";
 import { SimulationProvider } from "../simulation/SimulationProvider";
+const SystemDesignPage = lazy(() => import("../systemDesign/SystemDesignPage").then(module => ({ default: module.SystemDesignPage })));
 const HospitalPage = lazy(() => import("../hospital/HospitalPage").then(module => ({ default: module.HospitalPage })));
 
 function ShortLinkPage() {
@@ -33,6 +34,7 @@ export function App() {
 export function PulseGridRoutes() {
   return (
     <MotionConfig reducedMotion="user"><LazyMotion features={loadMotionFeatures} strict><SimulationProvider><Routes>
+      <Route path="/system-design" element={<Suspense fallback={<p role="status">Loading System Design Lab…</p>}><SystemDesignPage /></Suspense>} />
       <Route path="/short-link" element={<ShortLinkPage />} />
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />

@@ -129,6 +129,7 @@ export function HospitalHeader({
         <kbd>⌘ K</kbd>
       </button>
       <div className="header-account">
+        {(state.status === "authenticated" || import.meta.env.VITE_MOCK_API === "true" || import.meta.env.VITE_DEMO_MOCK === "true") && <Link className="lab-nav-link" to="/system-design">System Design Lab</Link>}
         <SimulationSwitch />
         <div className="notification-wrap" ref={noticeWrap}>
           <button
