@@ -56,8 +56,10 @@
 .workspace-content .reception-scene .reception-queue-display>div:not(.queue-flaps) { display:grid; gap:2px; text-align:left; }
 
 /* Consultation directory */
-.workspace-content .consultation-board { grid-template-rows:auto; align-items:start; }
-.workspace-content .consultation-board>* { grid-row:1; align-self:start; }
+@media(min-width:1200px) {
+ .workspace-content .consultation-board { grid-template-rows:auto; align-items:start; }
+ .workspace-content .consultation-board>* { grid-row:1; align-self:start; }
+}
 .workspace-content .reference-portrait--large { width:64px !important; height:64px !important; min-width:64px; flex:none; border-radius:50% !important; font-size:20px !important; }
 .workspace-content .reference-profile-top { align-items:center; gap:16px; height:auto; }
 .workspace-content .reference-profile-top h2 { font-size:20px; line-height:1.25; margin:4px 0 2px; }
@@ -66,8 +68,10 @@
 .workspace-content .profile-schedule-metrics>span { display:grid; align-content:start; gap:4px; padding:12px; text-align:left; border:1px solid var(--line); border-radius:8px; }
 .workspace-content .profile-schedule-metrics>span strong { font-size:16px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .workspace-content .profile-schedule-metrics>span small { font-size:12px; }
-.workspace-content .reference-doctor-list { --row:84px; height:auto; max-height:calc(var(--row) * 5 + 8px * 4 + 2px); }
-.workspace-content .reference-doctor-list:has(>:nth-child(6)) { -webkit-mask-image:linear-gradient(#000 85%,#0000); mask-image:linear-gradient(#000 85%,#0000); }
+@media(min-width:1200px) {
+ .workspace-content .reference-doctor-list { --row:84px; height:auto; max-height:calc(var(--row) * 5 + 8px * 4 + 2px); }
+ .workspace-content .reference-doctor-list:has(>:nth-child(6)) { -webkit-mask-image:linear-gradient(#000 85%,#0000); mask-image:linear-gradient(#000 85%,#0000); }
+}
 .workspace-content .roster-more { margin:4px 0 0; font-size:12px; color:var(--muted); text-align:center; }
 .workspace-content .reference-book-button { margin-top:24px !important; }
 .workspace-content .profile-schedule-metrics { grid-template-columns:minmax(0,1fr); gap:0; border:1px solid var(--line); border-radius:8px; }
@@ -77,8 +81,8 @@
 .workspace-content .profile-schedule-metrics>span strong { font-size:14px; }
 
 /* Appointments */
-.workspace-content .appointment-doctor-rows { max-height:calc(62px * 6 + 4px * 5 + 2px); }
-.workspace-content .appointment-doctor-rows:has(>:nth-child(7)) { -webkit-mask-image:linear-gradient(#000 88%,#0000); mask-image:linear-gradient(#000 88%,#0000); }
+@media(min-width:900px) { .workspace-content .appointment-doctor-rows { max-height:calc(62px * 6 + 4px * 5 + 2px); } }
+@media(min-width:900px) { .workspace-content .appointment-doctor-rows:has(>:nth-child(7)) { -webkit-mask-image:linear-gradient(#000 88%,#0000); mask-image:linear-gradient(#000 88%,#0000); } }
 .workspace-content .booking-patient-facts { display:grid; gap:0; margin:0 0 8px; border:1px solid var(--line); border-radius:8px; }
 .workspace-content .booking-patient-facts>div { display:grid; grid-template-columns:140px minmax(0,1fr); gap:12px; padding:8px 12px; }
 .workspace-content .booking-patient-facts>div+div { border-top:1px solid var(--line); }
@@ -236,3 +240,18 @@
  .workspace-content .filter-row>.hospital-fields { grid-template-columns:minmax(0,1fr); flex-basis:100%; }
 }
 .workspace-content .receptionist-care:not(:has(>:not(h2))) { display:none; }
+.workspace-content .pharmacy-catalog .dispensing-counter { margin-top:0 !important; align-self:start; }
+@media(max-width:1199px){.workspace-content .roster-more{display:none;}}
+
+/* Single-panel patient workflows use the full width; loose intros get a surface. */
+.workspace-content .patient-workflow:has(>:only-child) { grid-template-columns:minmax(0,1fr) !important; }
+.workspace-content .waitlist-register>p { align-self:start; margin:0; padding:24px; background:var(--surface-solid); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); }
+.workspace-content .task-table td:last-child:has(>.item-details) { white-space:nowrap; }
+.workspace-content .task-table td:last-child>div:has(>.more-actions) { display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px 16px; vertical-align:middle; }
+.workspace-content .task-table td:last-child .more-actions:not([open]) { margin:0; padding:0; border:0; }
+.workspace-content .task-table td:last-child:has(.more-actions) { white-space:nowrap; }
+@media(min-width:900px) {
+ .workspace-content .cashier-desk--patient { grid-template-columns:minmax(0,7fr) minmax(0,5fr) !important; grid-template-areas:"context context" "receipt register" !important; align-items:start; }
+}
+.workspace-content .er-desk>.er-intake { align-self:start; }
+@media(max-width:1199px){.workspace-content .reference-doctor-list{max-height:none !important;overflow:visible !important;}}

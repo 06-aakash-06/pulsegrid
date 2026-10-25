@@ -67,3 +67,19 @@ On 25 October 2026, a Chromium mouse click on the Patient demo button at <https:
 The public bundle cannot establish the exact deployed Git revision or the dashboard's environment-variable configuration; those require authenticated Vercel project metadata, which was unavailable here. No Vercel settings were changed. Before a future deployment, upgrade the outdated Vercel CLI with `npm i -g vercel@latest` for current compatibility.
 
 These checks exercise the synthetic browser interface, not backend authorization, real clinical workflows or production sessions.
+
+## Fix 3: page polish (`ui/polish`)
+
+Each screen's remaining defects were fixed in `frontend/src/styles/polish.css` (loaded last) plus the components that owned the markup. Reception merges the greeting and visit stats into one card and gives the four slips their own row; the queue panel shows "Not checked in yet" with a Check in button before a token exists and "Visit completed" with a summary link afterwards. Availability now loads whenever the doctor or date changes, so the "Load availability" button is gone and its tests were updated. Slot times use the one-line format "25 Oct · 14:00".
+
+Billing cannot list a visit's finalized consultations or completed dispensings (the Records and Pharmacy list endpoints reject billing staff), so the checkbox import list was not built; the reference form moved behind "Advanced: import by reference" as the brief allows.
+
+The doctor's Finalize section is a sticky footer inside the dossier card on screens 900px and wider. Because a sticky footer overlaps the draft fields by design, `scripts/ui-audit.mjs` now skips the card-overlap check for elements inside `[data-sticky-footer]`; the covered-control hit test still runs for every control there.
+
+### Results
+
+- `npm run typecheck`: passed.
+- `npm test`: 165 tests passed across 14 files.
+- `npm run build`: passed.
+- `UI_AUDIT_OUTPUT=../docs/verification/ui-cleanup/polish node scripts/ui-audit.mjs`: 105 route/viewports (35 routes at 1536×864, 1280×800 and 390×844, including mobile drawers), zero failures. Log in `polish-audit-output.txt`, report in `polish/audit-report.json`; the audit's raw PNGs were not kept.
+- `review.html`: before (`main`) and after pairs for all 35 routes at 1536px and 390px, from `review/before` and `review/after`. Rebuild with `python3 build_review.py`.

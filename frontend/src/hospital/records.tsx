@@ -436,7 +436,7 @@ function History({
         <aside className="dossier-side dossier-related" aria-labelledby="related-care-title">
           <h2 id="related-care-title">Related</h2>
           <section aria-labelledby="record-versions-title">
-            <h3 id="record-versions-title">Earlier versions</h3>
+            <h3 id="record-versions-title">Record history</h3>
             {visit ? (
               <ol className="record-versions">
                 {[...visit.versions].reverse().map((version) => (
