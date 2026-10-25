@@ -64,7 +64,7 @@ services:
   traefik:
     networks:
       edge:
-        ipv4_address: ${GATEWAY_IP:-172.29.40.2}
+        ipv4_address: ${GATEWAY_IP:-172.29.40.254}
       observability: {}
 
   prometheus:

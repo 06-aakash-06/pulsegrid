@@ -23,8 +23,17 @@ function requestErrorMessage(error: unknown, action: "login" | "register"): stri
     if (action === "login" && error.status === 401) {
       return "The email address or password is incorrect.";
     }
-    if (action === "register" && error.status === 409 && ["email_unavailable", "email_exists", "duplicate_email"].includes(error.code)) {
+    if (action === "register" && error.status === 409 && error.code === "idempotency_conflict") {
+      return "This registration conflicted with an earlier attempt. Submit again to start a fresh request.";
+    }
+    if (action === "register" && error.code === "identity_service_unavailable") {
+      return "New accounts are unavailable on this deployment because the Patient service is not connected. Use a demo account or a service-backed PulseGrid installation.";
+    }
+    if (action === "register" && error.status === 409 && ["conflict", "email_unavailable", "email_exists", "duplicate_email"].includes(error.code)) {
       return "An account with this email address may already exist. Try signing in or use a different email address.";
+    }
+    if (action === "register" && error.status === 409) {
+      return "Registration could not be completed. Please review the form and submit again.";
     }
     return error.message + ((error.status === 429 || error.status === 503) && error.retryAfterSeconds !== undefined ? ` Wait ${error.retryAfterSeconds} seconds before retrying.` : "");
   }

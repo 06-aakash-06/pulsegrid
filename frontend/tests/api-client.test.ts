@@ -111,12 +111,15 @@ describe("API client", () => {
   });
 
   it("sends only contract registration fields without cookie authentication", async () => {
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
-      new Response(JSON.stringify({ id: "1", user_id: "2", display_name: "Synthetic Patient", version: 1 }), {
+    const fetcher = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ status: "ready", service: "patient", application: "ready" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: "1", user_id: "2", display_name: "Synthetic Patient", version: 1 }), {
         status: 201,
         headers: { "content-type": "application/json" },
-      }),
-    );
+      }));
     const auth = createAuthApi(createApiClient({ fetcher }));
 
     await auth.register({
@@ -127,7 +130,9 @@ describe("API client", () => {
       synthetic_contact: "synthetic@example.test",
     });
 
-    const [url, init] = fetcher.mock.calls[0];
+    const [readinessUrl] = fetcher.mock.calls[0];
+    const [url, init] = fetcher.mock.calls[1];
+    expect(readinessUrl).toBe("/api/v1/patients/health/ready");
     expect(url).toBe("/api/v1/auth/register");
     expect(JSON.parse(String(init?.body))).toEqual({
       email: "patient@example.test",
@@ -194,15 +199,23 @@ describe("backend authentication contract", () => {
   });
 
   it("reuses both registration headers for an explicit attempt and rotates for a new attempt", async () => {
-    const fetcher = vi.fn<typeof fetch>(async () => new Response(JSON.stringify({ id: "1" }),
-      { status: 201, headers: { "content-type": "application/json" } }));
+    const fetcher = vi.fn<typeof fetch>(async (input) => {
+      const readiness = String(input).endsWith("/health/ready");
+      return new Response(JSON.stringify(readiness
+        ? { status: "ready", service: "patient", application: "ready" }
+        : { id: "1" }), {
+        status: readiness ? 200 : 201,
+        headers: { "content-type": "application/json" },
+      });
+    });
     const auth = createAuthApi(createApiClient({ fetcher }));
     const input = { email: "synthetic@example.test", password: "synthetic passphrase", display_name: "Synthetic" };
     const attempt = createRegistrationAttempt();
     await auth.register(input, undefined, attempt);
     await auth.register(input, undefined, attempt);
     await auth.register(input, undefined, createRegistrationAttempt());
-    const headers = fetcher.mock.calls.map(([, init]) => new Headers(init?.headers));
+    const registrationCalls = fetcher.mock.calls.filter(([url]) => String(url).endsWith("/auth/register"));
+    const headers = registrationCalls.map(([, init]) => new Headers(init?.headers));
     for (const field of ["Idempotency-Key", "X-Anonymous-Command-ID"]) {
       expect(headers[0].get(field)).toBe(headers[1].get(field));
       expect(headers[0].get(field)).not.toBe(headers[2].get(field));

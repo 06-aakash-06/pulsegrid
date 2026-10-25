@@ -36,9 +36,16 @@ function tokenSetFor(accessToken: string, expiresIn = 600) {
   return { access_token: accessToken, token_type: "Bearer" as const, expires_in: expiresIn };
 }
 
-function setupApplication(handler: FetchHandler, initialPath = "/login") {
+function setupApplication(
+  handler: FetchHandler,
+  initialPath = "/login",
+  options: { patientServiceReady?: boolean } = {},
+) {
   const fetcher = vi.fn<typeof fetch>(async (input, init = {}) => {
     const path = new URL(String(input), "http://pulsegrid.test").pathname;
+    if (path === "/api/v1/patients/health/ready" && options.patientServiceReady !== false) {
+      return jsonResponse({ status: "ready", service: "patient", application: "ready" });
+    }
     return handler(path, init);
   });
   const rawClient = createApiClient({ fetcher });
@@ -105,7 +112,11 @@ describe("authentication pages", () => {
     fireEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(screen.getByRole("button", { name: "Submitting…" })).toBeDisabled();
-    const registrationCall = fetcher.mock.calls.find(([url]) => String(url).includes("/auth/register"));
+    let registrationCall: typeof fetcher.mock.calls[number] | undefined;
+    await waitFor(() => {
+      registrationCall = fetcher.mock.calls.find(([url]) => String(url).includes("/auth/register"));
+      expect(registrationCall).toBeDefined();
+    });
     expect(registrationCall).toBeDefined();
     const requestInit = registrationCall?.[1] as RequestInit;
     expect(JSON.parse(String(requestInit.body))).toEqual({
@@ -142,6 +153,24 @@ describe("authentication pages", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("An account with this email address may already exist.");
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(fetcher.mock.calls.filter(([url]) => String(url).includes("/auth/register"))).toHaveLength(1);
+  });
+
+  it("explains when a static demo deployment has no Patient service and does not submit credentials", async () => {
+    const { fetcher } = setupApplication((path) => {
+      if (path === "/api/v1/auth/refresh") return errorResponse(401, "unauthorized", "No session.");
+      return new Response("<!doctype html><title>Page not found</title>", {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      });
+    }, "/register", { patientServiceReady: false });
+    await screen.findByRole("heading", { name: "Create a patient account" });
+    fillRegistration();
+    fireEvent.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "New accounts are unavailable on this deployment because the Patient service is not connected.",
+    );
+    expect(fetcher.mock.calls.some(([url]) => String(url).includes("/auth/register"))).toBe(false);
   });
 
   it("handles registration network errors", async () => {

@@ -1,5 +1,6 @@
 import {
   ApiConfigurationError,
+  ApiError,
   apiClient,
   type ApiClient,
 } from "./client";
@@ -85,6 +86,36 @@ export function createAuthApi(
     flight = result.catch(() => undefined);
     return result;
   };
+  const requirePatientService = async (signal?: AbortSignal): Promise<void> => {
+    try {
+      const readiness = await client.request<{
+        status?: unknown;
+        service?: unknown;
+        application?: unknown;
+      }>("/api/v1/patients/health/ready", { signal });
+      if (
+        readiness?.status !== "ready" ||
+        readiness.service !== "patient" ||
+        readiness.application !== "ready"
+      ) {
+        throw new ApiError(
+          "Patient account registration is unavailable because the Patient service is not ready.",
+          503,
+          "identity_service_unavailable",
+        );
+      }
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      if (error instanceof ApiError && (error.code === "network_error" || error.code === "identity_service_unavailable")) {
+        throw error;
+      }
+      throw new ApiError(
+        "Patient account registration is unavailable because this deployment is not connected to the Patient service.",
+        503,
+        "identity_service_unavailable",
+      );
+    }
+  };
   return {
     login: (input, signal) => serialized(async () => client.request<TokenSet>("/api/v1/auth/login", {
       method: "POST",
@@ -94,6 +125,7 @@ export function createAuthApi(
       signal,
     })),
     async register(input, signal, attempt = createRegistrationAttempt()) {
+      await requirePatientService(signal);
       return client.request<PatientProfile>("/api/v1/auth/register", {
         method: "POST",
         body: input,
