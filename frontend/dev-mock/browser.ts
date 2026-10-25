@@ -1,6 +1,6 @@
-import { createDemoStore } from "./storage";
+import { clearMockSession, createDemoStore, MOCK_SESSION_KEY } from "./storage";
 
-const SESSION_KEY = "pulsegrid_mock_session";
+const SESSION_KEY = MOCK_SESSION_KEY;
 const SESSION_COOKIE = /pulsegrid_mock_session=(\d*)/;
 const LATENCY_MS = 90;
 
@@ -15,19 +15,10 @@ function readSession() {
 function writeSession(value: string | null) {
   try {
     if (value) window.localStorage.setItem(SESSION_KEY, value);
-    else window.localStorage.removeItem(SESSION_KEY);
+    else clearMockSession(window.localStorage);
   } catch {
     // Without storage the demo session simply ends on reload.
   }
-}
-
-function addRibbon() {
-  const ribbon = document.createElement("div");
-  ribbon.setAttribute("role", "note");
-  ribbon.setAttribute("aria-label", "Mock data mode");
-  ribbon.textContent = "MOCK DATA";
-  ribbon.style.cssText = "position:fixed;z-index:2147483647;right:-46px;bottom:22px;transform:rotate(-45deg);width:180px;padding:6px 0;background:#a51c18;color:#fff;font:700 12px/1 system-ui,sans-serif;letter-spacing:.12em;text-align:center;box-shadow:0 2px 6px #0005;pointer-events:none";
-  document.body.appendChild(ribbon);
 }
 
 /** Answers same-origin /api/* requests from the synthetic fixtures for the public demo build. */
@@ -38,6 +29,9 @@ export function installBrowserMock() {
     const request = input instanceof Request ? input : null;
     const url = new URL(request ? request.url : String(input), window.location.origin);
     if (url.origin !== window.location.origin || !url.pathname.startsWith("/api/")) return realFetch(input, init);
+    // Clear before awaiting the fixture transaction/latency, so an immediate
+    // reload cannot restore a session while sign-out is still in flight.
+    if (url.pathname === "/api/v1/auth/logout" && (init?.method ?? request?.method ?? "GET").toUpperCase() === "POST") writeSession(null);
     const headers: Record<string, string | undefined> = {};
     new Headers(init?.headers ?? request?.headers).forEach((value, key) => { headers[key] = value; });
     const session = readSession();
@@ -62,6 +56,4 @@ export function installBrowserMock() {
     responseHeaders.set("Content-Type", "application/json");
     return new Response(JSON.stringify(result.body), { status: result.status, headers: responseHeaders });
   };
-  if (document.body) addRibbon();
-  else window.addEventListener("DOMContentLoaded", addRibbon);
 }

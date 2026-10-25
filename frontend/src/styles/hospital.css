@@ -19,7 +19,7 @@
   --success-soft: #daebdc;
   --warning: #85500c;
   --warning-soft: #fae5bd;
-  --surface: rgba(249, 242, 234, 0.96);
+  --surface: #f8f1e9;
   --surface-solid: #f8f1e9;
   --stone: #e6d6c0;
   --wood: #ac794b;
@@ -30,10 +30,12 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
-  --radius: 7px;
-  --shadow: 0 4px 20px #37231118, 0 1px 2px #4b351524;
+  --radius: 12px;
+  --shadow: 0 4px 24px #37231118;
   --header-height: 76px;
-  --directory-width: 240px;
+  --directory-width: 256px;
+  --content-width: 1280px;
+  --page-gutter: 24px;
   --duration-fast: 180ms;
   --duration-panel: 280ms;
   --duration-scene: 450ms;

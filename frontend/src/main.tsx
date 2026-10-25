@@ -15,3 +15,5 @@ import "./styles/reference-scenes.css";
 import "./styles/architectural-layout.css";
 import "./styles/department-scenes.css";
 import "./styles/responsive.css";
+
+import "./styles/layout-system.css";

@@ -163,7 +163,7 @@ describe("Phase 4 authentication handoff", () => {
 });
 
 describe("directory accessibility", () => {
-  it("marks the department link as the current page on an alias route", async () => {
+  it("marks the exact page as current in the shared directory", async () => {
     render(
       <AuthProvider client={authClientFor("patient")}>
         <MemoryRouter initialEntries={["/patient/check-in"]}>
@@ -176,7 +176,7 @@ describe("directory accessibility", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
     expect(await screen.findByRole("heading", { name: "QR check-in", level: 1 })).toBeInTheDocument();
     const directory = screen.getByRole("complementary", { name: "Hospital directory" });
-    expect(within(directory).getByRole("link", { name: "Waiting Room" })).toHaveAttribute("aria-current", "page");
+    expect(within(directory).getByRole("link", { name: "QR check-in" })).toHaveAttribute("aria-current", "page");
     expect(within(directory).getByRole("link", { name: "Reception" })).not.toHaveAttribute("aria-current");
   });
 

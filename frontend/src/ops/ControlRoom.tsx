@@ -1,9 +1,10 @@
+import { PageGrid } from "../components/PageGrid";
+import { PageHeader } from "../components/PageHeader";
 import { SurgeModeControls } from "./SurgeModeControls";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { StatusBadge } from "../components/StatusBadge";
-import { DepartmentIcon } from "../design/DepartmentIcon";
 import { formatDateTime } from "../hospital/ui";
 import "./controlRoom.css";
 
@@ -272,20 +273,17 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
 
   return (
     <section className="ops-dashboard ops-console" aria-labelledby="control-room-title">
-      <header className="ops-sign">
-        <span className="ops-sign__mark" aria-hidden="true"><DepartmentIcon department="control" /></span>
-        <div className="ops-sign__name">
-          <h1 id="control-room-title">Control Room</h1>
-          <p>Distributed-systems telemetry · not a hospital census</p>
-          <p className="ops-updated">{summary ? `Updated ${time(summary.observed_at)}` : "Waiting for monitoring"} <button className="ops-refresh-button" type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</button></p>
-        </div>
+      <PageHeader department="control" title="Control Room" id="control-room-title"
+        subtitle="Service health, event delivery and operational alerts"
+        actions={<button type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</button>} />
+      <p className="ops-updated">{summary ? `Updated ${time(summary.observed_at)}` : "Waiting for monitoring"}</p>
         <dl className="ops-wall-monitor" aria-label="Headline figures">
           <div><dt>Services ready</dt><dd>{summary ? `${ready}/${services.length}` : "No data"}</dd></div>
           <div><dt>p95 latency</dt><dd>{summary ? ms(system?.p95_latency_ms) : "No data"}</dd></div>
           <div><dt>HTTP 5xx</dt><dd>{summary ? percent(system?.error_rate_percent) : "No data"}</dd></div>
           <div data-alert={(summary?.alerts.length ?? 0) > 0}><dt>Firing alerts</dt><dd>{summary ? String(summary.alerts.length) : "No data"}</dd></div>
         </dl>
-      </header>
+
 
       {error ? (
         <div className="ops-monitoring-banner" role="status">
@@ -306,7 +304,8 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
             <KpiCard label="Redis hit rate" value={hitRate === null ? "No data" : number(hitRate)} unit="%" detail={hitRate === null ? "No cache samples" : `${number(hits, 2)} hits · ${number(misses, 2)} misses /s`} />
           </div>
 
-          <div className="ops-console-grid">
+          <PageGrid preset="main+aside" className="ops-console-grid">
+            <div className="ops-main-column">
             <section className="ops-topology" aria-labelledby="service-map-title">
               <header><h2 id="service-map-title">Service topology</h2><small>Seven owner services · readiness probed per replica</small></header>
               <div className="ops-tiles">
@@ -358,6 +357,11 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
               </details>
             </section>
 
+            <div className="ops-trend-grid">
+              <TrendChart title="Request throughput" unit="requests / sec" points={trendRates} description="Collected from service request counters." />
+              <TrendChart title="HTTP 5xx rate" unit="percent" points={trendErrors} description="Computed from observed HTTP status classes." />
+            </div>
+            </div>
             <aside className="ops-side">
               <section className="ops-panel ops-alerts" aria-labelledby="ops-alerts-title">
                 <div className="ops-panel-heading"><div><h2 id="ops-alerts-title">Live alerts</h2><p>Prometheus rule evaluations.</p></div></div>
@@ -380,20 +384,14 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
                 <ComponentList title="Redis cache samples" items={cache} primary="owner" secondary="outcome" />
                 <nav aria-label="Monitoring tools" className="ops-tools"><Link to={`${workspaceBasePath}/traces`}>Distributed traces →</Link>{import.meta.env.DEV&&<a href="http://127.0.0.1:3000" target="_blank" rel="noreferrer">Local Grafana →</a>}</nav>
               </section>
-            </aside>
-          </div>
-
-          <div className="ops-bottom">
-            <div className="ops-trend-grid">
-              <TrendChart title="Request throughput" unit="requests / sec" points={trendRates} description="Collected from service request counters." />
-              <TrendChart title="HTTP 5xx rate" unit="percent" points={trendErrors} description="Computed from observed HTTP status classes." />
-            </div>
             <section className="ops-panel ops-surge" aria-labelledby="ops-surge-title">
               <div className="ops-panel-heading"><div><h2 id="ops-surge-title">Surge Mode</h2><p>Shared admission state for Appointment.</p></div></div>
               <p className="ops-surge__state"><StatusBadge tone={toneForHealth(system?.surge_mode.state ?? "unknown")}>{system?.surge_mode.state ?? "UNKNOWN"}</StatusBadge><span>{system?.surge_mode.changed_at ? `Since ${time(system.surge_mode.changed_at)}` : "Change time not reported"}</span></p>
               <SurgeModeControls onChange={()=>void refresh()}/>
             </section>
-          </div>
+            </aside>
+          </PageGrid>
+
 
           <details className="ops-delivery-details"><summary>Distributed components, event delivery and operational audit</summary><div className="ops-two-column ops-messaging-and-events">
             <section className="ops-panel">
@@ -491,11 +489,9 @@ export function TraceExplorer() {
   const selectedTrace = traces.find((trace) => trace.trace_id === selected);
   return (
     <section className="ops-dashboard ops-console ops-trace-desk" aria-labelledby="trace-explorer-title">
-      <header className="ops-sign">
-        <span className="ops-sign__mark" aria-hidden="true"><DepartmentIcon department="control" /></span>
-        <div className="ops-sign__name"><h1 id="trace-explorer-title">Trace Explorer</h1><p>Recent trace summaries from the last hour. Sensitive span attributes are not returned.</p></div>
-        <button className="ops-refresh-button" type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}>Refresh traces</button>
-      </header>
+      <PageHeader department="control" title="Trace Explorer" id="trace-explorer-title"
+        subtitle="Recent trace summaries from the last hour"
+        actions={<button type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}>Refresh traces</button>} />
       {error ? <div className="ops-monitoring-banner" role="status"><strong>Trace data is temporarily unavailable.</strong><span>Service requests continue if the trace backend is offline.</span></div> : null}
       <div className={`ops-trace-layout${selected ? " ops-trace-layout--selected" : ""}`}>
         <section className="ops-panel" aria-label="Recent traces">

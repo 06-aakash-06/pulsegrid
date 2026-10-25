@@ -2,7 +2,6 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 import { handleMockRequest } from "./handlers";
 
-const RIBBON = `<div role="note" aria-label="Mock data mode" style="position:fixed;z-index:2147483647;right:-46px;bottom:22px;transform:rotate(-45deg);width:180px;padding:6px 0;background:#a51c18;color:#fff;font:700 12px/1 system-ui,sans-serif;letter-spacing:.12em;text-align:center;box-shadow:0 2px 6px #0005;pointer-events:none">MOCK DATA</div>`;
 const LATENCY_MS = 90;
 
 function readBody(request: IncomingMessage): Promise<unknown> {
@@ -25,9 +24,6 @@ export function mockApiPlugin(): Plugin {
   return {
     name: "pulsegrid-dev-mock-api",
     apply: "serve",
-    transformIndexHtml(html) {
-      return html.replace("</body>", `${RIBBON}</body>`);
-    },
     configureServer(server) {
       server.middlewares.use("/api", (request: IncomingMessage, response: ServerResponse) => {
         void (async () => {

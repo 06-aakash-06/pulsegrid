@@ -1,3 +1,4 @@
+import { PageGrid } from "../components/PageGrid";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -244,7 +245,7 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
   const current = useResource<Consultation>(selected ? `/api/v1/records/consultations/${selected}` : null, revision);
   const item = current.response?.data;
   return (
-    <div className={`dossier-room dossier-room--consultations${doctor ? " dossier-room--doctor" : ""}`}>
+    <PageGrid preset="main+aside" className={`dossier-room dossier-room--consultations${doctor ? " dossier-room--doctor" : ""}`}>
       {title && <DepartmentSign department="records" title={title} subtitle={subtitle ?? ""} />}
       <section className="dossier-timeline" aria-labelledby="consultation-register-title">
         <div className="dossier-panel-heading"><h2 id="consultation-register-title">{doctor ? "Your consultations" : "Consultations"}</h2><button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button></div>
@@ -300,7 +301,7 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
           <details className="dossier-more assigned-appointments"><summary>Assigned appointments</summary><Appointments doctor /></details>
         </aside>
       )}
-    </div>
+    </PageGrid>
   );
 }
 type Visit = { consultationId: string; versions: RecordSummary[]; first: RecordSummary; latest: RecordSummary };
