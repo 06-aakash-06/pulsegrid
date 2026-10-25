@@ -56,6 +56,7 @@ function ReservationStatus({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState<ReservationAttempt | null>(null);
+  const [review, setReview] = useState<typeof attempt>(null);
   const [created, setCreated] = useState<Reservation | null>(null);
   useEffect(() => { onLockChange?.(pending || !!attempt); }, [pending, attempt, onLockChange]);
 
@@ -91,17 +92,21 @@ function ReservationStatus({
         if (items.length < 1 || items.length > 50) {
           throw new Error("Choose at least one prescribed item to request from Pharmacy.");
         }
-        currentAttempt = {
+        setReview({
           body: { prescription_id: prescription.id, items },
           key: newIdempotencyKey(),
-        };
-        setAttempt(currentAttempt);
+        });
       } catch (reason) {
         setError(getErrorMessage(reason));
-        return;
       }
+      return;
     }
-    if (!currentAttempt) return;
+    await send(currentAttempt);
+  }
+
+  async function send(currentAttempt: NonNullable<typeof attempt>) {
+    setAttempt(currentAttempt);
+    setReview(null);
 
     setPending(true);
     try {
@@ -114,6 +119,7 @@ function ReservationStatus({
       );
       setCreated(response.data);
       setAttempt(null);
+      setReview(null);
       setQuantities({});
       fulfillment.reload();
       reservations.reload();
@@ -147,9 +153,9 @@ function ReservationStatus({
           </div>)}
           {!active.length && !reservations.loading && !reservations.error && <p>No active reservation for this prescription.</p>}
         </m.div>
-        {created && <p role="status">Pharmacy returned reservation {created.id}, state {created.state}, expiring <time dateTime={created.expires_at}>{formatTime(created.expires_at)}</time>.</p>}
+        {created && <p role="status" className="command-receipt">Medicines reserved until <time dateTime={created.expires_at}>{formatTime(created.expires_at)}</time>.</p>}
         {isIssued && fulfillment.data && <form className="reservation-request" onSubmit={(event) => void reserve(event)} noValidate>
-          <fieldset disabled={pending || !!attempt || fulfillment.data.review_required}>
+          <fieldset disabled={pending || !!attempt || !!review || fulfillment.data.review_required}>
             <legend>Request a Pharmacy reservation</legend>
             {fulfillment.data.items.map((item) => <label className="reservation-request__line" key={item.prescription_item_id} htmlFor={`reserve-${prescription.id}-${item.prescription_item_id}`}>
               <span><PrescribedMedicineName api={api} medicineId={item.medicine_id}/> quantity (up to {unreserved(item)})</span>
@@ -165,9 +171,14 @@ function ReservationStatus({
             </label>)}
             <p className="patient-workflow__hint" id={hintId}>Leave a line blank to omit it. Pharmacy rechecks stock and the prescription allowance.</p>
           </fieldset>
-          <button type="submit" disabled={pending || fulfillment.data.items.every((item) => unreserved(item) <= 0)}>
-            {pending ? "Submitting…" : attempt ? "Retry reservation request" : "Request reservation"}
+          <button type="submit" hidden={!!review && !attempt} disabled={pending || fulfillment.data.items.every((item) => unreserved(item) <= 0)}>
+            {pending ? "Submitting…" : attempt ? "Retry reservation request" : "Review reservation"}
           </button>
+          {review && !attempt && <div className="hospital-confirm" role="group" aria-label="Confirm: Request reservation">
+            <p>Reserve {review.body.items.reduce((sum, line) => sum + line.quantity, 0)} item(s) across {review.body.items.length} medicine line(s)?</p>
+            <button type="button" disabled={pending} onClick={() => void send(review)}>Request reservation</button>
+            <button type="button" disabled={pending} onClick={() => setReview(null)}>Keep editing</button>
+          </div>}
           {attempt && <p role="status">The response was uncertain. Retry uses the same idempotency key and quantities.</p>}
         </form>}
         {prescription.state === "revoked" && <p>This prescription is revoked, so it cannot be reserved.</p>}
@@ -250,7 +261,7 @@ function ReservationStatus({
       </>}
 
       {isIssued && fulfillment.data && <form onSubmit={(event) => void reserve(event)} noValidate>
-        <fieldset disabled={pending || !!attempt || fulfillment.data.review_required}>
+        <fieldset disabled={pending || !!attempt || !!review || fulfillment.data.review_required}>
           <legend>Request a Pharmacy reservation</legend>
           {fulfillment.data.items.map((item) => {
             const available = Math.max(0, item.prescribed_quantity - item.dispensed_quantity - item.reserved_quantity);
@@ -269,13 +280,18 @@ function ReservationStatus({
             </label>;
           })}
         </fieldset>
-        <button type="submit" disabled={pending || fulfillment.data.items.every((item) => item.prescribed_quantity - item.dispensed_quantity - item.reserved_quantity <= 0)}>
-          {pending ? "Submitting…" : attempt ? "Retry reservation request" : "Request reservation"}
+        <button type="submit" hidden={!!review && !attempt} disabled={pending || fulfillment.data.items.every((item) => item.prescribed_quantity - item.dispensed_quantity - item.reserved_quantity <= 0)}>
+          {pending ? "Submitting…" : attempt ? "Retry reservation request" : "Review reservation"}
         </button>
-        {attempt && <p role="status">The response was uncertain. Retry uses the same idempotency key and quantities.</p>}
+        {review && !attempt && <div className="hospital-confirm" role="group" aria-label="Confirm: Request reservation">
+            <p>Reserve {review.body.items.reduce((sum, line) => sum + line.quantity, 0)} item(s) across {review.body.items.length} medicine line(s)?</p>
+            <button type="button" disabled={pending} onClick={() => void send(review)}>Request reservation</button>
+            <button type="button" disabled={pending} onClick={() => setReview(null)}>Keep editing</button>
+          </div>}
+          {attempt && <p role="status">The response was uncertain. Retry uses the same idempotency key and quantities.</p>}
       </form>}
       {error && <p role="alert">{error}</p>}
-      {created && <p role="status">Pharmacy returned reservation {created.id}, state {created.state}, expiring <time dateTime={created.expires_at}>{formatTime(created.expires_at)}</time>.</p>}
+      {created && <p role="status" className="command-receipt">Medicines reserved until <time dateTime={created.expires_at}>{formatTime(created.expires_at)}</time>.</p>}
 
       <section aria-label={`Reservation status for prescription ${prescription.id}`}>
         <h4>Reservations</h4>

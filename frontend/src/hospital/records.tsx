@@ -213,9 +213,12 @@ function ConsultationEditor({
               setFinalized(result);
               refresh();
             }}
-            notice="Finalization freezes the draft and creates an immutable medical record and optional prescription. Clinical work blocks appointment cancellation and rescheduling."
+            notice="Freezes the draft into a permanent medical record, with an optional prescription."
           >
-            <PrescriptionItems items={items} setItems={setItems} />
+            <details className="finalize-prescription" open={items.length > 0}>
+              <summary>Prescribed medicines ({items.length})</summary>
+              <PrescriptionItems items={items} setItems={setItems} />
+            </details>
           </CommandForm>
           </div>
         </>

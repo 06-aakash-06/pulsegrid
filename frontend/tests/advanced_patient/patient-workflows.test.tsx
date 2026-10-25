@@ -388,11 +388,12 @@ describe("Agent 6 patient workflows", () => {
     };
     setup(<PatientFulfillmentPanel counter />, handler);
     fireEvent.change(await screen.findByLabelText(/Catalog item …81 quantity \(up to 4\)/), { target: { value: "2" } });
-    fireEvent.click(screen.getByRole("button", { name: "Request reservation" }));
+    fireEvent.click(screen.getByRole("button", { name: "Review reservation" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Request reservation" }));
     await screen.findByRole("button", { name: "Retry reservation request" });
     expect(screen.getByLabelText("Your prescription")).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Retry reservation request" }));
-    await screen.findByText(/Pharmacy returned reservation 91, state reserved/);
+    await screen.findByText(/Medicines reserved until/);
     expect(body(request!)).toEqual({ prescription_id: "71", items: [{ prescription_item_id: "72", quantity: 2 }] });
     expect(headers(request!).get("Idempotency-Key")).toMatch(/^[0-9a-f-]{36}$/);
     expect(headers(attempts[0]).get("Idempotency-Key")).toBe(headers(attempts[1]).get("Idempotency-Key"));

@@ -3,7 +3,7 @@ import { DepartmentIcon } from "../design/DepartmentIcon";
 import { MedicineAutocomplete } from "../phase4";
 import { useAuth } from "../auth/authContext";
 import { useCallback, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { PatientFulfillmentPanel } from "../advanced/patient/PatientFulfillmentPanel";
 import { MedicineCabinet, PharmacyRoom, availabilityText, medicineLabel, useCursorPage } from "./pharmacyRoom";
 import type {
@@ -367,7 +367,7 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
         <section className="counter-lower" aria-labelledby="dispensing-entry-title">
           <h2 id="dispensing-entry-title">Dispensing</h2>
           <p>Validate a Records prescription and review its Pharmacy reservation before dispensing.</p>
-          <Link className="button" to="/pharmacist/prescriptions">Open dispensing workspace →</Link>
+          <Link className="button" to={selected ? `/pharmacist/prescriptions?medicine=${encodeURIComponent(selected)}` : "/pharmacist/prescriptions"}>Open dispensing workspace →</Link>
           {item && (
             <details className="catalog-edit-tools"><summary>Edit selected catalog entry</summary>
               <CommandForm
@@ -430,7 +430,9 @@ export function Fulfillment({
 }) {
   const [prescriptionId, setPrescriptionId] = useState<string | null>(null);
   const [prescription, setPrescription] = useState<Prescription | null>(null);
-  const [medicine, setMedicine] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const carried = searchParams.get("medicine");
+  const [medicine, setMedicine] = useState<string | null>(carried && /^[1-9][0-9]*$/.test(carried) ? carried : null);
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const reservation = useResource<Reservation>(selected ? `/api/v1/pharmacy/reservations/${selected}` : null);
