@@ -104,6 +104,7 @@
 .workspace-shell .directory-subroute { display: grid; }
 .workspace-shell .ops-footnote { padding: 12px 16px; border-radius: 6px; background: var(--surface-solid); color: var(--ink); }
 .workspace-shell :is(.directory-copy small,.directory-heading span,.directory-help small,.workspace-context,.welcome-motto,.visit-today-panel small) { color: var(--ink); }
+.workspace-shell .workspace-nav-link--active .directory-copy small { color: #e2ebdf; }
 @media (max-width: 767px) {
   .workspace-shell :is(button,.text-link,.week-arrow,.roster-pagination a) { min-height: 40px; padding-block: 10px; }
   .workspace-shell .department-page > .page-heading { padding: 14px; }

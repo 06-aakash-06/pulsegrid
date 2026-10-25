@@ -18,10 +18,6 @@
     3px 4px 0 #977b5770,
     0 12px 25px #2c1e171f;
 }
-.workspace-shell:has(.reference-consultation) .directory-subroute,
-.workspace-shell:has(.reception-scene) .directory-subroute {
-  display: none;
-}
 .workspace-shell:has(.reference-consultation) .workspace-nav-link,
 .workspace-shell:has(.reception-scene) .workspace-nav-link {
   min-height: 72px;
@@ -51,15 +47,6 @@
 .workspace-shell:has(.reception-scene) .directory-copy strong {
   font-size: 12px;
   font-weight: 570;
-}
-/* Raw identifiers and secondary tools remain reachable from the directory drawer. */
-.workspace-shell:has(.reference-consultation)
-  .workspace-sidebar:focus-within
-  .directory-subroute,
-.workspace-shell:has(.reception-scene)
-  .workspace-sidebar:focus-within
-  .directory-subroute {
-  display: flex;
 }
 .department-page:has(.reference-consultation) > .page-heading {
   display: none;
