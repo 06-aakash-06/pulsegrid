@@ -1,3 +1,4 @@
+import { SimulationSwitch } from "../simulation/TourPicker";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Brand } from "../components/Brand";
@@ -96,6 +97,7 @@ export function HospitalHeader({
       {onMenu && (
         <button
           className="menu-toggle"
+          data-tour="menu-toggle"
           aria-label={
             menuOpen ? "Close navigation menu" : "Open navigation menu"
           }
@@ -127,6 +129,7 @@ export function HospitalHeader({
         <kbd>⌘ K</kbd>
       </button>
       <div className="header-account">
+        <SimulationSwitch />
         <div className="notification-wrap" ref={noticeWrap}>
           <button
             ref={noticeTrigger}

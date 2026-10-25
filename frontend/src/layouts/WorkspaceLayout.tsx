@@ -107,6 +107,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
             const subroute = index > 0 && itemDepartment === departmentFor(workspace.basePath, workspace.navigation[index - 1].path);
             return <NavLink key={item.path} end to={`${workspace.basePath}/${item.path}`}
               aria-label={item.label}
+              data-tour={`nav-${item.path}`}
               className={({ isActive }) => `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}${subroute ? " directory-subroute" : ""}`}>
               <span className="directory-number">{String(index + 1).padStart(2, "0")}</span>
               <DepartmentIcon department={itemDepartment} />
@@ -136,6 +137,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         <span className="workspace-context">{workspace.name}</span>
         <button
           className="sign-out-button"
+          data-tour="sign-out"
           type="button"
           onClick={() => void handleLogout()}
         >

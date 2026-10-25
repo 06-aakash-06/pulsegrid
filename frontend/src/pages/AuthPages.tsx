@@ -167,7 +167,7 @@ export function LoginPage() {
         {fieldErrors.email ? <p className="field-error" id="login-email-error" role="alert">{fieldErrors.email}</p> : null}
         {fieldErrors.password ? <p className="field-error" id="login-password-error" role="alert">{fieldErrors.password}</p> : null}
         {error ? <p className="form-message form-message--error" role="alert">{error}</p> : null}
-        <button className="button button--full" disabled={isSubmitting} type="submit">
+        <button className="button button--full" disabled={isSubmitting} type="submit" data-tour="sign-in-submit">
           {isSubmitting ? "Signing in…" : "Sign in"}
         </button>
       </form>
@@ -397,7 +397,7 @@ function DemoAccounts({ onPick }: { onPick: (email: string) => void }) {
       <h2 id="auth-demo-title">Quick sign-in</h2>
       <p>Choose a role to fill in its sign-in details.</p>
       <div className="auth-demo__roles">
-        {accounts.map(([role, email]) => <button key={email} type="button" onClick={() => onPick(email)}>{role}</button>)}
+        {accounts.map(([role, email]) => <button key={email} type="button" data-tour={`quick-sign-in-${email.split("@")[0]}`} onClick={() => onPick(email)}>{role}</button>)}
       </div>
     </section>
   );

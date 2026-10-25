@@ -20,3 +20,4 @@ import "./styles/layout-system.css";
 
 import "./styles/declutter.css";
 import "./styles/polish.css";
+import "./styles/simulation.css";
