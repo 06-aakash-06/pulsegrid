@@ -9,8 +9,10 @@ for name in ['admission-password','admission-hmac','cache-password']:
  p=secretpath/name
  if not p.exists():p.write_text(secrets.token_hex(32));p.chmod(0o600)
 admission=(secretpath/'admission-password').read_text().strip();cache=(secretpath/'cache-password').read_text().strip()
-# Redis server ACL files are private and never committed.
-(secretpath/'admission.acl').write_text(f'user default off\nuser admission on >{admission} ~pg:admission:v1:* +ping +time +type +hmget +hset +pexpire +evalsha +script|load\n')
+# Redis replays Lua effects as the disabled default user during AOF loading.
+# Permit only those persisted effects; the default identity cannot log in.
+# Runtime callers retain their separate, namespace-scoped admission identity.
+(secretpath/'admission.acl').write_text(f'user default off ~pg:admission:v1:* +select +hset +pexpireat +del\nuser admission on >{admission} ~pg:admission:v1:* +ping +time +type +hmget +hset +pexpire +evalsha +script|load\n')
 (secretpath/'cache.acl').write_text(f'user default off\nuser doctor on >{cache} ~pg:cache:v1:doctor:* +ping +get +set +del\n')
 for name in ['admission.acl','cache.acl']:(secretpath/name).chmod(0o600)
 if not (secretpath/'cache.json').exists(): (secretpath/'cache.json').write_text(json.dumps({'epoch':1,'nodes':{n:f'redis://doctor:{cache}@{n}:6379/0' for n in ['cache_a','cache_b']}}));(secretpath/'cache.json').chmod(0o600)
