@@ -3,6 +3,7 @@ import asyncio
 from types import SimpleNamespace
 from uuid import uuid4
 from .features.waitlist import worker as waitlist, offers
+from .features.waitlist.eligibility import fetch as fetch_eligibility
 from .features.journey import worker as journey
 
 
@@ -13,8 +14,7 @@ def worker_request(app):
 async def worker_loop(app):
     factory=app.state.database.session_factory
     async def fetch(ids):
-        return await app.state.snapshot_client.request(worker_request(app),'patient','patients:waitlist-eligibility',
-            '/internal/v1/patients/waitlist-eligibility','POST',{'patient_ids':ids})
+        return await fetch_eligibility(worker_request(app),ids)
     while True:
         try:
             await waitlist.repair(factory)

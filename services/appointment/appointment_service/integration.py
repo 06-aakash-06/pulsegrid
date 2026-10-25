@@ -80,7 +80,7 @@ async def change(session,request,principal,aid,body,prepared,identity=None):
 
 async def prepare_release(request,booking):
     from .features.waitlist.operations import prepare
+    from .features.waitlist.eligibility import fetch as fetch_eligibility
     async def fetch(ids):
-        return await request.app.state.snapshot_client.request(request,'patient','patients:waitlist-eligibility',
-            '/internal/v1/patients/waitlist-eligibility','POST',{'patient_ids':ids})
+        return await fetch_eligibility(request,ids)
     return await prepare(core.session_factory(request),booking['slot_id'],fetch)

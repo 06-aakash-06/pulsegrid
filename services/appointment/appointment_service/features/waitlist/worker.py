@@ -63,9 +63,15 @@ async def run_once(factory,request,fetch,create_episode=None,*,promotion_policy=
         job = (await session.execute(text('SELECT * FROM promotion_jobs WHERE slot_id=:slot'),dict(slot=sid))).mappings().one()
         if job['pending']:
             attempts = job['attempt_count']+1
+            next_attempt = ctx.now+timedelta(seconds=min(60,2**min(attempts-1,6)))
+            offer_expiry = (await session.execute(select(m.waitlist_offers.c.expires_at).where(
+                m.waitlist_offers.c.slot_id == sid, m.waitlist_offers.c.state == 'pending'))).scalar_one_or_none()
+            if offer_expiry is not None:
+                # Retry backoff cannot postpone the durable capacity-release deadline.
+                next_attempt = min(next_attempt,offer_expiry)
             await session.execute(text('''UPDATE promotion_jobs SET attempt_count=:attempts,
                 next_attempt_at=:next,lease_token=NULL,lease_expires_at=NULL,version=version+1
-                WHERE slot_id=:slot'''),dict(attempts=attempts,next=ctx.now+timedelta(seconds=min(60,2**min(attempts-1,6))),slot=sid))
+                WHERE slot_id=:slot'''),dict(attempts=attempts,next=next_attempt,slot=sid))
         return 200,{'appointment_id':str(result['id']) if result else None}
 
     await core.command(factory,identity,op.digest({'slot_id':str(sid),'job_version':version}),work)
