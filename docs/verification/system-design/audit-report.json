@@ -1,0 +1,13 @@
+{
+  "status": "blocked",
+  "route": "/system-design",
+  "requestedWidths": [1536, 1280, 390],
+  "executedPages": 0,
+  "executedTourSteps": 0,
+  "screenshots": [],
+  "reason": "Host sandbox denies localhost listen (EPERM) and Playwright Chromium MachPort bootstrap (permission denied).",
+  "typecheck": "pass",
+  "tests": { "status": "pass", "files": 18, "passed": 193 },
+  "build": "pass",
+  "visualAcceptance": "pending outside sandbox"
+}

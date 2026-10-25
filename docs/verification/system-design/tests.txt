@@ -1,0 +1,13 @@
+
+> pulsegrid-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/aaditpraveennath/Documents/COLLEGE/SEM5LABS/SystemDesign/MINIP2/pulsegrid-ui/frontend
+
+
+ Test Files  18 passed (18)
+      Tests  193 passed (193)
+   Start at  22:51:37
+   Duration  8.22s (transform 5.02s, setup 4.89s, import 9.21s, tests 26.50s, environment 12.73s)
+
