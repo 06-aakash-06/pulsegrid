@@ -1273,8 +1273,7 @@ async def staff_status(
         if caller == "doctor":
             _require_role(current_roles, "hospital_admin")
         elif not (
-            target_id == int(principal.user_id)
-            and "patient" in current_roles
+            "patient" in current_roles
             and actor_profile is not None
             and principal.patient_id == str(actor_profile["id"])
         ):
@@ -1282,6 +1281,12 @@ async def staff_status(
         user, profile, roles = await _load_account(session, target_id, lock=True)
         if user is None or profile is None:
             raise APIError(422, "invalid_reference", "The user reference is invalid.")
+        if caller == "records" and target_id != int(principal.user_id) and (
+            user["account_state"] != "active" or "doctor" not in roles
+        ):
+            # The delegated patient is the grant owner, not its doctor grantee.
+            # This leaf validates that grantee only; it is not a staff directory.
+            raise HTTPException(403)
         await _domain_audit(
             session,
             request,

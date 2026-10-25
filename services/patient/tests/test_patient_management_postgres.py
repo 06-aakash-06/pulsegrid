@@ -630,3 +630,42 @@ def test_service_only_waitlist_eligibility_is_current_and_audited(context):
         metadata=connection.execute(select(audit_entries.c.canonical_metadata).where(audit_entries.c.canonical_metadata['action'].astext=='patient.waitlist.eligibility_read').order_by(audit_entries.c.sequence.desc()).limit(1)).scalar_one()
         assert metadata['actor_type']=='service:appointment'
         assert 'actor_user_id' not in metadata
+
+
+def test_records_can_validate_active_doctor_grantee_for_self_patient(context):
+    patient = _seed_user(context, "Synthetic Grant Owner", ["patient"])
+    grantee = _seed_user(context, "Synthetic Doctor Grantee", ["doctor"])
+    response = context["client"].get(
+        f"/internal/v1/users/{grantee['id']}/staff-status",
+        headers=_service_headers(context, "records", "users:staff-status", patient),
+    )
+    assert response.status_code == 200, response.text
+    assert response.json() == {
+        "user_id": str(grantee["id"]),
+        "active": True,
+        "roles": ["doctor"],
+        "version": 1,
+    }
+
+
+@pytest.mark.parametrize(
+    ("roles", "state"),
+    [(["hospital_admin"], "active"), (["receptionist"], "active"),
+     (["doctor"], "disabled")],
+)
+def test_records_grantee_validation_does_not_expose_other_staff(context, roles, state):
+    patient = _seed_user(context, "Synthetic Grant Owner", ["patient"])
+    target = _seed_user(context, "Synthetic Invalid Grantee", roles, state)
+    assert context["client"].get(
+        f"/internal/v1/users/{target['id']}/staff-status",
+        headers=_service_headers(context, "records", "users:staff-status", patient),
+    ).status_code == 403
+
+
+def test_records_grantee_validation_requires_delegated_patient_authority(context):
+    actor = _seed_user(context, "Synthetic Reception Actor", ["receptionist"])
+    target = _seed_user(context, "Synthetic Doctor Grantee", ["doctor"])
+    assert context["client"].get(
+        f"/internal/v1/users/{target['id']}/staff-status",
+        headers=_service_headers(context, "records", "users:staff-status", actor),
+    ).status_code == 403
