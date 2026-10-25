@@ -973,6 +973,9 @@ async function dispatchMockRequest(request: MockRequest): Promise<MockResponse> 
   if (path === "/api/v1/auth/register" && method === "POST") {
     return registerPatient(request);
   }
+  if (path === "/api/v1/patients/health/ready" && method === "GET") {
+    return ok({ status: "ready", service: "patient", application: "ready" });
+  }
 
   const user = userFromToken(request.headers.authorization);
   if (!user) return error(401, "unauthenticated", "Sign in to continue.");

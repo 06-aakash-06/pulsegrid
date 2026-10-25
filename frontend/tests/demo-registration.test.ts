@@ -18,6 +18,11 @@ beforeEach(() => { vi.stubGlobal("crypto", webcrypto); resetMockState(); });
 afterEach(() => vi.unstubAllGlobals());
 
 describe("public demo patient registration", () => {
+  it("reports the Patient service ready without a session so the sign-up preflight passes", async () => {
+    const result = await request("/api/v1/patients/health/ready");
+    expect(result.status).toBe(200);
+    expect(result.body).toEqual({ status: "ready", service: "patient", application: "ready" });
+  });
   it("creates a new patient, signs in with the chosen password and returns that patient's profile", async () => {
     const result = await register();
     expect(result.status).toBe(201);
