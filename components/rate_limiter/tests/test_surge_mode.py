@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from pulsegrid_rate_limiter import IdentityDeriver, RateLimiter, RoutePolicy, build_buckets
 from pulsegrid_rate_limiter.limiter import SURGE_KEY
-from test_limiter import SECRET, bucket, config
+from .test_limiter import SECRET, bucket, config
 
 
 def actor_digest():
@@ -124,7 +124,7 @@ async def test_surge_quotas_are_shared_across_replicas_and_keep_critical_capacit
 
 
 async def test_redis_failure_uses_unknown_protective_profile_and_finite_class_a():
-    from test_limiter import FailedRedis
+    from .test_limiter import FailedRedis
     limiter = RateLimiter(config(), redis_client=FailedRedis(OSError('offline')))
     try:
         unknown = await limiter.surge_mode()
@@ -149,7 +149,7 @@ async def test_redis_failure_uses_unknown_protective_profile_and_finite_class_a(
 
 async def test_small_surge_auth_bucket_uses_bounded_four_replica_fallback():
     from pulsegrid_rate_limiter import AdmissionAdapter
-    from test_limiter import FailedRedis
+    from .test_limiter import FailedRedis
 
     limiter = RateLimiter(config(max_replicas=4), redis_client=FailedRedis(OSError('offline')))
     adapter = AdmissionAdapter(limiter, 'patient', {})
