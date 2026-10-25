@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
-import { handleMockRequest } from "./handlers";
+import { handleMockRequest, resetMockState } from "./handlers";
 
 const LATENCY_MS = 90;
 
@@ -25,6 +25,17 @@ export function mockApiPlugin(): Plugin {
     name: "pulsegrid-dev-mock-api",
     apply: "serve",
     configureServer(server) {
+      // Lets local end-to-end checks start from the original sample hospital.
+      server.middlewares.use("/__mock/reset", (request: IncomingMessage, response: ServerResponse) => {
+        if (request.method !== "POST") {
+          response.statusCode = 405;
+          response.end();
+          return;
+        }
+        resetMockState();
+        response.statusCode = 204;
+        response.end();
+      });
       server.middlewares.use("/api", (request: IncomingMessage, response: ServerResponse) => {
         void (async () => {
           const url = new URL(`/api${request.url ?? ""}`, "http://mock.local");

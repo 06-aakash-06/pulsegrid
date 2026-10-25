@@ -1,3 +1,4 @@
+import { announceCommandSuccess } from "../simulation/engine";
 import { AdvancedLookup, ItemDetails, useInAdvanced, useInDetails, PageRefresh } from "../components/PageTools";
 import { StatusBadge } from "../components/StatusBadge";
 import { m } from "motion/react";
@@ -488,7 +489,10 @@ export function CommandForm<T = unknown>({
   successMessage,
   onReload,
   reloadLabel = "Reload latest version",
+  tour,
 }: {
+  /** `data-tour` id for the walkthrough; the review, confirm and cancel buttons get `-review`, `-confirm` and `-cancel`. */
+  tour?: string;
   title: string;
   path: string;
   fields?: Field[];
@@ -561,6 +565,7 @@ export function CommandForm<T = unknown>({
       if (flash) flash(message);
       else setSuccess(message);
       onSuccess?.(response.data, response.etag);
+      announceCommandSuccess(title);
     } catch (err) {
       setError(errorMessage(err));
       setStale(err instanceof ApiError && err.status === 412);
@@ -581,6 +586,7 @@ export function CommandForm<T = unknown>({
     <form
       className="hospital-form"
       noValidate
+      data-tour={tour}
       onSubmit={(e) => {
         e.preventDefault();
         if (pending || attempt) return;
@@ -669,6 +675,7 @@ export function CommandForm<T = unknown>({
           <button
             type="button"
             disabled={pending}
+            data-tour={tour && `${tour}-confirm`}
             onClick={() => void send(attempt)}
           >
             {ambiguous ? "Retry original command" : confirm}
@@ -677,6 +684,7 @@ export function CommandForm<T = unknown>({
             <button
               type="button"
               disabled={pending}
+              data-tour={tour && `${tour}-cancel`}
               onClick={() => setAttempt(null)}
             >
               Keep editing
@@ -684,7 +692,7 @@ export function CommandForm<T = unknown>({
           )}
         </m.div>
       ) : (
-        <button type="submit" disabled={pending || (conditional && !etag)}>
+        <button type="submit" disabled={pending || (conditional && !etag)} data-tour={tour && `${tour}-review`}>
           {review}
         </button>
       )}
