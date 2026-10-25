@@ -167,6 +167,9 @@ describe("tour definitions", () => {
   const source = sources.join("\n");
   // Literal ids from `data-tour="…"` and from components' `tour="…"` props (which add -review, -confirm and -cancel).
   const literal = new Set([...source.matchAll(/data-tour="([^"]+)"/g), ...source.matchAll(/data-tour=\{[^}]*?"([a-z0-9-]+)"/g)].map((m) => m[1]));
+  for (const [expression] of source.matchAll(/data-tour=\{[^}]+\}/g)) {
+    for (const [, id] of expression.matchAll(/"([a-z0-9-]+)"/g)) literal.add(id);
+  }
   for (const [, id] of source.matchAll(/\btour="([^"]+)"/g)) for (const suffix of ["", "-review", "-confirm", "-cancel"]) literal.add(`${id}${suffix}`);
   // Ids built from data, such as `nav-${item.path}`; each prefix must appear in a data-tour template.
   const templates = [...source.matchAll(/(?:data-tour|tour)=\{`([a-z-]+)\$\{/g)].map((m) => m[1]);

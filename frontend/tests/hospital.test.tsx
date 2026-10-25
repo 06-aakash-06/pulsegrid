@@ -1186,9 +1186,9 @@ describe("final audit regressions", () => {
     const nav = await screen.findByRole("navigation", { name: "Hospital administrator navigation" });
     const links = within(nav).getAllByRole("link");
     expect(links.map(link => link.getAttribute("href")).sort()).toEqual([
-      "/admin/dashboard", "/admin/staff", "/admin/doctors", "/admin/control-room", "/admin/traces", "/admin/settings",
+      "/admin/dashboard", "/admin/staff", "/admin/doctors", "/admin/control-room", "/admin/traces", "/admin/settings", "/system-design",
     ].sort());
-    expect(links.map(link => link.querySelector(".directory-number")?.textContent)).toEqual(["01", "02", "03", "04", "05", "06"]);
+    expect(links.map(link => link.querySelector(".directory-number")?.textContent)).toEqual(["01", "02", "03", "04", "05", "06", "07"]);
     expect(within(nav).getByRole("link", { name: "Staff & roles" })).toHaveAttribute("aria-current", "page");
   });
 });

@@ -8,4 +8,6 @@ import { patientTour } from "./patient";
 import { pharmacistTour } from "./pharmacist";
 import { receptionistTour } from "./receptionist";
 
-export const allTours: Tour[] = [patientTour, receptionistTour, doctorTour, pharmacistTour, billingTour, emergencyTour, adminTour, opsTour];
+import { systemDesignTour } from "./systemDesign";
+
+export const allTours: Tour[] = [patientTour, receptionistTour, doctorTour, pharmacistTour, billingTour, emergencyTour, adminTour, opsTour, systemDesignTour];

@@ -6,7 +6,7 @@ import { resolve } from 'node:path';
 // Drives every role's Simulation Mode walkthrough by clicking only what the guide highlights.
 const base = process.env.TOUR_E2E_URL || 'http://127.0.0.1:5173';
 const out = resolve(process.env.TOUR_E2E_OUTPUT || '../docs/verification/simulation');
-const sizes = [[1536, 864], [390, 844]].filter(([w]) => !process.env.TOUR_E2E_WIDTH || w === Number(process.env.TOUR_E2E_WIDTH));
+const sizes = [[1536, 864], [1280, 800], [390, 844]].filter(([w]) => !process.env.TOUR_E2E_WIDTH || w === Number(process.env.TOUR_E2E_WIDTH));
 const tours = (process.env.TOUR_E2E_ROLES || 'patient,receptionist,doctor,pharmacist,billing,emergency,admin,ops').split(',');
 
 async function chromiumPath(root) {
@@ -36,9 +36,9 @@ try {
         const reset = await page.request.post(`${base}/__mock/reset`);
         if (reset.status() !== 204) throw Error(`could not reset the sample hospital (${reset.status()}); run against npm run dev:mock`);
         await page.goto(`${base}/login`);
-        await page.locator(`[data-tour="quick-sign-in-${tour}"]`).click();
+        await page.locator(`[data-tour="quick-sign-in-${tour === 'system-design' ? 'patient' : tour}"]`).click();
         await page.locator('[data-tour="sign-in-submit"]').click();
-        await page.waitForURL(`**/${tour}/dashboard`);
+        await page.waitForURL(`**/${tour === 'system-design' ? 'patient' : tour}/dashboard`);
         await page.locator('[data-tour="simulation-switch"]').click();
         await page.locator(`[data-tour="simulation-tour-${tour}"]`).click();
         await page.locator('[data-tour="simulation-start"]').click();

@@ -1,0 +1,69 @@
+.system-design-lab { max-width:1480px !important; margin:auto; padding:24px !important; }
+.lab-grid.page-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; align-items:start; }
+.lab-card { min-width:0; padding:24px; border:1px solid var(--line,#d8d0c3); border-radius:16px; background:var(--surface-solid,#fffaf1); color:var(--ink,#263c3b); box-shadow:0 6px 24px #2b46400a; }
+.lab-card :is(h2,h3,p) { margin:0; }
+.lab-card h2 { font-size:24px; line-height:1.25; margin:8px 0 12px; }
+.lab-card h3 { font-size:14px; line-height:1.5; font-weight:700; }
+.lab-card p { font-size:14px; line-height:1.6; }
+.lab-card small,.lab-card code,.lab-card pre,.lab-card li { font-size:12px; line-height:1.6; }
+.lab-card small { display:block; color:#506662; }
+.lab-eyebrow { font-size:12px; letter-spacing:.07em; text-transform:uppercase; color:#47685e; }
+.lab-card a { color:#206560; text-decoration:underline; text-underline-offset:3px; }
+.lab-used { margin-top:12px !important; }
+.lab-intro { max-width:84ch; margin:16px 0 24px; padding:16px; background:var(--surface-solid,#fffaf1); border-radius:12px; line-height:1.6; }
+.lab-demo { display:flex; flex-direction:column; gap:12px; margin:20px 0; padding:16px; border-radius:12px; background:#eff3ec; border:1px solid #dce4d8; }
+.lab-demo h3 { color:#275c56; }
+.lab-card label { display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:600; min-width:0; }
+.lab-card input,.lab-card select { width:100%; min-width:0; min-height:44px; padding:8px 10px; border:1px solid #b7c6be; border-radius:8px; color:#263c3b; background:#fffdf7; font:inherit; }
+.lab-card button { min-height:44px; border:1px solid #99b4a9; border-radius:8px; padding:10px 14px; background:#fffaf1; color:#225b55; font-size:13px; font-weight:600; cursor:pointer; white-space:normal; overflow-wrap:anywhere; }
+.lab-card button:hover:not(:disabled) { background:#dce9df; }
+.lab-card button:disabled { opacity:.55; cursor:default; }
+.lab-card :is(button,input,select,a):focus-visible,.lab-nav-link:focus-visible { outline:3px solid #207d76; outline-offset:3px; }
+.lab-controls,.lab-fields { display:flex; gap:8px; flex-wrap:wrap; }
+.lab-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.lab-card .lab-checkbox { flex-direction:row; align-items:center; gap:10px; }
+.lab-checkbox input { width:20px; min-height:24px; }
+.lab-card progress { appearance:none; height:24px; width:100%; border:1px solid #a6b9ad; border-radius:8px; overflow:hidden; background:#e0e5d9; }
+.lab-card progress::-webkit-progress-bar { background:#e0e5d9; }
+.lab-card progress::-webkit-progress-value { background:#33877a; transition:width .2s; }
+.lab-card progress::-moz-progress-bar { background:#33877a; }
+.lab-measured { border-top:1px solid #d9d4c7; padding-top:16px; }
+.lab-figure { padding:12px 0; border-bottom:1px solid #e6dfd1; }
+.lab-figure strong { display:block; font-size:18px; color:#245d56; line-height:1.4; }
+.lab-figure a { display:inline-block; font-size:12px; margin-top:6px; overflow-wrap:anywhere; }
+.lab-source-path { display:block; font-size:12px; }
+.lab-card footer { padding-top:16px; }
+.lab-card footer p { margin-top:4px; }
+.lab-ring-layout { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.lab-ring { width:220px; max-width:100%; flex:0 1 220px; }
+.lab-legend { display:flex; flex-direction:column; gap:6px; font-size:12px; }
+.lab-legend span { display:flex; align-items:center; gap:8px; }
+.lab-legend i { display:block; width:12px; height:12px; border-radius:50%; }
+.lab-trie,.lab-flow { display:flex; flex-wrap:wrap; gap:6px; font:12px monospace; }
+.lab-trie span,.lab-flow span { padding:6px; border:1px solid #c8d7cb; border-radius:6px; }
+.lab-matches { margin:0; padding-left:20px; }
+.lab-bits { display:flex; flex-wrap:wrap; gap:4px; }
+.lab-bits button { flex-basis:64px; padding:8px 4px; }
+.lab-bits button:nth-child(2) { background:#d0e5dc; }
+.lab-bits button:nth-child(3) { background:#e4decb; }
+.lab-bits button:nth-child(4) { background:#dbe2ea; }
+.lab-code,.lab-token code { overflow-wrap:anywhere; font-family:monospace; }
+.lab-token { display:flex; flex-direction:column; gap:12px; }
+.lab-token code { display:block; padding:8px; border:1px solid #cbd8ca; border-radius:6px; }
+.lab-service { display:flex; flex-direction:column; gap:8px; padding-top:8px; border-top:1px solid #d5dfd2; }
+.lab-response,.lab-log { white-space:pre-wrap; overflow-wrap:anywhere; max-height:240px; overflow:auto; background:#fffdf7; border:1px solid #d1d9cb; border-radius:8px; padding:12px; margin:0; }
+.lab-log { min-height:160px; }
+.lab-databases { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.lab-databases>div { display:flex; flex-direction:column; align-items:center; text-align:center; border:1px solid #bfd0c2; border-radius:8px; padding:10px 4px; background:#fffaf1; }
+.lab-databases strong { font-size:12px; }
+.lab-databases small { font-size:12px; }
+.lab-databases>div>span { font-size:24px; color:#367568; }
+.lab-blocked { border-left:3px solid #a37338; padding:12px; background:#f9efdc; }
+.lab-blocked ol { padding-left:20px; margin-bottom:0; }
+.lab-nav-link { display:inline-flex; align-items:center; min-height:44px; color:#245f59; font-size:12px; font-weight:600; text-decoration:underline; text-align:center; padding:4px 8px; }
+.system-design-shell .workspace-content { width:100%; }
+@media(max-width:899px) { .lab-grid.page-grid { grid-template-columns:minmax(0,1fr); } .system-design-lab { padding:16px !important; } .lab-card { padding:16px; } .lab-demo { padding:12px; } }
+@media(max-width:599px) { .hospital-header:has(.lab-nav-link) .global-search { display:none; } .hospital-header:has(.lab-nav-link) .notification-wrap { display:none; } .lab-nav-link { max-width:90px; line-height:1.25; padding:4px; } .lab-databases { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(prefers-reduced-motion:reduce) { .lab-card progress::-webkit-progress-value { transition:none; } }
+@media(max-width:1400px) { .hospital-header:has(.lab-nav-link) .hospital-tagline { display:none; } .hospital-header:has(.lab-nav-link) { gap:12px; } }
+@media(max-width:389px) { .hospital-header:has(.lab-nav-link) .brand-name { font-size:16px; } .hospital-header:has(.lab-nav-link) { gap:6px; } }

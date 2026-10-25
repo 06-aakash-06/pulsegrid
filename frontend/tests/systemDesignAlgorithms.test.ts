@@ -27,6 +27,11 @@ describe('browser algorithms', () => {
     expect(surgeBudget(100, 'A', true)).toBe(100);
     expect(surgeBudget(100, 'B', true)).toBe(60);
     expect(surgeBudget(100, 'C', true)).toBe(15);
+    expect(surgeBudget(1, 'C', true)).toBe(1);
+    const fractional = new TokenBucket(1, .001, 0);
+    expect(fractional.accept(0)).toBe(true);
+    expect(fractional.accept(999999)).toBe(false);
+    expect(fractional.accept(1000000)).toBe(true);
     expect(() => new TokenBucket(-1, 1)).toThrow();
     expect(() => bucket.burst(-1)).toThrow();
   });
