@@ -1,3 +1,4 @@
+import { AdvancedLookup, ItemDetails, PageRefresh } from "../../components/PageTools";
 import { useLocalDemo } from "../../design/localDemo";
 import { lazy, Suspense } from "react";
 import { DepartmentIcon } from "../../design/DepartmentIcon";
@@ -110,7 +111,7 @@ export function PatientWaitlistPage() {
     setJoinPending(true);
     try {
       const result = await sendCommand<Waitlist>(api, "/api/v1/appointments/waitlists", body);
-      setJoinNotice(`Waitlist entry ${result.data.id} was created with state “${result.data.state}”.`);
+      setJoinNotice(`You joined the waitlist. Status: ${result.data.state}.`);
       setSlotId("");
       setScheduleRevision("");
       list.reload();
@@ -157,14 +158,15 @@ export function PatientWaitlistPage() {
   if (gate !== "ready") return <PatientGate state={gate} />;
   return (
     <div className="patient-workflow waitlist-register">
-      <section className="patient-workflow__panel" aria-labelledby="waitlist-join-title">
+      <p>Check <Link to="/patient/appointments">Appointments</Link> for an available slot first. For a booked-out slot, ask reception for a waitlist reference and use Advanced lookup.</p>
+      <AdvancedLookup title="Join a waitlist using a slot reference">      <section className="patient-workflow__panel" aria-labelledby="waitlist-join-title">
         <h2 id="waitlist-join-title">Join a waitlist</h2>
         <p>Waitlists accept an occupied future slot. Free slots return an availability conflict; use <Link to="/patient/appointments">Appointments</Link> to book those.</p>
         <p>Enter the slot ID and accepted schedule revision supplied for the slot. The current patient ID is read from your authenticated profile.</p>
         <form onSubmit={(event) => void join(event)} noValidate>
           <label htmlFor="patient-waitlist-slot">Slot ID</label>
           <input id="patient-waitlist-slot" inputMode="numeric" value={slotId} onChange={(event) => setSlotId(event.target.value)} aria-describedby="patient-waitlist-slot-help" />
-          <span id="patient-waitlist-slot-help" className="patient-workflow__hint">Positive decimal ID, at most 9223372036854775807.</span>
+          <span id="patient-waitlist-slot-help" className="patient-workflow__hint">Enter the slot reference supplied by reception.</span>
           <label htmlFor="patient-waitlist-revision">Accepted schedule revision</label>
           <input id="patient-waitlist-revision" inputMode="numeric" value={scheduleRevision} onChange={(event) => setScheduleRevision(event.target.value)} />
           <button type="submit" disabled={joinPending}>{joinPending ? "Joining…" : "Join waitlist"}</button>
@@ -173,6 +175,7 @@ export function PatientWaitlistPage() {
         {joinNotice && <p role="status">{joinNotice}</p>}
       </section>
 
+</AdvancedLookup>
       <section className="patient-workflow__panel" aria-labelledby="waitlist-list-title">
         <h2 id="waitlist-list-title">Your waitlist entries</h2>
         {profile.loading&&<p role="status">Loading your patient profile…</p>}
@@ -182,31 +185,31 @@ export function PatientWaitlistPage() {
         {!!profile.data && !list.loading && !list.error && list.items.length === 0 && <p>No waitlist entries were returned for this patient.</p>}
         {list.items.map((entry) => (
           <article className="patient-workflow__item" key={entry.id}>
-            <h3>Waitlist entry …{entry.id.slice(-4)}</h3><details className="owner-identifiers"><summary>Entry and slot references</summary>Entry {entry.id} · Slot {entry.slot_id}</details>
+            <h3>Waitlist request</h3><ItemDetails>Entry {entry.id} · Slot {entry.slot_id}</ItemDetails>
             <dl className="patient-workflow__facts">
-              <div><dt>Slot</dt><dd>…{entry.slot_id.slice(-4)}</dd></div>
+
               <div><dt>State</dt><dd>{entry.state}</dd></div>
               <div><dt>Joined</dt><dd><time dateTime={entry.joined_at}>{formatTime(entry.joined_at)}</time></dd></div>
-              {entry.promoted_appointment_id && <div><dt>Promoted appointment</dt><dd>…{entry.promoted_appointment_id.slice(-4)}</dd></div>}
+              {entry.promoted_appointment_id && <div><dt>Appointment</dt><dd>Confirmed</dd></div>}
               {entry.skip_reason && <div><dt>Skip reason</dt><dd>{entry.skip_reason}</dd></div>}
             </dl>
             {entry.state === "waiting" && <>
               <WaitlistCount api={api} slotId={entry.slot_id} />
-              <p className="patient-workflow__muted">The API provides the slot’s waiting count, not your exact position.</p>
+              <p className="patient-workflow__muted">Your exact position is not available.</p>
               <label htmlFor={`waitlist-reason-${entry.id}`}>Reason to withdraw</label>
-              <input id={`waitlist-reason-${entry.id}`} maxLength={500} defaultValue="I no longer need this waitlist entry." />
+              <input id={`waitlist-reason-${entry.id}`} maxLength={500} placeholder="I no longer need this waitlist entry." />
               <button type="button" disabled={pageLoading} onClick={() => {
                 const input = document.getElementById(`waitlist-reason-${entry.id}`) as HTMLInputElement | null;
                 void withdraw(entry, input?.value ?? "");
               }}>Withdraw entry</button>
             </>}
-            {entry.state === "promoted" && <p role="status">Promotion created a confirmed appointment. There is no offer acceptance or rejection action in the frozen contract.</p>}
+            {entry.state === "promoted" && <p role="status">Your appointment is confirmed. Find it in Appointments.</p>}
           </article>
         ))}
         {listActionError && <p role="alert">{listActionError}</p>}
         {list.nextCursor && <button type="button" disabled={list.loadingMore} onClick={() => void list.loadMore()}>{list.loadingMore ? "Loading…" : "Load more entries"}</button>}
         {list.loadMoreError && <div role="alert"><p>{list.loadMoreError}</p><button type="button" onClick={() => void list.loadMore()}>Retry loading entries</button></div>}
-        <button type="button" onClick={list.reload}>Refresh waitlists</button>
+        <PageRefresh type="button" onClick={list.reload}>Refresh waitlists</PageRefresh>
       </section>
     </div>
   );
@@ -246,6 +249,7 @@ export function PatientCheckinPage({
   renderQr?: (sameOriginUrl: string) => ReactNode;
 } = {}) {
   const demo = useLocalDemo();
+  const [manualMode,setManualMode]=useState(false);
   const { api, gate } = usePatientAccess();
   const [landing, setLanding] = useState<LandingToken | null>(null);
   const [invalidLanding, setInvalidLanding] = useState(false);
@@ -393,10 +397,11 @@ export function PatientCheckinPage({
 
   if (gate !== "ready") return <PatientGate state={gate} />;
   const activeIssueUrl = issue ? safeLandingUrl(issue) : null;
+  const manualOpen = manualMode || !!appointmentId;
   return (
     <div className="patient-workflow waiting-station">
-      <aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Check In Here</h2><p>Scan your secure QR code.</p><div className="scanner-frame"><Suspense fallback={<p role="status">Loading scanner…</p>}><PatientScanner disabled={confirmPending || issuePending} onScan={scan=>{setAppointmentId(scan.appointmentId);setManualToken(scan.token);setLanding(null);setInvalidLanding(false);setIssue(null);setActionError(null);setConfirmationKey(null);setResult(null);}}/></Suspense></div><strong>PulseGrid</strong><p>Review your appointment before confirming check-in.</p></aside>
-      <section className="patient-workflow__panel" aria-labelledby="checkin-title">
+      <aside className="checkin-kiosk"><DepartmentIcon department="waiting"/><h2>Check In Here</h2><p>Scan your secure QR code.</p><div className="scanner-frame"><Suspense fallback={<p role="status">Loading scanner…</p>}><PatientScanner disabled={confirmPending || issuePending} onScan={scan=>{setAppointmentId(scan.appointmentId);setManualToken(scan.token);setLanding(null);setInvalidLanding(false);setIssue(null);setActionError(null);setConfirmationKey(null);setResult(null);}}/></Suspense></div><strong>PulseGrid</strong><p>Review your appointment before confirming check-in.</p><button type="button" onClick={()=>setManualMode(true)}>Check in manually</button></aside>
+      <details id="manual-checkin" className="patient-workflow__panel" open={manualOpen || undefined}><summary>Check in manually</summary><section aria-labelledby="checkin-title">
         <h2 id="checkin-title">Secure QR check-in</h2>
         <p>Opening a QR link never checks you in. Confirm below to send the authenticated check-in command.</p>
         {landing && <p role="status">QR link received for appointment {landing.appointmentId}. Verify the appointment and confirm check-in below.</p>}
@@ -416,11 +421,11 @@ export function PatientCheckinPage({
           setConfirmationKey(null);
         }}>
           <option value="">Select an appointment</option>
-          {ownAppointments.map((item) => <option key={item.id} value={item.id}>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`} — {formatTime(item.starts_at)}</option>)}
+          {ownAppointments.map((item) => <option key={item.id} value={item.id}>{demo?.appointments[item.id]?.label??"Appointment"} — {formatTime(item.starts_at)}</option>)}
         </select>}
         {appointments.nextCursor && <button type="button" disabled={appointments.loadingMore} onClick={() => void appointments.loadMore()}>{appointments.loadingMore ? "Loading appointments…" : "Load more appointments"}</button>}
         {appointments.loadMoreError && <div role="alert"><p>{appointments.loadMoreError}</p><button type="button" onClick={() => void appointments.loadMore()}>Retry loading appointments</button></div>}
-        <label htmlFor="checkin-appointment-id">Appointment ID</label>
+        <AdvancedLookup title="Check-in reference">        <label htmlFor="checkin-appointment-id">Appointment ID</label>
         <input id="checkin-appointment-id" inputMode="numeric" value={appointmentId} onChange={(event) => {
           setAppointmentId(event.target.value);
           setManualToken("");
@@ -430,7 +435,7 @@ export function PatientCheckinPage({
           setActionError(null);
           setConfirmationKey(null);
         }} aria-describedby="checkin-appointment-help" />
-        <span id="checkin-appointment-help" className="patient-workflow__hint">A positive decimal appointment ID from your own appointment list.</span>
+        <span id="checkin-appointment-help" className="patient-workflow__hint">Use a reference from your confirmed appointments.</span></AdvancedLookup>
         {workflow.loading && appointment && <p role="status">Loading current check-in status…</p>}
         {workflow.error && appointment && (workflow.notFound
           ? <p className="patient-workflow__calm" role="status">Check-in opens on the day of your appointment{selectedAppointment ? ` (${formatTime(selectedAppointment.starts_at)})` : ""}. Come back then to check in here.</p>
@@ -473,7 +478,7 @@ export function PatientCheckinPage({
             <button type="submit" disabled={confirmPending || workflow.loading || !workflow.etag}>{confirmPending ? "Confirming…" : confirmationKey ? "Retry check-in confirmation" : "Confirm check-in"}</button>
           </form>
         </>}
-      </section>
+      </section></details>
     </div>
   );
 }
@@ -543,7 +548,7 @@ export function PatientQueuePage() {
       {confirmed.length > 0 && <>
         <label htmlFor="patient-queue-appointment">Appointment</label>
         <select id="patient-queue-appointment" value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
-          {confirmed.map((item) => <option key={item.id} value={item.id}>{demo?.appointments[item.id]?.label??`Visit …${item.id.slice(-4)}`} — {formatTime(item.starts_at)}</option>)}
+          {confirmed.map((item) => <option key={item.id} value={item.id}>{demo?.appointments[item.id]?.label??"Appointment"} — {formatTime(item.starts_at)}</option>)}
         </select>
       </>}
       {appointments.nextCursor && <button type="button" disabled={appointments.loadingMore} onClick={() => void appointments.loadMore()}>{appointments.loadingMore ? "Loading appointments…" : "Load more appointments"}</button>}
@@ -571,7 +576,7 @@ export function PatientQueuePage() {
       {live.data && !live.data.queue && <p role="status">The service has not returned a queue entry for this appointment. Check-in may still be pending, or the appointment may not be enrolled in Phase 3.</p>}
       {live.data?.workflow && <p>Visit status: <strong>{workflowLabels[live.data.workflow.state]}</strong></p>}
       {live.data && !live.data.workflow && <p className="patient-workflow__muted">Check-in opens on the day of your appointment.</p>}
-      {!live.error && selectedId && <button type="button" onClick={live.retryNow}>Refresh queue now</button>}
+      {!live.error && selectedId && <PageRefresh type="button" onClick={live.retryNow}>Refresh queue now</PageRefresh>}
       <footer className="queue-monitor-footer"><span>PulseGrid · Consultation queue</span>{live.data?.queue && <time dateTime={live.data.queue.observed_at}>Observed {formatTime(live.data.queue.observed_at)}</time>}</footer>
     </section>
     <aside className="queue-wait-sign"><header><DepartmentIcon department="waiting"/><h2>Your Turn</h2></header><div className="waiting-position-display"><small>QUEUE POSITION</small><strong>{live.data?.queue?.entry.position??'—'}</strong><p>{live.data?.queue?.entry.position?'Your current queue position':'Check in for your position'}</p></div><dl className="waiting-status-lines"><div><dt>Your token</dt><dd>{live.data?.queue?.entry.token_number??'Not checked in'}</dd></div><div><dt>Status</dt><dd>{live.data?.queue?.entry.state.replaceAll('_',' ')??'Not available'}</dd></div></dl><p>Keep this page open for status updates.</p><small>Wait estimates are not supplied by the service.</small></aside>
@@ -597,9 +602,9 @@ function JourneyTimeline({ journey }: { journey: Journey }) {
         <h4>{stageLabels[stage.name]}</h4>
         <p><strong>{stage.state === "pending" ? "Incomplete" : stage.state}</strong>{stage.pending_reason ? ` — ${stage.pending_reason.replaceAll("_", " ")}` : ""}</p>
         {stage.observed_at && <p className="patient-workflow__meta">Updated {formatTime(stage.observed_at)}.</p>}
-        {stage.sources.length > 0 && <ul>{stage.sources.map((source) => <li key={`${source.owner}:${source.resource_type}:${source.resource_id}`}>
+        {stage.sources.length > 0 && <ItemDetails><ul>{stage.sources.map((source) => <li key={`${source.owner}:${source.resource_type}:${source.resource_id}`}>
           {source.owner} {source.resource_type} {source.resource_id}, version {source.version}, observed {formatTime(source.observed_at)}
-        </li>)}</ul>}
+        </li>)}</ul></ItemDetails>}
       </div>
     </li>)}
   </ol>;
@@ -650,7 +655,7 @@ export function PatientJourneyPage() {
   return <div className="patient-workflow">
     <section className="patient-workflow__panel" aria-labelledby="patient-journey-title">
       <h2 id="patient-journey-title">Patient journey</h2>
-      <p>The timeline shows the latest state projected by the appointment service. Owner outages, stale source versions and review flags remain visible as pending or reopened.</p>
+      <p>Your visit, step by step.</p>
       {profile.error && <div role="alert"><p>{profile.error}</p><RetryButton onClick={profile.reload} /></div>}
       {profile.loading && <p role="status">Loading your patient profile…</p>}
       {list.loading && <p role="status">Loading your journeys…</p>}
@@ -661,7 +666,7 @@ export function PatientJourneyPage() {
       {journeys.length > 0 && <>
         <label htmlFor="patient-journey-select">Journey</label>
         <select id="patient-journey-select" value={selectedId} onChange={(event) => setSelectedId(event.target.value)}>
-          {journeys.map((journey) => <option key={journey.id} value={journey.id}>Journey …{journey.id.slice(-4)} — {demo?.appointments[journey.appointment_id]?.label??`Visit …${journey.appointment_id.slice(-4)}`} — {journey.state}</option>)}
+          {journeys.map((journey) => <option key={journey.id} value={journey.id}>Visit — {demo?.appointments[journey.appointment_id]?.label??"Your visit"} — {journey.state}</option>)}
         </select>
       </>}
       {detail.loading && <p role="status">Loading current journey details…</p>}
@@ -669,14 +674,14 @@ export function PatientJourneyPage() {
       {detail.data && <>
         <dl className="patient-workflow__facts">
           <div><dt>Journey status</dt><dd>{detail.data.state}</dd></div>
-          <div><dt>Appointment</dt><dd>{demo?.appointments[detail.data.appointment_id]?.label??`Visit …${detail.data.appointment_id.slice(-4)}`}</dd></div>
-          <div><dt>Last reconciled</dt><dd>{formatTime(detail.data.last_reconciled_at)}</dd></div>
+          <div><dt>Appointment</dt><dd>{demo?.appointments[detail.data.appointment_id]?.label??"Your visit"}</dd></div>
+          <div><dt>Updated</dt><dd>{formatTime(detail.data.last_reconciled_at)}</dd></div>
           <div><dt>Review required</dt><dd>{detail.data.review_required ? "Yes" : "No"}</dd></div>
         </dl>
-        <details className="owner-identifiers"><summary>Journey source references</summary>Journey {detail.data.id} · Appointment {detail.data.appointment_id}</details>
+        <ItemDetails>Journey {detail.data.id} · Appointment {detail.data.appointment_id}</ItemDetails>
         <JourneyTimeline journey={detail.data} />
         <WorkflowHistory path={`/api/v1/appointments/journeys/${detail.data.id}/history`} />
-        <button type="button" onClick={() => void reconcile()} disabled={reconcilePending || detail.loading || !detail.etag}>{reconcilePending ? "Refreshing journey…" : "Refresh journey from current owner snapshots"}</button>
+        <PageRefresh type="button" onClick={() => void reconcile()} disabled={reconcilePending || detail.loading || !detail.etag}>{reconcilePending ? "Refreshing journey…" : "Refresh journey from current owner snapshots"}</PageRefresh>
         {reconcileError && <p role="alert">{reconcileError}</p>}
         {detail.data.review_required && <p role="status">The service has flagged this journey for review. Patient actions cannot clear that flag.</p>}
         {detail.data.discharge_eligible && <p role="status">The service reports the workflow ready for staff discharge. Patients cannot discharge a journey.</p>}

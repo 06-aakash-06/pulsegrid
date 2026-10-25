@@ -1,3 +1,4 @@
+import { PageRefresh } from "../components/PageTools";
 import { formatDateTime } from "../hospital/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ApiClient } from "../api/client";
@@ -265,14 +266,14 @@ export function AppointmentShortLinkPanel({
         >
           {creating === "check_in" ? "Creating…" : "Create secure check-in link"}
         </button>
-        <button
+        <PageRefresh
           className="phase4-text-button"
           type="button"
           disabled={workflowLoading || creating !== null}
           onClick={() => void refreshWorkflow()}
         >
           Refresh status
-        </button>
+        </PageRefresh>
       </div>
       {!workflowLoading && workflow && workflow.state !== "booked" && (
         <p className="phase4-inline-status">A check-in link is available after Appointment reports the workflow as booked.</p>

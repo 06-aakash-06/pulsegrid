@@ -147,13 +147,13 @@ describe("Agent 6 patient workflows", () => {
     fireEvent.change(screen.getByLabelText("Accepted schedule revision"), { target: { value: "4" } });
     fireEvent.click(screen.getByRole("button", { name: "Join waitlist" }));
 
-    await screen.findByText(/Waitlist entry 61 was created/);
+    await screen.findByText(/You joined the waitlist/);
     expect(posted).not.toBeNull();
     expect(body(posted!.init)).toEqual({ patient_id: "11", slot_id: "41", expected_schedule_revision: 4 });
     expect(headers(posted!.init).get("Idempotency-Key")).toMatch(/^[0-9a-f-]{36}$/);
     expect(headers(posted!.init).get("Authorization")).toContain("Bearer ");
     expect(fetcher.mock.calls.some(([input, init]) => String(input).endsWith("/withdraw") && method(init ?? {}) === "POST")).toBe(false);
-    expect(await screen.findByText((_content, element) => element?.tagName === "P" && element.textContent?.includes("not your exact position") === true)).toBeInTheDocument();
+    expect(await screen.findByText("Your exact position is not available.")).toBeInTheDocument();
   });
 
   it("uses the current waitlist ETag when withdrawing and explains immediate promotion", async () => {
@@ -172,8 +172,10 @@ describe("Agent 6 patient workflows", () => {
     };
     const fetcher = setup(<PatientWaitlistPage />, handler);
     await screen.findByRole("button", { name: "Withdraw entry" });
+    expect(screen.getByPlaceholderText("I no longer need this waitlist entry.")).toHaveValue("");
+    fireEvent.change(screen.getByPlaceholderText("I no longer need this waitlist entry."), {target:{value:"I no longer need this waitlist entry."}});
     fireEvent.click(screen.getByRole("button", { name: "Withdraw entry" }));
-    await screen.findByText(/no offer acceptance or rejection action/i);
+    await screen.findByText(/Your appointment is confirmed/);
     const withdraw = fetcher.mock.calls.find(([input, init]) => String(input).endsWith("/waitlists/61/withdraw") && method(init ?? {}) === "POST");
     expect(withdraw).toBeDefined();
     expect(headers(withdraw![1]!).get("If-Match")).toBe('"2"');
@@ -387,11 +389,11 @@ describe("Agent 6 patient workflows", () => {
       return undefined;
     };
     setup(<PatientFulfillmentPanel counter />, handler);
-    fireEvent.change(await screen.findByLabelText(/Catalog item …81 quantity \(up to 4\)/), { target: { value: "2" } });
+    fireEvent.change(await screen.findByLabelText(/Medicine name unavailable quantity \(up to 4\)/), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Review reservation" }));
     fireEvent.click(await screen.findByRole("button", { name: "Request reservation" }));
     await screen.findByRole("button", { name: "Retry reservation request" });
-    expect(screen.getByLabelText("Your prescription")).toBeDisabled();
+    expect(screen.getByLabelText("Choose a prescription")).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Retry reservation request" }));
     await screen.findByText(/Medicines reserved until/);
     expect(body(request!)).toEqual({ prescription_id: "71", items: [{ prescription_item_id: "72", quantity: 2 }] });
@@ -399,9 +401,11 @@ describe("Agent 6 patient workflows", () => {
     expect(headers(attempts[0]).get("Idempotency-Key")).toBe(headers(attempts[1]).get("Idempotency-Key"));
     expect(body(attempts[0])).toEqual(body(attempts[1]));
     expect((await screen.findAllByText("× 2")).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Reservation …91 · reserved/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("More actions",{selector:"summary"}));
+    fireEvent.click(screen.getByText("Reservation history",{selector:"summary"}));
+    expect(screen.getByText(/Reservation · reserved/)).toBeInTheDocument();
     expect(screen.queryByText(/All prescribed quantities dispensed/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Your prescription")).toHaveValue("71");
+    expect(screen.getByLabelText("Choose a prescription")).toHaveValue("71");
     expect(screen.queryByRole("button", { name: /Dispense reservation/ })).not.toBeInTheDocument();
   });
 
@@ -430,7 +434,7 @@ describe("temporary waitlist offers", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Accept slot offer" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Retry original command");
     fireEvent.click(await screen.findByRole("button", { name: "Retry original offer command" }));
-    expect(await screen.findByRole("status")).toHaveTextContent("Booking confirmed: appointment 51");
+    expect(await screen.findByRole("status")).toHaveTextContent("Booking confirmed. Find your visit in Appointments.");
     expect(headers(calls[0]).get("Idempotency-Key")).toBe(headers(calls[1]).get("Idempotency-Key"));
     expect(headers(calls[0]).get("If-Match")).toBe('"1"');
   });

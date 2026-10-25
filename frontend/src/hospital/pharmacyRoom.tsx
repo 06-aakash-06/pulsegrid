@@ -1,3 +1,4 @@
+import { PageRefresh } from "../components/PageTools";
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { useAuth } from "../auth/authContext";
 import { MedicineAutocomplete } from "../phase4";
@@ -115,7 +116,7 @@ export function MedicineCabinet({
             <button type="button" disabled={!shelf.hasPrevious || shelf.loading} onClick={shelf.previous} aria-label="Previous shelf page">‹ Prev</button>
             <span>Page {shelf.pageNumber}</span>
             <button type="button" disabled={!shelf.hasNext || shelf.loading} onClick={shelf.next} aria-label="Next shelf page">Next ›</button>
-            <button type="button" disabled={shelf.loading} onClick={shelf.refresh}>Refresh</button>
+            <PageRefresh type="button" disabled={shelf.loading} onClick={shelf.refresh}>Refresh</PageRefresh>
           </div>
         </div>
         <div className="cabinet-rail__row">

@@ -514,7 +514,7 @@ const routes: Route[] = [
   ["GET", /^\/api\/v1\/appointments\/queues$/, (request, user) => {
     if (!(isDoctor(user) || isReceptionist(user))) return forbidden();
     const doctorId = request.url.searchParams.get("doctor_id") ?? DOCTOR_ID;
-    return ok({ doctor_id: doctorId, local_date: request.url.searchParams.get("local_date") ?? state.day(0), items: doctorId === DOCTOR_ID ? state.queue : [], next_cursor: null, waiting_count: doctorId === DOCTOR_ID ? 3 : 0, in_consultation_count: doctorId === DOCTOR_ID ? 1 : 0, version: 4, observed_at: stamp() }, 4);
+    return ok({ doctor_id: doctorId, local_date: request.url.searchParams.get("local_date") ?? state.day(0), items: doctorId === DOCTOR_ID ? state.queue.map(entry=>({...entry,patient_name:[state.patient,...state.otherPatients].find(patient=>patient.id===entry.patient_id)?.display_name})) : [], next_cursor: null, waiting_count: doctorId === DOCTOR_ID ? 3 : 0, in_consultation_count: doctorId === DOCTOR_ID ? 1 : 0, version: 4, observed_at: stamp() }, 4);
   }],
   ["GET", /^\/api\/v1\/doctors\/(\d+)\/schedules$/, (request, _user, match) =>
     page(state.proposals.filter((item) => item.doctor_id === match[1]), request.url)],

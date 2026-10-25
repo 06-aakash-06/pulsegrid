@@ -281,10 +281,10 @@ describe("doctor consultation queue", () => {
     });
 
     expect(await screen.findByText(/Waiting count/)).toBeInTheDocument();
-    expect(screen.getByText(/Patient ID\s+11/)).toBeInTheDocument();
+    expect(screen.getByRole("columnheader",{name:"Patient"})).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Call next patient" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm start consultation" }));
-    expect(await screen.findByText(/Appointment service started queue token 7/)).toBeInTheDocument();
+    expect(await screen.findByText(/Queue token 7 is ready/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "consultation workspace" })).toHaveAttribute("href", "/doctor/consultations");
     const [url, init] = lastWrite(fetcher);
     expect(String(url)).toBe("/api/v1/appointments/queue-entries/91/start");
@@ -310,7 +310,7 @@ describe("doctor consultation queue", () => {
       return undefined;
     });
 
-    await screen.findByText(/Patient ID\s+11/);
+    await screen.findByRole("table");
     fireEvent.click(screen.getByRole("button", { name: "Call next patient" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm start consultation" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("queue head changed");
@@ -345,11 +345,11 @@ describe("doctor consultation queue", () => {
       return undefined;
     });
 
-    await screen.findByText(/Patient ID\s+11/);
+    await screen.findByRole("table");
     fireEvent.click(screen.getByRole("button", { name: "Call next patient" }));
     fireEvent.click(await screen.findByRole("button", { name: "Confirm start consultation" }));
     fireEvent.click(await screen.findByRole("button", { name: "Retry original start command" }));
-    expect(await screen.findByText(/Appointment service started queue token 7/)).toBeInTheDocument();
+    expect(await screen.findByText(/Queue token 7 is ready/)).toBeInTheDocument();
     const startWrites = writes(fetcher).filter(([url]) => String(url) === "/api/v1/appointments/queue-entries/91/start");
     expect(startWrites).toHaveLength(2);
     expect(requestHeaders(startWrites[0][1]!).get("Idempotency-Key")).toBe(requestHeaders(startWrites[1][1]!).get("Idempotency-Key"));
@@ -374,7 +374,7 @@ describe("doctor consultation queue", () => {
       if (url.pathname === "/api/v1/appointments/journeys/151") return json(journey, 200, '"6"');
       return undefined;
     });
-    await screen.findByText(/Patient ID\s+11/);
+    await screen.findByRole("table");
     visibility = "hidden";
     fireEvent(document, new Event("visibilitychange"));
     currentQueue = { ...queue, items: [], waiting_count: 0, version: 7 };
@@ -488,7 +488,7 @@ describe("patient journey and pharmacy fulfillment", () => {
     await screen.findByLabelText("Prescription ID");
     fill("Prescription ID", "71");
     fireEvent.submit(screen.getByLabelText("Prescription ID").closest("form")!);
-    fireEvent.click(await screen.findByRole("button", { name: "Request medicines from prescription 71" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Request medicines from this prescription" }));
     fill("Quantity for item 72 (medicine 81, prescribed 5)", "2");
     await confirm("Reserve medicines");
     expect(await screen.findByRole("button", { name: "View reservation 91" })).toBeInTheDocument();

@@ -1,3 +1,4 @@
+import { AdvancedLookup } from "../components/PageTools";
 import { useEffect, useRef, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
@@ -62,7 +63,7 @@ export function ReceptionScene({
       className={`reception-scene${publicView ? " reception-scene--public" : ""}`}
       ref={scene}
     >
-      <nav className="wayfinding" aria-label="Hospital wayfinding">
+      <AdvancedLookup title="Department shortcuts"><nav className="wayfinding" aria-label="Hospital wayfinding">
         {[
           {
             title: "Consultation",
@@ -102,7 +103,7 @@ export function ReceptionScene({
             <b aria-hidden="true">→</b>
           </Link>
         ))}
-      </nav>
+      </nav></AdvancedLookup>
       <section className="welcome-wall">
         <div>
           <p className="welcome-intro">

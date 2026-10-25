@@ -1,3 +1,5 @@
+import { ItemDetails } from "../components/PageTools";
+import { PageRefresh, AdvancedLookup } from "../components/PageTools";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
@@ -89,8 +91,8 @@ function DoctorAvailability({
             <small>Schedule days</small>
           </span>
           <span>
-            <strong>{resource.response.data.accepted_revision}</strong>
-            <small>Accepted revision</small>
+            <ItemDetails>Accepted revision {resource.response.data.accepted_revision}</ItemDetails>
+            <small>Schedule confirmed</small>
           </span>
         </div>
       )}
@@ -332,7 +334,7 @@ export function ReferenceConsultation({
       : "/patient/appointments";
   return (
     <div className="reference-consultation">
-      <nav className="consultation-tabs" aria-label="Consultation department">
+      <AdvancedLookup title="Department shortcuts">      <nav className="consultation-tabs" aria-label="Consultation department">
         <span aria-current="page">
           <DepartmentIcon department="consultation" />
           Doctors
@@ -356,6 +358,7 @@ export function ReferenceConsultation({
           </>
         )}
       </nav>
+</AdvancedLookup>
       <div className="consultation-board">
         <aside className="reference-specialties">
           <h2>
@@ -423,13 +426,13 @@ export function ReferenceConsultation({
             <button type="submit">Search</button>
           </form>
           <div className="roster-caption">
-            <span>{rows.length} doctors on this page</span>
-            <button
+            <span>Doctors</span>
+            <PageRefresh
               disabled={bookingLocked || roster.loading}
               onClick={roster.refresh}
             >
               Refresh
-            </button>
+            </PageRefresh>
           </div>
           {error && <p role="alert">{error}</p>}
           {roster.error && <p role="alert">{roster.error}</p>}
@@ -437,7 +440,7 @@ export function ReferenceConsultation({
           {!roster.loading && !rows.length && (
             <p>No doctors match this search.</p>
           )}
-          <p className="roster-scroll-hint">Scroll for more doctors</p>
+          <span />
           <div className="reference-doctor-list">
             {rows.map((d) => (
               <button
@@ -655,8 +658,8 @@ export function ReferenceConsultation({
           )}
         </aside>
       </div>
-      <details className="reference-advanced">
-        <summary>Advanced directory search & autocomplete</summary>
+      <AdvancedLookup title="Advanced directory search & autocomplete">
+
         <DoctorAutocomplete
           api={api}
           roleHints={state.status === "authenticated" ? state.roleHints : []}
@@ -701,7 +704,7 @@ export function ReferenceConsultation({
           )}
           <button>Search doctors</button>
         </form>
-      </details>
+      </AdvancedLookup>
       {admin && (
         <details className="reference-advanced">
           <summary>Create directory entries</summary>

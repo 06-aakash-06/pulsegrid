@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Brand } from "../components/Brand";
 import { useAuth } from "../auth/authContext";
 import { workspaces } from "../navigation/workspaces";
 import { useHospitalIdentity, clearHospitalIdentity } from "./hospitalIdentity";
 import { DepartmentIcon, departmentFor } from "./DepartmentIcon";
+const AccountProfile = lazy(()=>import("../components/AccountProfile").then(module=>({default:module.AccountProfile})));
 export function HospitalHeader({
   roleLabel,
   onMenu,
@@ -17,6 +18,7 @@ export function HospitalHeader({
   onLogout?: () => void;
 }) {
   const { state } = useAuth();
+  const [profileLoaded,setProfileLoaded]=useState(false);
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState(false);
   const displayName = useHospitalIdentity(
@@ -168,6 +170,7 @@ export function HospitalHeader({
                   {w.name} →
                 </Link>
               ))}
+              {state.roleHints.includes("patient") && <details className="account-profile" onToggle={event=>{if(event.currentTarget.open)setProfileLoaded(true);}}><summary>Your profile</summary>{profileLoaded&&<Suspense fallback={<p role="status">Loading profile…</p>}><AccountProfile/></Suspense>}</details>}
               {onLogout && (
                 <button
                   type="button"

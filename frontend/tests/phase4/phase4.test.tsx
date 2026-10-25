@@ -345,11 +345,11 @@ describe("Phase 4 insurance", () => {
     });
     render(<InsuranceRefreshPanel api={api} roleHints={["billing_staff"]} />);
 
-    fireEvent.click(await screen.findByRole("button", { name: "Refresh source" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Update insurance data" }));
     expect(await screen.findByRole("status")).toHaveTextContent("rate limited. Please wait about 21 seconds");
     fireEvent.click(screen.getByRole("button", { name: "Retry refresh request" }));
     expect(await screen.findByText(/Latest run: pending/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Check refresh status" }));
+    fireEvent.click(screen.getByRole("button", { name: "Check update status" }));
     expect(await screen.findByText(/Latest run: complete · 12 pages processed/)).toBeInTheDocument();
 
     const refresh = calls.filter((call) => call.path.endsWith("/refresh"));

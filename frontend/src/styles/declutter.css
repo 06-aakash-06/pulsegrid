@@ -1,0 +1,65 @@
+.page-advanced { margin-top:24px; padding:16px 24px; background:var(--surface-solid); border:1px solid var(--line); border-radius:12px; }
+.page-advanced>summary,.more-actions>summary,.item-details>summary { cursor:pointer; font-size:13px; font-weight:600; }
+.page-advanced:has(>div:empty) { display:none; }
+.advanced-section { padding:16px 0; border-top:1px solid var(--line); margin-top:16px; }
+.item-details,.more-actions { padding-top:12px; margin-top:12px; border-top:1px solid var(--line); font-size:13px; }
+.admin-home { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.task-link { display:flex; flex-direction:column; gap:12px; padding:24px; border:1px solid var(--line); border-radius:12px; background:var(--surface-solid); box-shadow:var(--shadow); color:var(--ink); text-decoration:none; }
+.task-link>strong { margin-top:auto; color:var(--accent); }
+.task-link h2,.task-link p { margin:0; }
+.task-table-wrap { overflow:auto; max-width:100%; }
+.task-table { width:100%; border-collapse:collapse; text-align:left; font-size:14px; }
+.task-table th,.task-table td { padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:top; }
+.task-table th { font-size:13px; font-weight:600; }
+.task-table td:last-child { min-width:160px; }
+.task-table td :is(p,h3) { margin:0 0 8px; }
+.task-tabs,.priority-choices { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.task-tabs button[aria-selected=true],.priority-choices button[aria-pressed=true] { background:var(--accent); color:white; }
+.priority-choices { margin:8px 0 0; }
+.priority-choices button { min-width:48px; }
+.workspace-content [hidden] { display:none !important; }
+.workspace-content .staff-advanced-summary { margin:16px 0; }
+.workspace-content .reception-hospital-today strong { font-size:16px; }
+.workspace-content .reception-hospital-today span { font-size:13px; }
+.workspace-content .reception-hospital-today>small { display:block; font-size:12px; margin-top:8px; }
+.account-profile { max-height:60vh; overflow:auto; }
+.account-profile[open] { width:min(400px,calc(100vw - 48px)); padding:16px; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) { grid-template-columns:minmax(0,1fr); }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .pharmacy-room__cabinet { order:3; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .pharmacy-room__counter { order:0; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .pharmacy-room__right { order:1; grid-column:1; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .pharmacy-room__right-stack { display:grid; grid-template-columns:minmax(0,8fr) minmax(0,4fr); gap:24px; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .counter-lower { order:0; grid-column:1; grid-row:1; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .counter-upper { order:1; grid-column:2; grid-row:1; }
+.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .prescription-stand { padding:16px 24px; }
+.workspace-content .pharmacy-allowance-table { overflow:auto; }
+@media(max-width:1199px){.admin-home{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:899px){.admin-home,.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) .pharmacy-room__right-stack {grid-template-columns:minmax(0,1fr);}.workspace-content .pharmacy-room:has(#patient-prescription-stand-title) :is(.counter-lower,.counter-upper){grid-column:1;grid-row:auto;}.task-table th,.task-table td{padding:12px 8px;}}
+.item-details__body { padding-top:12px; overflow-wrap:anywhere; }
+.item-details__body .hospital-facts { margin:0; }
+.task-table .item-details { min-width:0; }
+.workspace-content .task-table .task-table { min-width:0; }
+.workspace-content .pharmacy-room:not(:has(#patient-prescription-stand-title)) { grid-template-columns:minmax(0,8fr) minmax(0,4fr); }
+.workspace-content .pharmacy-room:not(:has(#patient-prescription-stand-title)) .pharmacy-room__cabinet { grid-column:1; grid-row:1; }
+.workspace-content .pharmacy-room:not(:has(#patient-prescription-stand-title)) .pharmacy-room__right { grid-column:2; grid-row:1; }
+.workspace-content .pharmacy-room:not(:has(#patient-prescription-stand-title)) .pharmacy-room__counter { grid-column:1/-1; grid-row:2; }
+.workspace-content .pharmacy-room__counter:has(.counter-tray:empty):not(:has(.prescription-stand)) { display:none; }
+.task-table tr[tabindex] { cursor:pointer; }
+.task-table tr[tabindex]:hover,.task-table tr[tabindex]:focus-visible { background:var(--accent-soft); }
+@media(max-width:899px){.workspace-content .pharmacy-room:not(:has(#patient-prescription-stand-title)){grid-template-columns:minmax(0,1fr);}.workspace-content .pharmacy-room:not(:has(#patient-prescription-stand-title)) :is(.pharmacy-room__cabinet,.pharmacy-room__right,.pharmacy-room__counter){grid-column:1;grid-row:auto;}}
+.workspace-content .prescription-selector { padding:0 0 16px; margin-bottom:16px; border-bottom:1px solid var(--line); }
+.workspace-content .prescription-selector>header { display:none; }
+.workspace-content .reception-scene { grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:stretch; }
+.workspace-content .reception-scene .welcome-wall { grid-column:1; grid-row:1; }
+.workspace-content .reception-scene .reception-hospital-today { grid-column:2; grid-row:1; }
+.workspace-content .reception-scene :is(.reception-counter,.reception-information-rail) { grid-column:1/-1; }
+@media(max-width:899px){.workspace-content .reception-scene{grid-template-columns:minmax(0,1fr);}.workspace-content .reception-scene :is(.welcome-wall,.reception-hospital-today,.reception-counter,.reception-information-rail){grid-column:1;grid-row:auto;}.workspace-content .reception-scene .reception-hospital-today{order:1;}}
+.task-table-wrap { width:100%; min-width:0; contain:inline-size; }
+/* Keep absolutely positioned screen-reader labels inside their local scroller. */
+.task-table-wrap { position:relative; }
+.task-table-wrap .sr-only { left:0; top:0; }
+.account-menu .header-popover:has(.account-profile[open]) { width:min(480px,calc(100vw - 32px)); max-width:calc(100vw - 32px); }
+.account-menu .account-profile[open] { width:100%; }
+.account-profile .hospital-fields { grid-template-columns:minmax(0,1fr); gap:12px; }
+.account-profile .hospital-form { display:block; }
+.account-profile :is(input,select,textarea) { min-width:0; max-width:100%; }

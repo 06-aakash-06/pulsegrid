@@ -1,3 +1,4 @@
+import { AdvancedLookup, ItemDetails, useInAdvanced, useInDetails, PageRefresh } from "../components/PageTools";
 import { StatusBadge } from "../components/StatusBadge";
 import { m } from "motion/react";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
@@ -138,13 +139,13 @@ export function Resource<T>({
       {resource.loading && <p role="status">Loading resource…</p>}
       {resource.error && <p role="alert">{resource.error}</p>}
       {path && showReload && (
-        <button
+        <PageRefresh
           type="button"
           disabled={resource.loading}
           onClick={resource.refresh}
         >
           Refresh
-        </button>
+        </PageRefresh>
       )}
       <ReloadContext.Provider value={resource.refresh}>
         {resource.response &&
@@ -161,6 +162,8 @@ export function Collection<T extends { id: string }>({
   path,
   title,
   renderItem,
+  columns,
+  onOpen,
   revision = 0,
   onFirstItem,
   itemFilter,
@@ -168,7 +171,9 @@ export function Collection<T extends { id: string }>({
 }: {
   path: string | null;
   title: string;
-  renderItem: (item: T) => ReactNode;
+  renderItem?: (item: T) => ReactNode;
+  columns?: { label: string; render: (item: T) => ReactNode }[];
+  onOpen?: (item:T)=>void;
   revision?: number;
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
@@ -183,6 +188,8 @@ export function Collection<T extends { id: string }>({
       path={path}
       title={title}
       renderItem={renderItem}
+      columns={columns}
+      onOpen={onOpen}
       onFirstItem={onFirstItem}
       itemFilter={itemFilter}
       sourceNote={sourceNote}
@@ -193,6 +200,8 @@ function CollectionPage<T extends { id: string }>({
   path,
   title,
   renderItem,
+  columns,
+  onOpen,
   onFirstItem,
   itemFilter,
   sourceNote,
@@ -201,7 +210,9 @@ function CollectionPage<T extends { id: string }>({
 }: {
   path: string | null;
   title: string;
-  renderItem: (item: T) => ReactNode;
+  renderItem?: (item: T) => ReactNode;
+  columns?: { label: string; render: (item: T) => ReactNode }[];
+  onOpen?: (item:T)=>void;
   onFirstItem?: (item: T) => void;
   itemFilter?: (item: T) => boolean;
   sourceNote: ReactNode;
@@ -228,19 +239,19 @@ function CollectionPage<T extends { id: string }>({
     <Panel title={title}>
       {resource.loading && <p role="status">Loading {title.toLowerCase()}…</p>}
       {resource.error && <p role="alert">{resource.error}</p>}
-      <div className="resource-toolbar">{sourceNote && <span>{sourceNote}</span>}<button
+      <div className="resource-toolbar">{sourceNote && <span>{sourceNote}</span>}<PageRefresh
         type="button"
         onClick={resource.refresh}
         disabled={!path || resource.loading}
       >
         Refresh {title.toLowerCase()}
-      </button></div>
+      </PageRefresh></div>
       {resource.response && (
         <>
           {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).length === 0 && (
             <div className="resource-empty"><strong>No {title.toLowerCase()} found.</strong><p>Nothing to display for the current filters.</p></div>
           )}
-          <div className="hospital-items">
+          {columns ? <div className="task-table-wrap"><table className="task-table"><thead><tr>{columns.map(column=><th key={column.label}>{column.label}</th>)}</tr></thead><tbody>{resource.response.data.items.filter(item=>!itemFilter||itemFilter(item)).map(item=><tr key={item.id} tabIndex={onOpen ? 0 : undefined} onClick={()=>onOpen?.(item)} onKeyDown={event=>{if(onOpen && (event.key==="Enter"||event.key===" ")){event.preventDefault();onOpen(item);}}}>{columns.map(column=><td key={column.label}>{column.render(item)}</td>)}</tr>)}</tbody></table></div> : <div className="hospital-items">
             {resource.response.data.items.filter(item=>!itemFilter || itemFilter(item)).map((item, index) => (
               <m.article
                 initial={firstBatch.current?.has(item.id) ? { opacity: 0, y: 6 } : false}
@@ -250,10 +261,10 @@ function CollectionPage<T extends { id: string }>({
                 className="hospital-item"
                 key={item.id}
               >
-                {renderItem(item)}
+                {renderItem?.(item)}
               </m.article>
             ))}
-          </div>
+          </div>}
           <div className="hospital-actions">
             <button
               type="button"
@@ -289,6 +300,8 @@ export interface Field {
   max?: number;
   min?: number;
   options?: string[];
+  choiceButtons?: boolean;
+  placeholder?: string;
   optionLabels?: Record<string,string>;
   initial?: string;
   nullable?: boolean;
@@ -297,7 +310,7 @@ export interface Field {
 export type Values = Record<string, string>;
 export function id(value: string): string {
   if (!/^[1-9][0-9]{0,18}$/.test(value) || BigInt(value) > 9223372036854775807n)
-    throw new Error("Enter a valid positive decimal ID.");
+    throw new Error("Enter a valid reference number.");
   return value;
 }
 export function integer(
@@ -395,12 +408,15 @@ export function Inputs({
   change: (name: string, value: string) => void;
   disabled?: boolean;
 }) {
-  return (
+  const nested=useInDetails();
+  const technical=nested?[]:fields.filter(field=>/revision|version|expected_revision/.test(field.name));
+  const primary=fields.filter(field=>!technical.includes(field));
+  return (<>
     <div className="hospital-fields">
-      {fields.map((field) => (
+      {primary.map((field) => field.choiceButtons ? <fieldset key={field.name}><legend>{field.label}</legend><div className="priority-choices" role="group" aria-label={field.label}>{field.options?.map(option=><button type="button" key={option} aria-label={`Priority ${option}`} disabled={disabled} aria-pressed={values[field.name]===option} onClick={()=>change(field.name,option)}>{option}</button>)}</div></fieldset> : (
         <label key={field.name}>
-          {field.label}
-          {field.kind === "select" ? (
+          {field.name !== "simulated_outcome" && field.label}
+          {field.name === "simulated_outcome" ? <details><summary>Demo options</summary><select aria-label="Demo payment result" value={values[field.name]??""} onChange={e=>change(field.name,e.target.value)} disabled={disabled}>{field.options?.map(option=><option key={option} value={option}>{option}</option>)}</select></details> : field.kind === "select" ? (
             <select
               title={values[field.name] || field.label}
               value={values[field.name] ?? ""}
@@ -430,6 +446,7 @@ export function Inputs({
                     : "text"
               }
               title={values[field.name] || field.label}
+              placeholder={field.placeholder}
               value={values[field.name] ?? ""}
               disabled={disabled}
               maxLength={field.kind !== "number" ? field.max : undefined}
@@ -439,7 +456,8 @@ export function Inputs({
         </label>
       ))}
     </div>
-  );
+    {technical.length>0&&<ItemDetails><Inputs fields={technical} values={values} change={change} disabled={disabled}/></ItemDetails>}
+  </>);
 }
 interface Attempt {
   path: string;
@@ -482,6 +500,9 @@ export function CommandForm<T = unknown>({
   onReload?: () => void;
   reloadLabel?: string;
 }) {
+  const advancedContext=useInAdvanced();
+  const detailsContext=useInDetails();
+  const technicalContext=advancedContext||detailsContext;
   const { api } = useAuth();
   const flash = useContext(FlashContext);
   const contextReload = useContext(ReloadContext);
@@ -625,7 +646,7 @@ export function CommandForm<T = unknown>({
           )}
         </div>
       )}
-      {success && <m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{success}</m.p>}
+      {success && <><m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{(!technicalContext && /…\d+|\b(?:revision|version|owner|reconcil\w*)\b/i.test(success)) ? `${title} completed.` : success}</m.p>{(!technicalContext && /…\d+|\b(?:revision|version|owner|reconcil\w*)\b/i.test(success))&&<ItemDetails>{success}</ItemDetails>}</>}
       {pending && <p role="status">Sending…</p>}
       {attempt ? (
         <m.div initial={{opacity:.7}} animate={{opacity:1}} transition={{duration:.18}}
@@ -673,7 +694,7 @@ export function Lookup({
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   return (
-    <form
+    <AdvancedLookup title={label}><form
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
@@ -691,10 +712,10 @@ export function Lookup({
       </label>
       <button>Open</button>
       {error && <p role="alert">{error}</p>}
-    </form>
+    </form></AdvancedLookup>
   );
 }
-export function Facts({ values }: { values: Record<string, ReactNode> }) {
+function FactList({ values }: { values: Record<string, ReactNode> }) {
   return (
     <dl className="hospital-facts">
       {Object.entries(values).map(([key, value]) => (
@@ -706,6 +727,15 @@ export function Facts({ values }: { values: Record<string, ReactNode> }) {
     </dl>
   );
 }
+export function Facts({values}:{values:Record<string,ReactNode>}) {
+  const nested=useInDetails();
+  const entries=Object.entries(values);
+  const technical=entries.filter(([key])=>/\bID\b|version|revision|observed|reconcil|source|identifier|proposal|queue entry|SKU|batch code/i.test(key));
+  const visible=entries.filter(([key])=>!technical.some(([hidden])=>hidden===key));
+  if(nested)return <FactList values={values}/>;
+  return <>{visible.length>0&&<FactList values={Object.fromEntries(visible)}/>} {technical.length>0&&<ItemDetails><FactList values={Object.fromEntries(technical)}/></ItemDetails>}</>;
+}
+
 export function Selected<T extends Versioned>({
   path,
   revision,

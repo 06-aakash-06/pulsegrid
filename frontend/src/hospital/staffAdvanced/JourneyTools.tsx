@@ -1,3 +1,4 @@
+import { AdvancedLookup } from "../../components/PageTools";
 import { WorkflowHistory } from "../../advanced/shared/WorkflowHistory";
 import { useState } from "react";
 import { CommandForm, Facts, Lookup, Panel, Resource } from "../ui";
@@ -8,7 +9,7 @@ export function StaffJourneyTools() {
   const [journeyId, setJourneyId] = useState<string | null>(null);
   const [reload, setReload] = useState(0);
 
-  return (
+  return (<AdvancedLookup title="Staff workflow lookup">
     <Panel title="Patient journey">
       <p>
         Journey stages contain owner-reported workflow state and source versions. They do not include clinical notes. Reconciliation can leave owner-unavailable stages pending.
@@ -94,5 +95,5 @@ export function StaffJourneyTools() {
         }}
       </Resource>
     </Panel>
-  );
+  </AdvancedLookup>);
 }

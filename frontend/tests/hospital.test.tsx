@@ -280,6 +280,10 @@ describe("patient profiles and appointment commands", () => {
         ? json({ ...profile, display_name: "Updated", version: 3 }, 200, '"3"')
         : undefined,
     );
+    const profileMenu = await screen.findByText("Your profile",{selector:"summary"});
+    const account = profileMenu.closest(".account-menu")!;
+    fireEvent.click(account.querySelector(":scope > summary")!);
+    fireEvent.click(profileMenu);
     await screen.findByDisplayValue(profile.display_name);
     fill("Display name", "Updated");
     await command("Save profile");
@@ -289,6 +293,10 @@ describe("patient profiles and appointment commands", () => {
   });
   it("validates empty names and future births without a mutation", async () => {
     const { fetcher } = setup("/patient/dashboard", "patient");
+    const profileMenu = await screen.findByText("Your profile",{selector:"summary"});
+    const account = profileMenu.closest(".account-menu")!;
+    fireEvent.click(account.querySelector(":scope > summary")!);
+    fireEvent.click(profileMenu);
     await screen.findByDisplayValue(profile.display_name);
     fill("Display name", " ");
     fireEvent.click(
@@ -748,7 +756,7 @@ describe("clinical and pharmacy workflows", () => {
       ],
     });
     expect(
-      await screen.findByText(/Medical record …62/),
+      await screen.findByText(/Medical record 62/),
     ).toBeInTheDocument();
   });
   it("reads own medical history and record detail", async () => {
@@ -804,7 +812,7 @@ describe("clinical and pharmacy workflows", () => {
     fireEvent.submit(screen.getByLabelText("Prescription ID").closest("form")!);
     fireEvent.click(
       await screen.findByRole("button", {
-        name: "Request medicines from prescription 71",
+        name: "Request medicines from this prescription",
       }),
     );
     fill("Quantity for item 72 (medicine 81, prescribed 5)", "2");
@@ -922,8 +930,9 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "View invoice 111" }),
     );
-    await screen.findByLabelText("Simulated outcome");
-    fill("Simulated outcome", "decline");
+    fireEvent.click(await screen.findByText("Demo options", {selector:"summary"}));
+    await screen.findByLabelText("Demo payment result");
+    fill("Demo payment result", "decline");
     await command("Submit simulated payment");
     expect(
       await screen.findByText(
@@ -982,12 +991,12 @@ describe("billing, emergency, doctor and administration workflows", () => {
         ? json(emergency, 201)
         : undefined,
     );
-    await screen.findByLabelText("Synthetic request description");
-    fill("Synthetic request description", "Synthetic request");
+    await screen.findByLabelText("What's happening?");
+    fill("What's happening?", "Synthetic request");
     fill("Reported urgency (advisory)", "urgent");
     await command("Submit emergency request");
     await screen.findByText("Request sent. It now appears in Your requests.");
-    expect(screen.getByLabelText("Synthetic request description")).toHaveValue("");
+    expect(screen.getByLabelText("What's happening?")).toHaveValue("");
     expect(screen.getByLabelText("Reported urgency (advisory)")).toHaveValue("unspecified");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expect(lastBody(fetcher)).toEqual({
@@ -1045,9 +1054,10 @@ describe("billing, emergency, doctor and administration workflows", () => {
         ? json(proposal, 202)
         : undefined,
     );
-    await screen.findByLabelText("Slot minutes");
-    fill("Slot minutes", "30");
-    fill("Latest proposal revision (0 initially)", "4");
+    fireEvent.click(await screen.findByRole("tab", { name: "Schedule changes" }));
+    await screen.findByLabelText("Slot length (minutes)");
+    fill("Slot length (minutes)", "30");
+    fill("Current schedule reference", "4");
     await command("Submit schedule proposal");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/doctors/21/schedules", "POST", '"3"');
@@ -1081,9 +1091,8 @@ describe("billing, emergency, doctor and administration workflows", () => {
         return json({ ...proposal, status: "rejected" });
       return undefined;
     });
-    fireEvent.click(
-      await screen.findByRole("button", { name: "Open proposal 131" }),
-    );
+    fireEvent.click(await screen.findByRole("tab", { name: "Schedule changes" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Open" }));
     await screen.findByLabelText("Current accepted revision");
     fill("Current accepted revision", "4");
     await command("Request schedule decision");
@@ -1095,7 +1104,7 @@ describe("billing, emergency, doctor and administration workflows", () => {
       proposal_id: "131",
       expected_accepted_revision: 4,
     });
-    await command("Reconcile schedule");
+    await command("Apply accepted schedule");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(2));
     expectConditional(
       fetcher,
@@ -1128,7 +1137,7 @@ describe("billing, emergency, doctor and administration workflows", () => {
       },
     );
     fireEvent.click(
-      await screen.findByRole("button", { name: "Manage account 101" }),
+      await screen.findByRole("button", { name: "Open account Synthetic Staff" }),
     );
     await screen.findByLabelText("Roles (comma separated)");
     fill("Roles (comma separated)", "doctor, receptionist");
@@ -1206,7 +1215,7 @@ describe("emergency command receipts after version refresh", () => {
       return undefined;
     });
     fireEvent.click(await screen.findByRole("button", { name: "Change priority" }));
-    fill("Assigned priority (1 highest, 5 lowest)", "1");
+    fireEvent.click(screen.getByRole("button", { name: "Priority 1" }));
     fill("Reason for priority", "Synthetic priority review");
     await command("Set priority");
     await screen.findByText("Priority set to P1.");

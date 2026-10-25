@@ -30,6 +30,7 @@ export interface Workflow {
 }
 
 export interface QueueEntry {
+  patient_name?: string;
   id: ID;
   appointment_id: ID;
   doctor_id: ID;
