@@ -71,3 +71,23 @@
 .dossier-room--doctor .consultation-finalize { position: sticky; bottom: 0; z-index: 3; margin: 12px -16px 0; padding: 4px 16px 12px; background: #fbf6eef2; border-top: 1px solid #dccab0; box-shadow: 0 -10px 16px -12px #3a2412; backdrop-filter: blur(4px); }
 .dossier-room--doctor .consultation-finalize .hospital-form { padding-top: 6px; }
 .dossier-room--doctor .finalize-prescription > summary { min-height: 40px; }
+
+/* Doctor and administrator catalogue: a readable list rather than the Pharmacy cabinet. */
+.medicine-table .cabinet-signage { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 4px; padding: 10px 14px; background: #fbf6ee; color: var(--ink); border-radius: 4px 4px 0 0; }
+.medicine-table .cabinet-signage strong { font-size: 16px; letter-spacing: 0; }
+.medicine-table .cabinet-signage span { font-size: 13px; color: #4a5250; }
+.medicine-table { min-width: 0; }
+.medicine-table .hospital-panel > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.medicine-table .hospital-panel { padding: 0 14px 12px; background: #fbf6ee; border: 0; border-radius: 0 0 4px 4px; }
+.medicine-table .hospital-items { display: block; max-height: none; }
+.medicine-table .hospital-item { display: block; margin: 0; padding: 0; background: none; border: 0; border-bottom: 1px solid #e0d0b6; border-radius: 0; box-shadow: none; min-height: 0; }
+.medicine-table-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; align-items: center; gap: 4px 12px; padding: 8px 0; }
+.medicine-table-row strong { font-size: 14px; font-weight: 600; }
+.medicine-table-row small { font-size: 12px; color: #4a5250; }
+.medicine-table-row .owner-state { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: var(--status-neutral-bg); color: var(--status-neutral-fg); white-space: nowrap; }
+.medicine-table-row .owner-state[data-state="available"] { background: var(--status-success-bg); color: var(--status-success-fg); }
+.medicine-table-row .owner-state[data-state="unavailable"] { background: var(--status-danger-bg); color: var(--status-danger-fg); }
+.medicine-table-row button { min-height: 36px; margin: 0; padding: 6px 14px; }
+.medicine-table-row[data-selected="true"] { box-shadow: inset 4px 0 0 var(--select-teal, #0f6b6b); padding-left: 10px; }
+@media (max-width: 580px) { .medicine-table-row { grid-template-columns: minmax(0, 1fr) auto; } .medicine-table-row small { grid-row: 2; } }
+.medicine-table .hospital-items { max-height: 420px; overflow: auto; overscroll-behavior: contain; }

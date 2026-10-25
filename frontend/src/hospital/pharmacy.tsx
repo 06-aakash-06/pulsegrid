@@ -96,7 +96,7 @@ export function MedicineCatalog({
       </Panel>
       </details>
       {demo&&<label className="catalog-cohort"><input type="checkbox" checked={showAll} onChange={e=>{setShowAll(e.target.checked);setSelected(null);}}/>Show all owner records · Fictional demo catalog</label>}
-      </div><div className="pharmacy-shelf-workspace"><div className="medicine-shelves"><div className="cabinet-signage"><strong>MEDICINE CABINET</strong><span>Catalog availability · Pharmacy</span></div>
+      </div><div className="pharmacy-shelf-workspace"><div className="medicine-table"><div className="cabinet-signage"><strong>Medicine catalogue</strong><span> · Availability from Pharmacy</span></div>
       <Collection<Medicine>
         title="Medicines"
         path={query("/api/v1/pharmacy/medicines", filters)}
@@ -104,10 +104,11 @@ export function MedicineCatalog({
         itemFilter={item=>(!demo||showAll||!!filters.q||item.sku.startsWith("DEMO-"))&&(!availability||item.availability===availability)}
         onFirstItem={item=>{if(!selected||(demo&&!showAll&&!demoSelected)){setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(Boolean(demo));}}}
         renderItem={(item) => (
-          <div className="medicine-shelf-slot" data-selected={selected===item.id} data-availability={item.availability}>
-            <div className="carton-space"><span className="medicine-box" aria-hidden="true"><small>PULSEGRID · DEMO</small><DepartmentIcon department="pharmacy"/><span>{item.name.startsWith("Synthetic") ? "Catalog medicine" : item.name}</span><i /></span></div>
-            <button aria-label={`View medicine ${item.id}`} aria-pressed={selected===item.id} onClick={() => {setSelected(item.id);if(inventory)setMedicineId(item.id);}}><strong>{item.name.startsWith("Synthetic")?`Demo catalog item …${item.id.slice(-4)}`:item.name}</strong><span>Details →</span></button>
-            <p>{availabilityText[item.availability]}</p>
+          <div className="medicine-table-row" data-selected={selected===item.id} data-availability={item.availability}>
+            <strong>{item.name.startsWith("Synthetic")?`Demo catalog item …${item.id.slice(-4)}`:item.name}</strong>
+            <small>{item.sku}</small>
+            <span className="owner-state" data-state={item.availability}>{availabilityText[item.availability]}</span>
+            <button aria-label={`View medicine ${item.id}`} aria-pressed={selected===item.id} onClick={() => {setSelected(item.id);if(inventory)setMedicineId(item.id);}}>{selected===item.id ? "Selected" : "Select"}</button>
           </div>
         )}
       />
