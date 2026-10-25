@@ -498,7 +498,7 @@ describe("patient journey and pharmacy fulfillment", () => {
     await waitFor(() => expect(getCalls(fetcher).filter(([input]) => String(input) === "/api/v1/pharmacy/reservations/91").length).toBeGreaterThan(1));
     await screen.findByRole("button", { name: commandLabels("Dispense reservation").review });
     await confirm("Dispense reservation");
-    expect(await screen.findByText(/Completed dispensing 101/)).toBeInTheDocument();
+    expect(await screen.findByText(/Dispensed \(…101\)/)).toBeInTheDocument();
     const dispenseCall = writes(fetcher).find(([url]) => String(url) === "/api/v1/pharmacy/reservations/91/dispense")!;
     expect(JSON.parse(String(dispenseCall[1]?.body))).toEqual({});
     expect(requestHeaders(dispenseCall[1]!).get("If-Match")).toBe('"3"');
