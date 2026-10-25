@@ -29,7 +29,7 @@ function requestErrorMessage(error: unknown, action: "login" | "register"): stri
     if (action === "register" && error.code === "identity_service_unavailable") {
       return "New accounts are unavailable on this deployment because the Patient service is not connected. Use a demo account or a service-backed PulseGrid installation.";
     }
-    if (action === "register" && error.status === 409 && ["conflict", "email_unavailable"].includes(error.code)) {
+    if (action === "register" && error.status === 409 && ["conflict", "email_unavailable", "email_exists", "duplicate_email"].includes(error.code)) {
       return "An account with this email address may already exist. Try signing in or use a different email address.";
     }
     if (action === "register" && error.status === 409) {
@@ -206,6 +206,7 @@ export function RegistrationPage() {
     if (!normalizedName) nextErrors.displayName = "Enter your display name.";
     if (!validEmail(normalizedEmail)) nextErrors.email = "Enter a valid email address.";
     if (!password) nextErrors.password = "Enter a password.";
+    else if (password.length < 8) nextErrors.password = "Use at least 8 characters for your password.";
     if (!passwordConfirmation) nextErrors.passwordConfirmation = "Confirm your password.";
     else if (password !== passwordConfirmation) nextErrors.passwordConfirmation = "Passwords do not match.";
     setFieldErrors(nextErrors);
@@ -241,6 +242,7 @@ export function RegistrationPage() {
 
   return (
     <AuthFrame title="Create a patient account" description="Registration is for patient accounts. Staff roles are assigned by hospital administrators.">
+      {(import.meta.env.VITE_DEMO_MOCK === "true" || import.meta.env.VITE_MOCK_API === "true") && <p className="form-message">{import.meta.env.VITE_DEMO_MOCK === "true" ? "Demo accounts and activity are saved in this browser only." : "Demo accounts and activity reset when this development server restarts."} Use fictional details and a password you do not use elsewhere.</p>}
       {submitted ? (
         <div className="form-message form-message--success" role="status">
           Your registration was accepted by the identity service. <Link to="/login">Sign in to continue.</Link>

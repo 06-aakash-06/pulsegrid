@@ -1,4 +1,4 @@
-import { DepartmentIcon, departmentFor, departmentDescriptions } from "../design/DepartmentIcon";
+import { DepartmentIcon, departmentFor, pageSubtitle } from "../design/DepartmentIcon";
 import { PatientWaitlistPage, PatientCheckinPage, PatientQueuePage, PatientJourneyPage } from "../advanced/patient";
 import { WaitlistOffers } from "../advanced/patient/WaitlistOffers";
 import { DoctorQueuePage, ReceptionWorkflowPanel, StaffFulfillmentPanel } from "./staffAdvanced";
@@ -28,7 +28,7 @@ export function HospitalPage({
   const route = page.path;
   const title = role === "/pharmacist" && route === "dashboard" ? "Pharmacy" : page.title;
   const pharmacyRoom = (role === "/patient" && route === "pharmacy") || role === "/pharmacist";
-  const subtitle = departmentDescriptions[departmentFor(role, route)];
+  const subtitle = pageSubtitle(role, route);
   const signed =
     (role === "/patient" && ["records", "billing", "emergency", "appointments"].includes(route)) ||
     (role === "/receptionist" && route === "appointments") ||
@@ -57,8 +57,8 @@ export function HospitalPage({
     if (route === "prescriptions")
       content = (
         <>
-          <MedicineCatalog />
           <Prescriptions doctor />
+          <MedicineCatalog />
         </>
       );
   }
@@ -105,7 +105,7 @@ export function HospitalPage({
           <p className="eyebrow">{workspace.name}</p>
           <h1>{title}</h1>
           <p className="page-description">
-            {role === "/patient" && route === "queue" ? "Check in. Follow your place in the queue." : departmentDescriptions[departmentFor(role,route)]}
+            {role === "/patient" && route === "queue" ? "Check in. Follow your place in the queue." : role === "/patient" && route === "check-in" ? "Check in for today's visit." : subtitle}
           </p>
         </div>
       </div>

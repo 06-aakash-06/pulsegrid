@@ -83,3 +83,11 @@ export const departmentDescriptions: Record<Department, string> = {
   records: "Patient history",
   control: "System health & operations",
 };
+const pageSubtitles: Record<string, string> = {
+  "/admin/dashboard": "Hospital administration",
+  "/admin/staff": "Staff & roles",
+  "/admin/settings": "Hospital configuration",
+};
+export function pageSubtitle(base: string, path: string): string {
+  return pageSubtitles[`${base}/${path}`] ?? departmentDescriptions[departmentFor(base, path)];
+}

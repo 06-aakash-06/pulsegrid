@@ -14,7 +14,7 @@ export function AppointmentDoctorRail({selected,onSelect}:{selected:string;onSel
   const rows=(roster.response?.data.items??[]).filter(d=>!demo||all||demo.doctors[d.id]);
   useEffect(()=>{if(!selected&&rows[0])onSelect(rows[0]);},[selected,roster.response,demo,onSelect]);
   return <div className="appointment-doctor-rail">
-    <label>Find a doctor<input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search doctor by name or specialty…"/></label>
+    <label>Find a doctor<input type="search" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search doctors…" title="Search doctors by name or specialty"/></label>
     {roster.error&&<p role="alert">{roster.error}</p>}
     {roster.loading&&<p role="status">Loading doctors…</p>}
     <div className="appointment-specialties" aria-label="Doctor specialties"><button type="button" aria-pressed={!specialty} onClick={()=>setSpecialty("")}>All</button>{[...new Set(rows.flatMap(d=>d.specialties.map(s=>s.name)))].map(name=><button type="button" key={name} aria-pressed={specialty===name} onClick={()=>setSpecialty(name)}>{name}</button>)}</div>

@@ -49,7 +49,7 @@
     gap: 7px;
   }
   .entrance-directory .directory-copy strong { font-size: 12px; }
-  .entrance-directory .directory-copy small { font-size: 9px; }
+  .entrance-directory .directory-copy small { font-size: var(--text-min); }
   .entrance-directory .directory-heading { padding: 0 8px 18px; margin-bottom: 8px; }
   .reception-scene {
     height: min(calc(66.6667vw - var(--scene-top)), calc(100vh - var(--scene-top)));
@@ -70,8 +70,8 @@
     min-height: 0;
     height: 100%;
   }
-  .reception-scene .wayfinding-sign strong { font-size: clamp(11px, .85vw, 15px); white-space: nowrap; }
-  .reception-scene .wayfinding-sign small { font-size: clamp(9px, .65vw, 11px); }
+  .reception-scene .wayfinding-sign strong { font-size: clamp(var(--text-min), .85vw, 15px); white-space: nowrap; }
+  .reception-scene .wayfinding-sign small { font-size: clamp(var(--text-min), .65vw, var(--text-min)); }
   .reception-scene .wayfinding-sign .department-icon { width: 1.7vw; height: 1.7vw; flex-shrink: 0; }
   .reception-scene .wayfinding-sign b { font-size: 18px; }
   .reception-scene .welcome-wall {
@@ -92,7 +92,7 @@
     padding-left: 1.2vw;
     gap: 8px;
   }
-  .reception-guidance .button { padding-inline: 10px; font-size: 11px; }
+  .reception-guidance .button { padding-inline: 10px; font-size: var(--text-min); }
   .reception-scene .robot-conversation {
     left: calc(42vw - var(--scene-left));
     top: calc(27vw - var(--scene-top));
@@ -180,7 +180,7 @@
   .workspace-shell:has(.reception-scene) .workspace-nav-link,
   .workspace-shell:has(.reference-consultation) .workspace-nav-link { min-height: 46px; padding-block: 5px; }
   .workspace-shell:has(.reception-scene) .directory-copy small,
-  .workspace-shell:has(.reference-consultation) .directory-copy small { white-space: normal; font-size: 8px; }
+  .workspace-shell:has(.reference-consultation) .directory-copy small { white-space: normal; font-size: var(--text-min); }
   .workspace-shell:has(.reception-scene) .directory-help,
   .workspace-shell:has(.reference-consultation) .directory-help { padding-block: 8px; margin-top: 0; }
   .reference-consultation .consultation-desk { padding-top: 12px; }
@@ -194,8 +194,8 @@
   .consultation-quick h2 { grid-column: 1 / -1; margin-bottom: 2px; }
   .consultation-quick a { gap: 6px; align-items: start; }
   .consultation-quick .department-icon { width: 18px; height: 18px; flex-shrink: 0; }
-  .consultation-quick strong { font-size: 11px; }
-  .consultation-quick small { font-size: 9px; }
+  .consultation-quick strong { font-size: var(--text-min); }
+  .consultation-quick small { font-size: var(--text-min); }
 }
 @media (min-width: 901px) and (max-width: 1100px) {
   .reception-scene .wayfinding-sign .department-icon,

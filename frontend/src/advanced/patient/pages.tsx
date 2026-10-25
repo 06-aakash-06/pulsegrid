@@ -46,6 +46,14 @@ import type {
 } from "./contracts";
 import "./patient.css";
 
+const workflowLabels: Record<Workflow["state"], string> = {
+  booked: "Waiting for check-in",
+  checked_in: "Checked in",
+  in_consultation: "In consultation",
+  completed: "Visit completed",
+  cancelled: "Cancelled",
+  no_show: "Marked as no-show",
+};
 function RetryButton({ onClick, disabled = false }: { onClick: () => void; disabled?: boolean }) {
   return <button type="button" onClick={onClick} disabled={disabled}>Retry</button>;
 }
@@ -289,6 +297,7 @@ export function PatientCheckinPage({
     : null;
   const appointments = usePagedItems<Appointment>(api, appointmentsPath, gate === "ready" && !!profile.data);
   const ownAppointments = appointments.items.filter((item) => item.state === "confirmed");
+  const selectedAppointment = ownAppointments.find((item) => item.id === appointment);
 
   async function issueLink() {
     if (!appointment || !workflow.etag) {
@@ -330,7 +339,7 @@ export function PatientCheckinPage({
       return;
     }
     if (!/^[A-Za-z0-9]{22}$/.test(manualToken.trim())) {
-      setActionError("Check-in token must contain exactly 22 Base62 characters.");
+      setActionError("Enter the 22-character check-in code, or get a new code above.");
       return;
     }
     if (!workflow.etag) {
@@ -423,36 +432,47 @@ export function PatientCheckinPage({
         }} aria-describedby="checkin-appointment-help" />
         <span id="checkin-appointment-help" className="patient-workflow__hint">A positive decimal appointment ID from your own appointment list.</span>
         {workflow.loading && appointment && <p role="status">Loading current check-in status…</p>}
-        {workflow.error && appointment && <div role="alert"><p>{workflow.error}</p><RetryButton onClick={workflow.reload} /></div>}
+        {workflow.error && appointment && (workflow.notFound
+          ? <p className="patient-workflow__calm" role="status">Check-in opens on the day of your appointment{selectedAppointment ? ` (${formatTime(selectedAppointment.starts_at)})` : ""}. Come back then to check in here.</p>
+          : <div role="alert"><p>{workflow.error}</p><RetryButton onClick={workflow.reload} /></div>)}
         {workflow.data && <dl className="patient-workflow__facts">
-          <div><dt>Backend workflow status</dt><dd>{workflow.data.state}</dd></div>
-          <div><dt>Check-in window starts</dt><dd><time dateTime={workflow.data.checkin_window.starts_at}>{formatTime(workflow.data.checkin_window.starts_at)}</time></dd></div>
-          <div><dt>Check-in window ends</dt><dd><time dateTime={workflow.data.checkin_window.ends_at}>{formatTime(workflow.data.checkin_window.ends_at)}</time></dd></div>
+          <div><dt>Status</dt><dd>{workflowLabels[workflow.data.state]}</dd></div>
+          <div><dt>Check-in opens</dt><dd><time dateTime={workflow.data.checkin_window.starts_at}>{formatTime(workflow.data.checkin_window.starts_at)}</time></dd></div>
+          <div><dt>Check-in closes</dt><dd><time dateTime={workflow.data.checkin_window.ends_at}>{formatTime(workflow.data.checkin_window.ends_at)}</time></dd></div>
         </dl>}
-        {workflow.data?.state === "booked" && <button type="button" disabled={issuePending || workflow.loading || !workflow.etag} onClick={() => void issueLink()}>{issuePending ? "Requesting link…" : issue ? "Issue a new check-in QR" : "Request check-in QR"}</button>}
-        {issueError && <div role="alert"><p>{issueError}</p>{workflow.data?.state === "booked" && <button type="button" disabled={issuePending} onClick={() => void issueLink()}>Request a new link</button>}</div>}
-        {issue && activeIssueUrl && <div className="patient-workflow__item" aria-label="Check-in link receipt">
-          <h3>Check-in link issued</h3>
-          <p>Expires at <time dateTime={issue.expires_at}>{formatTime(issue.expires_at)}</time>. The expiry is shown from the service; this page does not decide whether the link is valid.</p>
-          <div className="patient-workflow__qr" aria-label="Check-in QR display">
-            {renderQr ? renderQr(activeIssueUrl) : <CheckinQr value={activeIssueUrl} />}
+        {(result || (workflow.data && workflow.data.state !== "booked")) ? (
+          <div className="patient-workflow__done" role="status">
+            <h3>{result || workflow.data?.state === "checked_in" ? "You're checked in" : workflowLabels[workflow.data!.state]}</h3>
+            {result && <p>Your queue token is <strong>{result.queue_entry.token_number}</strong>.</p>}
+            {(result || workflow.data?.state === "checked_in" || workflow.data?.state === "in_consultation") && <Link className="button" to="/patient/queue">Follow your place in the Waiting Room →</Link>}
           </div>
-          <label htmlFor="checkin-landing-url">Secure same-origin landing URL</label>
-          <input id="checkin-landing-url" readOnly value={activeIssueUrl} onFocus={(event) => event.currentTarget.select()} />
-          <label htmlFor="checkin-issued-token">One-time token (held in memory)</label>
-          <input id="checkin-issued-token" readOnly value={issue.token} onFocus={(event) => event.currentTarget.select()} />
-          <p className="patient-workflow__muted">Reissuing revokes unconsumed links. The token is not saved in browser storage and is cleared on logout or page exit.</p>
-        </div>}
-        {actionError && <p role="alert">{actionError}</p>}
-        {!result && <form onSubmit={(event) => void confirmCheckin(event)} noValidate>
-          <label htmlFor="checkin-token-input">QR token</label>
-          <input id="checkin-token-input" autoComplete="off" value={manualToken} onChange={(event) => {
-            setManualToken(event.target.value);
-            setConfirmationKey(null);
-          }} maxLength={22} />
-          <button type="submit" disabled={confirmPending || workflow.loading || !workflow.etag}>{confirmPending ? "Confirming…" : confirmationKey ? "Retry check-in confirmation" : "Confirm check-in"}</button>
-        </form>}
-        {result && <p role="status">Check-in confirmed by the service. Queue token {result.queue_entry.token_number}; workflow status {result.workflow.state}.</p>}
+        ) : workflow.data?.state === "booked" && <>
+          <div className="patient-workflow__step">
+            <p>No QR to scan? Ask for a one-time check-in code for this appointment, then confirm below.</p>
+            <button type="button" disabled={issuePending || workflow.loading || !workflow.etag} onClick={() => void issueLink()}>{issuePending ? "Requesting code…" : issue ? "Issue a new check-in code" : "Get a check-in code"}</button>
+          </div>
+          {issueError && <div role="alert"><p>{issueError}</p><button type="button" disabled={issuePending} onClick={() => void issueLink()}>Request a new code</button></div>}
+          {issue && activeIssueUrl && <details className="patient-workflow__item" aria-label="Check-in link receipt">
+            <summary>Show this code as a QR</summary>
+            <p>Expires at <time dateTime={issue.expires_at}>{formatTime(issue.expires_at)}</time>. Reissuing revokes unused codes.</p>
+            <div className="patient-workflow__qr" aria-label="Check-in QR display">
+              {renderQr ? renderQr(activeIssueUrl) : <CheckinQr value={activeIssueUrl} />}
+            </div>
+            <label htmlFor="checkin-landing-url">Secure same-origin landing URL</label>
+            <input id="checkin-landing-url" readOnly value={activeIssueUrl} onFocus={(event) => event.currentTarget.select()} />
+            <p className="patient-workflow__muted">The code is not saved in browser storage and is cleared on logout or page exit.</p>
+          </details>}
+          {actionError && <p role="alert">{actionError}</p>}
+          <form onSubmit={(event) => void confirmCheckin(event)} noValidate>
+            <label htmlFor="checkin-token-input">Check-in code</label>
+            <input id="checkin-token-input" autoComplete="off" value={manualToken} placeholder="22 letters and digits, e.g. aB3dE5fG7hJ9kL1mN3pQ5r" aria-describedby="checkin-token-help" onChange={(event) => {
+              setManualToken(event.target.value);
+              setConfirmationKey(null);
+            }} maxLength={22} />
+            <span id="checkin-token-help" className="patient-workflow__hint">Filled in for you when you scan a QR or get a code above.</span>
+            <button type="submit" disabled={confirmPending || workflow.loading || !workflow.etag}>{confirmPending ? "Confirming…" : confirmationKey ? "Retry check-in confirmation" : "Confirm check-in"}</button>
+          </form>
+        </>}
       </section>
     </div>
   );
@@ -540,7 +560,7 @@ export function PatientQueuePage() {
         <dl className="patient-workflow__facts">
           <div><dt>Queue token</dt><dd>{live.data.queue.entry.token_number}</dd></div>
           <div><dt>Your position</dt><dd>{live.data.queue.entry.position ?? "Not currently waiting"}</dd></div>
-          <div><dt>Queue status</dt><dd>{live.data.queue.entry.state}</dd></div>
+          <div><dt>Queue status</dt><dd>{live.data.queue.entry.state.replaceAll("_", " ")}</dd></div>
           <div><dt>Waiting count</dt><dd>{live.data.queue.waiting_count}</dd></div>
           <div><dt>In consultation</dt><dd>{live.data.queue.in_consultation_count}</dd></div>
           <div><dt>Queue snapshot version</dt><dd>{live.data.queue.queue_version}</dd></div>
@@ -549,8 +569,8 @@ export function PatientQueuePage() {
         <p>Queue status updates are polled every five seconds while this page is visible. Other patients’ identities are never requested or shown.</p></details>
       </>}
       {live.data && !live.data.queue && <p role="status">The service has not returned a queue entry for this appointment. Check-in may still be pending, or the appointment may not be enrolled in Phase 3.</p>}
-      {live.data?.workflow && <p>Consultation status: <strong>{live.data.workflow.state}</strong> (workflow version {live.data.workflow.version}).</p>}
-      {live.data && !live.data.workflow && <p className="patient-workflow__muted">No workflow was returned for this appointment.</p>}
+      {live.data?.workflow && <p>Visit status: <strong>{workflowLabels[live.data.workflow.state]}</strong></p>}
+      {live.data && !live.data.workflow && <p className="patient-workflow__muted">Check-in opens on the day of your appointment.</p>}
       {!live.error && selectedId && <button type="button" onClick={live.retryNow}>Refresh queue now</button>}
       <footer className="queue-monitor-footer"><span>PulseGrid · Consultation queue</span>{live.data?.queue && <time dateTime={live.data.queue.observed_at}>Observed {formatTime(live.data.queue.observed_at)}</time>}</footer>
     </section>

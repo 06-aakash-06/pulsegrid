@@ -1,3 +1,4 @@
+import { formatDateTime } from "../ui";
 import { ApiError } from "../../api/client";
 import { errorMessage, id } from "../ui";
 
@@ -77,9 +78,5 @@ export function appendQueueQuery(
 export function scheduleLocalTime(value: string): string {
   const instant = new Date(value);
   if (!Number.isFinite(instant.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "UTC",
-  }).format(instant) + " UTC";
+  return formatDateTime(instant, { utc: true });
 }

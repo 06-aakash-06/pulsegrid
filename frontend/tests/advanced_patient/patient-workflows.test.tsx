@@ -227,16 +227,17 @@ describe("Agent 6 patient workflows", () => {
     const fetcher = setup(<PatientCheckinPage />, handler);
 
     expect(window.location.hash).toBe("");
-    await screen.findByRole("button", { name: "Request check-in QR" });
+    await screen.findByRole("button", { name: "Get a check-in code" });
     expect(fetcher.mock.calls.some(([input, init]) => String(input).endsWith("/check-in") && method(init ?? {}) === "POST")).toBe(false);
-    fireEvent.click(screen.getByRole("button", { name: "Request check-in QR" }));
-    expect(await screen.findByLabelText("One-time token (held in memory)")).toHaveValue(token);
+    fireEvent.click(screen.getByRole("button", { name: "Get a check-in code" }));
+    expect(await screen.findByLabelText("Check-in code")).toHaveValue(token);
     expect(await screen.findByAltText("Single-use appointment check-in QR")).toBeInTheDocument();
     expect(issueRequest).not.toBeNull();
     expect(headers(issueRequest!.init).get("If-Match")).toBe('"2"');
     expect(screen.getByLabelText("Secure same-origin landing URL")).toHaveValue(`${window.location.origin}/patient/check-in#appointment_id=51&token=${token}`);
     fireEvent.click(await screen.findByRole("button", { name: "Confirm check-in" }));
-    await screen.findByText(/Check-in confirmed by the service/);
+    await screen.findByText("You're checked in");
+    expect(screen.getByRole("link", { name: /Follow your place in the Waiting Room/ })).toHaveAttribute("href", "/patient/queue");
     expect(body(checkinRequest!.init)).toEqual({ token });
     expect(headers(checkinRequest!.init).get("If-Match")).toBe('"3"');
     expect(headers(checkinRequest!.init).get("Idempotency-Key")).toMatch(/^[0-9a-f-]{36}$/);
@@ -258,7 +259,7 @@ describe("Agent 6 patient workflows", () => {
     fireEvent.click(confirm);
     await waitFor(() => expect(fetcher.mock.calls.some(([input, init]) => String(input).endsWith("/check-in") && method(init ?? {}) === "POST")).toBe(true));
     await screen.findByText((_content, element) => element?.tagName === "P" && element.textContent?.includes("No check-in was confirmed") === true);
-    expect(screen.queryByText(/Check-in confirmed by the service/)).not.toBeInTheDocument();
+    expect(screen.queryByText("You're checked in")).not.toBeInTheDocument();
   });
 
   it("reconnects the own-queue poll and renders only the backend position and status", async () => {
@@ -282,7 +283,7 @@ describe("Agent 6 patient workflows", () => {
     };
     setup(<PatientQueuePage />, handler);
     fireEvent.click(await screen.findByRole("button", { name: "Reconnect now" }));
-    await screen.findByText("in_consultation");
+    await screen.findByText("In consultation", { selector: "strong" });
     expect(screen.getByText("2", { selector: "dd" })).toBeInTheDocument();
     expect(screen.getByText("Queue token").nextElementSibling).toHaveTextContent("7");
     expect(screen.getByText(/Queue status updates are polled every five seconds/)).toBeInTheDocument();
@@ -387,11 +388,12 @@ describe("Agent 6 patient workflows", () => {
     };
     setup(<PatientFulfillmentPanel counter />, handler);
     fireEvent.change(await screen.findByLabelText(/Catalog item …81 quantity \(up to 4\)/), { target: { value: "2" } });
-    fireEvent.click(screen.getByRole("button", { name: "Request reservation" }));
+    fireEvent.click(screen.getByRole("button", { name: "Review reservation" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Request reservation" }));
     await screen.findByRole("button", { name: "Retry reservation request" });
     expect(screen.getByLabelText("Your prescription")).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Retry reservation request" }));
-    await screen.findByText(/Pharmacy returned reservation 91, state reserved/);
+    await screen.findByText(/Medicines reserved until/);
     expect(body(request!)).toEqual({ prescription_id: "71", items: [{ prescription_item_id: "72", quantity: 2 }] });
     expect(headers(request!).get("Idempotency-Key")).toMatch(/^[0-9a-f-]{36}$/);
     expect(headers(attempts[0]).get("Idempotency-Key")).toBe(headers(attempts[1]).get("Idempotency-Key"));

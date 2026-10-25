@@ -31,7 +31,7 @@
 }
 .workspace-shell:has(.reference-consultation) .directory-copy small,
 .workspace-shell:has(.reception-scene) .directory-copy small {
-  font-size: 9px;
+  font-size: var(--text-min);
   white-space: nowrap;
 }
 .workspace-shell:has(.reference-consultation) .directory-heading,
@@ -103,7 +103,7 @@
   stroke-width: 0.8;
 }
 .consultation-wall-mark span {
-  font-size: 9px;
+  font-size: var(--text-min);
   line-height: 1.5;
   letter-spacing: 2px;
 }
@@ -125,7 +125,7 @@
   align-items: center;
   gap: 10px;
   padding: 0 15px;
-  font-size: 11px;
+  font-size: var(--text-min);
   white-space: nowrap;
   border-right: 1px solid #cfbea750;
   flex: 1;
@@ -199,11 +199,11 @@
 }
 .reference-specialties button span {
   color: inherit;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .specialty-tools {
   margin: 20px 5px 0;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .specialty-tools summary {
   cursor: pointer;
@@ -211,7 +211,7 @@
 .demo-footnote {
   position: absolute;
   bottom: 8px;
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #687269;
 }
 .reference-roster {
@@ -238,7 +238,7 @@
   padding: 5px !important;
   flex: 1;
   width: 0;
-  font-size: 11px;
+  font-size: var(--text-min);
   box-shadow: none;
 }
 .workspace-content .doctor-search-bar button {
@@ -246,10 +246,10 @@
   min-height: 25px !important;
   border: 0 !important;
   background: none !important;
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .roster-caption {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: #5d6666;
   display: flex;
   align-items: center;
@@ -257,7 +257,7 @@
   min-height: 30px;
 }
 .workspace-content .roster-caption button {
-  font-size: 10px;
+  font-size: var(--text-min);
   min-height: 22px;
   padding: 3px 6px;
   border: 0;
@@ -304,10 +304,10 @@
   font-weight: 600;
 }
 .doctor-row-name > span {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .doctor-row-name small {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #66706d;
 }
 .reference-portrait {
@@ -336,20 +336,20 @@
   grid-template-columns: 6px minmax(0, 1fr);
   gap: 4px;
   align-items: center;
-  font-size: 10px;
+  font-size: var(--text-min);
   border-left: 1px solid #c9bba65c;
   padding-left: 12px;
   min-width: 0;
 }
 .doctor-availability strong {
   font-weight: 500;
-  font-size: 10px;
+  font-size: var(--text-min);
   color: #096e4b;
   white-space: normal;
 }
 .doctor-availability small {
   grid-column: 2;
-  font-size: 9px;
+  font-size: var(--text-min);
   line-height: 1.3;
 }
 .availability-dot {
@@ -373,7 +373,7 @@
   padding-top: 6px;
 }
 .workspace-content .roster-pagination button {
-  font-size: 9px;
+  font-size: var(--text-min);
   min-height: 24px;
   padding: 3px 7px;
   background: none;
@@ -403,7 +403,7 @@
   padding-top: 2px;
 }
 .profile-active {
-  font-size: 10px;
+  font-size: var(--text-min);
   display: inline-block;
   background: #c8dfbd;
   color: #087148;
@@ -425,7 +425,7 @@
   margin: 0 0 5px;
 }
 .reference-profile-top small {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #66706d;
 }
 .reference-profile-status {
@@ -440,10 +440,10 @@
   gap: 5px;
 }
 .doctor-availability--profile strong {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .doctor-availability--profile small {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .profile-slot-strip {
   grid-column: 1/-1;
@@ -456,7 +456,7 @@
   padding: 5px;
   border: 1px solid #d1bda57a;
   border-radius: 3px;
-  font-size: 9px;
+  font-size: var(--text-min);
   flex: 1;
   text-align: center;
 }
@@ -471,7 +471,7 @@
   background: none;
   border: 0;
   border-radius: 0;
-  font-size: 11px;
+  font-size: var(--text-min);
   padding: 10px 0;
   min-height: 34px;
 }
@@ -498,15 +498,15 @@
   background: #d5d8dc;
   padding: 5px 10px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .profile-about .profile-note {
-  font-size: 11px;
+  font-size: var(--text-min);
   color: #5c6767;
   margin-top: 16px;
 }
 .profile-technical-details {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .profile-technical-details dd {
   margin: 3px 0 10px;
@@ -527,7 +527,7 @@
   border-radius: 4px;
 }
 .profile-management {
-  font-size: 10px;
+  font-size: var(--text-min);
   margin-top: 12px;
 }
 .profile-management summary {
@@ -581,7 +581,7 @@
   margin: 0;
 }
 .schedule-title > span {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: #5f6261;
 }
 .schedule-visits {
@@ -599,7 +599,7 @@
   gap: 2px;
   border-left: 2px solid var(--visit-color);
   padding: 0 8px;
-  font-size: 11px;
+  font-size: var(--text-min);
   position: relative;
 }
 .schedule-visit:before {
@@ -613,7 +613,7 @@
   border-radius: 50%;
 }
 .schedule-visit time {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #66706d;
   margin-bottom: 5px;
 }
@@ -621,7 +621,7 @@
   font-size: 12px;
 }
 .schedule-visit small {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #647070;
   line-height: 1.3;
 }
@@ -654,17 +654,17 @@
 }
 .consultation-quick strong {
   font-weight: 550;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .consultation-quick small {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #5b696c;
 }
 .reference-advanced {
   padding: 12px 16px;
   background: #f0e0ccbe;
   margin-top: 18px;
-  font-size: 11px;
+  font-size: var(--text-min);
   border: 1px solid #ddcbae;
 }
 .reference-advanced summary {
@@ -734,7 +734,7 @@
   font-size: 14px;
 }
 .reception-scene .wayfinding-sign small {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .reception-scene .wayfinding-sign .department-icon {
   width: 28px;
@@ -774,7 +774,7 @@
   margin: 0;
 }
 .reception-scene .welcome-motto {
-  font-size: 8px;
+  font-size: var(--text-min);
   letter-spacing: 3px;
   margin-top: 16px;
   white-space: nowrap;
@@ -787,7 +787,7 @@
   width: 170px;
   padding: 13px 14px;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: var(--text-min);
   background: #fff9efeb;
   box-shadow: 0 1px 2px #8b765e30;
 }
@@ -891,7 +891,7 @@
   max-width: 130px;
 }
 .reception-scene .appointment-slip p {
-  font-size: 11px;
+  font-size: var(--text-min);
   line-height: 1.35;
   margin: 9px 0 0;
   padding-right: 16px;
@@ -951,7 +951,7 @@
 }
 .reception-scene .slip-object--records .slip-object-backing:before {
   content: "VISIT HISTORY";
-  font-size: 8px;
+  font-size: var(--text-min);
   letter-spacing: 0.8px;
   position: absolute;
   top: -10px;
@@ -966,11 +966,11 @@
   top: 17%;
   right: 12%;
   width: 18%;
-  font-size: 11px;
+  font-size: var(--text-min);
   color: #172e34;
 }
 .reception-hospital-today > .eyebrow {
-  font-size: 8px;
+  font-size: var(--text-min);
   letter-spacing: 1.8px;
   margin-bottom: 14px;
 }
@@ -992,13 +992,13 @@
   font-weight: 550;
 }
 .reception-hospital-today > small {
-  font-size: 8px;
+  font-size: var(--text-min);
   color: #5a605b;
   display: block;
   margin-top: 10px;
 }
 .reception-live-error {
-  font-size: 9px;
+  font-size: var(--text-min);
 }
 .reception-information-rail {
   position: absolute;
@@ -1035,13 +1035,13 @@
   margin: 0;
 }
 .reception-info-title > span {
-  font-size: 9px;
+  font-size: var(--text-min);
 }
 .reception-next-time {
   display: flex;
   align-items: center;
   gap: 15px;
-  font-size: 11px;
+  font-size: var(--text-min);
   margin: 12px 0 6px;
   border-bottom: 1px solid #b09b7b;
   padding-bottom: 5px;
@@ -1051,7 +1051,7 @@
   font-size: 14px;
 }
 .reception-today > a {
-  font-size: 9px;
+  font-size: var(--text-min);
 }
 .reception-queue-display {
   display: grid;
@@ -1069,7 +1069,7 @@
 }
 .reception-queue-display > span {
   grid-column: 1/-1;
-  font-size: 10px;
+  font-size: var(--text-min);
   letter-spacing: 1.5px;
 }
 .queue-flaps {
@@ -1092,11 +1092,11 @@
   gap: 5px;
 }
 .reception-queue-display > div > strong {
-  font-size: 11px;
+  font-size: var(--text-min);
   font-weight: 500;
 }
 .reception-queue-display small {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #d8d6cf;
 }
 .reception-queue-display > b {
@@ -1106,7 +1106,7 @@
 .reception-announcements p {
   display: flex;
   gap: 7px;
-  font-size: 9px;
+  font-size: var(--text-min);
   line-height: 1.35;
   margin-top: 8px;
 }
@@ -1119,7 +1119,7 @@
   margin-top: 3px;
 }
 .reception-announcements > small {
-  font-size: 8px;
+  font-size: var(--text-min);
   color: #6c6560;
 }
 .profile-desk {
@@ -1189,10 +1189,10 @@
     font-size: 18px;
   }
   .doctor-row-name strong {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .doctor-row-name > span {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .doctor-availability {
     padding-left: 7px;
@@ -1201,7 +1201,7 @@
     padding: 13px;
   }
   .reference-specialties button {
-    font-size: 11px !important;
+    font-size: var(--text-min) !important;
     padding-inline: 7px !important;
   }
   .consultation-wall-heading h1 {
@@ -1216,7 +1216,7 @@
   .consultation-tabs > a,
   .consultation-tabs > span {
     padding-inline: 10px;
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .reception-scene {
     min-height: 665px;
@@ -1237,7 +1237,7 @@
     font-size: 12px;
   }
   .reception-scene .wayfinding-sign small {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-scene .appointment-slip {
     padding: 17px 16px;
@@ -1364,10 +1364,10 @@
     gap: 6px;
   }
   .reception-scene .wayfinding-sign strong {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .reception-scene .wayfinding-sign small {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-scene .wayfinding-sign b {
     display: none;
@@ -1437,7 +1437,7 @@
   .consultation-tabs > span {
     min-width: 110px;
     padding: 8px;
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .consultation-board {
     display: block;
@@ -1459,7 +1459,7 @@
   .reference-specialties button {
     width: auto;
     min-height: 30px !important;
-    font-size: 10px !important;
+    font-size: var(--text-min) !important;
     padding: 5px 8px !important;
     background: #f6eee3 !important;
     border: 1px solid #cbb89e70 !important;
@@ -1469,13 +1469,13 @@
   }
   .specialty-tools {
     margin: 0;
-    font-size: 10px;
+    font-size: var(--text-min);
     align-self: center;
   }
   .demo-footnote {
     position: static;
     width: 100%;
-    font-size: 8px;
+    font-size: var(--text-min);
     margin: 2px 0;
   }
   .reference-roster {
@@ -1495,22 +1495,22 @@
     height: 52px;
   }
   .doctor-row-name strong {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .doctor-row-name > span {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .doctor-row-name small {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .doctor-availability {
     padding-left: 5px;
   }
   .doctor-availability strong {
-    font-size: 9px;
+    font-size: var(--text-min);
   }
   .doctor-availability small {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reference-doctor-profile {
     display: flex;
@@ -1547,7 +1547,7 @@
     font-size: 12px;
   }
   .schedule-title > span {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .schedule-visit {
     min-width: 110px;
@@ -1580,7 +1580,7 @@
   }
   .reception-scene .wayfinding-sign {
     min-height: 48px;
-    font-size: 10px;
+    font-size: var(--text-min);
     gap: 8px;
   }
   .reception-scene .wayfinding-sign .department-icon {
@@ -1588,10 +1588,10 @@
     height: 20px;
   }
   .reception-scene .wayfinding-sign strong {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .reception-scene .wayfinding-sign small {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-scene .welcome-wall {
     top: 125px;
@@ -1605,7 +1605,7 @@
     font-size: 31px !important;
   }
   .reception-scene .welcome-motto {
-    font-size: 6px;
+    font-size: var(--text-min);
     letter-spacing: 2px;
     margin-top: 10px;
   }
@@ -1624,14 +1624,14 @@
   .reception-hospital-today > .eyebrow {
     width: 100%;
     margin: 0;
-    font-size: 7px;
+    font-size: var(--text-min);
   }
   .reception-hospital-today > div {
     grid-template-columns: 16px auto 1fr;
     gap: 5px;
     padding: 3px 0;
     border: 0;
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-hospital-today strong {
     font-size: 12px;
@@ -1643,14 +1643,14 @@
   .reception-hospital-today > small {
     margin: 0;
     width: 100%;
-    font-size: 7px;
+    font-size: var(--text-min);
   }
   .reception-scene .robot-conversation {
     top: 330px;
     left: 5%;
     width: 140px;
     padding: 10px;
-    font-size: 9px;
+    font-size: var(--text-min);
   }
   .reception-scene .reception-counter {
     top: 465px;
@@ -1658,7 +1658,7 @@
   }
   .reception-scene .reception-counter-label {
     top: -42px;
-    font-size: 9px;
+    font-size: var(--text-min);
     letter-spacing: 6px;
   }
   .reception-scene .appointment-slips {
@@ -1676,7 +1676,7 @@
     font-size: 14px;
   }
   .reception-scene .appointment-slip p {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .reception-information-rail {
     top: 755px;
@@ -1733,7 +1733,7 @@
 }
 
 .reference-directory-tools {
-  font-size: 10px;
+  font-size: var(--text-min);
   padding: 5px 10px;
   background: none;
   border: 0;
@@ -1744,7 +1744,7 @@
 .reference-directory-tools a {
   display: block;
   padding: 6px 0;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .workspace-content .doctor-search-bar button {
   color: #213c44 !important;
@@ -1876,7 +1876,7 @@
   color: #102638;
 }
 .counter-token-stand > small {
-  font-size: 7px;
+  font-size: var(--text-min);
   letter-spacing: 1px;
 }
 .counter-token-stand > strong {
@@ -1885,7 +1885,7 @@
   letter-spacing: -1px;
 }
 .counter-token-stand > span {
-  font-size: 9px;
+  font-size: var(--text-min);
 }
 .counter-token-stand > b {
   font-size: 18px;
@@ -1904,7 +1904,7 @@
   }
   .workspace-shell:has(.reference-consultation) .hospital-header,
   .workspace-shell:has(.reception-scene) .hospital-header {
-    inset-inline: 48px;
+    inset-inline: 24px;
   }
   .workspace-shell:has(.reference-consultation) .workspace-sidebar,
   .workspace-shell:has(.reception-scene) .workspace-sidebar {
@@ -1948,7 +1948,7 @@
     font-size: 23px;
   }
   .counter-token-stand > span {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-scene:has(.counter-token-stand) .slip-object--check-in {
     margin-left: 40px;
@@ -2021,14 +2021,14 @@
     z-index: 2;
   }
   .reception-hospital-today > div {
-    font-size: 10px;
+    font-size: var(--text-min);
     gap: 6px;
   }
   .reception-hospital-today > .eyebrow {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-hospital-today > small {
-    font-size: 8px;
+    font-size: var(--text-min);
   }
   .reception-information-rail {
     padding-top: 760px;
@@ -2038,7 +2038,7 @@
   }
 }
 .profile-accepted-schedule {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .profile-accepted-schedule > div {
   display: grid;
@@ -2056,11 +2056,11 @@
   background: #fbf2e6;
 }
 .profile-accepted-schedule > div > span > small {
-  font-size: 8px;
+  font-size: var(--text-min);
   color: #646861;
 }
 .profile-accepted-schedule > small {
-  font-size: 9px;
+  font-size: var(--text-min);
   color: #5c6665;
 }
 .profile-schedule-metrics {
@@ -2082,7 +2082,7 @@
   color: #102638 !important;
 }
 .profile-schedule-metrics small {
-  font-size: 9px !important;
+  font-size: var(--text-min) !important;
 }
 .profile-schedule-metrics > span + span {
   border-left: 1px solid #c7b39850;
@@ -2095,10 +2095,10 @@
     font-size: 12px;
   }
   .doctor-availability strong {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .doctor-availability small {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .reference-specialties button {
     font-size: 13px !important;
@@ -2134,7 +2134,7 @@
     font-size: 12px;
   }
   .consultation-quick small {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
 }
 @media (max-width: 1300px) and (min-width: 901px) {
@@ -2142,13 +2142,13 @@
     font-size: 12px;
   }
   .doctor-row-name > span {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .doctor-availability strong {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .doctor-availability small {
-    font-size: 9px;
+    font-size: var(--text-min);
   }
   .reference-profile-top h2 {
     font-size: 19px;
@@ -2233,6 +2233,6 @@
     font-size: 13px;
   }
   .doctor-row-name > span {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
 }

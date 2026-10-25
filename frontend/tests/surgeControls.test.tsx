@@ -1,3 +1,4 @@
+import { commandLabels } from "./commandLabels";
 import {
   cleanup,
   fireEvent,
@@ -60,7 +61,7 @@ describe("owner-authorized Surge controls", () => {
       target: { value: "incident_override" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Change Surge Mode" }),
+      screen.getByRole("button", { name: commandLabels("Change Surge Mode").review }),
     );
     expect(screen.getByRole("alert")).toHaveTextContent(
       "explicitly selected override policy",
@@ -74,11 +75,11 @@ describe("owner-authorized Surge controls", () => {
       target: { value: "true" },
     });
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Change Surge Mode" }),
+      screen.getByRole("button", { name: commandLabels("Change Surge Mode").review }),
     );
     expect(screen.getByLabelText(/Requested operation/)).toBeDisabled();
     fireEvent.click(
-      screen.getByRole("button", { name: "Confirm Change Surge Mode" }),
+      screen.getByRole("button", { name: commandLabels("Change Surge Mode").confirm }),
     );
     await waitFor(() =>
       expect(mocks.requestWithMetadata).toHaveBeenCalledWith(
@@ -105,7 +106,7 @@ describe("owner-authorized Surge controls", () => {
       "Admission state unavailable",
     );
     expect(
-      screen.queryByRole("button", { name: "Review Change Surge Mode" }),
+      screen.queryByRole("button", { name: commandLabels("Change Surge Mode").review }),
     ).not.toBeInTheDocument();
   });
 });

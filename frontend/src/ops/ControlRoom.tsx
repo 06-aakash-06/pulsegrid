@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { StatusBadge } from "../components/StatusBadge";
 import { DepartmentIcon } from "../design/DepartmentIcon";
+import { formatDateTime } from "../hospital/ui";
 import "./controlRoom.css";
 
 const API_ROOT = "/api/v1/appointments/operations/control-room";
@@ -111,14 +112,11 @@ function number(value: number | null | undefined, digits = 1): string {
 }
 
 function time(value: string | null | undefined): string {
-  if (!value) return "Time unavailable";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Time unavailable" : date.toLocaleString();
+  return formatDateTime(value);
 }
 
 function localTimeFromNanos(value: number): string {
-  const date = new Date(value / 1_000_000);
-  return Number.isNaN(date.getTime()) ? "Time unavailable" : date.toLocaleTimeString();
+  return formatDateTime(value / 1_000_000);
 }
 
 function toneForHealth(value: string): "success" | "warning" | "danger" | "neutral" {
@@ -149,7 +147,7 @@ function KpiCard({ label, value, unit, detail, points, tone = "neutral" }: {
   const trend = points ? trendOf(points) : null;
   return (
     <article className={`ops-kpi ops-kpi--${tone}`}>
-      <p className="ops-kpi__label">{label}</p>
+      <p className="ops-kpi__label"><span className="ops-kpi__icon" aria-hidden="true">{({ Throughput: "↗", "p95 latency": "◷", "HTTP 5xx rate": "!", "RabbitMQ backlog": "≋", "Redis hit rate": "◈" } as Record<string, string>)[label]}</span>{label}</p>
       <p className="ops-kpi__value"><strong>{value}</strong>{unit && value !== "No data" ? <span>{unit}</span> : null}</p>
       <p className="ops-kpi__detail">
         {trend ? <span className="ops-kpi__trend" title={trend.label}><span aria-hidden="true">{trend.arrow}</span><span className="sr-only">{trend.label}</span></span> : null}
@@ -214,7 +212,7 @@ function TrendChart({ title, unit, points, description }: {
             <table className="ops-table">
               <caption className="sr-only">{title} samples ({unit})</caption>
               <thead><tr><th scope="col">Time</th><th scope="col">{unit}</th></tr></thead>
-              <tbody>{points.map((point) => <tr key={point.timestamp}><th scope="row">{new Date(point.timestamp * 1000).toLocaleTimeString()}</th><td>{number(point.value, 2)}</td></tr>)}</tbody>
+              <tbody>{points.map((point) => <tr key={point.timestamp}><th scope="row">{formatDateTime(point.timestamp * 1000)}</th><td>{number(point.value, 2)}</td></tr>)}</tbody>
             </table>
           </div>
         </details>
@@ -302,7 +300,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
         <>
           <div className="ops-kpi-row" aria-label="System overview">
             <KpiCard label="Throughput" value={number(system?.request_rate_per_second, 2)} unit="req/s" detail="5 minute rate" points={trendRates} />
-            <KpiCard label="p95 latency" value={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No data" : number(system.p95_latency_ms, 0)} unit="ms" detail="No latency series returned" tone={(system?.p95_latency_ms ?? 0) > 150 ? "warning" : "neutral"} />
+            <KpiCard label="p95 latency" value={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No data" : number(system.p95_latency_ms, 0)} unit="ms" detail={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No latency samples in this window" : "95th percentile · 5 minute window"} tone={(system?.p95_latency_ms ?? 0) > 150 ? "warning" : "neutral"} />
             <KpiCard label="HTTP 5xx rate" value={system?.error_rate_percent === null || system?.error_rate_percent === undefined ? "No data" : number(system.error_rate_percent)} unit="%" detail="Observed status classes" points={trendErrors} tone={(system?.error_rate_percent ?? 0) > 5 ? "danger" : "neutral"} />
             <KpiCard label="RabbitMQ backlog" value={backlog === null ? "No data" : String(backlog)} unit="msgs" detail={`${queues.length} queues · ready + unacked`} tone={(backlog ?? 0) > 50 ? "warning" : "neutral"} />
             <KpiCard label="Redis hit rate" value={hitRate === null ? "No data" : number(hitRate)} unit="%" detail={hitRate === null ? "No cache samples" : `${number(hits, 2)} hits · ${number(misses, 2)} misses /s`} />
@@ -438,7 +436,7 @@ function ComponentList({ title, items, primary, secondary, valueLabel = "rate" }
   return (
     <div className="ops-component-list">
       <h3>{title}</h3>
-      {items.length ? <ul>{items.slice(0, 8).map((item, index) => <li key={`${String(item[primary])}-${String(secondary ? item[secondary] : "")}-${index}`}><span>{item[primary] ?? "Component"}{secondary && item[secondary] ? ` · ${item[secondary]}` : ""}</span><strong>{number(item.value, 2)} <small>{valueLabel}</small></strong></li>)}</ul> : <p className="ops-no-data">No samples collected.</p>}
+      {items.length ? <ul>{items.slice(0, 8).map((item, index) => <li key={`${String(item[primary])}-${String(secondary ? item[secondary] : "")}-${index}`}><span title={`${String(item[primary] ?? "Component")}${secondary && item[secondary] ? ` · ${item[secondary]}` : ""}`}>{item[primary] ?? "Component"}{secondary && item[secondary] ? ` · ${item[secondary]}` : ""}</span><strong>{number(item.value, 2)} <small>{valueLabel}</small></strong></li>)}</ul> : <p className="ops-no-data">No samples collected.</p>}
     </div>
   );
 }
@@ -504,7 +502,7 @@ export function TraceExplorer() {
           <div className="ops-panel-heading"><div><h2>Recent traces</h2><p>Service and operation summaries are allowlisted by the server.</p></div></div>
           {loading && !traces.length ? <p className="ops-loading" role="status">Loading recent traces…</p> : null}
           {!loading && !traces.length && !error ? <EmptyRows>No traces found in the last hour.</EmptyRows> : null}
-          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
+          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong title={trace.operation}>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
         </section>
         <section className="ops-panel ops-trace-detail" aria-label="Selected trace details">
           {!selected && !detailLoading ? (
@@ -514,12 +512,12 @@ export function TraceExplorer() {
               <div className="ops-panel-heading"><div><h2>{selectedTrace?.operation ?? "Trace details"}</h2><p>{`Trace ID ${selected}`}</p></div></div>
               {detailLoading ? <p className="ops-loading" role="status">Loading trace spans…</p> : null}
               {selected && !detailLoading && !spans.length ? <EmptyRows>No safe span details are available.</EmptyRows> : null}
-              {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
+              {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong title={span.operation}>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
             </>
           )}
+          <p className="ops-footnote">Trace results include safe service, operation, and timing fields only.</p>
         </section>
       </div>
-      <p className="ops-footnote">Trace results include safe service, operation, and timing fields only.</p>
     </section>
   );
 }

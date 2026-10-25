@@ -121,7 +121,7 @@ export function MedicineCabinet({
               api={api}
               roleHints={state.status === "authenticated" ? state.roleHints : []}
               label="Find a medicine"
-              placeholder="Find a medicine by name…"
+              placeholder="Search medicines…"
               onSelect={(item) => onSelect(item.id)}
             />
           </div>

@@ -3,12 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { workspaces, type WorkspaceConfig } from "../navigation/workspaces";
+import { useResource } from "../hospital/ui";
 import { HospitalHeader } from "../design/HospitalHeader";
 import {
   DepartmentIcon,
   departmentFor,
   departmentNames,
   departmentDescriptions,
+  pageSubtitle,
 } from "../design/DepartmentIcon";
 const directoryOrder = [
   "reception",
@@ -25,6 +27,10 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const { state, logout } = useAuth();
+  // Load owner-confirmed identity even when entering a department directly.
+  useResource(state.status === "authenticated" && state.roleHints.includes("patient")
+    ? "/api/v1/patients/me"
+    : state.status === "authenticated" && state.roleHints.includes("doctor") ? "/api/v1/doctors/me" : null);
   const location = useLocation();
   const main = useRef<HTMLElement>(null);
   const sidebar = useRef<HTMLElement>(null);
@@ -53,9 +59,9 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   const referenceMode =
     (workspace.basePath === "/patient" && route === "dashboard") ||
     route === "doctors" || ["appointments","waiting","pharmacy","billing","emergency","records","control"].includes(department);
-  const patientWorkspace = allowed.find((w) => w.basePath === "/patient");
+  // Only the patient workspace has the department-signboard directory; staff keep their own grouped pages.
   const referenceItems =
-    referenceMode && patientWorkspace
+    referenceMode && workspace.basePath === "/patient"
       ? [
           "dashboard",
           "doctors",
@@ -67,25 +73,9 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         ].map((path) => ({
           path,
           base: "/patient",
-          department: navDepartmentForPatient(path),
+          department: departmentFor("/patient", path),
         }))
       : [];
-  function navDepartmentForPatient(path: string) {
-    return departmentFor("/patient", path);
-  }
-  if (referenceMode && allowed.some((w) => w.basePath === "/admin")) {
-    referenceItems.push({
-      path: "control-room",
-      base: "/admin",
-      department: "control",
-    });
-    if (workspace.basePath === "/admin") {
-      const consultation = referenceItems.find(
-        (i) => i.department === "consultation",
-      );
-      if (consultation) consultation.base = "/admin";
-    }
-  }
   const navDepartment = (path: string) =>
     path === "appointments"
       ? "reception"
@@ -123,7 +113,9 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
     }
   }
   useEffect(() => {
+    const fromDrawer = menuOpen;
     setMenuOpen(false);
+    if (fromDrawer) requestAnimationFrame(() => main.current?.focus());
     window.scrollTo?.({ top: 0, behavior: "instant" });
     sidebar.current?.querySelector<HTMLElement>(".workspace-nav-link--active")?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
     if (document.activeElement?.closest(".workspace-nav"))
@@ -184,7 +176,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
         >
           {referenceItems.length ? (
             <>
-              {referenceItems.map((item) => {
+              {referenceItems.map((item, index) => {
                 const destination = `${item.base}/${item.path}`;
                 const aliasActive =
                   location.pathname !== destination &&
@@ -192,9 +184,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
                 const content = (
                   <>
                     <span className="directory-number">
-                      {String(
-                        directoryOrder.indexOf(item.department) + 1,
-                      ).padStart(2, "0")}
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                     <DepartmentIcon department={item.department} />
                     <span className="directory-copy">
@@ -234,7 +224,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
           ) : (
             <>
               {" "}
-              {groups.map((group) => (
+              {groups.map((group, groupIndex) => (
                 <div className="directory-department" key={group.department}>
                   {group.items.map((item, i) => (
                     <NavLink
@@ -242,17 +232,14 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
                       end
                       key={item.path}
                       to={`${workspace.basePath}/${item.path}`}
-                      onClick={() => setMenuOpen(false)}
                       className={({ isActive }) =>
                         `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}${i ? " directory-subroute" : ""}`
                       }
                     >
-                      {!i && (
+                      {(
                         <>
                           <span className="directory-number">
-                            {String(
-                              directoryOrder.indexOf(group.department) + 1,
-                            ).padStart(2, "0")}
+                            {String(groups.slice(0, groupIndex).reduce((n, g) => n + g.items.length, 0) + i + 1).padStart(2, "0")}
                           </span>
                           <DepartmentIcon
                             department={navDepartment(item.path)}
@@ -260,16 +247,8 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
                         </>
                       )}
                       <span className="directory-copy">
-                        <strong>
-                          {i
-                            ? item.label
-                            : departmentNames[navDepartment(item.path)]}
-                        </strong>
-                        <small>
-                          {i
-                            ? ""
-                            : departmentDescriptions[navDepartment(item.path)]}
-                        </small>
+                        <strong>{item.label}</strong>
+                        {!i && <small>{pageSubtitle(workspace.basePath, item.path)}</small>}
                       </span>
                       <span className="directory-arrow" aria-hidden="true">
                         →

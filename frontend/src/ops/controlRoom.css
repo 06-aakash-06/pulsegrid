@@ -117,7 +117,7 @@
 
 .ops-metric-detail {
   color: var(--faint);
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 
 .ops-trend-grid,
@@ -178,7 +178,7 @@
 
 .ops-chart-caption {
   color: var(--faint);
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 
 .ops-table-wrap {
@@ -202,7 +202,7 @@
 
 .ops-table thead th {
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-min);
   font-weight: 650;
   letter-spacing: 0.055em;
   text-transform: uppercase;
@@ -274,7 +274,7 @@
 
 .ops-component-list li small {
   color: var(--faint);
-  font-size: 10px;
+  font-size: var(--text-min);
   font-weight: 500;
 }
 
@@ -300,7 +300,7 @@
 .ops-alert-list small,
 .ops-event-list small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 
 .ops-event-mark {
@@ -354,7 +354,7 @@
 
 .ops-footnote {
   color: var(--faint);
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 
 .ops-trace-layout {
@@ -404,12 +404,12 @@
 .ops-trace-row small,
 .ops-span-copy small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 
 .ops-trace-duration {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-min);
   white-space: nowrap;
 }
 

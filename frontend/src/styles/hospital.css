@@ -3,6 +3,7 @@
 :root {
   font-family: "Inter Variable", Inter, Arial, sans-serif;
   --ink: #102638;
+  --text-min: 12px;
   --navy: #0d273a;
   --muted: #505759;
   --faint: #656866;
@@ -275,7 +276,7 @@ button[type="submit"],
   stroke-width: 0.4;
 }
 .hospital-tagline {
-  font-size: 11px;
+  font-size: var(--text-min);
   white-space: nowrap;
   color: #363c3d;
 }
@@ -307,7 +308,7 @@ button[type="submit"],
 .global-search kbd {
   margin-left: auto;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: var(--text-min);
   background: #d4ccca;
   border-radius: 4px;
   padding: 3px 5px;
@@ -474,7 +475,7 @@ button[type="submit"],
   line-height: 1.2;
 }
 .directory-heading > span {
-  font-size: 11px;
+  font-size: var(--text-min);
   letter-spacing: 0.2em;
 }
 .workspace-nav {
@@ -521,7 +522,7 @@ button[type="submit"],
 }
 .directory-copy small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-min);
   white-space: normal;
   line-height: 1.3;
 }
@@ -563,14 +564,14 @@ button[type="submit"],
   gap: 3px;
 }
 .directory-help small {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 .directory-help strong {
   font-weight: 500;
 }
 .workspace-context {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
   padding: 8px 10px;
 }
@@ -620,7 +621,7 @@ button[type="submit"],
   gap: 20px;
 }
 .page-heading .eyebrow {
-  font-size: 10px;
+  font-size: var(--text-min);
   letter-spacing: 0.17em;
   color: var(--muted);
   margin: 0 0 7px;
@@ -708,7 +709,7 @@ button[type="submit"],
   min-width: 0;
 }
 .hospital-facts dt {
-  font-size: 11px;
+  font-size: var(--text-min);
   font-weight: 450;
   color: var(--muted);
   margin-bottom: 3px;
@@ -768,7 +769,7 @@ button[type="submit"],
 }
 .resource-toolbar button {
   min-height: 30px;
-  font-size: 11px;
+  font-size: var(--text-min);
   padding: 5px 9px;
   background: transparent;
 }
@@ -831,7 +832,7 @@ button[type="submit"],
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--text-min);
   border-radius: 5px;
 }
 .auth-route-layout {
@@ -876,7 +877,7 @@ button[type="submit"],
   gap: 16px;
 }
 .workspace-content .patient-workflow__facts dt {
-  font-size: 11px;
+  font-size: var(--text-min);
   color: var(--muted);
   font-weight: 500;
 }
@@ -931,7 +932,7 @@ button[type="submit"],
 .workspace-content .ops-table thead th {
   background: #e3d9ce;
   color: var(--ink);
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .workspace-content .ops-table {
   font-size: 13px;
@@ -939,7 +940,7 @@ button[type="submit"],
 .workspace-content .ops-metric-detail,
 .workspace-content .ops-chart-caption,
 .workspace-content .ops-footnote {
-  font-size: 11px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 @media (min-width: 1700px) {
@@ -963,7 +964,7 @@ button[type="submit"],
     font-size: 14px;
   }
   .directory-copy small {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .workspace-nav-link {
     padding-block: 16px;
@@ -991,7 +992,7 @@ button[type="submit"],
     padding-right: 16px;
   }
   .directory-copy small {
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .directory-heading strong {
     font-size: 21px;
@@ -1267,7 +1268,7 @@ button[type="submit"],
   font-weight: 550;
 }
 .wayfinding-sign small {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: #e1e5df;
 }
 .wayfinding-sign b {
@@ -1299,7 +1300,7 @@ button[type="submit"],
 }
 .welcome-motto {
   margin-top: 16px;
-  font-size: 10px;
+  font-size: var(--text-min);
   letter-spacing: 0.35em;
 }
 .reception-guidance {
@@ -1311,7 +1312,7 @@ button[type="submit"],
   gap: 14px;
 }
 .reception-guidance .eyebrow {
-  font-size: 9px;
+  font-size: var(--text-min);
 }
 .reception-guidance .button {
   font-size: 12px;
@@ -1534,7 +1535,7 @@ button[type="submit"],
     font-size: 12px;
   }
   .wayfinding-sign small {
-    font-size: 9px;
+    font-size: var(--text-min);
   }
   .wayfinding-sign > .department-icon {
     width: 23px;
@@ -1554,7 +1555,7 @@ button[type="submit"],
     font-size: 24px;
   }
   .welcome-motto {
-    font-size: 8px;
+    font-size: var(--text-min);
     letter-spacing: 0.25em;
   }
   .reception-guidance {
@@ -1618,7 +1619,7 @@ button[type="submit"],
   padding-block: 9px;
 }
 .specialty-rail .hospital-item > p {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .specialty-rail .hospital-item button {
   width: 100%;
@@ -1651,7 +1652,7 @@ button[type="submit"],
   grid-column: 2;
   grid-row: 1/3;
   align-self: center;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .doctor-selection .hospital-fields {
   grid-template-columns: 1fr;
@@ -1714,7 +1715,7 @@ button[type="submit"],
     font-size: 12px;
   }
   .specialty-rail .hospital-item button {
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .doctor-dossier {
     grid-column: auto;
@@ -1894,17 +1895,17 @@ button[type="submit"],
   top: 9px;
 }
 .specialty-rail .hospital-actions button {
-  font-size: 10px;
+  font-size: var(--text-min);
   padding: 6px;
   min-height: 30px;
 }
 .doctor-selection .hospital-item > button {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .workspace-content .resource-toolbar button {
   min-height: 29px;
   padding: 4px 7px;
-  font-size: 11px;
+  font-size: var(--text-min);
   background: transparent;
 }
 .robot-conversation {
@@ -1921,7 +1922,7 @@ button[type="submit"],
     position: static;
     min-height: 24px;
     width: auto;
-    font-size: 10px;
+    font-size: var(--text-min);
   }
   .specialty-rail .hospital-item > button:after {
     display: none;
@@ -1959,14 +1960,14 @@ button[type="submit"],
   line-height: 1.25;
 }
 .doctor-selection .hospital-item > p {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .specialty-rail .hospital-items {
   max-height: 500px;
   overflow: auto;
 }
 .resource-toolbar > span {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 .department-tabs {
@@ -2020,7 +2021,7 @@ button[type="submit"],
   border-radius: 50%;
   background: var(--accent);
   color: white;
-  font-size: 11px;
+  font-size: var(--text-min);
   flex-shrink: 0;
 }
 .booking-doctor {
@@ -2077,11 +2078,11 @@ button[type="submit"],
   box-shadow: 0 5px 10px #4d321e16;
 }
 .printed-receipt > strong {
-  font-size: 11px;
+  font-size: var(--text-min);
   letter-spacing: 0.08em;
 }
 .printed-receipt > p {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .calendar-strip {
   display: grid;
@@ -2099,7 +2100,7 @@ button[type="submit"],
   font-weight: 400;
 }
 .calendar-strip button small {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .calendar-strip button strong {
   font-size: 16px;
@@ -2127,17 +2128,17 @@ button[type="submit"],
   padding: 7px;
 }
 .available-slot time {
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 .workspace-content .available-slot button {
-  font-size: 11px;
+  font-size: var(--text-min);
   padding: 8px 4px;
   min-height: 34px;
   white-space: nowrap;
 }
 .available-slot p {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .appointment-management {
   display: grid;
@@ -2284,7 +2285,7 @@ button[type="submit"],
   }
   .walkin-steps p {
     margin: 0;
-    font-size: 11px;
+    font-size: var(--text-min);
   }
   .walkin-workspace {
     padding: 16px;
@@ -2294,7 +2295,7 @@ button[type="submit"],
   }
   .workspace-content .department-tabs button {
     flex: 1;
-    font-size: 11px;
+    font-size: var(--text-min);
     padding: 10px;
   }
   .available-slots {
@@ -2352,7 +2353,7 @@ button[type="submit"],
   border-radius: 7px;
 }
 .scanner-frame .staff-advanced-scanner > p {
-  font-size: 11px;
+  font-size: var(--text-min);
   color: #f3ebdf;
 }
 .scanner-frame .staff-advanced-scanner > button {
@@ -2433,7 +2434,7 @@ button[type="submit"],
   margin-left: -22px;
 }
 .route-journey .patient-workflow__stage ul {
-  font-size: 11px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 .workspace-content .staff-advanced-page {
@@ -2509,7 +2510,7 @@ button[type="submit"],
   gap: 3px;
 }
 .doctor-dossier .calendar-strip button {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .doctor-dossier .booking-schedule .hospital-fields {
   grid-template-columns: 1fr;
@@ -2577,12 +2578,12 @@ button[type="submit"],
   line-height: 1.3;
 }
 .medicine-shelves .hospital-item > p {
-  font-size: 11px;
+  font-size: var(--text-min);
   overflow-wrap: anywhere;
   margin: 0;
 }
 .medicine-shelves .hospital-item > button {
-  font-size: 11px;
+  font-size: var(--text-min);
   min-height: 32px;
   padding: 6px;
   margin-top: auto;
@@ -2600,7 +2601,7 @@ button[type="submit"],
   margin-bottom: 4px;
 }
 .medicine-box > span {
-  font-size: 8px;
+  font-size: var(--text-min);
   max-width: 60px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2702,7 +2703,7 @@ button[type="submit"],
 .invoice-lines small {
   display: block;
   overflow-wrap: anywhere;
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
   max-width: 190px;
 }
@@ -2827,7 +2828,7 @@ button[type="submit"],
 }
 .visit-timeline .hospital-item time {
   display: block;
-  font-size: 11px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 .visit-timeline .hospital-item strong {
@@ -2836,10 +2837,10 @@ button[type="submit"],
   margin-top: 6px;
 }
 .visit-timeline .hospital-item p {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .visit-timeline .hospital-item button {
-  font-size: 11px;
+  font-size: var(--text-min);
   min-height: 30px;
   padding: 5px 9px;
 }
@@ -3007,7 +3008,7 @@ button[type="submit"],
   max-width: 530px;
 }
 .auth-welcome > .eyebrow {
-  font-size: 10px;
+  font-size: var(--text-min);
   letter-spacing: 0.2em;
   color: var(--ink);
 }
@@ -3042,7 +3043,7 @@ button[type="submit"],
   margin-block: 9px 12px;
 }
 .auth-card .eyebrow {
-  font-size: 10px;
+  font-size: var(--text-min);
   letter-spacing: 0.16em;
   color: var(--muted);
 }
@@ -3064,7 +3065,7 @@ button[type="submit"],
   padding-right: 58px;
 }
 .auth-card .password-toggle {
-  font-size: 11px;
+  font-size: var(--text-min);
   background: transparent;
   border: 0;
   min-height: 30px;
@@ -3082,7 +3083,7 @@ button[type="submit"],
   padding: 12px;
   background: var(--surface);
   border-radius: 5px;
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
   margin: 15px 0 0;
 }
@@ -3188,7 +3189,7 @@ button[type="submit"],
   border-color: var(--line);
 }
 .workspace-content .phase4-facts dt {
-  font-size: 11px;
+  font-size: var(--text-min);
   color: var(--muted);
   font-weight: 500;
 }
@@ -3214,7 +3215,7 @@ button[type="submit"],
   font-size: 30px !important;
 }
 .account-subject {
-  font-size: 10px;
+  font-size: var(--text-min);
   overflow-wrap: anywhere;
   color: var(--muted);
 }
@@ -3425,7 +3426,7 @@ button[type="submit"],
 }
 .workspace-content > .department-page > .department-workspace > button {
   justify-self: start;
-  font-size: 11px;
+  font-size: var(--text-min);
   min-height: 30px;
   padding: 5px 9px;
 }
@@ -3504,7 +3505,7 @@ button[type="submit"],
 }
 .profile-desk > button {
   margin-block: 12px;
-  font-size: 11px;
+  font-size: var(--text-min);
   min-height: 30px;
 }
 .department-page[data-workspace="/patient"].route-dashboard .welcome-wall h2 {
@@ -3624,7 +3625,7 @@ button[type="submit"],
   margin-top: 10px;
 }
 .workspace-content .status-badge {
-  font-size: 11px;
+  font-size: var(--text-min);
   font-weight: 550;
   padding: 3px 8px;
   line-height: 1.35;
@@ -3636,10 +3637,10 @@ button[type="submit"],
   display: block;
 }
 .emergency-register .hospital-facts time {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .invoice-receipt .hospital-facts time {
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .surge-console {
   grid-column: 1/-1;
@@ -3745,7 +3746,7 @@ button[type="submit"],
 }
 .booking-doctor-directory small {
   grid-column: 2;
-  font-size: 10px;
+  font-size: var(--text-min);
   color: var(--muted);
 }
 .booking-doctor-directory button > span:last-child {
@@ -3757,7 +3758,7 @@ button[type="submit"],
   background: #dfe3da;
 }
 .booking-doctor-directory .hospital-actions button {
-  font-size: 10px;
+  font-size: var(--text-min);
   min-height: 30px;
   padding: 5px;
 }
@@ -3767,7 +3768,7 @@ button[type="submit"],
   border-top: 1px solid var(--line);
 }
 .manual-doctor-lookup > summary {
-  font-size: 11px;
+  font-size: var(--text-min);
   cursor: pointer;
 }
 .manual-doctor-lookup > form {
@@ -3832,7 +3833,7 @@ button[type="submit"],
   max-width: 240px;
 }
 .reception-guidance .eyebrow {
-  font-size: 10px;
+  font-size: var(--text-min);
 }
 .profile-booking .booking-receipt .hospital-facts {
   grid-template-columns: 1fr;
@@ -3867,7 +3868,7 @@ button[type="submit"],
 .availability-range {
   width: 100%;
   padding: 8px 0;
-  font-size: 11px;
+  font-size: var(--text-min);
 }
 .availability-range > summary {
   cursor: pointer;
@@ -3913,7 +3914,7 @@ button[type="submit"],
   max-height: 335px;
 }
 .booking-schedule .hospital-panel .resource-state > button {
-  font-size: 11px;
+  font-size: var(--text-min);
   min-height: 30px;
 }
 @media (max-width: 580px) {

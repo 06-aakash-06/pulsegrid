@@ -1,3 +1,5 @@
+import { sortEmergencyQueue } from "../src/hospital/billingEmergency";
+import { commandLabels } from "./commandLabels";
 import {
   fireEvent,
   render,
@@ -242,9 +244,9 @@ function fill(label: string, value: string) {
   fireEvent.change(screen.getByLabelText(label), { target: { value } });
 }
 async function command(title: string) {
-  fireEvent.click(screen.getByRole("button", { name: `Review ${title}` }));
+  fireEvent.click(screen.getByRole("button", { name: commandLabels(title).review }));
   fireEvent.click(
-    await screen.findByRole("button", { name: `Confirm ${title}` }),
+    await screen.findByRole("button", { name: commandLabels(title).confirm }),
   );
 }
 function writes(fetcher: ReturnType<typeof setup>["fetcher"]) {
@@ -290,7 +292,7 @@ describe("patient profiles and appointment commands", () => {
     await screen.findByDisplayValue(profile.display_name);
     fill("Display name", " ");
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Save profile" }),
+      screen.getByRole("button", { name: commandLabels("Save profile").review }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Display name is required",
@@ -298,7 +300,7 @@ describe("patient profiles and appointment commands", () => {
     fill("Display name", "Synthetic");
     fill("Date of birth", "2999-01-01");
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Save profile" }),
+      screen.getByRole("button", { name: commandLabels("Save profile").review }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "cannot be in the future",
@@ -388,14 +390,19 @@ describe("patient profiles and appointment commands", () => {
     expect(screen.queryByRole('button',{name:'Book Appointment'})).not.toBeInTheDocument();
     expect(fetcher.mock.calls.some(([url])=>String(url).startsWith('/api/v1/appointments?'))).toBe(false);
   });
-  it("books accepted availability with own profile ID rather than token subject", async () => {
+  it("books accepted availability with own profile ID, clears selection and reloads the available slots", async () => {
+    let booked = false;
     const { fetcher } = setup(
       "/patient/appointments",
       "patient",
-      (path, init) =>
-        path === "/api/v1/appointments" && init.method === "POST"
-          ? json(appointment, 201)
-          : undefined,
+      (path, init) => {
+        if (path === "/api/v1/appointments" && init.method === "POST") {
+          booked = true;
+          return json(appointment, 201);
+        }
+        if (path === "/api/v1/appointments/availability") return json({ slots: booked ? [] : [slot], accepted_revision: 4, observed_at: slot.starts_at });
+        return undefined;
+      },
     );
     await screen.findByLabelText("Doctor ID for availability");
     fill("Doctor ID for availability", "21");
@@ -408,9 +415,9 @@ describe("patient profiles and appointment commands", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
-    expect(screen.getByRole("button",{name:"Review Book appointment"})).toBeInTheDocument();
+    expect(screen.getByRole("button",{name:commandLabels("Book appointment").review})).toBeInTheDocument();
     fill("From (UTC)", "2027-01-02T00:00:00Z");
-    expect(screen.queryByRole("button",{name:"Review Book appointment"})).not.toBeInTheDocument();
+    expect(screen.queryByRole("button",{name:commandLabels("Book appointment").review})).not.toBeInTheDocument();
     fill("From (UTC)", "2027-01-01T00:00:00Z");
     fireEvent.click(await screen.findByRole("button",{name:/^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i}));
     await command("Book appointment");
@@ -421,8 +428,14 @@ describe("patient profiles and appointment commands", () => {
       expected_schedule_revision: 4,
     });
     expect(
-      await screen.findByText("Book appointment: confirmed by the service."),
+      await screen.findByText("Appointment booked"),
     ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Review booking" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /Booked 09:00 am UTC/i })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: /^Select 09:00 am/i })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Book another appointment" }));
+    expect(screen.queryByRole("button", { name: "Review booking" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Confirm booking" })).not.toBeInTheDocument();
   });
   it("rejects non-UTC and overlong availability windows without a request", async () => {
     const { fetcher } = setup("/patient/appointments", "patient");
@@ -465,9 +478,10 @@ describe("patient profiles and appointment commands", () => {
       await screen.findByRole("button", { name: "Cancel appointment 51" }),
     );
     expect(fetcher.mock.calls.some(([url])=>String(url).includes("patient_id=11"))).toBe(true);
-    await screen.findByLabelText("Reason");
-    fill("Reason", "Synthetic cancellation");
+    await screen.findByLabelText("Reason for cancelling");
+    fill("Reason for cancelling", "Synthetic cancellation");
     await command("Cancel appointment");
+    await screen.findByText("Appointment cancelled.");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/appointments/51/cancel", "POST", '"5"');
     expect(lastBody(fetcher)).toEqual({ reason: "Synthetic cancellation" });
@@ -486,7 +500,7 @@ describe("patient profiles and appointment commands", () => {
         return undefined;
       },
     );
-    fireEvent.click(await screen.findByRole("button", { name: "My Appointments" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Appointments" }));
     fireEvent.click(
       await screen.findByRole("button", { name: "Reschedule appointment 51" }),
     );
@@ -502,6 +516,7 @@ describe("patient profiles and appointment commands", () => {
       await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
     await command("Reschedule appointment");
+    await screen.findByText(/^Appointment moved to /);
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(
       fetcher,
@@ -548,7 +563,7 @@ describe("command safety and states", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Retry original command" }),
     );
-    await screen.findByText("Test command: confirmed by the service.");
+    await screen.findByText("Test command: done.");
     const calls = writes(fetcher);
     expect(calls).toHaveLength(2);
     expect(calls[0][1]?.body).toBe(calls[1][1]?.body);
@@ -565,12 +580,12 @@ describe("command safety and states", () => {
       <CommandForm title="Test command" path="/api/v1/test" />,
     );
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Test command" }),
+      screen.getByRole("button", { name: commandLabels("Test command").review }),
     );
     expect(writes(fetcher)).toHaveLength(0);
     fireEvent.click(screen.getByRole("button", { name: "Keep editing" }));
     expect(
-      screen.getByRole("button", { name: "Review Test command" }),
+      screen.getByRole("button", { name: commandLabels("Test command").review }),
     ).toBeEnabled();
   });
   it("reports stale versions with reload guidance and does not retry PATCH", async () => {
@@ -608,13 +623,13 @@ describe("command safety and states", () => {
     );
     await command("Test command");
     expect(
-      await screen.findByText("Submitting test command…"),
+      await screen.findByText("Sending…"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Confirm Test command" }),
+      screen.getByRole("button", { name: commandLabels("Test command").confirm }),
     ).toBeDisabled();
     release(json({}));
-    await screen.findByText("Test command: confirmed by the service.");
+    await screen.findByText("Test command: done.");
     expect(writes(fetcher)).toHaveLength(1);
   });
   it("disables conditional mutation without an owner ETag", () => {
@@ -630,7 +645,7 @@ describe("command safety and states", () => {
         etag={null}
       />,
     );
-    expect(screen.getByRole("button", { name: "Review Edit" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: commandLabels("Edit").review })).toBeDisabled();
   });
   it("shows empty lists and deferred workflows without commands", async () => {
     const { fetcher, view } = setup("/patient/appointments?view=upcoming", "patient");
@@ -683,21 +698,24 @@ describe("clinical and pharmacy workflows", () => {
       clinical_content: clinicalContent,
     });
   });
-  it("finalizes a consultation with prescribed item fields", async () => {
+  it("finalizes a consultation with prescribed item fields and refreshes the register and dossier", async () => {
+    let finalized = false;
     const { fetcher } = setup(
       "/doctor/consultations",
       "doctor",
       (path, init) => {
         if (path === "/api/v1/records/consultations")
-          return json({ items: [consultation], next_cursor: null });
+          return json({ items: [{ ...consultation, status: finalized ? "finalized" : "draft" }], next_cursor: null });
         if (path === "/api/v1/records/consultations/61")
-          return json(consultation);
-        if (path.endsWith("/finalize") && init.method === "POST")
+          return json({ ...consultation, status: finalized ? "finalized" : "draft", revision: finalized ? 2 : 1 });
+        if (path.endsWith("/finalize") && init.method === "POST") {
+          finalized = true;
           return json({
             consultation: { ...consultation, status: "finalized" },
             record: medicalRecord,
             prescription,
           });
+        }
         return undefined;
       },
     );
@@ -713,6 +731,11 @@ describe("clinical and pharmacy workflows", () => {
     fill("Instructions 1", "Synthetic instructions");
     await command("Finalize consultation");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
+    await waitFor(() => expect(screen.getAllByText("Finalized")).toHaveLength(2));
+    expect(screen.queryByText("Draft")).not.toBeInTheDocument();
+    for (const path of ["/api/v1/records/consultations", "/api/v1/records/consultations/61"]) {
+      expect(fetcher.mock.calls.filter(([url, init]) => new URL(String(url), "http://test").pathname === path && init?.method === "GET").length).toBeGreaterThanOrEqual(2);
+    }
     expectConditional(fetcher, "/api/v1/records/consultations/61/finalize");
     expect(lastBody(fetcher)).toEqual({
       prescription_items: [
@@ -725,7 +748,7 @@ describe("clinical and pharmacy workflows", () => {
       ],
     });
     expect(
-      await screen.findByText(/Medical record ID: 62/),
+      await screen.findByText(/Medical record …62/),
     ).toBeInTheDocument();
   });
   it("reads own medical history and record detail", async () => {
@@ -826,7 +849,7 @@ describe("clinical and pharmacy workflows", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "View reservation 91" }),
     );
-    await screen.findByRole("button", { name: `Review ${title}` });
+    await screen.findByRole("button", { name: commandLabels(title).review });
     await command(title);
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(
@@ -856,7 +879,7 @@ describe("clinical and pharmacy workflows", () => {
     fill("Expected batch version (0 for new batch)", "0");
     fill("Reason", "Synthetic setup");
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Adjust stock" }),
+      screen.getByRole("button", { name: commandLabels("Adjust stock").review }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "cannot be zero",
@@ -940,6 +963,7 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fill("Finalized consultation ID", "61");
     fill("Completed dispensing IDs (comma separated)", "92");
     await command("Import charges manually");
+    await screen.findByText("Charges imported. The receipt shows the new lines.");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(
       fetcher,
@@ -962,6 +986,9 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fill("Synthetic request description", "Synthetic request");
     fill("Reported urgency (advisory)", "urgent");
     await command("Submit emergency request");
+    await screen.findByText("Request sent. It now appears in Your requests.");
+    expect(screen.getByLabelText("Synthetic request description")).toHaveValue("");
+    expect(screen.getByLabelText("Reported urgency (advisory)")).toHaveValue("unspecified");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expect(lastBody(fetcher)).toEqual({
       patient_id: "11",
@@ -1005,8 +1032,9 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "Track request 121" }),
     );
-    await screen.findByRole("button", { name: "Review Claim request" });
+    await screen.findByRole("button", { name: commandLabels("Claim request").review });
     await command("Claim request");
+    await screen.findByText("Request claimed. You hold it for 15 minutes.");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/emergencies/121/claim", "POST", '"3"');
     expect(lastBody(fetcher)).toEqual({});
@@ -1120,5 +1148,76 @@ describe("large integer currency display", () => {
   it("preserves paise at the frozen safe-integer limit", () => {
     expect(money(Number.MAX_SAFE_INTEGER)).toBe("₹9,00,71,99,25,47,409.91");
     expect(money(1)).toBe("₹0.01");
+  });
+});
+
+
+describe("final audit regressions", () => {
+  it("orders emergency priority first, unassigned last, and older requests first within a priority", () => {
+    const entries = [
+      { ...emergency, id: "1", assigned_priority: null, created_at: "2026-10-25T01:00:00Z" },
+      { ...emergency, id: "2", assigned_priority: 2, created_at: "2026-10-25T01:00:00Z" },
+      { ...emergency, id: "3", assigned_priority: 1, created_at: "2026-10-25T03:00:00Z" },
+      { ...emergency, id: "4", assigned_priority: 1, created_at: "2026-10-25T02:00:00Z" },
+    ];
+    expect(sortEmergencyQueue(entries).map(item => item.id)).toEqual(["4", "3", "2", "1"]);
+    expect(entries.map(item => item.id)).toEqual(["1", "2", "3", "4"]);
+  });
+  it("keeps closed emergency cases below the open queue", async () => {
+    const items = [
+      { ...emergency, id: "10", state: "resolved", assigned_priority: 1 },
+      { ...emergency, id: "11", state: "triaged", assigned_priority: 2 },
+      { ...emergency, id: "12", state: "submitted", assigned_priority: null },
+    ];
+    setup("/emergency/requests", "emergency_staff", path => path === "/api/v1/emergencies" ? json({ items, next_cursor: null }) : undefined);
+    await screen.findByRole("button", { name: "Track request 10" });
+    const rows = document.querySelectorAll(".er-queue > li");
+    expect(Array.from(rows).map(row => row.textContent)).toEqual([
+      expect.stringContaining("P2"), expect.stringContaining("No priority"), "Closed", expect.stringContaining("P1"),
+    ]);
+  });
+  it("shows every admin directory page, consecutive numbers and the active route", async () => {
+    setup("/admin/staff", "hospital_admin");
+    const nav = await screen.findByRole("navigation", { name: "Hospital administrator navigation" });
+    const links = within(nav).getAllByRole("link");
+    expect(links.map(link => link.getAttribute("href")).sort()).toEqual([
+      "/admin/dashboard", "/admin/staff", "/admin/doctors", "/admin/control-room", "/admin/traces", "/admin/settings",
+    ].sort());
+    expect(links.map(link => link.querySelector(".directory-number")?.textContent)).toEqual(["01", "02", "03", "04", "05", "06"]);
+    expect(within(nav).getByRole("link", { name: "Staff & roles" })).toHaveAttribute("aria-current", "page");
+  });
+});
+
+
+describe("emergency command receipts after version refresh", () => {
+  it("retains priority and release confirmations while refreshing the case version", async () => {
+    let current: Emergency = { ...emergency, state: "claimed", patient_id: "11", description: "Synthetic case", claimed_by_user_id: "101", claim_expires_at: "2027-01-01T10:00:00Z" };
+    const { fetcher } = setup("/emergency/requests", "emergency_staff", (path, init) => {
+      if (path === "/api/v1/emergencies") return json({ items: [current], next_cursor: null });
+      if (path === "/api/v1/emergencies/121") return json(current, 200, `"${current.version}"`);
+      if (path.endsWith("/priority") && init.method === "PATCH") {
+        current = { ...current, assigned_priority: 1, version: current.version + 1 };
+        return json(current, 200, `"${current.version}"`);
+      }
+      if (path.endsWith("/release") && init.method === "POST") {
+        current = { ...current, state: "triaged", claimed_by_user_id: null, claim_expires_at: null, version: current.version + 1 };
+        return json(current, 200, `"${current.version}"`);
+      }
+      return undefined;
+    });
+    fireEvent.click(await screen.findByRole("button", { name: "Change priority" }));
+    fill("Assigned priority (1 highest, 5 lowest)", "1");
+    fill("Reason for priority", "Synthetic priority review");
+    await command("Set priority");
+    await screen.findByText("Priority set to P1.");
+    await waitFor(() => expect(document.querySelector(".er-case")).toHaveTextContent("P1"));
+    expectConditional(fetcher, "/api/v1/emergencies/121/priority", "PATCH", '"3"');
+    fireEvent.click(screen.getByRole("button", { name: "Release claim" }));
+    fill("Reason for releasing", "Synthetic handoff");
+    await command("Release claim");
+    await screen.findByText("Claim released.");
+    await waitFor(() => expect(document.querySelector(".er-case")).toHaveTextContent("triaged"));
+    expect(screen.getByText("Claim released.")).toBeInTheDocument();
+    expectConditional(fetcher, "/api/v1/emergencies/121/release", "POST", '"4"');
   });
 });

@@ -1,3 +1,4 @@
+import { formatDateTime } from "../hospital/ui";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AdmissionFeedback } from "./AdmissionFeedback";
@@ -164,7 +165,7 @@ export function ShortLinkLanding({
             <dl className="phase4-facts">
               <div><dt>Appointment</dt><dd>{resolution.appointment_id}</dd></div>
               <div><dt>Link type</dt><dd>{resolution.purpose === "check_in" ? "Check-in workflow" : "Appointment workflow"}</dd></div>
-              <div><dt>Expires</dt><dd>{new Date(resolution.expires_at).toLocaleString()}</dd></div>
+              <div><dt>Expires</dt><dd>{formatDateTime(resolution.expires_at, { utc: true })}</dd></div>
             </dl>
             <button className="button button--primary" type="button" onClick={continueToWorkflow}>
               Continue to appointment

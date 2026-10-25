@@ -36,7 +36,7 @@ export function mockApiPlugin(): Plugin {
             Object.entries(request.headers).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value]),
           );
           const body = await readBody(request);
-          const result = handleMockRequest({ method: request.method ?? "GET", url, headers, body });
+          const result = await handleMockRequest({ method: request.method ?? "GET", url, headers, body });
           await new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
           response.statusCode = result.status;
           response.setHeader("Cache-Control", "no-store");

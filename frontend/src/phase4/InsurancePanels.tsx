@@ -1,3 +1,4 @@
+import { formatDateTime } from "../hospital/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AdmissionFeedback } from "./AdmissionFeedback";
 import { createIdempotencyKey, isCanonicalId, quoteVersion } from "./api";
@@ -76,7 +77,7 @@ function formatInr(minor: number): string {
 function dateLabel(value: string | null): string {
   if (value === null) return "No successful refresh yet";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Date unavailable" : date.toLocaleString();
+  return Number.isNaN(date.getTime()) ? "Date unavailable" : formatDateTime(date, { utc: true });
 }
 
 function EstimateCard({ estimate }: { estimate: InsuranceEstimate }) {

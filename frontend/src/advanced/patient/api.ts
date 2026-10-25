@@ -1,4 +1,5 @@
 import { ApiError, type ApiClient, type ApiRequestOptions } from "../../api/client";
+import { formatDateTime } from "../../hospital/ui";
 
 const MAX_ID = 9223372036854775807n;
 const MAX_VERSION = Number.MAX_SAFE_INTEGER;
@@ -78,11 +79,7 @@ export function getErrorMessage(error: unknown): string {
 }
 
 export function formatTime(value: string | null | undefined): string {
-  if (!value) return "Not reported";
-  const time = new Date(value);
-  return Number.isNaN(time.valueOf())
-    ? "Time unavailable"
-    : `${time.toLocaleString(undefined, { timeZone: "UTC" })} UTC`;
+  return formatDateTime(value);
 }
 
 export function idempotencyRecovery(error: unknown): boolean {

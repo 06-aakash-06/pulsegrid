@@ -1,3 +1,4 @@
+import { formatDateTime } from "../hospital/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ApiClient } from "../api/client";
 import { AdmissionFeedback } from "./AdmissionFeedback";
@@ -80,7 +81,7 @@ function ShortLinkEntry({
       <div className="phase4-short-link__heading">
         <div>
           <h4>{link.purpose === "check_in" ? "Secure check-in link" : "Appointment link"}</h4>
-          <p>Expires {new Date(link.expires_at).toLocaleString()}</p>
+          <p>Expires {formatDateTime(link.expires_at, { utc: true })}</p>
         </div>
         <span className="phase4-feature-indicator">Navigation only</span>
       </div>

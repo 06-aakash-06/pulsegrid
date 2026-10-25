@@ -98,14 +98,37 @@ describe("hospital design integration", () => {
     mount(<HospitalHeader roleLabel="Patient" />, fetcher);
     expect(await screen.findByText("Account ID 21")).toBeInTheDocument();
     expect(screen.getByLabelText("Patient account menu")).toBeInTheDocument();
-    act(() => publishHospitalIdentity("999", "Another account"));
+    await act(async () => publishHospitalIdentity("999", "Another account"));
     expect(screen.queryByText("Another account")).not.toBeInTheDocument();
-    act(() => publishHospitalIdentity("21", "Anika Shah"));
+    await act(async () => publishHospitalIdentity("21", "Anika Shah"));
     expect(screen.getByText("Anika Shah")).toBeInTheDocument();
-    act(() => publishHospitalIdentity("21", "Synthetic Phase29 Patient"));
+    await act(async () => publishHospitalIdentity("21", "Synthetic Phase29 Patient"));
     expect(screen.getByText("Patient account")).toBeInTheDocument();
     expect(screen.queryByText("Synthetic Phase29 Patient")).not.toBeInTheDocument();
     expect(fetcher).not.toHaveBeenCalled();
+  });
+  it("closes notifications and account popovers on Escape or outside pointerdown and restores trigger focus", async () => {
+    mount(<HospitalHeader roleLabel="Patient" />);
+    const account = await screen.findByLabelText("Patient account menu");
+    const notifications = screen.getByRole("button", { name: "Notifications" });
+    fireEvent.click(notifications);
+    expect(screen.getByText("Hospital updates")).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByText("Hospital updates")).not.toBeInTheDocument();
+    expect(notifications).toHaveFocus();
+    fireEvent.click(notifications);
+    fireEvent.pointerDown(document.body);
+    expect(screen.queryByText("Hospital updates")).not.toBeInTheDocument();
+    expect(notifications).toHaveFocus();
+    const details = account.closest("details")!;
+    details.open = true;
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(details.open).toBe(false);
+    expect(account).toHaveFocus();
+    details.open = true;
+    fireEvent.pointerDown(document.body);
+    expect(details.open).toBe(false);
+    expect(account).toHaveFocus();
   });
   it("date selection sets a UTC interval without making a booking or fetching prematurely", async () => {
     const fetcher = vi.fn(
@@ -120,20 +143,27 @@ describe("hospital design integration", () => {
         ),
     );
     mount(<AvailabilityPicker doctorId="31" />, fetcher);
+    const day = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
+    const next = new Date(Date.parse(`${day}T00:00:00Z`) + 86400000).toISOString();
     fireEvent.change(screen.getByLabelText("Choose date (UTC)"), {
-      target: { value: "2026-10-20" },
+      target: { value: day },
     });
-    expect(screen.getByLabelText("From (UTC)")).toHaveValue(
-      "2026-10-20T00:00:00Z",
-    );
-    expect(screen.getByLabelText("To (UTC)")).toHaveValue(
-      "2026-10-21T00:00:00.000Z",
-    );
+    expect(screen.getByLabelText("From (UTC)")).toHaveValue(`${day}T00:00:00Z`);
+    expect(screen.getByLabelText("To (UTC)")).toHaveValue(next);
     expect(fetcher).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     await screen.findByText("No available slots in this interval.");
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(String(fetcher.mock.calls[0]?.[0])).toContain("doctor_id=31");
+  });
+  it("explains a past date inline instead of silently blocking the request", async () => {
+    const fetcher = vi.fn(async () => new Response("{}", { headers: { "Content-Type": "application/json" } }));
+    mount(<AvailabilityPicker doctorId="31" />, fetcher);
+    fireEvent.change(screen.getByLabelText("From (UTC)"), { target: { value: "2020-01-01T00:00:00Z" } });
+    fireEvent.change(screen.getByLabelText("To (UTC)"), { target: { value: "2020-01-02T00:00:00Z" } });
+    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
+    expect(await screen.findByText("That date has passed. Choose today or a later date.")).toBeInTheDocument();
+    expect(fetcher).not.toHaveBeenCalled();
   });
   it("does not run the reception scene introduction when motion is reduced", () => {
     vi.stubGlobal(

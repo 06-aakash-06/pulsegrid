@@ -85,7 +85,7 @@ export const workspaces: WorkspaceConfig[] = [
   ]),
   workspace("/admin", "Administration", "Hospital administrator", ["hospital_admin"], [
     page("dashboard", "Administration", "A starting point for authorized hospital administration.", "Administration data is not connected yet."),
-    page("staff", "Staff and roles", "Manage staff identity and role assignments through the patient service.", "Staff administration is not connected yet."),
+    page("staff", "Staff & roles", "Manage staff identity and role assignments through the patient service.", "Staff administration is not connected yet."),
     page("doctors", "Consultation", "Manage doctor profiles through the doctor service.", "Doctor administration is not connected yet."),
     page("control-room", "Control Room", "Review live service health, event delivery, and operational alerts.", "Live operational metrics are temporarily unavailable."),
     page("traces", "Trace Explorer", "Inspect safe timing summaries for recent distributed traces.", "Trace data is temporarily unavailable."),

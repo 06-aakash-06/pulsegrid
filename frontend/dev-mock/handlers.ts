@@ -1,5 +1,6 @@
 import type { Appointment, Batch, Consultation, Dispensing, Emergency, Grant, Invoice, MedicalRecord, Medicine, Payment, Prescription, Reservation, Slot, Tariff } from "../src/hospital/models";
-import type { Fulfillment, OwnQueue, Workflow } from "../src/advanced/patient/contracts";
+import type { CheckinResult, Fulfillment, OwnQueue, TokenIssue, Workflow } from "../src/advanced/patient/contracts";
+import type { PatientProfile, RegistrationInput } from "../src/api/authApi";
 import { createState, users, type MockUser } from "./fixtures";
 import { controlRoomSummary, traceList, traceSpans } from "./operations";
 
@@ -22,11 +23,18 @@ const SESSION_COOKIE = "pulsegrid_mock_session";
 const MOCK_PAGE_CAP = 12;
 
 let state = createState();
+interface DemoAccount { user: MockUser; salt: string; passwordHash: string }
+let accounts: DemoAccount[] = [];
+const allUsers = () => [...users, ...accounts.map(account => account.user)];
+const allPatients = () => [state.patient, ...state.otherPatients];
+const patientFor = (user: MockUser) => allPatients().find(patient => patient.user_id === user.id);
+const patientIdFor = (user: MockUser) => patientFor(user)?.id;
 const idempotency = new Map<string, { fingerprint: string; response: MockResponse }>();
 
 export function resetMockState() {
   state = createState();
   idempotency.clear();
+  accounts = [];
 }
 
 const error = (status: number, code: string, message: string): MockResponse => ({
@@ -66,7 +74,7 @@ function userFromToken(header: string | undefined): MockUser | null {
   try {
     const encoded = (token.split(".")[1] ?? "").replace(/-/g, "+").replace(/_/g, "/");
     const claims = JSON.parse(atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, "="))) as { sub?: string };
-    return users.find((user) => user.id === claims.sub) ?? null;
+    return allUsers().find((user) => user.id === claims.sub) ?? null;
   } catch {
     return null;
   }
@@ -74,7 +82,7 @@ function userFromToken(header: string | undefined): MockUser | null {
 
 function sessionUser(cookie: string | undefined): MockUser | null {
   const match = cookie?.match(new RegExp(`${SESSION_COOKIE}=(\\d+)`));
-  return users.find((user) => user.id === match?.[1]) ?? null;
+  return allUsers().find((user) => user.id === match?.[1]) ?? null;
 }
 
 function versionMatches(request: MockRequest, version: number): MockResponse | null {
@@ -137,7 +145,7 @@ function adjustReserved(medicineId: string, delta: number, dispensed = false) {
 }
 
 function ownsPrescription(user: MockUser, prescription: Prescription) {
-  return user.roles.includes("pharmacist") || user.roles.includes("doctor") || (user.roles.includes("patient") && prescription.patient_id === state.patient.id);
+  return user.roles.includes("pharmacist") || user.roles.includes("doctor") || (user.roles.includes("patient") && prescription.patient_id === patientIdFor(user));
 }
 
 type Route = [method: string, pattern: RegExp, handler: (request: MockRequest, user: MockUser, match: RegExpMatchArray) => MockResponse];
@@ -195,7 +203,7 @@ function bookableSlot(slotId: string, revision: unknown, except?: string): Slot 
 }
 function userView(item: MockUser) {
   const name = item.email.split("@")[0];
-  return { id: item.id, email: item.email, display_name: `Mock ${name[0].toUpperCase()}${name.slice(1)}`, roles: item.roles, state: "active" as const, auth_version: 1, version: 1 };
+  return { id: item.id, email: item.email, display_name: patientFor(item)?.display_name ?? `Mock ${name[0].toUpperCase()}${name.slice(1)}`, roles: item.roles, state: "active" as const, auth_version: 1, version: 1 };
 }
 function journey() {
   const source = (owner: "records" | "pharmacy" | "billing", resource_type: string, resource_id: string) => ({ owner, resource_type, resource_id, version: 1, observed_at: stamp() });
@@ -216,7 +224,7 @@ function journey() {
 function visibleAppointment(user: MockUser, id: string): Appointment | null {
   const item = state.appointments.find((appointment) => appointment.id === id);
   if (!item) return null;
-  if (isReceptionist(user) || (isPatient(user) && item.patient_id === state.patient.id) || (isDoctor(user) && item.doctor_id === DOCTOR_ID)) return item;
+  if (isReceptionist(user) || (isPatient(user) && item.patient_id === patientIdFor(user)) || (isDoctor(user) && item.doctor_id === DOCTOR_ID)) return item;
   return null;
 }
 
@@ -227,7 +235,7 @@ function emergencyView(item: Emergency, user: MockUser): Emergency {
 }
 function visibleEmergency(user: MockUser, id: string) {
   const item = state.emergencies.find((candidate) => candidate.id === id);
-  if (!item || (!isEmergencyStaff(user) && !(isPatient(user) && item.patient_id === state.patient.id))) return null;
+  if (!item || (!isEmergencyStaff(user) && !(isPatient(user) && item.patient_id === patientIdFor(user)))) return null;
   return item;
 }
 function emergencyChange(item: Emergency, apply: () => MockResponse | void, user: MockUser): MockResponse {
@@ -251,7 +259,7 @@ function currentTariff(code: string): Tariff | undefined {
 }
 function visibleInvoice(user: MockUser, id: string) {
   const item = state.invoices.find((invoice) => invoice.id === id);
-  if (!item || (!isBilling(user) && !(isPatient(user) && item.patient_id === state.patient.id))) return null;
+  if (!item || (!isBilling(user) && !(isPatient(user) && item.patient_id === patientIdFor(user)))) return null;
   return item;
 }
 function recordSummary(item: MedicalRecord & { created_at: string }) {
@@ -262,14 +270,40 @@ function visibleConsultation(user: MockUser, id: string): Consultation | null {
   const item = state.consultations.find((consultation) => consultation.id === id);
   if (!item) return null;
   if (isDoctor(user) && item.doctor_id === DOCTOR_ID) return item;
-  if (isPatient(user) && item.patient_id === state.patient.id) return item;
+  if (isPatient(user) && item.patient_id === patientIdFor(user)) return item;
   return null;
 }
 const forbidden = () => error(403, "forbidden", "This account is not permitted to use this resource.");
 
+function workflowFor(appointmentId: string) {
+  let workflow = state.workflows.find(item => item.appointment_id === appointmentId);
+  if (!workflow) {
+    const appointment = state.appointments.find(item => item.id === appointmentId);
+    if (!appointment || appointment.state !== "confirmed") return undefined;
+    workflow = { appointment_id: appointment.id, journey_id: nextId(), patient_id: appointment.patient_id, doctor_id: appointment.doctor_id, state: "booked", checkin_window: { starts_at: new Date(Date.parse(appointment.starts_at) - 30 * 60000).toISOString(), ends_at: new Date(Date.parse(appointment.starts_at) + 15 * 60000).toISOString() }, queue_entry_id: null, version: 1 };
+    state.workflows.push(workflow);
+  }
+  return workflow;
+}
+
 const routes: Route[] = [
   ["GET", /^\/api\/v1\/patients\/me$/, (_request, user) =>
-    user.roles.includes("patient") ? ok(state.patient, state.patient.version) : error(404, "not_found", "No patient profile for this account.")],
+    patientFor(user) ? ok(patientFor(user), patientFor(user)!.version) : error(404, "not_found", "No patient profile for this account.")],
+  ["PATCH", /^\/api\/v1\/patients\/me$/, (request, user) => {
+    const profile = patientFor(user);
+    if (!profile || !isPatient(user)) return forbidden();
+    const stale = versionMatches(request, profile.version);
+    if (stale) return stale;
+    const body = request.body as Partial<PatientProfile>;
+    if (body.display_name !== undefined && (typeof body.display_name !== "string" || !body.display_name.trim())) return error(422, "validation_failed", "Display name is required.");
+    if (body.date_of_birth && (!/^\d{4}-\d{2}-\d{2}$/.test(body.date_of_birth) || !Number.isFinite(Date.parse(body.date_of_birth)) || Date.parse(body.date_of_birth) > Date.now())) return error(422, "validation_failed", "Enter a valid date of birth.");
+    for (const key of ["display_name", "date_of_birth", "synthetic_contact"] as const) {
+      if (body[key] === null) delete profile[key];
+      else if (typeof body[key] === "string") profile[key] = body[key]!.trim();
+    }
+    profile.version += 1;
+    return ok(profile, profile.version);
+  }],
 
   ["GET", /^\/api\/v1\/pharmacy\/medicines\/autocomplete$/, (request) => {
     const prefix = (request.url.searchParams.get("prefix") ?? "").toLowerCase();
@@ -340,7 +374,7 @@ const routes: Route[] = [
   ["GET", /^\/api\/v1\/pharmacy\/reservations$/, (request, user) => {
     const patientId = request.url.searchParams.get("patient_id");
     const prescriptionId = request.url.searchParams.get("prescription_id");
-    if (!isPharmacist(user) && patientId !== state.patient.id) return forbidden();
+    if (!isPharmacist(user) && (!isPatient(user) || patientId !== patientIdFor(user))) return forbidden();
     return page(state.reservations.filter((item) =>
       (!patientId || item.patient_id === patientId) && (!prescriptionId || item.prescription_id === prescriptionId)), request.url);
   }],
@@ -371,12 +405,12 @@ const routes: Route[] = [
   }],
   ["GET", /^\/api\/v1\/pharmacy\/reservations\/(\d+)$/, (_request, user, match) => {
     const item = state.reservations.find((reservation) => reservation.id === match[1]);
-    if (!item || (!isPharmacist(user) && item.patient_id !== state.patient.id)) return error(404, "not_found", "Reservation not found.");
+    if (!item || (!isPharmacist(user) && item.patient_id !== patientIdFor(user))) return error(404, "not_found", "Reservation not found.");
     return ok(item, item.version);
   }],
   ["DELETE", /^\/api\/v1\/pharmacy\/reservations\/(\d+)$/, (request, user, match) => {
     const item = state.reservations.find((reservation) => reservation.id === match[1]);
-    if (!item || (!isPharmacist(user) && item.patient_id !== state.patient.id)) return error(404, "not_found", "Reservation not found.");
+    if (!item || (!isPharmacist(user) && item.patient_id !== patientIdFor(user))) return error(404, "not_found", "Reservation not found.");
     const stale = versionMatches(request, item.version);
     if (stale) return stale;
     if (item.state !== "reserved") return error(409, "invalid_state", `A ${item.state} reservation cannot be released.`);
@@ -426,34 +460,48 @@ const routes: Route[] = [
   ["GET", /^\/api\/v1\/records\/prescriptions$/, (request, user) => {
     const patientId = request.url.searchParams.get("patient_id");
     const consultationId = request.url.searchParams.get("consultation_id");
-    if (!(isPatient(user) || isDoctor(user)) || (patientId && patientId !== state.patient.id)) return forbidden();
+    if (!(isPatient(user) || isDoctor(user)) || (isPatient(user) && patientId && patientId !== patientIdFor(user))) return forbidden();
     const ownConsultations = state.consultations.filter((item) => item.doctor_id === DOCTOR_ID).map((item) => item.id);
     return page(state.prescriptions.filter((item) =>
-      item.patient_id === state.patient.id &&
-      (patientId || isPatient(user) || ownConsultations.includes(item.consultation_id)) &&
+      (isPatient(user) ? item.patient_id === patientIdFor(user) : ownConsultations.includes(item.consultation_id)) &&
+      (!patientId || item.patient_id === patientId) &&
       (!consultationId || item.consultation_id === consultationId)), request.url);
   }],
   ["GET", /^\/api\/v1\/appointments\/journeys$/, (request, user) =>
-    isPatient(user) || isReceptionist(user) ? page([journey()], request.url) : forbidden()],
+    (isPatient(user) || isReceptionist(user)) ? page(isReceptionist(user) || patientIdFor(user) === state.patient.id ? [journey()] : [], request.url) : forbidden()],
   ["GET", /^\/api\/v1\/appointments\/journeys\/(\d+)$/, (_request, user, match) =>
-    match[1] === "9401" && (isPatient(user) || isReceptionist(user)) ? ok(journey(), state.journeyVersion) : error(404, "not_found", "Journey not found.")],
+    match[1] === "9401" && (isReceptionist(user) || (isPatient(user) && patientIdFor(user) === state.patient.id)) ? ok(journey(), state.journeyVersion) : error(404, "not_found", "Journey not found.")],
   ["GET", /^\/api\/v1\/appointments\/journeys\/(\d+)\/history$/, (request) => page([], request.url)],
-  ["POST", /^\/api\/v1\/appointments\/journeys\/(\d+)\/reconcile$/, (request, _user, match) => {
+  ["POST", /^\/api\/v1\/appointments\/journeys\/(\d+)\/reconcile$/, (request, user, match) => {
+    if (!(isReceptionist(user) || (isPatient(user) && patientIdFor(user) === state.patient.id))) return forbidden();
     if (match[1] !== "9401") return error(404, "not_found", "Journey not found.");
     const stale = versionMatches(request, state.journeyVersion);
     if (stale) return stale;
     state.journeyVersion += 1;
     return ok(journey(), state.journeyVersion);
   }],
-  ["GET", /^\/api\/v1\/appointments\/waitlists$/, (request, user) =>
-    isPatient(user) ? page(state.waitlists, request.url) : forbidden()],
-  ["GET", /^\/api\/v1\/appointments\/waitlists\/(\d+)$/, (_request, _user, match) => {
-    const item = state.waitlists.find((entry) => entry.id === match[1]);
-    return item ? ok(item, item.version) : error(404, "not_found", "Waitlist entry not found.");
+  ["POST", /^\/api\/v1\/appointments\/waitlists$/, (request, user) => {
+    const body = request.body as { patient_id?: string; slot_id?: string; expected_schedule_revision?: number };
+    if (!isPatient(user) || body.patient_id !== patientIdFor(user)) return forbidden();
+    const slot = slotFromId(body.slot_id ?? "");
+    if (!slot) return error(404, "not_found", "Slot not found.");
+    if (body.expected_schedule_revision !== slot.revision) return error(409, "schedule_revision_changed", "Reload the accepted schedule revision.");
+    if (slot.state !== "bookable" || Date.parse(slot.starts_at) <= Date.now()) return error(409, "slot_unavailable", "This slot is no longer available for a waitlist.");
+    if (!slotTaken(slot.id)) return error(409, "slot_available", "This slot is available. Book an appointment instead.");
+    if (state.waitlists.some(item => item.slot_id === slot.id && item.patient_id === body.patient_id && item.state === "waiting")) return error(409, "waitlist_exists", "You are already on this waitlist.");
+    const entry = { id: nextId(), slot_id: slot.id, patient_id: body.patient_id!, state: "waiting" as const, joined_at: stamp(), promoted_appointment_id: null, skip_reason: null, version: 1 };
+    state.waitlists.push(entry);
+    return ok(entry, entry.version, 201);
   }],
-  ["POST", /^\/api\/v1\/appointments\/waitlists\/(\d+)\/withdraw$/, (request, _user, match) => {
+  ["GET", /^\/api\/v1\/appointments\/waitlists$/, (request, user) =>
+    isPatient(user) ? page(state.waitlists.filter(item => item.patient_id === patientIdFor(user)), request.url) : forbidden()],
+  ["GET", /^\/api\/v1\/appointments\/waitlists\/(\d+)$/, (_request, user, match) => {
     const item = state.waitlists.find((entry) => entry.id === match[1]);
-    if (!item) return error(404, "not_found", "Waitlist entry not found.");
+    return item && item.patient_id === patientIdFor(user) ? ok(item, item.version) : error(404, "not_found", "Waitlist entry not found.");
+  }],
+  ["POST", /^\/api\/v1\/appointments\/waitlists\/(\d+)\/withdraw$/, (request, user, match) => {
+    const item = state.waitlists.find((entry) => entry.id === match[1]);
+    if (!item || item.patient_id !== patientIdFor(user)) return error(404, "not_found", "Waitlist entry not found.");
     const stale = versionMatches(request, item.version);
     if (stale) return stale;
     item.state = "withdrawn";
@@ -461,7 +509,7 @@ const routes: Route[] = [
     return ok(item, item.version);
   }],
   ["GET", /^\/api\/v1\/appointments\/waitlist-slots\/(\d+)$/, (_request, _user, match) =>
-    ok({ slot_id: match[1], waiting_count: 3, promotion_pending: false, accepted_revision: 1, observed_at: stamp() })],
+    ok({ slot_id: match[1], waiting_count: state.waitlists.filter(item => item.slot_id === match[1] && item.state === "waiting").length, promotion_pending: false, accepted_revision: 1, observed_at: stamp() })],
   ["GET", /^\/api\/v1\/appointments\/waitlist-offers$/, (request) => page([], request.url)],
   ["GET", /^\/api\/v1\/appointments\/queues$/, (request, user) => {
     if (!(isDoctor(user) || isReceptionist(user))) return forbidden();
@@ -477,10 +525,10 @@ const routes: Route[] = [
   ["GET", /^\/api\/v1\/patients\/users$/, (request, user) => {
     if (!user.roles.includes("hospital_admin")) return forbidden();
     const q = request.url.searchParams.get("q")?.toLowerCase() ?? "";
-    return page(users.filter((item) => item.email.includes(q)).map(userView), request.url);
+    return page(allUsers().filter((item) => item.email.includes(q)).map(userView), request.url);
   }],
   ["GET", /^\/api\/v1\/patients\/users\/(\d+)$/, (_request, user, match) => {
-    const item = users.find((candidate) => candidate.id === match[1]);
+    const item = allUsers().find((candidate) => candidate.id === match[1]);
     if (!user.roles.includes("hospital_admin") || !item) return error(404, "not_found", "User not found.");
     return ok(userView(item), 1);
   }],
@@ -493,16 +541,16 @@ const routes: Route[] = [
   ["GET", /^\/api\/v1\/emergencies$/, (request, user) => {
     const newest = [...state.emergencies].sort((a, b) => b.created_at.localeCompare(a.created_at));
     if (isEmergencyStaff(user)) return page(newest, request.url);
-    if (isPatient(user)) return page(newest.filter((item) => item.patient_id === state.patient.id).map((item) => emergencyView(item, user)), request.url);
+    if (isPatient(user)) return page(newest.filter((item) => item.patient_id === patientIdFor(user)).map((item) => emergencyView(item, user)), request.url);
     return forbidden();
   }],
   ["POST", /^\/api\/v1\/emergencies$/, (request, user) => {
     const body = request.body as { patient_id?: string; description?: string; reported_urgency?: Emergency["reported_urgency"]; synthetic_contact?: string };
-    if (!isPatient(user) || body.patient_id !== state.patient.id) return forbidden();
+    if (!isPatient(user) || body.patient_id !== patientIdFor(user)) return forbidden();
     if (!body.description?.trim()) return error(422, "validation_failed", "A description is required.");
     const created: Emergency = {
       id: nextId(), state: "submitted", reported_urgency: body.reported_urgency ?? "unspecified", assigned_priority: null,
-      created_at: stamp(), updated_at: stamp(), patient_id: state.patient.id, description: body.description,
+      created_at: stamp(), updated_at: stamp(), patient_id: patientIdFor(user), description: body.description,
       synthetic_contact: body.synthetic_contact ?? null, claimed_by_user_id: null, claim_expires_at: null, version: 1,
     };
     state.emergencies.unshift(created);
@@ -573,6 +621,9 @@ const routes: Route[] = [
     }, user);
   }],
 
+  // Explicit synthetic empty state until a provider fixture is configured.
+  ["GET", /^\/api\/v1\/billing\/insurance\/providers$/, (request, user) =>
+    isBilling(user) ? page([], request.url) : forbidden()],
   ["GET", /^\/api\/v1\/billing\/tariffs$/, (request, user) =>
     isBilling(user) ? page([...state.tariffs].sort((a, b) => a.charge_code.localeCompare(b.charge_code) || b.revision - a.revision), request.url) : forbidden()],
   ["POST", /^\/api\/v1\/billing\/tariffs$/, (request, user) => {
@@ -585,15 +636,16 @@ const routes: Route[] = [
   }],
   ["GET", /^\/api\/v1\/billing\/invoices$/, (request, user) => {
     if (isBilling(user)) return page(state.invoices, request.url);
-    if (isPatient(user)) return page(state.invoices.filter((item) => item.patient_id === state.patient.id), request.url);
+    if (isPatient(user)) return page(state.invoices.filter((item) => item.patient_id === patientIdFor(user)), request.url);
     return forbidden();
   }],
   ["POST", /^\/api\/v1\/billing\/invoices$/, (request, user) => {
     if (!isBilling(user)) return forbidden();
     const appointmentId = (request.body as { appointment_id?: string }).appointment_id;
     if (!appointmentId) return error(422, "validation_failed", "An appointment ID is required.");
+    if (!state.appointments.some(item => item.id === appointmentId)) return error(404, "not_found", "Appointment not found.");
     if (state.invoices.some((item) => item.appointment_id === appointmentId)) return error(409, "invoice_exists", "This appointment already has an invoice.");
-    const created: Invoice = { id: nextId(), journey_id: null, appointment_id: appointmentId, patient_id: state.patient.id, status: "open", items: [], total_minor: 0, paid_minor: 0, balance_minor: 0, currency: "INR", version: 1 };
+    const created: Invoice = { id: nextId(), journey_id: null, appointment_id: appointmentId, patient_id: state.appointments.find(item => item.id === appointmentId)!.patient_id, status: "open", items: [], total_minor: 0, paid_minor: 0, balance_minor: 0, currency: "INR", version: 1 };
     state.invoices.unshift(created);
     return ok(created, created.version, 201);
   }],
@@ -654,12 +706,12 @@ const routes: Route[] = [
   }],
 
   ["GET", /^\/api\/v1\/records\/patients\/(\d+)$/, (request, user, match) => {
-    if (match[1] !== state.patient.id || !(isPatient(user) || isDoctor(user))) return forbidden();
-    return page([...state.records].sort((a, b) => b.created_at.localeCompare(a.created_at)).map(recordSummary), request.url);
+    if (!(isDoctor(user) || (isPatient(user) && match[1] === patientIdFor(user)))) return forbidden();
+    return page(state.records.filter(item => item.patient_id === match[1]).sort((a, b) => b.created_at.localeCompare(a.created_at)).map(recordSummary), request.url);
   }],
   ["GET", /^\/api\/v1\/records\/consultations$/, (request, user) => {
     if (isDoctor(user)) return page(state.consultations.filter((item) => item.doctor_id === DOCTOR_ID).reverse(), request.url);
-    if (isPatient(user)) return page(state.consultations.filter((item) => item.patient_id === state.patient.id && item.status === "finalized"), request.url);
+    if (isPatient(user)) return page(state.consultations.filter((item) => item.patient_id === patientIdFor(user) && item.status === "finalized"), request.url);
     return forbidden();
   }],
   ["POST", /^\/api\/v1\/records\/consultations$/, (request, user) => {
@@ -704,7 +756,7 @@ const routes: Route[] = [
   }],
   ["GET", /^\/api\/v1\/records\/(\d+)$/, (_request, user, match) => {
     const item = state.records.find((record) => record.id === match[1]);
-    if (!item || !(isPatient(user) || isDoctor(user))) return error(404, "not_found", "Medical record not found.");
+    if (!item || !(isDoctor(user) || (isPatient(user) && item.patient_id === patientIdFor(user)))) return error(404, "not_found", "Medical record not found.");
     const { created_at: _created, ...record } = item;
     return ok(record, item.version);
   }],
@@ -725,13 +777,14 @@ const routes: Route[] = [
   ["POST", /^\/api\/v1\/records\/access-grants$/, (request, user) => {
     if (!isPatient(user)) return forbidden();
     const body = request.body as Omit<Grant, "id" | "version">;
+    if (body.patient_id !== patientIdFor(user)) return forbidden();
     const created: Grant = { ...body, id: nextId(), version: 1 };
     state.grants.push(created);
     return ok(created, created.version, 201);
   }],
   ["DELETE", /^\/api\/v1\/records\/access-grants\/(\d+)$/, (request, user, match) => {
     const item = state.grants.find((grant) => grant.id === match[1]);
-    if (!item || !isPatient(user)) return error(404, "not_found", "Grant not found.");
+    if (!item || !isPatient(user) || item.patient_id !== patientIdFor(user)) return error(404, "not_found", "Grant not found.");
     const stale = versionMatches(request, item.version);
     if (stale) return stale;
     state.grants.splice(state.grants.indexOf(item), 1);
@@ -762,12 +815,13 @@ const routes: Route[] = [
   ["POST", /^\/api\/v1\/appointments$/, (request, user) => {
     const body = request.body as { patient_id?: string; slot_id?: string; expected_schedule_revision?: number };
     const patientIds = [state.patient.id, ...state.otherPatients.map((item) => item.id)];
-    if (!(isReceptionist(user) || (isPatient(user) && body.patient_id === state.patient.id))) return forbidden();
+    if (!(isReceptionist(user) || (isPatient(user) && body.patient_id === patientIdFor(user)))) return forbidden();
     if (!body.patient_id || !patientIds.includes(body.patient_id)) return error(404, "not_found", "Patient not found.");
     const slot = bookableSlot(body.slot_id ?? "", body.expected_schedule_revision);
     if ("status" in slot) return slot;
     const created: Appointment = { id: nextId(), journey_id: null, patient_id: body.patient_id, doctor_id: slot.doctor_id, slot_id: slot.id, starts_at: slot.starts_at, ends_at: slot.ends_at, state: "confirmed", version: 1 };
     state.appointments.push(created);
+    workflowFor(created.id);
     return ok(created, created.version, 201);
   }],
   ["GET", /^\/api\/v1\/appointments\/(\d+)$/, (_request, user, match) => {
@@ -783,6 +837,9 @@ const routes: Route[] = [
     if (!reasonOf(request.body)) return error(422, "validation_failed", "A reason is required.");
     item.state = "cancelled";
     item.version += 1;
+    const workflow = state.workflows.find(workflow => workflow.appointment_id === item.id);
+    if (workflow) { workflow.state = "cancelled"; workflow.version += 1; }
+    state.checkinLinks.delete(item.id);
     return ok(item, item.version);
   }],
   ["POST", /^\/api\/v1\/appointments\/(\d+)\/reschedule$/, (request, user, match) => {
@@ -795,6 +852,9 @@ const routes: Route[] = [
     const slot = bookableSlot(body.target_slot_id ?? "", body.expected_schedule_revision, item.id);
     if ("status" in slot) return slot;
     Object.assign(item, { doctor_id: slot.doctor_id, slot_id: slot.id, starts_at: slot.starts_at, ends_at: slot.ends_at, version: item.version + 1 });
+    const workflow = workflowFor(item.id);
+    if (workflow) { workflow.doctor_id = item.doctor_id; workflow.checkin_window = { starts_at: new Date(Date.parse(item.starts_at) - 30 * 60000).toISOString(), ends_at: new Date(Date.parse(item.starts_at) + 15 * 60000).toISOString() }; workflow.version += 1; }
+    state.checkinLinks.delete(item.id);
     return ok(item, item.version);
   }],
   ["GET", /^\/api\/v1\/patients$/, (request, user) => {
@@ -826,33 +886,81 @@ const routes: Route[] = [
     });
     return ok(state.surge, state.surge.version);
   }],
-  ["GET", /^\/api\/v1\/appointments\/(\d+)\/queue$/, (_request, _user, match) => {
-    if (match[1] !== "5101") return error(404, "not_found", "No queue entry for this appointment.");
+  ["GET", /^\/api\/v1\/appointments\/(\d+)\/queue$/, (_request, user, match) => {
+    if (!visibleAppointment(user, match[1])) return error(404, "not_found", "Appointment not found.");
+    const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+    if (match[1] === "5101") {
+      const queue: OwnQueue = {
+        entry: { id: "9301", appointment_id: "5101", doctor_id: "8001", local_date: state.day(0), token_number: 3, state: "waiting", position: 2, version: 1 },
+        waiting_count: 4, in_consultation_count: 1, queue_version: 1, observed_at: stamp,
+      };
+      return ok(queue, 1);
+    }
+    const checked = state.checkinEntries.get(match[1]);
+    const workflow = workflowFor(match[1]);
+    if (!checked || !workflow) return error(404, "not_found", "No queue entry for this appointment.");
     const queue: OwnQueue = {
-      entry: { id: "9301", appointment_id: "5101", doctor_id: "8001", local_date: state.day(0), token_number: 3, state: "waiting", position: 2, version: 1 },
-      waiting_count: 4, in_consultation_count: 1, queue_version: 1, observed_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+      entry: { id: checked.id, appointment_id: match[1], doctor_id: workflow.doctor_id, local_date: state.day(0), token_number: checked.token_number, state: "waiting", position: 1, version: 1 },
+      waiting_count: 1, in_consultation_count: 0, queue_version: 1, observed_at: stamp,
     };
     return ok(queue, 1);
   }],
-  ["GET", /^\/api\/v1\/appointments\/(\d+)\/workflow$/, (_request, _user, match) => {
-    if (match[1] !== "5101") return error(404, "not_found", "No workflow for this appointment.");
-    const workflow: Workflow = {
-      appointment_id: "5101", journey_id: "9401", patient_id: state.patient.id, doctor_id: "8001", state: "checked_in",
-      checkin_window: { starts_at: state.minutes(-20), ends_at: state.minutes(40) }, queue_entry_id: "9301", version: 2,
+  ["GET", /^\/api\/v1\/appointments\/(\d+)\/workflow$/, (_request, user, match) => {
+    if (!visibleAppointment(user, match[1])) return error(404, "not_found", "Appointment not found.");
+    const workflow = workflowFor(match[1]);
+    if (!workflow) return error(404, "not_found", "No workflow for this appointment.");
+    return ok(workflow satisfies Workflow, workflow.version);
+  }],
+  ["POST", /^\/api\/v1\/appointments\/(\d+)\/check-in-links$/, (request, user, match) => {
+    if (!visibleAppointment(user, match[1])) return error(404, "not_found", "Appointment not found.");
+    const workflow = workflowFor(match[1]);
+    if (!workflow) return error(404, "not_found", "No workflow for this appointment.");
+    const stale = versionMatches(request, workflow.version);
+    if (stale) return stale;
+    if (workflow.state !== "booked") return error(409, "invalid_state", "This appointment is not waiting for check-in.");
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const token = Array.from({ length: 22 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
+    state.checkinLinks.set(match[1], token);
+    workflow.version += 1;
+    const issue: TokenIssue = {
+      link_id: nextId(), appointment_id: match[1], expires_at: state.minutes(10), token,
+      landing_path: `/patient/check-in#appointment_id=${match[1]}&token=${token}`, version: 1,
     };
-    return ok(workflow, workflow.version);
+    return ok(issue, 1, 201);
+  }],
+  ["POST", /^\/api\/v1\/appointments\/(\d+)\/check-in$/, (request, user, match) => {
+    if (!visibleAppointment(user, match[1])) return error(404, "not_found", "Appointment not found.");
+    const workflow = workflowFor(match[1]);
+    if (!workflow) return error(404, "not_found", "No workflow for this appointment.");
+    const stale = versionMatches(request, workflow.version);
+    if (stale) return stale;
+    if (Date.now() < Date.parse(workflow.checkin_window.starts_at) || Date.now() >= Date.parse(workflow.checkin_window.ends_at)) return error(409, "checkin_window_closed", "Check-in is outside the appointment window.");
+    const token = (request.body as { token?: string } | undefined)?.token;
+    if (!token || state.checkinLinks.get(match[1]) !== token) return error(422, "token_invalid", "The check-in token is invalid.");
+    state.checkinLinks.delete(match[1]);
+    const entry = { id: nextId(), token_number: 5 };
+    state.checkinEntries.set(match[1], entry);
+    workflow.state = "checked_in";
+    workflow.queue_entry_id = entry.id;
+    workflow.version += 1;
+    const result: CheckinResult = {
+      workflow,
+      queue_entry: { id: entry.id, appointment_id: match[1], doctor_id: workflow.doctor_id, local_date: state.day(0), token_number: entry.token_number, state: "waiting", position: 1, version: 1 },
+    };
+    return ok(result, workflow.version);
   }],
 ];
 
-export function handleMockRequest(request: MockRequest): MockResponse {
+async function dispatchMockRequest(request: MockRequest): Promise<MockResponse> {
   const path = request.url.pathname;
   const method = request.method.toUpperCase();
 
   if (path === "/api/v1/auth/csrf") return ok({ csrf_token: "mock-csrf-token", header_name: "X-CSRF-Token", expires_in: 3600 });
   if (path === "/api/v1/auth/login" && method === "POST") {
     const email = String((request.body as { email?: string })?.email ?? "").trim().toLowerCase();
-    const user = users.find((candidate) => candidate.email === email);
-    if (!user) return error(401, "invalid_credentials", "Use patient@, pharmacist@, doctor@ or admin@mock.test with any password.");
+    const user = allUsers().find((candidate) => candidate.email === email);
+    const account = accounts.find(account => account.user.id === user?.id);
+    if (!user || (account && await passwordDigest(String((request.body as { password?: string })?.password ?? ""), account.salt) !== account.passwordHash)) return error(401, "invalid_credentials", "The email address or password is incorrect.");
     return { ...ok(tokenFor(user)), headers: { "Set-Cookie": `${SESSION_COOKIE}=${user.id}; HttpOnly; Path=/; SameSite=Strict` } };
   }
   if (path === "/api/v1/auth/refresh" && method === "POST") {
@@ -863,7 +971,7 @@ export function handleMockRequest(request: MockRequest): MockResponse {
     return { status: 204, headers: { "Set-Cookie": `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict` } };
   }
   if (path === "/api/v1/auth/register" && method === "POST") {
-    return error(409, "mock_registration_disabled", "Mock mode uses the fixed mock.test accounts.");
+    return registerPatient(request);
   }
 
   const user = userFromToken(request.headers.authorization);
@@ -887,4 +995,57 @@ export function handleMockRequest(request: MockRequest): MockResponse {
     }
   }
   return error(404, "not_found", `No mock fixture for ${method} ${path}.`);
+}
+
+
+const hex = (bytes: ArrayBuffer | Uint8Array) => Array.from(new Uint8Array(bytes)).map(byte => byte.toString(16).padStart(2, "0")).join("");
+async function passwordDigest(password: string, salt: string) {
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: new TextEncoder().encode(salt), iterations: 210000 }, key, 256));
+}
+async function registerPatient(request: MockRequest): Promise<MockResponse> {
+  const key = request.headers["idempotency-key"];
+  const owner = request.headers["x-anonymous-command-id"];
+  if (!key || !owner) return error(428, "precondition_required", "Registration requires an anonymous command ID and idempotency key.");
+  const body = request.body as Partial<RegistrationInput> | undefined;
+  const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+  const name = typeof body?.display_name === "string" ? body.display_name.trim() : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !name || name.length > 200 || typeof body?.password !== "string" || body.password.length < 8 || body.password.length > 1024) return error(422, "validation_failed", "Enter a name, a valid email and a password of at least 8 characters.");
+  if (body.date_of_birth && (!/^\d{4}-\d{2}-\d{2}$/.test(body.date_of_birth) || !Number.isFinite(Date.parse(body.date_of_birth)) || Date.parse(body.date_of_birth) > Date.now())) return error(422, "validation_failed", "Enter a valid date of birth.");
+  const fingerprint = hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify([owner, request.body]))));
+  const idempotencyKey = `registration:${key}`;
+  const previous = idempotency.get(idempotencyKey);
+  if (previous) return previous.fingerprint === fingerprint ? structuredClone(previous.response) : error(422, "idempotency_key_reused", "This idempotency key was already used for a different registration.");
+  if (allUsers().some(user => user.email.toLowerCase() === email)) return error(409, "email_unavailable", "An account with this email address already exists. Sign in instead.");
+  const salt = hex(crypto.getRandomValues(new Uint8Array(16)));
+  const passwordHash = await passwordDigest(body.password, salt);
+  const user: MockUser = { id: nextId(), email, roles: ["patient"] };
+  const profile: PatientProfile = { id: nextId(), user_id: user.id, display_name: name, version: 1,
+    ...(body.date_of_birth ? { date_of_birth: body.date_of_birth } : {}),
+    ...(body.synthetic_contact?.trim() ? { synthetic_contact: body.synthetic_contact.trim() } : {}),
+  };
+  accounts.push({ user, salt, passwordHash });
+  state.otherPatients.push(profile);
+  const response = ok(profile, profile.version, 201);
+  idempotency.set(idempotencyKey, { fingerprint, response: structuredClone(response) });
+  return response;
+}
+
+/** Browser-local demo database only. No plaintext passwords or bearer tokens are serialized. */
+export function exportMockState(): string {
+  return JSON.stringify({ schema: 1, state, accounts, idempotency }, (_key, value) => value instanceof Map ? { __pulsegridMap: [...value] } : value);
+}
+export function importMockState(serialized: string) {
+  const saved = JSON.parse(serialized, (_key, value) => value && typeof value === "object" && Array.isArray(value.__pulsegridMap) ? new Map(value.__pulsegridMap) : value);
+  if (saved.schema !== 1 || !saved.state || !Array.isArray(saved.accounts) || !(saved.idempotency instanceof Map)) throw new Error("Saved demo data could not be read.");
+  state = Object.assign(createState(), saved.state);
+  accounts = saved.accounts;
+  idempotency.clear();
+  for (const [key, value] of saved.idempotency) idempotency.set(key, value);
+}
+let requestFlight: Promise<unknown> = Promise.resolve();
+export function handleMockRequest(request: MockRequest): Promise<MockResponse> {
+  const result = requestFlight.then(() => dispatchMockRequest(request));
+  requestFlight = result.catch(() => undefined);
+  return result;
 }

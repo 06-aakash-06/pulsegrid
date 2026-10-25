@@ -1,3 +1,4 @@
+import { commandLabels } from "../commandLabels";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -69,9 +70,9 @@ function fill(label: string, value: string) {
 }
 
 async function confirm(title: string) {
-  fireEvent.click(screen.getByRole("button", { name: `Review ${title}` }));
-  fireEvent.click(await screen.findByRole("button", { name: `Confirm ${title}` }));
-  await screen.findByText(`${title}: confirmed by the service.`);
+  fireEvent.click(screen.getByRole("button", { name: commandLabels(title).review }));
+  fireEvent.click(await screen.findByRole("button", { name: commandLabels(title).confirm }));
+  await screen.findByText((_text, element) => element?.getAttribute("role") === "status" && (element.textContent ?? "").includes(commandLabels(title).success));
 }
 
 const token = "0123456789012345678901";
@@ -177,16 +178,16 @@ describe("reception check-in", () => {
     fireEvent.submit(screen.getByLabelText("Appointment ID").closest("form")!);
     await screen.findByLabelText("No-show reason");
     fill("No-show reason", "Synthetic patient did not attend");
-    fireEvent.click(screen.getByRole("button", { name: "Review Mark no-show" }));
+    fireEvent.click(screen.getByRole("button", { name: commandLabels("Mark no-show").review }));
     expect(writes(fetcher)).toHaveLength(0);
-    fireEvent.click(await screen.findByRole("button", { name: "Confirm Mark no-show" }));
+    fireEvent.click(await screen.findByRole("button", { name: commandLabels("Mark no-show").confirm }));
     await screen.findByText("no_show");
     const [url, init] = lastWrite(fetcher);
     expect(String(url)).toContain("/api/v1/appointments/51/no-show");
     expect(JSON.parse(String(init?.body))).toEqual({ reason: "Synthetic patient did not attend" });
     expect(requestHeaders(init!).get("If-Match")).toBe('"3"');
     expect(requestHeaders(init!).get("Idempotency-Key")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Review Mark no-show" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: commandLabels("Mark no-show").review })).not.toBeInTheDocument();
   });
 
   it("validates manual token input, supports scanner fallback and confirms owner success", async () => {
@@ -492,12 +493,12 @@ describe("patient journey and pharmacy fulfillment", () => {
     await confirm("Reserve medicines");
     expect(await screen.findByRole("button", { name: "View reservation 91" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "View reservation 91" }));
-    await screen.findByRole("button", { name: "Review Revalidate reservation" });
+    await screen.findByRole("button", { name: commandLabels("Revalidate reservation").review });
     await confirm("Revalidate reservation");
     await waitFor(() => expect(getCalls(fetcher).filter(([input]) => String(input) === "/api/v1/pharmacy/reservations/91").length).toBeGreaterThan(1));
-    await screen.findByRole("button", { name: "Review Dispense reservation" });
+    await screen.findByRole("button", { name: commandLabels("Dispense reservation").review });
     await confirm("Dispense reservation");
-    expect(await screen.findByText(/Completed dispensing 101/)).toBeInTheDocument();
+    expect(await screen.findByText(/Dispensed \(…101\)/)).toBeInTheDocument();
     const dispenseCall = writes(fetcher).find(([url]) => String(url) === "/api/v1/pharmacy/reservations/91/dispense")!;
     expect(JSON.parse(String(dispenseCall[1]?.body))).toEqual({});
     expect(requestHeaders(dispenseCall[1]!).get("If-Match")).toBe('"3"');

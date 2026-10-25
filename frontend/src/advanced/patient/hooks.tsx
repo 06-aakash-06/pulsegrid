@@ -30,6 +30,7 @@ export interface LoadState<T> {
   etag: string | null;
   loading: boolean;
   error: string | null;
+  notFound: boolean;
   reload(): void;
 }
 
@@ -40,6 +41,7 @@ export function useLoad<T>(
 ): LoadState<T> {
   const [response, setResponse] = useState<ApiResponse<T> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(false);
   const [revision, setRevision] = useState(0);
   const reload = useCallback(() => {
@@ -51,6 +53,7 @@ export function useLoad<T>(
   useEffect(() => {
     setResponse(null);
     setError(null);
+    setNotFound(false);
     setLoading(Boolean(enabled && path));
     if (!enabled || !path) return;
     const controller = new AbortController();
@@ -59,7 +62,9 @@ export function useLoad<T>(
         if (!controller.signal.aborted) setResponse(next);
       })
       .catch((reason: unknown) => {
-        if (!controller.signal.aborted) setError(getErrorMessage(reason));
+        if (controller.signal.aborted) return;
+        setError(getErrorMessage(reason));
+        setNotFound(reason instanceof ApiError && reason.status === 404);
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
@@ -72,6 +77,7 @@ export function useLoad<T>(
     etag: response?.etag ?? null,
     loading,
     error,
+    notFound,
     reload,
   };
 }
