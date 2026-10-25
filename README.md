@@ -134,7 +134,7 @@ See [infrastructure](docs/infrastructure.md) and [authentication integration](do
 
 #### UI development without the backend
 
-`npm run dev:mock` (from `frontend/`) explicitly starts Vite with an in-memory fixture API instead of the gateway. Sign in with a fixture email and any password; the page shows a MOCK DATA ribbon. Fixtures are synthetic, intended for layout work, and do not verify real API behavior. Never use this mode or `npm run build:demo` for deployment. Vercel uses the normal production build and the backend reverse-proxy configuration described in the [deployment guide](docs/deployment/vercel-render.md). Never use real patient information or a reused password in mock mode.
+`npm run dev:mock` (from `frontend/`) explicitly starts Vite with an in-memory fixture API instead of the gateway. Sign in with a fixture email and any password; the page shows a MOCK DATA ribbon. Fixtures are synthetic, intended for layout work, and do not verify real API behavior. Never use this mode against real data. With a hosted backend, Vercel uses the normal production build and the backend reverse-proxy configuration described in the [deployment guide](docs/deployment/vercel-render.md); the backend-less public demo uses `build:demo` through `PULSEGRID_DEMO_DEPLOY=true`, as that guide explains. Never use real patient information or a reused password in mock mode.
 
 ## Validation
 

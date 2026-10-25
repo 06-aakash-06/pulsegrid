@@ -59,7 +59,7 @@ The temporary database bootstrap port defaults to `55433`; the seed helper remov
 - `infra/scripts/phase11_rebuild_local.py` is destructive only with `--execute --confirm-target pulsegrid`; leave it in dry-run mode when checking the target.
 - `infra/scripts/phase11_seed_demo.py` and its private credentials are loopback-only. Do not relax these guards to make hosted deployment work.
 - Never commit `.env`, `secrets/phase11/credentials.json`, `secrets/phase11/seed-state.json`, signing keys, service credentials, or database backups.
-- Vercel redeploys must run the normal `npm run build` only. They must not reset or seed databases.
+- Vercel redeploys build the frontend only (normal `npm run build` with a backend, `build:demo` for the backend-less public demo; see the runbook). They must not reset or seed databases.
 - A hosted fictional dataset needs an independently reviewed first-admin procedure and eight separate strong credentials. That hosted bootstrap is intentionally not provided by these local helpers. See the [Vercel/Render runbook](../deployment/vercel-render.md).
 
 See [the cleanup report](CLEANUP-REPORT.md) for the completed reset and verification evidence.

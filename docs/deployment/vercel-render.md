@@ -4,9 +4,13 @@ This repository is prepared for a Vercel-hosted React frontend and a separately 
 
 ## Frontend on Vercel
 
-Create a Vercel project with `frontend/` as its root directory. Use the committed lockfile, `npm ci`, and the normal `npm run build` command. Do not select `build:demo`; that command injects development mocks. `frontend/vercel.ts` fails closed unless `PULSEGRID_BACKEND_ORIGIN` is a bare HTTPS origin, then rewrites `/api/*` and `/s/*` requests to the backend gateway and sends the remaining paths to the SPA entrypoint. Set the origin in Vercel project environment settings for each deployment environment; it is a server-side routing value and must not use a `VITE_` prefix.
+Create a Vercel project with `frontend/` as its root directory. Use the committed lockfile, `npm ci`, and the normal `npm run build` command against a backend. `frontend/vercel.ts` fails closed unless either `PULSEGRID_BACKEND_ORIGIN` is a bare HTTPS origin or `PULSEGRID_DEMO_DEPLOY=true` selects the browser-only demo (see below). With a backend origin it then rewrites `/api/*` and `/s/*` requests to the backend gateway and sends the remaining paths to the SPA entrypoint. Set the origin in Vercel project environment settings for each deployment environment; it is a server-side routing value and must not use a `VITE_` prefix.
 
 The browser keeps API calls same-origin at the Vercel URL. This lets the existing CSRF and HttpOnly refresh-cookie flow remain same-site while Vercel proxies the request. Keep the backend origin stable, enable TLS, set Patient `AUTH_ORIGINS` to the exact Vercel origin, and set `AUTH_ALLOW_HTTP=false`. The Patient service enforces secure cookies and exact-origin CSRF checks in that configuration. Never place database, signing, service-auth, Redis or RabbitMQ credentials in Vercel frontend variables or the generated bundle. `/api` and `/s` rewrite caching is disabled by the Vercel headers in the config.
+
+### Browser-only public demo
+
+The current public site (`pulsegrid-ruddy.vercel.app`) has no hosted backend. Its Vercel project sets `PULSEGRID_DEMO_DEPLOY=true`, so `frontend/vercel.ts` runs `npm run build:demo` and serves only the SPA fallback, with no `/api` proxy. Every visitor gets the fictional mock hospital stored in their own browser, including patient sign-up; nothing reaches a server. Never set `PULSEGRID_DEMO_DEPLOY` on a deployment that has a backend: remove it and set `PULSEGRID_BACKEND_ORIGIN` instead.
 
 ## Backend and data services on Render
 
