@@ -104,7 +104,7 @@ export function MedicineCabinet({
       <div className="cabinet-rail">
         <h2 id={titleId} className="sr-only">Medicine cabinet</h2>
         <div className="cabinet-rail__row">
-          <div className="cabinet-rail__search">
+          <div className="cabinet-rail__search" data-tour="medicine-search">
             <MedicineAutocomplete
               api={api}
               roleHints={state.status === "authenticated" ? state.roleHints : []}
@@ -179,7 +179,7 @@ export function MedicineCabinet({
             return (
               <li key={item.id} className="shelf-slot" data-selected={selected === item.id} data-availability={item.availability}>
                 <span className="carton" aria-hidden="true" data-tone={cartonTones[(Number(item.id.slice(-2)) || index) % cartonTones.length]} />
-                <button type="button" className="shelf-label" aria-pressed={selected === item.id} title={label} onClick={() => onSelect(item.id)}>
+                <button type="button" className="shelf-label" data-tour={index === 0 ? "shelf-medicine" : undefined} aria-pressed={selected === item.id} title={label} onClick={() => onSelect(item.id)}>
                   <strong>{label}</strong>
                   <span>
                     {item.availability === "unknown" ? <><span className="sr-only">Availability </span>Not supplied</> : availabilityText[item.availability]}

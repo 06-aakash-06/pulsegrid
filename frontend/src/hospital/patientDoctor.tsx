@@ -204,7 +204,7 @@ export function StaffManagement() {
   const [error, setError] = useState("");
   return (
     <PageGrid preset={selected ? "main+aside" : "main"} className="account-register">
-      <Panel title="Filter accounts">
+      <Panel title="Filter accounts" tour="staff-filters">
         <form
           className="filter-row"
           onSubmit={(e) => {
@@ -253,7 +253,7 @@ export function StaffManagement() {
  {label:"Email",render:item=>item.email},
  {label:"Roles",render:item=>item.roles.join(", ").replaceAll("_"," ")},
  {label:"Status",render:item=>item.state},
- {label:"Actions",render:item=><><button type="button" aria-label={`Open account ${item.display_name}`} onClick={()=>setSelected(item.id)}>Open</button><ItemDetails>Account {item.id} · Version {item.version}</ItemDetails></>},
+ {label:"Actions",render:item=><><button type="button" data-tour="staff-open-account" aria-label={`Open account ${item.display_name}`} onClick={()=>setSelected(item.id)}>Open</button><ItemDetails>Account {item.id} · Version {item.version}</ItemDetails></>},
  ]}
       />
       <Selected<UserView>
@@ -714,8 +714,8 @@ function WalkinRegistration({onSuccess,onLockChange}:{onSuccess:()=>void;onLockC
           <div className="walkin-patient-strip"><div><strong>{patient.display_name}</strong><small>{patient.date_of_birth ? `Born ${patient.date_of_birth}` : "Date of birth not provided"}</small></div><button type="button" disabled={locked} onClick={()=>{setPatient(null);setBooked(false);}}>Change patient</button><ItemDetails>Patient ID {patient.id}</ItemDetails></div>
         ) : (
           <>
-            <form className="walkin-patient-search" onSubmit={e=>{e.preventDefault();if(draft.trim().length<2||draft.trim().length>100){setError("Search must contain 2 to 100 characters.");return;}setSearch(draft.trim());setPatient(null);setError("");}}><label>Find existing patient<input disabled={locked} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Patient name…"/></label><button disabled={locked}>Search patients</button>{error&&<p role="alert">{error}</p>}</form>
-            {search && <Collection<PatientProfile> title="Matching patients" path={query("/api/v1/patients",{q:search})} renderItem={item=><div className="walkin-match"><span><strong>{item.display_name}</strong><small>{item.date_of_birth ? `Born ${item.date_of_birth}` : "Date of birth not provided"}</small></span><button type="button" disabled={locked} onClick={()=>setPatient(item)}>Use this patient</button></div>}/>}
+            <form className="walkin-patient-search" onSubmit={e=>{e.preventDefault();if(draft.trim().length<2||draft.trim().length>100){setError("Search must contain 2 to 100 characters.");return;}setSearch(draft.trim());setPatient(null);setError("");}}><label>Find existing patient<input data-tour="walkin-search" disabled={locked} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Patient name…"/></label><button data-tour="walkin-search-submit" disabled={locked}>Search patients</button>{error&&<p role="alert">{error}</p>}</form>
+            {search && <Collection<PatientProfile> title="Matching patients" path={query("/api/v1/patients",{q:search})} renderItem={item=><div className="walkin-match"><span><strong>{item.display_name}</strong><small>{item.date_of_birth ? `Born ${item.date_of_birth}` : "Date of birth not provided"}</small></span><button type="button" data-tour="walkin-use-patient" disabled={locked} onClick={()=>setPatient(item)}>Use this patient</button></div>}/>}
             <p className="walkin-intake-note">New patients register an account first. <Link to="/receptionist/dashboard">Open the Reception desk →</Link></p>
           </>
         )}

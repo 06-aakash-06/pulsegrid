@@ -86,7 +86,7 @@ function InvoiceReceipt({
       {invoice.items.length === 0 ? (
         <p className="cashier-receipt__empty">No charges have been imported.</p>
       ) : (
-        <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items">
+        <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items" data-tour="receipt-lines">
           <table className="cashier-lines">
             <caption className="sr-only">Itemized invoice</caption>
             <thead><tr><th scope="col">Charge</th><th scope="col">Qty × unit</th><th scope="col">Amount</th></tr></thead>
@@ -291,7 +291,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
         <>
           <div className="cashier-left">
             <section className="cashier-workbench" aria-label="Cashier actions">
-              <div className="cashier-tabs" role="tablist" aria-label="Cashier actions">
+              <div className="cashier-tabs" role="tablist" aria-label="Cashier actions" data-tour="cashier-tabs">
                 {cashierTabs.map((item, index) => (
                   <button
                     key={item.key}
@@ -352,7 +352,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
 }
 function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: string | null; onChange: () => void }) {
   return (
-    <div className="cashier-import">
+    <div className="cashier-import" data-tour="charge-import">
       <p>Import finalized sources for <strong><VisitLabel appointmentId={invoice.appointment_id}/></strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
       <p className="cashier-import__hint">Records and Pharmacy do not list a visit's sources to Billing yet. Use the references they send you.</p>
       <details className="item-details cashier-import__advanced" data-disclosure="advanced"><summary>Advanced: import by reference</summary>
@@ -462,6 +462,7 @@ function NextSteps({
     const reason = { ...reasonField, label: labels.reason };
     return (
       <CommandForm
+        tour={`er-${target}`}
         title={title}
         reviewLabel={labels.review}
         confirmLabel={labels.confirm}
@@ -479,6 +480,7 @@ function NextSteps({
   };
   const priority = (title: string) => (
     <CommandForm
+      tour="er-priority"
       title={title}
       reviewLabel="Review priority"
       confirmLabel="Set priority"
@@ -498,6 +500,7 @@ function NextSteps({
   );
   const claim = (
     <CommandForm
+      tour="er-claim"
       title="Claim request"
       reviewLabel="Review claim"
       confirmLabel="Claim request"
@@ -573,11 +576,11 @@ function NextSteps({
   );
 }
 
-function EmergencyRow({ entry, now, selected, onSelect }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void }) {
+function EmergencyRow({ entry, now, selected, onSelect, top = false }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void; top?: boolean }) {
   const rowTitle = requestTitle(entry);
   return (
     <li>
-      <button type="button" className="er-row" data-state={entry.state} aria-pressed={selected} aria-label={`Track request ${entry.id}`} onClick={() => onSelect(entry.id)}>
+      <button type="button" className="er-row" data-tour={top ? "er-case-top" : undefined} data-state={entry.state} aria-pressed={selected} aria-label={`Track request ${entry.id}`} onClick={() => onSelect(entry.id)}>
         <span className="er-row__main">
           <strong title={rowTitle}>{rowTitle}</strong>
           <small><StateChip state={entry.state} /><span>{entry.reported_urgency === "urgent" ? "Reported urgent" : "Urgency not specified"}</span><time dateTime={entry.created_at}>{elapsed(entry.created_at, now)}</time></small>
@@ -650,8 +653,8 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
       {register.loading && <p role="status">Loading emergency requests…</p>}
       {register.error && <p role="alert">{register.error}</p>}
       {register.loaded && !register.loading && register.items.length === 0 && <p>No emergency requests found.</p>}
-      <ol className="er-queue">
-        {open.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
+      <ol className="er-queue" data-tour="er-queue">
+        {open.map((entry, index) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} top={index === 0} />)}
         {closed.length > 0 && <li className="er-queue__divider" role="presentation"><span>Closed</span></li>}
         {closed.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
       </ol>

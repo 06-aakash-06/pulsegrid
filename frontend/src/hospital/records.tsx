@@ -102,6 +102,7 @@ function PrescriptionItems({
       <button
         type="button"
         disabled={items.length >= 50}
+        data-tour="add-prescribed-medicine"
         onClick={() => setItems([...items, {}])}
       >
         Add prescribed medicine
@@ -170,7 +171,7 @@ function ConsultationEditor({
     <>
       <header className="dossier-header" data-check="records-dossier-header">
         <div><p className="dossier-eyebrow">{item.status === "draft" ? "Draft consultation" : "Finalized consultation"}</p><h2><VisitLabel appointmentId={item.appointment_id}/></h2></div>
-        <span className="owner-state" data-state={item.status}>{item.status === "draft" ? "Draft" : "Finalized"}</span>
+        <span className="owner-state" data-state={item.status} data-tour={item.status === "finalized" ? "consultation-finalized" : undefined}>{item.status === "draft" ? "Draft" : "Finalized"}</span>
         <PageRefresh type="button" onClick={refresh}>Refresh</PageRefresh>
       </header>
       <ItemDetails>      <Facts
@@ -187,6 +188,7 @@ function ConsultationEditor({
       {item.status === "draft" && !finalized && (
         <>
           <CommandForm
+            tour="save-draft"
             title="Save consultation draft"
             reviewLabel="Review draft"
             confirmLabel="Save draft"
@@ -203,6 +205,7 @@ function ConsultationEditor({
           />
           <div className="consultation-finalize" data-sticky-footer>
           <CommandForm<FinalizeResult>
+            tour="finalize"
             title="Finalize consultation"
             reviewLabel="Review finalization"
             confirmLabel="Finalize consultation"
@@ -219,7 +222,7 @@ function ConsultationEditor({
             }}
             notice="Freezes the draft into a permanent medical record, with an optional prescription."
           >
-            <details className="finalize-prescription" open={items.length > 0}>
+            <details className="finalize-prescription" data-tour="prescription-items" open={items.length > 0}>
               <summary>Prescribed medicines ({items.length})</summary>
               <PrescriptionItems items={items} setItems={setItems} />
             </details>

@@ -119,12 +119,14 @@ export function useResource<T>(path: string | null, revision = 0) {
 export function Panel({
   title,
   children,
+  tour,
 }: {
   title: string;
   children: ReactNode;
+  tour?: string;
 }) {
   return (
-    <section className="hospital-panel" data-panel={title.toLowerCase().replaceAll(" ", "-")}>
+    <section className="hospital-panel" data-panel={title.toLowerCase().replaceAll(" ", "-")} data-tour={tour}>
       <h2>{title}</h2>
       {children}
     </section>

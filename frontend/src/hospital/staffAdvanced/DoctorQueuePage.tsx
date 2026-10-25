@@ -374,7 +374,7 @@ export function DoctorQueuePage() {
   return (
     <StaffRoleGate role="doctor">
       <div className="staff-advanced-page">
-        <Panel title="Assigned consultation queue">
+        <Panel title="Assigned consultation queue" tour="doctor-queue">
           {doctorLoading && <p role="status">Loading your doctor assignment…</p>}
           {doctorError && <p role="alert">{doctorError}</p>}
           {doctor && (
@@ -422,7 +422,7 @@ export function DoctorQueuePage() {
                       {firstPage.waiting_count > 0 ? (
                         <>
 
-                          <button type="button" disabled={actionPending || stale || !!startAttempt || firstPage.in_consultation_count > 0} onClick={() => void startNextPatient()}>
+                          <button type="button" data-tour="queue-call-next" disabled={actionPending || stale || !!startAttempt || firstPage.in_consultation_count > 0} onClick={() => void startNextPatient()}>
                             {actionPending && !startAttempt ? "Checking queue head…" : "Call next patient"}
                           </button>
                           {firstPage.in_consultation_count > 0 && <p>Finish the active consultation before calling another patient.</p>}

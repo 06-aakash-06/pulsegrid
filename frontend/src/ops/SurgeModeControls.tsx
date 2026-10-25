@@ -17,7 +17,7 @@ export function SurgeModeControls({ onChange }: { onChange: () => void }) {
   )
     return null;
   return (
-    <details className="surge-console">
+    <details className="surge-console" data-tour="surge-controls">
       <summary>Surge Mode controls · Administrator</summary>
       <Resource<SurgeSnapshot> path={path}>
         {(snapshot, _etag, reload) => (
@@ -37,6 +37,7 @@ export function SurgeModeControls({ onChange }: { onChange: () => void }) {
               require review and an audited reason.
             </p>
             <CommandForm
+              tour="surge"
               title="Change Surge Mode" reviewLabel="Review change" confirmLabel="Apply change" successMessage="Surge Mode change accepted."
               path={path}
               fields={[

@@ -283,7 +283,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
         subtitle="Service health, event delivery and operational alerts"
         actions={<PageRefresh type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</PageRefresh>} />
       <p className="ops-updated">{summary ? `Updated ${time(summary.observed_at)}` : "Waiting for monitoring"}</p>
-        <dl className="ops-wall-monitor" aria-label="Headline figures">
+        <dl className="ops-wall-monitor" aria-label="Headline figures" data-tour="ops-headline">
           <div><dt>Services ready</dt><dd>{summary ? `${ready}/${services.length}` : "No data"}</dd></div>
           <AdvancedLookup title="Latency snapshot">{summary ? ms(system?.p95_latency_ms) : "No data"}</AdvancedLookup>
           <AdvancedLookup title="Error-rate snapshot">{summary ? percent(system?.error_rate_percent) : "No data"}</AdvancedLookup>
@@ -320,6 +320,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
                     type="button"
                     key={service.name}
                     className={`ops-tile ops-tile--${service.health}`}
+                    data-tour={service.health === "degraded" ? "ops-degraded-service" : undefined}
                     aria-label={`Inspect ${service.name} service`}
                     aria-pressed={inspected === service.name}
                     aria-controls="ops-service-inspector"
@@ -372,7 +373,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
               <section className="ops-panel ops-alerts" aria-labelledby="ops-alerts-title">
                 <div className="ops-panel-heading"><div><h2 id="ops-alerts-title">Live alerts</h2><p>Prometheus rule evaluations.</p></div></div>
                 {summary.alerts.length ? (
-                  <ul className="ops-alert-list">
+                  <ul className="ops-alert-list" data-tour="ops-alerts">
                     {summary.alerts.map((alert, index) => <li key={`${alert.name}-${alert.service ?? "all"}-${index}`} data-severity={alert.severity}><StatusBadge tone={alert.severity === "critical" ? "danger" : alert.severity === "warning" ? "warning" : "neutral"}>{alert.severity}</StatusBadge><span><strong>{alert.name}</strong><small>{alert.service ?? "System"}</small></span></li>)}
                   </ul>
                 ) : <EmptyRows>There are no firing alerts.</EmptyRows>}
@@ -504,7 +505,7 @@ export function TraceExplorer() {
           <div className="ops-panel-heading"><div><h2>Recent traces</h2><p>Service and operation summaries are allowlisted by the server.</p></div></div>
           {loading && !traces.length ? <p className="ops-loading" role="status">Loading recent traces…</p> : null}
           {!loading && !traces.length && !error ? <EmptyRows>No traces found in the last hour.</EmptyRows> : null}
-          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong title={trace.operation}>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
+          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button data-tour="ops-trace-option" className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong title={trace.operation}>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
         </section>
         <section className="ops-panel ops-trace-detail" aria-label="Selected trace details">
           {!selected && !detailLoading ? (
@@ -514,7 +515,7 @@ export function TraceExplorer() {
               <div className="ops-panel-heading"><div><h2>{selectedTrace?.operation ?? "Trace details"}</h2><p>{`Trace ID ${selected}`}</p></div></div>
               {detailLoading ? <p className="ops-loading" role="status">Loading trace spans…</p> : null}
               {selected && !detailLoading && !spans.length ? <EmptyRows>No safe span details are available.</EmptyRows> : null}
-              {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong title={span.operation}>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
+              {spans.length ? <ol className="ops-span-list" data-tour="ops-trace-spans">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong title={span.operation}>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
             </>
           )}
           <p className="ops-footnote">Trace results include safe service, operation, and timing fields only.</p>
