@@ -68,6 +68,9 @@ The audit verdict remains **PARTIAL**: physical QR camera decoding, exhaustive c
 - [Historical visual correction checkpoint](docs/phase-9-visual-fidelity-corrections.md)
 - [Frontend design system](docs/phase-9-design-system.md)
 - [Phase 8.2 measured scalability evaluation](docs/phase-8-2-scalability-finalization.md)
+- [Phase 11 clean local demo rebuild and verification](docs/demo-environment/CLEANUP-REPORT.md)
+- [Local demo reproduction and reset guards](docs/demo-environment/README.md)
+- [Vercel frontend and separate backend deployment guide](docs/deployment/vercel-render.md)
 
 ## Run locally
 
@@ -123,13 +126,15 @@ npm ci
 npm run dev -- --host 127.0.0.1 --strictPort
 ```
 
-Open **http://127.0.0.1:5173**. Vite proxies API requests to the loopback gateway. Register a synthetic patient through the application. Privileged roles require the documented authorized bootstrap; there is no universal staff password. Local demo credentials, mappings and signing keys are deliberately excluded from Git.
+Open **http://127.0.0.1:5173**. Vite proxies API requests to the loopback gateway. The rebuilt Phase 11 dataset provides the eight local role accounts listed in the [demo guide](docs/demo-environment/README.md); their local credential file and signing keys are deliberately excluded from Git. A blank development database still requires the documented Patient-owned administrator bootstrap.
+
+For the rebuilt eight-role local dataset and its private local-only credentials, use the [Phase 11 demo guide](docs/demo-environment/README.md). The guide's setup helpers accept loopback targets only; the reset command defaults to a dry run.
 
 See [infrastructure](docs/infrastructure.md) and [authentication integration](docs/authentication-integration.md) for configuration, bootstrap, migrations and troubleshooting. Production frontend builds need an API reverse proxy; the static build does not start backend services.
 
 #### UI development without the backend
 
-`npm run dev:mock` (from `frontend/`) starts Vite with a dev-only fixture API that answers `/api/*` in memory instead of proxying to the gateway. Sign in with any password; the email picks the role: `patient@`, `doctor@`, `receptionist@`, `pharmacist@`, `billing@`, `emergency@`, `admin@` or `ops@mock.test`. Every page shows a MOCK DATA ribbon. The fixtures in `frontend/dev-mock/` are synthetic, are served only by the dev server and are excluded from `npm run build`. Mock mode is for layout work; it does not verify real API behaviour. Patient registration is supported: new accounts use their chosen password and receive their own empty patient workspace. In `dev:mock`, accounts and activity live until the development server restarts. In the static Vercel demo, accounts and activity persist in the current browser using local storage; they are not shared across browsers or devices. Clearing site data removes those demo accounts. Existing `@mock.test` fixture accounts still accept any password. Never use real patient information or a reused password in the demo. `npm run build:demo` produces a separate static demo (used for the Vercel preview, configured in `frontend/vercel.json`) that runs the same fixtures in the browser; the normal `npm run build` never includes them.
+`npm run dev:mock` (from `frontend/`) explicitly starts Vite with an in-memory fixture API instead of the gateway. Sign in with a fixture email and any password; the page shows a MOCK DATA ribbon. Fixtures are synthetic, intended for layout work, and do not verify real API behavior. Never use this mode or `npm run build:demo` for deployment. Vercel uses the normal production build and the backend reverse-proxy configuration described in the [deployment guide](docs/deployment/vercel-render.md). Never use real patient information or a reused password in mock mode.
 
 ## Validation
 

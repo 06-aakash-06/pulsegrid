@@ -338,6 +338,7 @@ def test_self_profile_round_trip_validation_and_atomic_database_effects(context)
 def test_profile_authorization_and_filtered_keyset_pagination(context):
     receptionist = _seed_user(context, "Synthetic Receptionist", ["receptionist"])
     group = "Casey " + uuid4().hex[:10]
+    staff_profile = _seed_user(context, group + " Staff", ["receptionist"])
     patient = _seed_user(context, group + " Synthetic 01", ["patient"])
     second = _seed_user(context, group + " Synthetic 02", ["patient"])
     third = _seed_user(context, group + " Synthetic 03", ["patient"])
@@ -364,6 +365,7 @@ def test_profile_authorization_and_filtered_keyset_pagination(context):
         str(second["patient_id"]),
         str(third["patient_id"]),
     }
+    assert str(staff_profile["patient_id"]) not in returned_ids
     changed_filter = client.get(
         "/api/v1/patients",
         params={

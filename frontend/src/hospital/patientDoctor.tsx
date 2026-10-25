@@ -787,7 +787,7 @@ export function Appointments({
   const {state,api}=useAuth();
   const demo=useLocalDemo();
   const ownProfile=useResource<PatientProfile>(!reception&&!doctor?"/api/v1/patients/me":null);
-  const doctorRoster=useResource<Page<Doctor>>(demo?"/api/v1/doctors?limit=20&q=Dr.":"/api/v1/doctors?limit=20");
+  const doctorRoster=useResource<Page<Doctor>>("/api/v1/doctors?limit=20");
   const [params,setParams]=useSearchParams();
   const requested = appointmentViews.find((item) => item.param && item.param === params.get("view"))?.key ?? "book";
   const view: AppointmentView = doctor ? "manage" : requested === "walk-in" && !reception ? "book" : requested;

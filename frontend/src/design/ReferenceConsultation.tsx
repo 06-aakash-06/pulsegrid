@@ -161,12 +161,12 @@ function ScheduleRail({ demo }: { demo: DemoHospital | null }) {
     destination ? "/api/v1/appointments?limit=100" : null,
   );
   const doctors = useResource<Page<Doctor>>(
-    demo ? "/api/v1/doctors?q=Dr.&limit=100" : "/api/v1/doctors?limit=100",
+    "/api/v1/doctors?limit=100",
   );
   const visible = (list.response?.data.items ?? [])
     .filter(
       (a) =>
-        a.state === "confirmed" && (!demo || !!demo.patients[a.patient_id]),
+        a.state === "confirmed",
     )
     .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
     .slice(0, 6);
@@ -262,8 +262,6 @@ export function ReferenceConsultation({
       : null,
   );
   const demo = useLocalDemo();
-  const [allRecords,setAllRecords]=useState(false);
-  useEffect(()=>{if(revision>0&&demo)setAllRecords(true);},[revision,demo]);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [cursor, setCursor] = useState<string>();
@@ -278,17 +276,12 @@ export function ReferenceConsultation({
     "/api/v1/doctors/specialties?limit=20",
     revision,
   );
-  const path = query("/api/v1/doctors", {
-    ...(demo && !allRecords ? { q: "Dr." } : {}),
-    ...filters,
-  });
+  const path = query("/api/v1/doctors", filters);
   const roster = useResource<Page<Doctor>>(
     `${path}${path.includes("?") ? "&" : "?"}limit=20${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
     revision,
   );
-  const rows = (roster.response?.data.items ?? []).filter(
-    (d) => !demo || allRecords || !!demo.doctors[d.id],
-  );
+  const rows = roster.response?.data.items ?? [];
   useEffect(() => {
     if (rows.length && !rows.some((d) => d.id === selected))
       setSelected(rows[0].id);
@@ -398,9 +391,7 @@ export function ReferenceConsultation({
           </button>
           {specialties.error && <p role="alert">{specialties.error}</p>}
           {specialties.loading && <p role="status">Loading specialties…</p>}
-          {(specialties.response?.data.items ?? [])
-            .filter((s) => !demo || allRecords || demo.specialties.includes(s.id))
-            .map((s) => (
+          {(specialties.response?.data.items ?? []).map((s) => (
               <button
                 key={s.id}
                 className={filters.specialty_id === s.id ? "is-selected" : ""}
@@ -433,11 +424,7 @@ export function ReferenceConsultation({
             onSubmit={(e) => {
               e.preventDefault();
               submit(
-                demo && !allRecords &&
-                  search.trim() &&
-                  !search.trim().toLowerCase().startsWith("dr.")
-                  ? `Dr. ${search.trim()}`
-                  : search,
+                search,
               );
             }}
           >
@@ -688,7 +675,6 @@ export function ReferenceConsultation({
       </div>
       <details className="reference-advanced">
         <summary>Advanced directory search & autocomplete</summary>
-        {demo&&<label><input type="checkbox" checked={allRecords} disabled={bookingLocked} onChange={e=>{setAllRecords(e.target.checked);setFilters({});setSearch('');setCursor(undefined);setHistory([]);setSelected(null);}}/>Show all owner records, including integration fixtures</label>}
         <DoctorAutocomplete
           api={api}
           roleHints={state.status === "authenticated" ? state.roleHints : []}

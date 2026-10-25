@@ -1,4 +1,3 @@
-import { useLocalDemo } from "../design/localDemo";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { MedicineAutocomplete } from "../phase4";
 import { useAuth } from "../auth/authContext";
@@ -43,9 +42,6 @@ export function MedicineCatalog({
   inventory?: boolean;
 }) {
   const { state, api }=useAuth();
-  const demo = useLocalDemo();
-  const [showAll, setShowAll] = useState(false);
-  const [demoSelected, setDemoSelected] = useState(false);
   const [draft, setDraft] = useState<Values>({});
   const [filters, setFilters] = useState<Values>({});
   const [error, setError] = useState("");
@@ -55,8 +51,8 @@ export function MedicineCatalog({
   const [availability, setAvailability] = useState<Medicine["availability"] | "">("");
   return (
     <div className="pharmacy-catalog"><div className="pharmacy-search-counter">
-      <div className="pharmacy-autocomplete"><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} label="Quick medicine lookup" placeholder="Search medicines…" onSelect={item => {setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(true);}} /></div>
-      <nav className="medicine-availability-tabs" aria-label="Catalog availability on this page">{[["","All medicines"],["available","Available"],["unavailable","Unavailable"],["unknown","Availability not supplied"]].map(([value,label])=><button type="button" key={value} aria-pressed={availability===value} onClick={()=>{setAvailability(value as Medicine["availability"]|"");setSelected(null);setDemoSelected(false);}}>{label}</button>)}</nav>
+      <div className="pharmacy-autocomplete"><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} label="Quick medicine lookup" placeholder="Search medicines…" onSelect={item => {setSelected(item.id);if(inventory)setMedicineId(item.id);}} /></div>
+      <nav className="medicine-availability-tabs" aria-label="Catalog availability on this page">{[["","All medicines"],["available","Available"],["unavailable","Unavailable"],["unknown","Availability not supplied"]].map(([value,label])=><button type="button" key={value} aria-pressed={availability===value} onClick={()=>{setAvailability(value as Medicine["availability"]|"");setSelected(null);}}>{label}</button>)}</nav>
       <details className="pharmacy-catalog-search"><summary>Search & catalog filters</summary>
       <Panel title="Medicine search">
         <form
@@ -96,14 +92,13 @@ export function MedicineCatalog({
         </form>
       </Panel>
       </details>
-      {demo&&<label className="catalog-cohort"><input type="checkbox" checked={showAll} onChange={e=>{setShowAll(e.target.checked);setSelected(null);}}/>Show all owner records · Fictional demo catalog</label>}
       </div><div className="pharmacy-shelf-workspace"><div className="medicine-table"><div className="cabinet-signage"><strong>Medicine catalogue</strong><span> · Availability from Pharmacy</span></div>
       <Collection<Medicine>
         title="Medicines"
         path={query("/api/v1/pharmacy/medicines", filters)}
         revision={revision}
-        itemFilter={item=>(!demo||showAll||!!filters.q||item.sku.startsWith("DEMO-"))&&(!availability||item.availability===availability)}
-        onFirstItem={item=>{if(!selected||(demo&&!showAll&&!demoSelected)){setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(Boolean(demo));}}}
+        itemFilter={item=>!availability||item.availability===availability}
+        onFirstItem={item=>{if(!selected){setSelected(item.id);if(inventory)setMedicineId(item.id);}}}
         renderItem={(item) => (
           <div className="medicine-table-row" data-selected={selected===item.id} data-availability={item.availability}>
             <strong>{item.name.startsWith("Synthetic")?`Demo catalog item …${item.id.slice(-4)}`:item.name}</strong>

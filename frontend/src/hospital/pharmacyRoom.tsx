@@ -1,7 +1,6 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { useAuth } from "../auth/authContext";
 import { DepartmentIcon } from "../design/DepartmentIcon";
-import { useLocalDemo } from "../design/localDemo";
 import { MedicineAutocomplete } from "../phase4";
 import type { Medicine, Page } from "./models";
 import { Inputs, query, useResource, type Values } from "./ui";
@@ -93,16 +92,14 @@ export function MedicineCabinet({
   showSelection?: boolean;
 }) {
   const { state, api } = useAuth();
-  const demo = useLocalDemo();
   const titleId = useId();
-  const [showAll, setShowAll] = useState(false);
   const [draft, setDraft] = useState<Values>({});
   const [filters, setFilters] = useState<Values>({});
   const [searchError, setSearchError] = useState("");
   const [availability, setAvailability] = useState<Medicine["availability"] | "">("");
   const shelf = useCursorPage<Medicine>(query("/api/v1/pharmacy/medicines", filters), revision);
   const visible = shelf.items.filter(
-    (item) => (!demo || showAll || !!filters.q || item.sku.startsWith("DEMO-")) && (!availability || item.availability === availability),
+    (item) => !availability || item.availability === availability,
   );
   const firstVisible = visible[0]?.id;
   useEffect(() => {
@@ -173,12 +170,6 @@ export function MedicineCabinet({
               <button>Search medicines</button>
               {searchError && <p role="alert">{searchError}</p>}
             </form>
-            {demo && (
-              <label className="catalog-cohort">
-                <input type="checkbox" checked={showAll} onChange={(event) => { setShowAll(event.target.checked); onSelect(null); }} />
-                Show all catalog records · Fictional demo catalog
-              </label>
-            )}
           </details>
         </div>
       </div>

@@ -612,7 +612,13 @@ async def list_patients(
             filters,
         )
         cursor = _decode_cursor(query.get("cursor"), filter_hash)
-        statement = select(patient_profiles)
+        statement = select(patient_profiles).where(
+            patient_profiles.c.user_id.in_(
+                select(role_assignments.c.user_id).where(
+                    role_assignments.c.role == "patient"
+                )
+            )
+        )
         if prefix is not None:
             statement = statement.where(
                 func.lower(patient_profiles.c.display_name).like(
