@@ -1,0 +1,6 @@
+PASS Admin: five task links; real account/doctor counts; patient and medicine registers absent from home.
+PASS Doctor dashboard: Today, Profile and Schedule changes expose their tasks; one Schedule proposals heading.
+PASS Doctor queue: patient names and table columns; Skip reveals its reason; page Refresh preserves the reason and sends no commands.
+PASS Patient Pharmacy: one prescription card with dose/instructions and fulfillment quantities, plus the reservation card; account-menu profile works away from Reception and keeps its draft across collapse.
+PASS Waitlist: slot-reference form is in Advanced lookup; withdrawal reasons start empty.
+PASS Emergency: five priority choices; review still requires explicit confirmation and sends no premature mutation.

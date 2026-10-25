@@ -5,7 +5,7 @@ import { mkdir, writeFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const base = process.env.UI_AUDIT_URL || 'http://127.0.0.1:5173';
-const out = resolve(process.env.UI_AUDIT_OUTPUT || '../docs/verification/ui-cleanup');
+const out = resolve(process.env.UI_AUDIT_OUTPUT || '../docs/verification/ui-declutter');
 await mkdir(`${out}/after`, { recursive: true });
 // Prefer preinstalled Linux Chromium, otherwise use Playwright's managed browser.
 async function chromiumPath(root) {
@@ -97,6 +97,30 @@ try {
     await page.waitForTimeout(500);
     await page.evaluate(()=>document.fonts.ready);
     const failures = await page.evaluate(inspectLayout);
+    const content = await page.evaluate(() => {
+     const hits=[], justified=[];
+     const pattern=/\b\d{4,}\b|…\d{3,}|revision|owner|version|projected|reconcil|IANA|Positive decimal|MOCK-/gi;
+     const visible=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!e.closest('[hidden],[aria-hidden="true"],.sr-only,details:not([open]) > :not(summary)');};
+     const walker=document.createTreeWalker(document.querySelector('.workspace-content'),NodeFilter.SHOW_TEXT);
+     while(walker.nextNode()) {
+      const n=walker.currentNode,e=n.parentElement,t=n.textContent.trim();
+      if(!t||!visible(e)||['SCRIPT','STYLE','OPTION'].includes(e.tagName))continue;
+      const range=document.createRange();range.selectNodeContents(n);if(!range.getBoundingClientRect().width)continue;
+      if([...function*(a){for(;a;a=a.parentElement)yield a;}(e)].some(a=>a.matches('details')&&/Details|Advanced/i.test(a.querySelector(':scope > summary')?.textContent||'')))continue;
+      for(const m of t.matchAll(pattern)) {
+       const value=m[0];
+       const isYear=/^\d{4}$/.test(value)&&Number(value)>=1900&&Number(value)<=2100&&(e.closest('time[datetime]')||/\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/.test(t)||/^\d{4}-\d{2}-\d{2}/.test(t)||e.closest('.month-calendar,.schedule-title,.calendar-strip'));
+       const isDose=/^\d+$/.test(value)&&new RegExp(value+'\\s*(IU|mg|mcg|mL)\\b','i').test(t);
+       if(isYear||isDose||e.closest('[role="alert"]'))justified.push({text:t,reason:isYear?'Calendar date':isDose?'Medicine strength':'Required error or stale-state message'});
+       else hits.push(`developer-text: ${e.tagName.toLowerCase()} ${t.slice(0,220)}`);
+      }
+     }
+     const refresh=[...document.querySelectorAll('.workspace-content button')].filter(e=>visible(e)&&/\bRefresh(?:ing)?\b/i.test(e.textContent));
+     if(refresh.length>1)hits.push(`refresh-count: ${refresh.length}`);
+     return {hits:[...new Set(hits)],justified,refreshCount:refresh.length};
+    });
+    failures.push(...content.hits);
+    if(!process.env.UI_AUDIT_TEXT_ONLY) {
     // Test hit targets in their actual scroll position, including controls below the fold.
     const controls=page.locator('button,a,input,select,textarea');
     for(let i=0;i<await controls.count();i++) {
@@ -139,6 +163,7 @@ try {
     if(patches.some(p=>new Set(p).size<8) || patches.some(p=>p.filter((c,i)=>c!==patches[0][i]).length>p.length*.01)) failures.push(`background-seam: raster samples differ or become flat (${patches.map(p=>new Set(p).size).join(',')}; differences ${patches.map(p=>p.filter((c,i)=>c!==patches[0][i]).length).join(',')})`);
     if(backgrounds.some(b=>b.position!=='fixed'||b.inset!=='0px'||!b.image.includes('url(')||!b.size.includes('cover')) || new Set(backgrounds.map(JSON.stringify)).size!==1)failures.push('background-seam: backdrop is not a continuous fixed cover image');
     await page.evaluate(()=>scrollTo(0,0));
+    }
     if(route==='/patient/appointments') {
      for(const name of ['My Appointments','Book Appointment']) {
       const tab=page.getByRole('button',{name,exact:true});
@@ -166,7 +191,7 @@ try {
      await page.screenshot({path:`${out}/after/${route.slice(1).replaceAll('/','-')}-${width}-drawer.png`});
      await page.locator('.menu-toggle').click();
     }
-    const record={role,route,width,height,failures:[...new Set(failures)]};report.pages.push(record);
+    const record={role,route,width,height,refreshCount:content.refreshCount,justified:content.justified,failures:[...new Set(failures)]};report.pages.push(record);
     if(record.failures.length)report.failures.push(record);
     await writeFile(`${out}/audit-report.json`,JSON.stringify(report,null,2)+'\n');
     console.log(`${record.failures.length?'FAIL':'PASS'} ${width} ${route} (${record.failures.length})`);

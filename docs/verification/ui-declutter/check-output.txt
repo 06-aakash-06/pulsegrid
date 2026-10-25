@@ -1,0 +1,46 @@
+Now using node v24.22.0 (npm v11.19.1)
+
+> pulsegrid-frontend@0.1.0 typecheck
+> tsc --noEmit
+
+
+> pulsegrid-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/aaditpraveennath/Documents/COLLEGE/SEM5LABS/SystemDesign/MINIP2/pulsegrid-ui/frontend
+
+
+ Test Files  14 passed (14)
+      Tests  165 passed (165)
+   Start at  20:09:25
+   Duration  6.14s (transform 3.08s, setup 2.34s, import 6.09s, tests 17.72s, environment 7.16s)
+
+
+> pulsegrid-frontend@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v6.4.4 building for production...
+transforming...
+✓ 819 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                       0.69 kB │ gzip:   0.38 kB
+dist/assets/inter-latin-wght-normal-Dx4kXJAl.woff2   48.26 kB
+dist/assets/HospitalPage-ChdjHLAI.css                19.76 kB │ gzip:   4.33 kB
+dist/assets/index-B4zan88e.css                      282.94 kB │ gzip:  47.36 kB
+dist/assets/AccountProfile-ecTyOkvJ.js                0.32 kB │ gzip:   0.25 kB
+dist/assets/CheckinScanner-D1e7VOX2.js                3.72 kB │ gzip:   1.60 kB
+dist/assets/qr-encoder-mn9J00Ke.js                   25.46 kB │ gzip:   9.98 kB
+dist/assets/motionFeatures-DvUKIKvw.js               47.93 kB │ gzip:  18.41 kB
+dist/assets/patientDoctor-DX3FVb8s.js                78.06 kB │ gzip:  21.10 kB
+dist/assets/HospitalPage-BD6O-4L7.js                199.92 kB │ gzip:  49.81 kB
+dist/assets/index-Z7o8iSS6.js                       449.95 kB │ gzip: 148.94 kB
+dist/assets/qr-decoder-3D1EhZ5u.js                  458.34 kB │ gzip: 118.44 kB
+✓ built in 2.13s
+PASS Admin: five task links; real account/doctor counts; patient and medicine registers absent from home.
+PASS Doctor dashboard: Today, Profile and Schedule changes expose their tasks; one Schedule proposals heading.
+PASS Doctor queue: patient names and table columns; Skip reveals its reason; page Refresh preserves the reason and sends no commands.
+PASS Patient Pharmacy: one prescription card with dose/instructions and fulfillment quantities, plus the reservation card; account-menu profile works away from Reception and keeps its draft across collapse.
+PASS Waitlist: slot-reference form is in Advanced lookup; withdrawal reasons start empty.
+PASS Emergency: five priority choices; review still requires explicit confirmation and sends no premature mutation.

@@ -1,0 +1,1623 @@
+{
+  "base": "http://127.0.0.1:5173",
+  "pages": [
+    {
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/doctors",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/appointments",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/waitlist",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 12:29 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/check-in",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/queue",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/journey",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:53 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/records",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "13 Oct 2026",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026, 10:30 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "2 Aug 2026, 16:15 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "14 Jun 2026, 11:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "5 Mar 2026, 09:00 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "10 Jan 2026, 14:10 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026, 10:30 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/billing",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/emergency",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Request from 25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Request from 25 Oct 2026, 12:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Request from 25 Oct 2026, 11:39 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Your request from 25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/doctors",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/appointments",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/waitlist",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 12:29 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/check-in",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/queue",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/journey",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:53 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:20 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/records",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "13 Oct 2026",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026, 10:30 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "2 Aug 2026, 16:15 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "14 Jun 2026, 11:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "5 Mar 2026, 09:00 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "10 Jan 2026, 14:10 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026, 10:30 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/billing",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/emergency",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Request from 25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Request from 25 Oct 2026, 12:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Request from 25 Oct 2026, 11:39 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Your request from 25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/doctors",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/appointments",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/waitlist",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 12:29 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/check-in",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/queue",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/journey",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:53 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/records",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "13 Oct 2026",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026, 10:30 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "2 Aug 2026, 16:15 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "14 Jun 2026, 11:20 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "5 Mar 2026, 09:00 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "10 Jan 2026, 14:10 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "13 Oct 2026, 10:30 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/prescriptions",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/pharmacy",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:21 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/billing",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "patient",
+      "route": "/patient/emergency",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Request from 25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Request from 25 Oct 2026, 12:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Request from 25 Oct 2026, 11:39 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Your request from 25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "receptionist",
+      "route": "/receptionist/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "receptionist",
+      "route": "/receptionist/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "receptionist",
+      "route": "/receptionist/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "receptionist",
+      "route": "/receptionist/appointments",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/queue",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/prescriptions",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/queue",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/prescriptions",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/consultations",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/queue",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "doctor",
+      "route": "/doctor/prescriptions",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        },
+        {
+          "text": "31 Mar 2027",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "31 Aug 2027",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        },
+        {
+          "text": "25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        },
+        {
+          "text": "31 Mar 2027",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "31 Aug 2027",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        },
+        {
+          "text": "25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/inventory",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "pharmacist",
+      "route": "/pharmacist/prescriptions",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Vitamin D3 1000 IU softgels",
+          "reason": "Medicine strength"
+        },
+        {
+          "text": "25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/invoices",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/payments",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/insurance",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/invoices",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/payments",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/insurance",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/invoices",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/payments",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "billing",
+      "route": "/billing/insurance",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "emergency",
+      "route": "/emergency/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "emergency",
+      "route": "/emergency/requests",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "emergency",
+      "route": "/emergency/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "emergency",
+      "route": "/emergency/requests",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "emergency",
+      "route": "/emergency/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "emergency",
+      "route": "/emergency/requests",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 13:55 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 13:58 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/staff",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/doctors",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/control-room",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Updated 25 Oct 2026, 14:23 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Since 25 Oct 2026, 10:59 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/traces",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:22 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:18 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:13 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:05 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/settings",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/staff",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/doctors",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/control-room",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Updated 25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Since 25 Oct 2026, 10:59 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/traces",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:22 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:18 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:13 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:05 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/settings",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/staff",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/doctors",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/control-room",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Updated 25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Since 25 Oct 2026, 10:59 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/traces",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:22 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:18 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:13 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:05 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/admin/settings",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 0,
+      "justified": [],
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/dashboard",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Updated 25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Since 25 Oct 2026, 10:59 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/traces",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:22 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:18 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:13 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:05 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/dashboard",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Updated 25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Since 25 Oct 2026, 10:59 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/traces",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:22 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:18 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:13 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:05 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/dashboard",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "Updated 25 Oct 2026, 14:24 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "Since 25 Oct 2026, 10:59 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "ops",
+      "route": "/ops/traces",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 1,
+      "justified": [
+        {
+          "text": "25 Oct 2026, 14:22 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:18 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:13 UTC",
+          "reason": "Calendar date"
+        },
+        {
+          "text": "25 Oct 2026, 14:05 UTC",
+          "reason": "Calendar date"
+        }
+      ],
+      "failures": []
+    }
+  ],
+  "regressions": [
+    "1536: appointment mouse hit boxes",
+    "patient/1536: demo autofill and sign out survive reload",
+    "1280: appointment mouse hit boxes",
+    "patient/1280: demo autofill and sign out survive reload",
+    "390: appointment mouse hit boxes",
+    "patient/390: demo autofill and sign out survive reload",
+    "receptionist/1536: demo autofill and sign out survive reload",
+    "receptionist/1280: demo autofill and sign out survive reload",
+    "receptionist/390: demo autofill and sign out survive reload",
+    "doctor/1536: demo autofill and sign out survive reload",
+    "doctor/1280: demo autofill and sign out survive reload",
+    "doctor/390: demo autofill and sign out survive reload",
+    "pharmacist/1536: demo autofill and sign out survive reload",
+    "pharmacist/1280: demo autofill and sign out survive reload",
+    "pharmacist/390: demo autofill and sign out survive reload",
+    "billing/1536: demo autofill and sign out survive reload",
+    "billing/1280: demo autofill and sign out survive reload",
+    "billing/390: demo autofill and sign out survive reload",
+    "emergency/1536: demo autofill and sign out survive reload",
+    "emergency/1280: demo autofill and sign out survive reload",
+    "emergency/390: demo autofill and sign out survive reload",
+    "admin/1536: demo autofill and sign out survive reload",
+    "admin/1280: demo autofill and sign out survive reload",
+    "admin/390: demo autofill and sign out survive reload",
+    "ops/1536: demo autofill and sign out survive reload",
+    "ops/1280: demo autofill and sign out survive reload",
+    "ops/390: demo autofill and sign out survive reload"
+  ],
+  "failures": []
+}
