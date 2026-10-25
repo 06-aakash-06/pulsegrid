@@ -1,3 +1,5 @@
+import { VisitLabel, PrescriptionDate, PrescriptionDoctor, MedicineNames } from "../components/HumanLabels";
+import { PageRefresh, ItemDetails, AdvancedLookup } from "../components/PageTools";
 import { PageGrid } from "../components/PageGrid";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { useEffect, useState, type ReactNode } from "react";
@@ -145,7 +147,7 @@ export function ClinicalSheet({ value }: { value: Content }) {
 function MedicineName({ medicineId }: { medicineId: string }) {
   const medicine = useResource<Medicine>(`/api/v1/pharmacy/medicines/${medicineId}`);
   const name = medicine.response?.data.name;
-  return <>{name && !name.startsWith("Synthetic") ? name : `Medicine …${medicineId.slice(-4)}`}</>;
+  return <>{name && !name.startsWith("Synthetic") ? name : "Medicine name unavailable"}</>;
 }
 function longDate(value: string) {
   return formatDateTime(value, { utc: true, time: false });
@@ -167,11 +169,11 @@ function ConsultationEditor({
   return (
     <>
       <header className="dossier-header" data-check="records-dossier-header">
-        <div><p className="dossier-eyebrow">{item.status === "draft" ? "Draft consultation" : "Finalized consultation"}</p><h2>Consultation for visit …{item.appointment_id.slice(-4)}</h2><p>Revision {item.revision}</p></div>
+        <div><p className="dossier-eyebrow">{item.status === "draft" ? "Draft consultation" : "Finalized consultation"}</p><h2><VisitLabel appointmentId={item.appointment_id}/></h2></div>
         <span className="owner-state" data-state={item.status}>{item.status === "draft" ? "Draft" : "Finalized"}</span>
-        <button type="button" onClick={refresh}>Refresh</button>
+        <PageRefresh type="button" onClick={refresh}>Refresh</PageRefresh>
       </header>
-      <details className="owner-identifiers"><summary>Details</summary>      <Facts
+      <ItemDetails>      <Facts
         values={{
           "Consultation ID": item.id,
           "Appointment ID": item.appointment_id,
@@ -180,7 +182,7 @@ function ConsultationEditor({
           Revision: item.revision,
         }}
       />
-</details>
+</ItemDetails>
       <ClinicalSheet value={item.clinical_content} />
       {item.status === "draft" && !finalized && (
         <>
@@ -226,10 +228,7 @@ function ConsultationEditor({
         </>
       )}
       {finalized && (
-        <p role="status" className="command-receipt">
-          Consultation finalized. Medical record …{finalized.record.id.slice(-4)}
-          {finalized.prescription ? ` and prescription …${finalized.prescription.id.slice(-4)} were` : " was"} created.
-        </p>
+        <><p role="status" className="command-receipt">Consultation finalized. Your visit records have been created.</p><ItemDetails>Medical record {finalized.record.id}{finalized.prescription && ` · Prescription ${finalized.prescription.id}`}</ItemDetails></>
       )}
     </>
   );
@@ -248,7 +247,7 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
     <PageGrid preset="main+aside" className={`dossier-room dossier-room--consultations${doctor ? " dossier-room--doctor" : ""}`}>
       {title && <DepartmentSign department="records" title={title} subtitle={subtitle ?? ""} />}
       <section className="dossier-timeline" aria-labelledby="consultation-register-title">
-        <div className="dossier-panel-heading"><h2 id="consultation-register-title">{doctor ? "Your consultations" : "Consultations"}</h2><button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button></div>
+        <div className="dossier-panel-heading"><h2 id="consultation-register-title">{doctor ? "Your consultations" : "Consultations"}</h2><PageRefresh type="button" disabled={register.loading} onClick={register.refresh}>Refresh</PageRefresh></div>
         {register.loading && <p role="status">Loading consultations…</p>}
         {register.error && <p role="alert">{register.error}</p>}
         {register.loaded && !register.loading && register.items.length === 0 && <p>No consultations found.</p>}
@@ -256,15 +255,15 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
           {register.items.map((entry) => (
             <li key={entry.id}>
               <button type="button" className="visit-entry" aria-pressed={selected === entry.id} aria-label={`View consultation ${entry.id}`} onClick={() => setSelected(entry.id)}>
-                <strong>Visit …{entry.appointment_id.slice(-4)}</strong>
+                <strong><VisitLabel appointmentId={entry.appointment_id}/></strong>
                 <span className="owner-state" data-state={entry.status}>{entry.status === "draft" ? "Draft" : "Finalized"}</span>
-                <small>Consultation …{entry.id.slice(-4)}</small>
+                <small>Consultation</small>
               </button>
             </li>
           ))}
         </ol>
         {(register.hasPrevious || register.hasNext) && <div className="dossier-pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
-        <details className="dossier-more"><summary>Open a consultation by ID</summary><Lookup label="Consultation ID" onSelect={setSelected} /></details>
+        <AdvancedLookup title="Open a consultation by ID"><Lookup label="Consultation ID" onSelect={setSelected} /></AdvancedLookup>
       </section>
       <article className="dossier-sheet" aria-label="Consultation document">
         {!selected && !register.loading && <div className="dossier-empty"><DepartmentIcon department="consultation" /><p>Select a consultation{doctor ? " or create one for an assigned appointment" : ""}.</p></div>}
@@ -276,9 +275,9 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
               <ConsultationEditor item={item} etag={current.response?.etag ?? null} refresh={() => { current.refresh(); setRevision((v) => v + 1); }} />
             ) : (
               <>
-                <header className="dossier-header"><div><p className="dossier-eyebrow">Consultation</p><h2>Visit …{item.appointment_id.slice(-4)}</h2></div><span className="owner-state" data-state={item.status}>{item.status === "draft" ? "Draft" : "Finalized"}</span></header>
+                <header className="dossier-header"><div><p className="dossier-eyebrow">Consultation</p><h2><VisitLabel appointmentId={item.appointment_id}/></h2></div><span className="owner-state" data-state={item.status}>{item.status === "draft" ? "Draft" : "Finalized"}</span></header>
                 <ClinicalSheet value={item.clinical_content} />
-                <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Consultation ID": item.id, "Appointment ID": item.appointment_id, Version: item.version }} /></details>
+                <ItemDetails><Facts values={{ "Consultation ID": item.id, "Appointment ID": item.appointment_id, Version: item.version }} /></ItemDetails>
               </>
             )}
           </div>
@@ -325,7 +324,7 @@ function VisitPrescriptions({ patientId, consultationId }: { patientId: string; 
       {prescriptions.loaded && !prescriptions.loading && prescriptions.items.length === 0 && <p>No prescriptions were issued at this visit.</p>}
       {prescriptions.items.map((prescription) => (
         <div className="dossier-rx" key={prescription.id} data-state={prescription.state} tabIndex={0} role="region" aria-label={`${prescription.state === "revoked" ? "Revoked" : "Issued"} prescription …${prescription.id.slice(-4)}`}>
-          <p className="dossier-rx__status"><span className="owner-state" data-state={prescription.state}>{prescription.state === "revoked" ? "Revoked" : "Issued"}</span>{prescription.state === "revoked" ? "Revoked prescription. These instructions are retained as history and are not valid for new fulfilment." : `Prescription …${prescription.id.slice(-4)}`}</p>
+          <p className="dossier-rx__status"><span className="owner-state" data-state={prescription.state}>{prescription.state === "revoked" ? "Revoked" : "Issued"}</span>{prescription.state === "revoked" ? "Revoked prescription. These instructions are retained as history and are not valid for new fulfilment." : "Prescription"}</p>
           <table>
             <caption className="sr-only">Medicines on prescription …{prescription.id.slice(-4)}</caption>
             <thead><tr><th scope="col">Medicine</th><th scope="col">Quantity</th><th scope="col">Dosage</th><th scope="col">Instructions</th></tr></thead>
@@ -367,7 +366,7 @@ function History({
     <>
       <section className="dossier-band" aria-label="Patient">
         <DepartmentIcon department="reception" />
-        <div className="dossier-band__name"><strong>{patientName ?? "Patient"}</strong><small>Patient ID …{patientId.slice(-4)}</small></div>
+        <div className="dossier-band__name"><strong>{patientName ?? "Patient"}</strong><small>Your medical history</small></div>
         <dl>
           <div><dt>Last visit</dt><dd>{visits[0] ? longDate(visits[0].first.created_at) : history.loading ? "Loading…" : "None recorded"}</dd></div>
           <div><dt>Visits</dt><dd>{visits.length}{paged ? " in this list" : ""}</dd></div>
@@ -375,7 +374,7 @@ function History({
       </section>
       <div className={`dossier-room__body${doctor ? " dossier-room__body--doctor" : ""}`}>
         <section className="dossier-timeline" aria-labelledby={`timeline-${patientId}`}>
-          <div className="dossier-panel-heading"><h2 id={`timeline-${patientId}`}>Visit timeline</h2><button type="button" disabled={history.loading} onClick={history.refresh}>Refresh</button></div>
+          <div className="dossier-panel-heading"><h2 id={`timeline-${patientId}`}>Visit timeline</h2><PageRefresh type="button" disabled={history.loading} onClick={history.refresh}>Refresh</PageRefresh></div>
           {history.loading && <p role="status">Loading medical history…</p>}
           {history.error && <p role="alert">{history.error}</p>}
           {history.loaded && !history.loading && visits.length === 0 && <p>No medical records found.</p>}
@@ -385,13 +384,13 @@ function History({
                 <button type="button" className="visit-entry" aria-pressed={entry.versions.some((version) => version.id === selected)} aria-label={`View record ${entry.latest.id}`} onClick={() => setSelected(entry.latest.id)}>
                   <time className="visit-date-chip" dateTime={entry.first.created_at}>{shortDateTime(entry.first.created_at)}</time>
                   <strong>Visit record</strong>
-                  <small>{entry.versions.length > 1 ? `Amended · revision ${entry.latest.revision}` : "Original record"}</small>
+                  <small>{entry.versions.length > 1 ? `Amended` : "Original record"}</small>
                 </button>
               </li>
             ))}
           </ol>
           {paged && <div className="dossier-pages"><button type="button" disabled={!history.hasPrevious} onClick={history.previous}>Previous page</button><button type="button" disabled={!history.hasNext} onClick={history.next}>Next page</button></div>}
-          <details className="dossier-more"><summary>Open a record by ID</summary><Lookup label="Medical record ID" onSelect={setSelected} /></details>
+          <AdvancedLookup title="Open a record by ID"><Lookup label="Medical record ID" onSelect={setSelected} /></AdvancedLookup>
         </section>
         <article className="dossier-sheet" aria-labelledby="dossier-title">
           {!selected && !history.loading && <div className="dossier-empty"><DepartmentIcon department="records" /><p>Choose a visit to read its summary, assessment and plan.</p></div>}
@@ -405,8 +404,8 @@ function History({
                   <h2 id="dossier-title">{visit ? longDate(visit.first.created_at) : "Clinical document"}</h2>
                   <p>{clinician.response ? `${clinician.response.data.display_name}${clinician.response.data.specialties[0] ? ` · ${clinician.response.data.specialties[0].name}` : ""}` : "Clinician not returned"}</p>
                 </div>
-                <span className="owner-state" data-state={isLatest ? "current" : "earlier"}>{!isLatest ? "Earlier version" : item.revision > 1 ? "Amended" : "Current"}</span>
-                <button type="button" disabled={record.loading} onClick={record.refresh}>Refresh</button>
+                <span className="owner-state" data-state={isLatest ? "current" : "earlier"}>{!isLatest ? "Earlier record" : item.revision > 1 ? "Amended" : "Current"}</span>
+                <PageRefresh type="button" disabled={record.loading} onClick={record.refresh}>Refresh</PageRefresh>
               </header>
               {!isLatest && visit && <p className="dossier-notice">You are reading an earlier version of this record. <button type="button" onClick={() => setSelected(visit.latest.id)}>Open the current version</button></p>}
               <ClinicalSheet value={item.content} />
@@ -459,7 +458,7 @@ function History({
             </nav>
           )}
           {extra}
-          {item && <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Record ID": item.id, "Consultation ID": item.consultation_id, Revision: item.revision, Version: item.version, Supersedes: item.supersedes_id ?? "None (original)" }} /></details>}
+          {item && <ItemDetails><Facts values={{ "Record ID": item.id, "Consultation ID": item.consultation_id, Revision: item.revision, Version: item.version, Supersedes: item.supersedes_id ?? "None (original)" }} /></ItemDetails>}
         </aside>
       </div>
     </>
@@ -558,7 +557,7 @@ export function PrescriptionDetail({
   prescription: Prescription;
   compact?: boolean;
 }) {
-  if (compact) return <div className="pharmacy-prescription-document"><h3>Prescription …{prescription.id.slice(-4)}</h3><p>Records · {prescription.state} · Revision {prescription.revision}</p>{prescription.state === "revoked" && <p className="prescription-revoked-note">Revoked prescription. Instructions are retained as history.</p>}{prescription.items.map(item=><article className="prescribed-document-line" key={item.id}><Resource<Medicine> path={`/api/v1/pharmacy/medicines/${item.medicine_id}`} showReload={false}>{medicine=><strong>{medicine.name.startsWith("Synthetic")?`Catalog item …${medicine.id.slice(-4)}`:medicine.name}</strong>}</Resource><Facts values={{Quantity:item.quantity,Dosage:item.dosage,Instructions:item.instructions}}/></article>)}<details className="owner-identifiers"><summary>Records references</summary><Facts values={{"Prescription ID":prescription.id,"Consultation ID":prescription.consultation_id,"Patient ID":prescription.patient_id}}/></details></div>;
+  if (compact) return <div className="pharmacy-prescription-document"><h3>Prescription</h3><p>Records · {prescription.state} · Revision {prescription.revision}</p>{prescription.state === "revoked" && <p className="prescription-revoked-note">Revoked prescription. Instructions are retained as history.</p>}{prescription.items.map(item=><article className="prescribed-document-line" key={item.id}><Resource<Medicine> path={`/api/v1/pharmacy/medicines/${item.medicine_id}`} showReload={false}>{medicine=><strong>{medicine.name.startsWith("Synthetic")?`Catalog item …${medicine.id.slice(-4)}`:medicine.name}</strong>}</Resource><Facts values={{Quantity:item.quantity,Dosage:item.dosage,Instructions:item.instructions}}/></article>)}<ItemDetails><Facts values={{"Prescription ID":prescription.id,"Consultation ID":prescription.consultation_id,"Patient ID":prescription.patient_id}}/></ItemDetails></div>;
   return (
     <>
       <Facts
@@ -602,19 +601,16 @@ export function Prescriptions({
       {!pharmacist && (
         <Collection<Prescription>
           title="Prescriptions"
+          onOpen={item=>setSelected(item.id)}
           revision={revision}
           path={query("/api/v1/records/prescriptions", {})}
-          renderItem={(item) => (
-            <>
-              <p>
-                Prescription {item.id} • {item.state} • Consultation{" "}
-                {item.consultation_id}
-              </p>
-              <button aria-label={`View prescription ${item.id}`} onClick={() => setSelected(item.id)}>
-                View prescription {item.id}
-              </button>
-            </>
-          )}
+          columns={[
+ {label:"Date",render:item=><PrescriptionDate consultationId={item.consultation_id}/>},
+ {label:"Doctor",render:item=><PrescriptionDoctor consultationId={item.consultation_id}/>},
+ {label:"Medicines",render:item=><MedicineNames items={item.items}/>},
+ {label:"Status",render:item=>item.state},
+ {label:"Actions",render:item=><><button type="button" aria-label="Open prescription" onClick={()=>setSelected(item.id)}>Open</button><ItemDetails>Prescription {item.id} · Consultation {item.consultation_id} · Revision {item.revision}</ItemDetails></>},
+ ]}
         />
       )}
       <Lookup label="Prescription ID" onSelect={setSelected} />

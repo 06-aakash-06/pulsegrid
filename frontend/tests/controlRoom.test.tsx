@@ -79,7 +79,8 @@ describe("PulseGrid Control Room", () => {
     expect(screen.getByText("epoch")).toBeInTheDocument();
     expect(screen.getByText("2.00")).toBeInTheDocument();
     expect(screen.getByText("nodes")).toBeInTheDocument();
-    expect(screen.getByText("appointment.journey.billing.v1")).toBeInTheDocument();
+    expect(screen.getByText("appointment updates")).toBeInTheDocument();
+    expect(screen.getByText("Queue pulsegrid.appointment.journey.billing.v1")).toBeInTheDocument();
     expect(mocks.request).toHaveBeenCalledWith(
       "/api/v1/appointments/operations/control-room/summary",
       expect.objectContaining({ signal: expect.any(AbortSignal) }),

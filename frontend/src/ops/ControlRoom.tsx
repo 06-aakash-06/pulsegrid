@@ -1,3 +1,5 @@
+import { ItemDetails, AdvancedLookup } from "../components/PageTools";
+import { PageRefresh } from "../components/PageTools";
 import { PageGrid } from "../components/PageGrid";
 import { PageHeader } from "../components/PageHeader";
 import { SurgeModeControls } from "./SurgeModeControls";
@@ -275,12 +277,12 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
     <section className="ops-dashboard ops-console" aria-labelledby="control-room-title">
       <PageHeader department="control" title="Control Room" id="control-room-title"
         subtitle="Service health, event delivery and operational alerts"
-        actions={<button type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</button>} />
+        actions={<PageRefresh type="button" onClick={() => { setLoading(true); void refresh(); }} disabled={loading}>{loading ? "Refreshing…" : "Refresh"}</PageRefresh>} />
       <p className="ops-updated">{summary ? `Updated ${time(summary.observed_at)}` : "Waiting for monitoring"}</p>
         <dl className="ops-wall-monitor" aria-label="Headline figures">
           <div><dt>Services ready</dt><dd>{summary ? `${ready}/${services.length}` : "No data"}</dd></div>
-          <div><dt>p95 latency</dt><dd>{summary ? ms(system?.p95_latency_ms) : "No data"}</dd></div>
-          <div><dt>HTTP 5xx</dt><dd>{summary ? percent(system?.error_rate_percent) : "No data"}</dd></div>
+          <AdvancedLookup title="Latency snapshot">{summary ? ms(system?.p95_latency_ms) : "No data"}</AdvancedLookup>
+          <AdvancedLookup title="Error-rate snapshot">{summary ? percent(system?.error_rate_percent) : "No data"}</AdvancedLookup>
           <div data-alert={(summary?.alerts.length ?? 0) > 0}><dt>Firing alerts</dt><dd>{summary ? String(summary.alerts.length) : "No data"}</dd></div>
         </dl>
 
@@ -307,7 +309,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
           <PageGrid preset="main+aside" className="ops-console-grid">
             <div className="ops-main-column">
             <section className="ops-topology" aria-labelledby="service-map-title">
-              <header><h2 id="service-map-title">Service topology</h2><small>Seven owner services · readiness probed per replica</small></header>
+              <header><h2 id="service-map-title">Service topology</h2><small>Seven services · current health</small></header>
               <div className="ops-tiles">
                 {services.map((service) => (
                   <button
@@ -377,7 +379,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
                   <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="RabbitMQ queues">
                     <table className="ops-table ops-queue-table">
                       <thead><tr><th scope="col">Queue</th><th scope="col">Ready</th><th scope="col">Unacked</th><th scope="col">Consumers</th></tr></thead>
-                      <tbody>{queues.map((queue) => <tr key={queue.name}><th scope="row">{queue.name.replace("pulsegrid.", "")}</th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
+                      <tbody>{queues.map((queue) => <tr key={queue.name}><th scope="row">{queue.name.replace("pulsegrid.", "").split(".")[0]} updates<ItemDetails>Queue {queue.name}</ItemDetails></th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
                     </table>
                   </div>
                 ) : <EmptyRows>No RabbitMQ queue samples.</EmptyRows>}
@@ -491,7 +493,7 @@ export function TraceExplorer() {
     <section className="ops-dashboard ops-console ops-trace-desk" aria-labelledby="trace-explorer-title">
       <PageHeader department="control" title="Trace Explorer" id="trace-explorer-title"
         subtitle="Recent trace summaries from the last hour"
-        actions={<button type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}>Refresh traces</button>} />
+        actions={<PageRefresh type="button" onClick={() => { setLoading(true); void load(); }} disabled={loading}>Refresh traces</PageRefresh>} />
       {error ? <div className="ops-monitoring-banner" role="status"><strong>Trace data is temporarily unavailable.</strong><span>Service requests continue if the trace backend is offline.</span></div> : null}
       <div className={`ops-trace-layout${selected ? " ops-trace-layout--selected" : ""}`}>
         <section className="ops-panel" aria-label="Recent traces">

@@ -1,3 +1,5 @@
+import { QueuePatientName, VisitLabel } from "../components/HumanLabels";
+import { MoreActions, PageRefresh, ItemDetails, AdvancedLookup } from "../components/PageTools";
 import { m } from "motion/react";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { DepartmentSign } from "../design/DepartmentSign";
@@ -37,7 +39,7 @@ function MedicineCharge({ code }: { code: string }) {
   const medicine = useResource<Medicine>(medicineId ? `/api/v1/pharmacy/medicines/${medicineId}` : null);
   if (code === "consultation") return <>Consultation fee</>;
   const name = medicine.response?.data.name;
-  return <>{name && !name.startsWith("Synthetic") ? name : code}</>;
+  return <>{name && !name.startsWith("Synthetic") ? name : code.startsWith("medicine:") ? "Medicine charge" : code}</>;
 }
 function InvoiceStatus({ invoice }: { invoice: Invoice }) {
   const label = invoice.status === "paid" ? "Paid" : invoice.paid_minor > 0 ? "Part paid" : "Unpaid";
@@ -78,8 +80,8 @@ function InvoiceReceipt({
   return (
     <>
       <header className="cashier-receipt__header">
-        <div><h2 id="cashier-receipt-title">Receipt</h2><p>Invoice …{invoice.id.slice(-4)} · <InvoiceStatus invoice={invoice} /></p></div>
-        <button type="button" disabled={loading} onClick={onRefresh}>Refresh</button>
+        <div><h2 id="cashier-receipt-title">Receipt</h2><p>Invoice · <InvoiceStatus invoice={invoice} /></p></div>
+        <PageRefresh type="button" disabled={loading} onClick={onRefresh}>Refresh</PageRefresh>
       </header>
       {invoice.items.length === 0 ? (
         <p className="cashier-receipt__empty">No charges have been imported.</p>
@@ -126,7 +128,7 @@ function InvoiceReceipt({
           etag={etag}
           fields={[
             { name: "amount_rupees", label: "Payment amount (₹)", required: true, max: 20, initial: rupees(invoice.balance_minor) },
-            { name: "simulated_outcome", label: "Simulated outcome", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
+            { name: "simulated_outcome", label: "Demo payment result", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
           ]}
           preview={(values) => {
             try {
@@ -149,22 +151,24 @@ function InvoiceReceipt({
       )}
       {payment && payment.invoice_id === invoice.id && (
         <m.p key={payment.id} initial={{ backgroundColor: "#f3dd9a" }} animate={{ backgroundColor: "#f1ebe1" }} transition={{ duration: 1.2 }} role="status" className="cashier-payment-result">
-          Payment …{payment.id.slice(-4)}:{" "}
+          Payment result:{" "}
           {payment.status === "declined" ? "simulated decline recorded; balance was not paid" : "simulated success recorded"}. Amount {money(payment.amount_minor)}.
         </m.p>
       )}
+      <MoreActions>
       <details className="cashier-more"><summary>Payment history</summary>
         <Collection<Payment>
           title="Invoice payments"
           path={`/api/v1/billing/invoices/${invoice.id}/payments`}
-          renderItem={(item) => <div className="cashier-payment-row"><span>{money(item.amount_minor)}</span><span className="owner-state" data-state={item.status}>{item.status === "declined" ? "Declined" : "Succeeded"}</span><small>…{item.id.slice(-4)}</small></div>}
+          renderItem={(item) => <div className="cashier-payment-row"><span>{money(item.amount_minor)}</span><span className="owner-state" data-state={item.status}>{item.status === "declined" ? "Declined" : "Succeeded"}</span><ItemDetails>Payment {item.id}</ItemDetails></div>}
         />
       </details>
       <details className="cashier-more"><summary>Insurance estimates</summary><InsuranceEstimatePanel api={api} roleHints={authState.status === "authenticated" ? authState.roleHints : []} invoiceId={invoice.id} providerChoices={syntheticProviders} /></details>
-      <details className="owner-identifiers"><summary>Details</summary>
+      </MoreActions>
+      <ItemDetails>
         <Facts values={{ "Invoice ID": invoice.id, "Patient ID": invoice.patient_id, "Appointment ID": invoice.appointment_id, Version: invoice.version }} />
         <ul className="cashier-sources">{invoice.items.map((line) => <li key={line.id}>{line.source_service} · source {line.source_item_id} · {line.charge_code} · tariff revision {line.tariff_revision}</li>)}</ul>
-      </details>
+      </ItemDetails>
     </>
   );
 }
@@ -176,7 +180,7 @@ function TariffReference() {
   tariffs.items.forEach((item) => latest.set(item.charge_code, Math.max(latest.get(item.charge_code) ?? 0, item.revision)));
   return (
     <div className="cashier-tariffs">
-      <div className="cashier-panel-heading"><p>Billing sets prices when charges are imported. Historical revisions stay for reference; this list does not add charges.</p><button type="button" disabled={tariffs.loading} onClick={tariffs.refresh}>Refresh</button></div>
+      <div className="cashier-panel-heading"><p>Billing sets prices when charges are imported. Historical revisions stay for reference; this list does not add charges.</p><PageRefresh type="button" disabled={tariffs.loading} onClick={tariffs.refresh}>Refresh</PageRefresh></div>
       {tariffs.loading && <p role="status">Loading tariffs…</p>}
       {tariffs.error && <p role="alert">{tariffs.error}</p>}
       <table className="cashier-price-table">
@@ -229,9 +233,9 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
     <section className="cashier-context" aria-label="Selected invoice">
       {current ? (
         <dl>
-          <div className="cashier-context__patient"><dt>Patient</dt><dd>{ownName ?? `Patient …${current.patient_id.slice(-4)}`}{ownName && <small>ID …{current.patient_id.slice(-4)}</small>}</dd></div>
-          <div><dt>Visit</dt><dd>Visit …{current.appointment_id.slice(-4)}</dd></div>
-          <div><dt>Invoice</dt><dd>Invoice …{current.id.slice(-4)}</dd></div>
+          <div className="cashier-context__patient"><dt>Patient</dt><dd>{ownName ?? <QueuePatientName patientId={current.patient_id}/>}</dd></div>
+          <div><dt>Visit</dt><dd><VisitLabel appointmentId={current.appointment_id}/></dd></div>
+          <div><dt>Invoice</dt><dd>Invoice</dd></div>
           <div><dt>Status</dt><dd><InvoiceStatus invoice={current} /></dd></div>
         </dl>
       ) : (
@@ -242,28 +246,28 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
   );
   const registerTable = (
     <section className="cashier-register" ref={registerRef} tabIndex={-1} aria-labelledby="cashier-register-title">
-      <div className="cashier-panel-heading"><h2 id="cashier-register-title">{staff ? "Invoice register" : "Your invoices"}</h2><button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button></div>
+      <div className="cashier-panel-heading"><h2 id="cashier-register-title">{staff ? "Invoice register" : "Your invoices"}</h2><PageRefresh type="button" disabled={register.loading} onClick={register.refresh}>Refresh</PageRefresh></div>
       {register.loading && <p role="status">Loading invoices…</p>}
       {register.error && <p role="alert">{register.error}</p>}
       {register.loaded && !register.loading && register.items.length === 0 && <p>No invoices found.</p>}
       {register.items.length > 0 && (
-        <table className="cashier-register__table">
+        <div className="task-table-wrap"><table className="cashier-register__table">
           <caption className="sr-only">Invoices</caption>
           <thead><tr><th scope="col">Invoice</th><th scope="col" className="cashier-register__visit">Visit</th><th scope="col">Status</th><th scope="col">Total</th><th scope="col">Balance</th><th scope="col"><span className="sr-only">Open</span></th></tr></thead>
           <tbody>{register.items.map((item) => (
             <tr key={item.id} data-selected={selected === item.id}>
-              <th scope="row" data-label="Invoice">…{item.id.slice(-4)}</th>
-              <td className="cashier-register__visit">…{item.appointment_id.slice(-4)}</td>
+              <th scope="row" data-label="Invoice">Invoice</th>
+              <td className="cashier-register__visit"><VisitLabel appointmentId={item.appointment_id}/></td>
               <td data-label="Status"><InvoiceStatus invoice={item} /></td>
               <td data-label="Total">{money(item.total_minor)}</td>
               <td data-label="Balance">{money(item.balance_minor)}</td>
               <td><button type="button" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
             </tr>
           ))}</tbody>
-        </table>
+        </table></div>
       )}
       {(register.hasPrevious || register.hasNext) && <div className="cashier-pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
-      <details className="cashier-more"><summary>Open an invoice by ID</summary><Lookup label="Invoice ID" onSelect={select} /></details>
+      <AdvancedLookup title="Open an invoice by ID"><Lookup label="Invoice ID" onSelect={select} /></AdvancedLookup>
     </section>
   );
   const receipt = (
@@ -348,7 +352,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
 function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: string | null; onChange: () => void }) {
   return (
     <div className="cashier-import">
-      <p>Import finalized sources for <strong>Visit …{invoice.appointment_id.slice(-4)}</strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
+      <p>Import finalized sources for <strong><VisitLabel appointmentId={invoice.appointment_id}/></strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
       <CommandForm
         title="Import charges manually"
         reviewLabel="Review import"
@@ -425,7 +429,7 @@ function StateChip({ state }: { state: string }) {
   return <span className="owner-state" data-state={state}>{state.replaceAll("_", " ")}</span>;
 }
 function requestTitle(item: Emergency) {
-  return item.description?.trim() || `Request …${item.id.slice(-4)}`;
+  return item.description?.trim().replace(/^Synthetic:\s*/i, "") || `Request from ${utcTime(item.created_at)}`;
 }
 const terminalStates = ["resolved", "cancelled"];
 export function sortEmergencyQueue(items: Emergency[]): Emergency[] {
@@ -482,7 +486,7 @@ function NextSteps({
       onReload={onChange}
       reloadLabel="Reload request"
       fields={[
-        { name: "assigned_priority", label: "Assigned priority (1 highest, 5 lowest)", kind: "number", min: 1, max: 5, required: true },
+        { name: "assigned_priority", label: "Priority (1 highest, 5 lowest)", kind: "number", min: 1, max: 5, required: true, options: ["1","2","3","4","5"], choiceButtons: true },
         { ...reasonField, label: "Reason for priority" },
       ]}
       onSuccess={onChange}
@@ -565,8 +569,8 @@ function NextSteps({
   );
 }
 
-function EmergencyRow({ entry, staff, now, selected, onSelect }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void }) {
-  const rowTitle = staff ? requestTitle(entry) : `Request …${entry.id.slice(-4)}`;
+function EmergencyRow({ entry, now, selected, onSelect }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void }) {
+  const rowTitle = requestTitle(entry);
   return (
     <li>
       <button type="button" className="er-row" data-state={entry.state} aria-pressed={selected} aria-label={`Track request ${entry.id}`} onClick={() => onSelect(entry.id)}>
@@ -585,11 +589,11 @@ function EmergencyCase({ item, staff, userId, loading, onRefresh, now }: { item:
     <section className="er-case" aria-labelledby="er-case-title">
       <header className="er-case__header">
         <div>
-          <p className="er-case__eyebrow">Emergency request <span>…{item.id.slice(-4)}</span></p>
+          <p className="er-case__eyebrow">Emergency request</p>
           <h2 id="er-case-title">{staff ? requestTitle(item) : `Your request from ${utcTime(item.created_at)}`}</h2>
         </div>
         <div className="er-case__chips"><StateChip state={item.state} /><PriorityChip priority={item.assigned_priority} /></div>
-        <button type="button" disabled={loading} onClick={onRefresh}>Refresh</button>
+        <PageRefresh type="button" disabled={loading} onClick={onRefresh}>Refresh</PageRefresh>
       </header>
       <dl className="er-facts">
         <div><dt>Submitted</dt><dd><time dateTime={item.created_at}>{utcTime(item.created_at)}</time><small>{elapsed(item.created_at, now)} ago</small></dd></div>
@@ -600,10 +604,10 @@ function EmergencyCase({ item, staff, userId, loading, onRefresh, now }: { item:
         {staff && <div><dt>Claim</dt><dd>{claimHolder ? <>{claimHolder}{item.claim_expires_at && <small>Lease ends <time dateTime={item.claim_expires_at}>{utcTime(item.claim_expires_at)}</time></small>}</> : "Not claimed"}</dd></div>}
       </dl>
       {staff && item.description && <section className="er-description"><h3>Request description</h3><p>{item.description}</p></section>}
-      <details className="owner-identifiers">
-        <summary>Details</summary>
+      <ItemDetails>
+
         <Facts values={{ "Request ID": item.id, Version: item.version, ...(staff ? { "Patient ID": item.patient_id, "Claimed by": item.claimed_by_user_id } : {}) }} />
-      </details>
+      </ItemDetails>
     </section>
   );
 }
@@ -637,7 +641,7 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
       <header className="er-register__header">
         <h2 id="er-register-title">{staff ? "Request queue" : "Your requests"} <span>({register.items.length}{paged ? " on this page" : ""})</span></h2>
         <button type="button" className="er-register__toggle" aria-expanded={listOpen} onClick={() => setListOpen(!listOpen)}>{listOpen ? "Hide requests" : `All requests (${register.items.length})`}</button>
-        <button type="button" disabled={register.loading} onClick={register.refresh}>Refresh</button>
+        <PageRefresh type="button" disabled={register.loading} onClick={register.refresh}>Refresh</PageRefresh>
       </header>
       {register.loading && <p role="status">Loading emergency requests…</p>}
       {register.error && <p role="alert">{register.error}</p>}
@@ -648,7 +652,7 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
         {closed.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
       </ol>
       {paged && <div className="er-register__pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
-      <details className="er-lookup"><summary>Open a request by ID</summary><Lookup label="Emergency request ID" onSelect={setSelected} /></details>
+      <AdvancedLookup title="Open a request by ID"><Lookup label="Emergency request ID" onSelect={setSelected} /></AdvancedLookup>
     </section>
   );
   const casePanel = (
@@ -672,7 +676,7 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
           )}
         </DepartmentSign>
       )}
-      <p className="er-notice" role="note">Synthetic educational requests only. This prototype does not provide emergency dispatch or certified clinical triage.</p>
+      <p className="er-notice" role="note">Demo only, not real emergency dispatch.</p>
       {!staff && (
         <section className="er-intake" aria-labelledby="er-intake-title">
           <h2 id="er-intake-title">New request</h2>
@@ -685,16 +689,16 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
                 successMessage="Request sent. It now appears in Your requests."
                 path="/api/v1/emergencies"
                 fields={[
-                  textField("description", "Synthetic request description"),
+                  textField("description", "What's happening?"),
                   { name: "reported_urgency", label: "Reported urgency (advisory)", kind: "select", required: true, options: ["unspecified", "urgent"], optionLabels: { unspecified: "Not sure", urgent: "Urgent" }, initial: "unspecified" },
-                  { name: "synthetic_contact", label: "Synthetic contact", max: 256 },
+                  { name: "synthetic_contact", label: "Contact number or email", max: 256 },
                 ]}
                 build={(values) => ({
                   ...buildFields(
                     [
                       textField("description", "Description"),
                       { name: "reported_urgency", label: "Urgency", required: true, options: ["unspecified", "urgent"] },
-                      { name: "synthetic_contact", label: "Synthetic contact", max: 256 },
+                      { name: "synthetic_contact", label: "Contact number or email", max: 256 },
                     ],
                     values,
                   ),

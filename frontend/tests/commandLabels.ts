@@ -24,6 +24,7 @@ const labels: Record<string, { review: string; confirm: string; success: string 
   "Submit schedule proposal": { review: "Review proposal", confirm: "Submit proposal", success: "Schedule proposal submitted." },
   "Save doctor profile": { review: "Review profile", confirm: "Save profile", success: "Profile saved." },
   "Request schedule decision": { review: "Review decision", confirm: "Send decision", success: "Decision sent." },
+  "Apply accepted schedule": { review: "Review schedule update", confirm: "Apply schedule", success: "Schedule updated." },
   "Reconcile schedule": { review: "Review reconcile", confirm: "Reconcile schedule", success: "Schedule reconciled." },
   "Change Surge Mode": { review: "Review change", confirm: "Apply change", success: "Surge Mode change accepted." },
   "Mark no-show": { review: "Review no-show", confirm: "Mark no-show", success: "Marked as no-show." },

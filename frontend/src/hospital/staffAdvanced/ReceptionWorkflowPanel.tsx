@@ -1,3 +1,4 @@
+import { AdvancedLookup } from "../../components/PageTools";
 import { lazy, Suspense, useState } from "react";
 import { ApiError } from "../../api/client";
 import { useAuth } from "../../auth/authContext";
@@ -273,12 +274,12 @@ function CheckinPanel() {
 }
 
 export function ReceptionWorkflowPanel() {
-  return (
+  return (<AdvancedLookup title="Staff workflow lookup">
     <StaffRoleGate role="receptionist">
       <div className="staff-advanced-page">
         <CheckinPanel />
         <StaffJourneyTools />
       </div>
     </StaffRoleGate>
-  );
+  </AdvancedLookup>);
 }

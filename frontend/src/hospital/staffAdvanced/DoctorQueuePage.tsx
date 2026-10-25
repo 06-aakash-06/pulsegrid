@@ -1,3 +1,5 @@
+import { QueuePatientName } from "../../components/HumanLabels";
+import { ItemDetails, PageRefresh } from "../../components/PageTools";
 import { QueueTransitions } from "./QueueTransitions";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -377,7 +379,7 @@ export function DoctorQueuePage() {
           {doctorError && <p role="alert">{doctorError}</p>}
           {doctor && (
             <>
-              <p>Doctor: {doctor.doctor.display_name} (ID {doctor.doctor.id}). The owner API verifies your current assignment on every request.</p>
+              <p>{doctor.doctor.display_name}</p>
               <label>
                 Doctor local schedule date
                 <input
@@ -386,29 +388,22 @@ export function DoctorQueuePage() {
                   onChange={(event) => {
                     const value = event.target.value;
                     setLocalDate(value);
-                    if (!value) setQueueError("Choose a valid date in the accepted schedule's IANA timezone.");
+                    if (!value) setQueueError("Choose a valid date in the doctor’s time zone.");
                     else {
                       try {
                         validateDate(value);
                         setQueueError("");
                       } catch {
-                        setQueueError("Choose a valid date in the accepted schedule's IANA timezone.");
+                        setQueueError("Choose a valid date in the doctor’s time zone.");
                       }
                     }
                   }}
                   aria-describedby="staff-advanced-date-help"
                 />
               </label>
-              <p id="staff-advanced-date-help" className="staff-advanced-muted">
-                The selected value is sent as local_date. Choose it using the accepted schedule's IANA timezone.
-              </p>
-              <div className="hospital-actions">
-                <button type="button" disabled={!queuePath || refreshing} onClick={() => refreshFirstPageRef.current()}>
-                  {refreshing ? "Refreshing queue…" : "Refresh queue"}
-                </button>
-                <span>Staff queue polling pauses when this tab is hidden.</span>
-              </div>
-              {!localDateValid && <p role="alert">Choose a valid date in the accepted schedule's IANA timezone.</p>}
+              <p id="staff-advanced-date-help" className="staff-advanced-muted">Choose your schedule date.</p>
+              <PageRefresh type="button" disabled={!queuePath || refreshing} onClick={() => refreshFirstPageRef.current()}>Refresh queue</PageRefresh>
+              {!localDateValid && <p role="alert">Choose a valid date in the doctor’s time zone.</p>}
               {refreshing && !firstPage && <p role="status">Loading assigned queue…</p>}
               {queueError && <p role="alert">{queueError}</p>}
               {stale && <p role="alert" className="staff-advanced-stale">Queue data is stale. Refresh before acting.</p>}
@@ -422,47 +417,39 @@ export function DoctorQueuePage() {
                     "Observed (UTC)": scheduleLocalTime(firstPage.observed_at),
                     "Page": pageIndex + 1,
                   }} />
+                  {pageIndex === 0 && (
+                    <div className="staff-advanced-summary">
+                      {firstPage.waiting_count > 0 ? (
+                        <>
+
+                          <button type="button" disabled={actionPending || stale || !!startAttempt || firstPage.in_consultation_count > 0} onClick={() => void startNextPatient()}>
+                            {actionPending && !startAttempt ? "Checking queue head…" : "Call next patient"}
+                          </button>
+                          {firstPage.in_consultation_count > 0 && <p>Finish the active consultation before calling another patient.</p>}
+                        </>
+                      ) : (
+                        <p>No waiting entry is available in this queue snapshot.</p>
+                      )}
+                      <p>Skipped patients keep their token and can be recalled.</p>
+                    </div>
+                  )}
                   {firstPage.waiting_count === 0 && firstPage.in_consultation_count === 0 && entries.length === 0 ? (
                     <p>No queue entries were returned for this doctor and schedule date.</p>
                   ) : (
-                    <div className="hospital-items">
-                      {entries.map((entry) => (
-                        <article className="hospital-item" key={entry.id}>
-                          <h3>Queue token {entry.token_number}</h3>
-                          <p>Appointment {entry.appointment_id} • Patient ID {entry.patient_id}</p>
-                          <p>State: {entry.state}{entry.position === null ? "" : ` • Position ${entry.position}`}</p>
-                          <p>Queue entry version {entry.version}</p>
-                          <QueueTransitions entry={entry} refresh={() => refreshFirstPageRef.current()} />
-                        </article>
-                      ))}
-                    </div>
+                    <div className="task-table-wrap"><table className="task-table"><thead><tr><th>Token</th><th>Patient</th><th>Status</th><th>Position</th><th>Actions</th></tr></thead><tbody>
+                      {entries.map((entry) => <tr key={entry.id}><td>{entry.token_number}</td><td><QueuePatientName patientId={entry.patient_id} name={entry.patient_name} /></td><td>{entry.state.replaceAll("_"," ")}</td><td>{entry.position ?? "—"}</td><td><QueueTransitions entry={entry} refresh={() => refreshFirstPageRef.current()} /><ItemDetails>Appointment {entry.appointment_id} · Patient {entry.patient_id} · Queue entry {entry.id} · Version {entry.version}</ItemDetails></td></tr>)}
+                    </tbody></table></div>
                   )}
                   <div className="hospital-actions">
                     <button type="button" disabled={pageIndex === 0 || pageLoading} onClick={() => setPages((current) => current.slice(0, -1))}>Previous page</button>
                     <button type="button" disabled={!currentCursor || pageLoading || actionPending} onClick={() => void loadNextPage()}>{pageLoading ? "Loading next page…" : "Next page"}</button>
                   </div>
-                  {pageIndex === 0 && (
-                    <div className="staff-advanced-summary">
-                      {firstPage.waiting_count > 0 ? (
-                        <>
-                          <p>The Appointment service selects the oldest waiting entry and verifies the queue head when you start.</p>
-                          <button type="button" disabled={actionPending || stale || !!startAttempt || firstPage.in_consultation_count > 0} onClick={() => void startNextPatient()}>
-                            {actionPending && !startAttempt ? "Checking queue head…" : "Call next patient"}
-                          </button>
-                          {firstPage.in_consultation_count > 0 && <p>Another consultation is already active. The owner API will remain authoritative if the queue changes concurrently.</p>}
-                        </>
-                      ) : (
-                        <p>No waiting entry is available in this queue snapshot.</p>
-                      )}
-                      <p>Skipped patients retain their daily token and can be recalled. Queue completion follows Records finalization and journey reconciliation.</p>
-                    </div>
-                  )}
                   {pageIndex === 0 && startAttempt && (
                     <div className="hospital-confirm" role="group" aria-label="Confirm call next patient">
                       <p>
                         {startAttemptAmbiguous
                           ? "The start outcome is uncertain. Retry the original command with the same key before attempting another queue action."
-                          : `Confirm calling queue token ${startAttempt.tokenNumber} for appointment ${startAttempt.appointmentId}? The Appointment service will start the consultation.`}
+                          : `Confirm calling queue token ${startAttempt.tokenNumber} ?`}
                       </p>
                       <button type="button" disabled={actionPending} onClick={() => void confirmStart(startAttempt)}>
                         {actionPending ? "Starting consultation…" : startAttemptAmbiguous ? "Retry original start command" : "Confirm start consultation"}
@@ -479,7 +466,7 @@ export function DoctorQueuePage() {
               {actionError && <p role="alert">{actionError}</p>}
               {started && (
                 <div role="status" className="staff-advanced-summary">
-                  The Appointment service started queue token {started.token_number} for appointment {started.appointment_id}. Continue in the existing <Link to="/doctor/consultations">consultation workspace</Link> and enter that appointment ID. Queue completion follows confirmed Records finalization.
+                  Queue token {started.token_number} is ready. Continue in the <Link to="/doctor/consultations">consultation workspace</Link> to start the visit.
                 </div>
               )}
             </>

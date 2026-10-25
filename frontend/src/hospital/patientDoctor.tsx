@@ -1,3 +1,4 @@
+import { PageRefresh, AdvancedLookup, ItemDetails } from "../components/PageTools";
 import { PageGrid } from "../components/PageGrid";
 import { AppointmentDoctorRail } from "../design/AppointmentDoctorRail";
 import { DoctorPortrait, useLocalDemo } from "../design/localDemo";
@@ -65,7 +66,7 @@ const profileFields = (profile: PatientProfile): Field[] => [
   },
   {
     name: "synthetic_contact",
-    label: "Synthetic contact",
+    label: "Contact number or email",
     max: 256,
     nullable: true,
     initial: profile.synthetic_contact,
@@ -91,7 +92,7 @@ export function ProfileEditor({
           "User ID": profile.user_id,
           Name: profile.display_name,
           "Date of birth": profile.date_of_birth,
-          "Synthetic contact": profile.synthetic_contact,
+          "Contact number or email": profile.synthetic_contact,
         }}
       />
       <CommandForm
@@ -124,9 +125,9 @@ export function ProfileEditor({
   );
 }
 export function PatientDashboard() {
-  return <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>{(profile,etag,refresh)=><>
+  return <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>{(profile,_etag,refresh)=><>
     <ReceptionScene name={profile.display_name}><ReceptionVisit patientId={profile.id}/></ReceptionScene>
-    <details className="profile-desk"><summary>Your profile</summary><button type="button" onClick={refresh}>Refresh profile</button><ProfileEditor key={profile.version} profile={profile} etag={etag} path="/api/v1/patients/me" refresh={refresh}/></details>
+    <PageRefresh type="button" onClick={refresh}>Refresh profile</PageRefresh>
   </>}</Resource>;
 }
 export function Demographics({ admin = false }: { admin?: boolean }) {
@@ -165,15 +166,11 @@ export function Demographics({ admin = false }: { admin?: boolean }) {
         title="Patients"
         revision={revision}
         path={query("/api/v1/patients", { q: filter })}
-        renderItem={(item) => (
-          <>
-            <strong>{item.display_name}</strong>
-            <p>Patient ID: {item.id}</p>
-            <button onClick={() => setSelected(item.id)}>
-              View patient {item.id}
-            </button>
-          </>
-        )}
+        columns={[
+ {label:"Name",render:item=><strong>{item.display_name}</strong>},
+ {label:"Contact",render:item=>item.synthetic_contact||"—"},
+ {label:"Actions",render:item=><><button type="button" aria-label={`Open patient ${item.display_name}`} onClick={()=>setSelected(item.id)}>Open</button><ItemDetails>Patient {item.id}</ItemDetails></>},
+ ]}
       />
       <Selected<PatientProfile>
         path={selected ? `/api/v1/patients/${selected}` : null}
@@ -250,17 +247,13 @@ export function StaffManagement() {
         title="Accounts"
         path={query("/api/v1/patients/users", filters)}
         revision={revision}
-        renderItem={(item) => (
-          <>
-            <strong>{item.display_name}</strong>
-            <p>
-              {item.email} • {item.state} • {item.roles.join(", ")}
-            </p>
-            <button onClick={() => setSelected(item.id)}>
-              Manage account {item.id}
-            </button>
-          </>
-        )}
+        columns={[
+ {label:"Name",render:item=><strong>{item.display_name}</strong>},
+ {label:"Email",render:item=>item.email},
+ {label:"Roles",render:item=>item.roles.join(", ").replaceAll("_"," ")},
+ {label:"Status",render:item=>item.state},
+ {label:"Actions",render:item=><><button type="button" aria-label={`Open account ${item.display_name}`} onClick={()=>setSelected(item.id)}>Open</button><ItemDetails>Account {item.id} · Version {item.version}</ItemDetails></>},
+ ]}
       />
       <Selected<UserView>
         path={selected ? `/api/v1/patients/users/${selected}` : null}
@@ -466,7 +459,7 @@ export function AvailabilityPicker({
                 </div>
               );
             })}
-            <p className="availability-note">Times are UTC · accepted schedule revision {data.accepted_revision}. Appointment rechecks availability when you confirm.</p>
+            <p className="availability-note">Times shown in UTC.</p>
           </div>
         )}
       </Resource>
@@ -546,8 +539,8 @@ export function Booking({
       <section className="booking-doctor" aria-labelledby="booking-step-doctor"><fieldset disabled={locked}>
         <h3 id="booking-step-doctor"><span className="step-number">1</span>Select Doctor</h3>
         {!doctorId && <AppointmentDoctorRail selected={doctor} onSelect={(item) => { if (!locked) chooseDoctor(item.id, item.display_name, item); }} />}
-        <details className="advanced-doctor-search"><summary>Search the complete directory</summary><DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={(item) => chooseDoctor(item.id, item.label, null)} /></details>
-        <details className="manual-doctor-lookup"><summary>Use a doctor ID</summary><Lookup label="Doctor ID for availability" onSelect={(value) => chooseDoctor(value, "", null)} /></details>
+        <AdvancedLookup title="Search the complete directory"><DoctorAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} onSelect={(item) => chooseDoctor(item.id, item.label, null)} /></AdvancedLookup>
+        <AdvancedLookup title="Use a doctor ID"><Lookup label="Doctor ID for availability" onSelect={(value) => chooseDoctor(value, "", null)} /></AdvancedLookup>
       </fieldset></section>
       <section className="booking-schedule" aria-labelledby="booking-step-time"><fieldset disabled={locked}>
         <h3 id="booking-step-time"><span className="step-number">2</span>Choose Date &amp; Time</h3>
@@ -594,7 +587,7 @@ export function Booking({
               <div><dt>Patient</dt><dd>{patientName || (patientId ? `Patient …${patientId.slice(-4)}` : "—")}</dd></div>
               <div><dt>Visit</dt><dd>…{confirmed.appointment.id.slice(-4)}</dd></div>
             </dl>
-            <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Appointment ID": confirmed.appointment.id, "Doctor ID": confirmed.appointment.doctor_id, "Slot ID": confirmed.appointment.slot_id }} /></details>
+            <ItemDetails><Facts values={{ "Appointment ID": confirmed.appointment.id, "Doctor ID": confirmed.appointment.doctor_id, "Slot ID": confirmed.appointment.slot_id }} /></ItemDetails>
             <p>Confirmed by the Appointment service.</p>
             <button type="button" className="printed-receipt__again" onClick={() => setConfirmed(null)}>Book another appointment</button>
           </m.div>
@@ -723,7 +716,7 @@ function WalkinRegistration({onSuccess,onLockChange}:{onSuccess:()=>void;onLockC
       <section className="walkin-find" aria-labelledby="walkin-find-title">
         <h3 id="walkin-find-title"><span className="step-number">1</span>Find patient</h3>
         {patient ? (
-          <div className="walkin-patient-strip"><div><strong>{patient.display_name}</strong><small>{patient.date_of_birth ? `Born ${patient.date_of_birth}` : "Date of birth not provided"}</small></div><button type="button" disabled={locked} onClick={()=>{setPatient(null);setBooked(false);}}>Change patient</button><details className="owner-identifiers"><summary>Details</summary>Patient ID {patient.id}</details></div>
+          <div className="walkin-patient-strip"><div><strong>{patient.display_name}</strong><small>{patient.date_of_birth ? `Born ${patient.date_of_birth}` : "Date of birth not provided"}</small></div><button type="button" disabled={locked} onClick={()=>{setPatient(null);setBooked(false);}}>Change patient</button><ItemDetails>Patient ID {patient.id}</ItemDetails></div>
         ) : (
           <>
             <form className="walkin-patient-search" onSubmit={e=>{e.preventDefault();if(draft.trim().length<2||draft.trim().length>100){setError("Search must contain 2 to 100 characters.");return;}setSearch(draft.trim());setPatient(null);setError("");}}><label>Find existing patient<input disabled={locked} value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Patient name…"/></label><button disabled={locked}>Search patients</button>{error&&<p role="alert">{error}</p>}</form>
@@ -850,7 +843,7 @@ export function Appointments({
           <section className="appointment-list-desk" aria-label={reception ? "Appointments" : doctor ? "Assigned appointments" : "My appointments"}>
             <div className="appointment-subtabs" role="tablist" aria-label="Appointment lists">
               {(["upcoming", "past", "cancelled"] as const).map((key) => <button key={key} type="button" role="tab" aria-selected={listTab === key} onClick={() => setListTab(key)}>{key === "upcoming" ? "Upcoming" : key === "past" ? "Past" : "Cancelled"} ({counts[key]})</button>)}
-              <button type="button" className="appointment-refresh" disabled={list.loading} onClick={list.refresh}>Refresh</button>
+              <PageRefresh type="button" className="appointment-refresh" disabled={list.loading} onClick={list.refresh}>Refresh</PageRefresh>
             </div>
             {list.loading && <p role="status">Loading appointments…</p>}
             {list.error && <p role="alert">{list.error}</p>}
@@ -875,7 +868,7 @@ export function Appointments({
                       <div className="appointment-row__detail">
                         <Facts values={{ Visit: `…${entry.id.slice(-4)}`, State: entry.state, "Starts (UTC)": entry.starts_at, "Ends (UTC)": entry.ends_at }} />
                         {!doctor && entry.state === "confirmed" && <details className="appointment-share"><summary>Secure appointment links</summary><AppointmentShortLinkPanel api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} appointmentId={entry.id}/></details>}
-                        <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Appointment ID": entry.id, "Patient ID": entry.patient_id, "Doctor ID": entry.doctor_id, Version: entry.version }} /></details>
+                        <ItemDetails><Facts values={{ "Appointment ID": entry.id, "Patient ID": entry.patient_id, "Doctor ID": entry.doctor_id, Version: entry.version }} /></ItemDetails>
                       </div>
                     )}
                   </li>
@@ -1011,14 +1004,14 @@ function ScheduleForm({
   const fields: Field[] = [
     {
       name: "timezone",
-      label: "IANA timezone",
+      label: "Time zone",
       required: true,
       max: 128,
       initial: "Asia/Kolkata",
     },
     {
       name: "slot_minutes",
-      label: "Slot minutes",
+      label: "Slot length (minutes)",
       kind: "number",
       required: true,
       min: 5,
@@ -1026,18 +1019,16 @@ function ScheduleForm({
     },
     {
       name: "expected_revision",
-      label: "Latest proposal revision (0 initially)",
+      label: "Current schedule reference",
       kind: "number",
       required: true,
       min: 0,
     },
   ];
   return (
-    <Panel title="Schedule proposals">
+    <Panel title="Propose schedule changes">
       <p>
-        Submit a proposal, request an Appointment decision, then reconcile
-        Doctor. Empty intervals propose closure. A rejected decision preserves
-        accepted slots. Enter all interval times in UTC.
+        Choose your new appointment times in UTC. Leave the intervals empty to propose closing your schedule. Rejected changes keep your current slots.
       </p>
 
       <CommandForm<Proposal>
@@ -1051,7 +1042,7 @@ function ScheduleForm({
           try {
             new Intl.DateTimeFormat("en", { timeZone: values.timezone.trim() });
           } catch {
-            throw new Error("Enter a valid IANA timezone.");
+            throw new Error("Enter a valid Time zone.");
           }
           const slotMinutes = integer(values.slot_minutes, 5, 120);
           let previousEnd = 0;
@@ -1153,12 +1144,15 @@ export function DoctorManagement({
   etag,
   refresh,
   admin = false,
+  dashboard = false,
 }: {
   doctor: Doctor;
   etag: string | null;
   refresh: () => void;
   admin?: boolean;
+  dashboard?: boolean;
 }) {
+  const [tab,setTab]=useState("Today");
   const [selected, setSelected] = useState<string | null>(null);
   const [decision, setDecision] = useState<Decision | null>(null);
   const [revision, setRevision] = useState(0);
@@ -1191,6 +1185,8 @@ export function DoctorManagement({
   ];
   return (
     <>
+      {dashboard && <div className="task-tabs" role="tablist" aria-label="Doctor dashboard">{["Today","Profile","Schedule changes"].map(name=><button key={name} role="tab" aria-selected={tab===name} type="button" onClick={()=>setTab(name)}>{name}</button>)}</div>}
+      <section hidden={dashboard && tab!=="Profile"}>
       <CommandForm
         title="Save doctor profile" reviewLabel="Review profile" confirmLabel="Save profile" successMessage="Profile saved."
         path={`/api/v1/doctors/${doctor.id}`}
@@ -1217,7 +1213,12 @@ export function DoctorManagement({
             : undefined
         }
       />
+      </section>
+      <section hidden={dashboard && tab!=="Today"}>
+      {dashboard && <><h2>Today's slots</h2><Link className="button" to="/doctor/queue">Open patient queue</Link></>}
       <AvailabilityPicker doctorId={doctor.id} autoLoad />
+      </section>
+      <section hidden={dashboard && tab!=="Schedule changes"}>
       {doctor.active && (
         <ScheduleForm
           doctor={doctor}
@@ -1232,22 +1233,12 @@ export function DoctorManagement({
         title="Schedule proposals"
         path={`/api/v1/doctors/${doctor.id}/schedules`}
         revision={revision}
-        renderItem={(proposal) => (
-          <>
-            <p>
-              Proposal {proposal.id} • revision {proposal.revision} •{" "}
-              {proposal.status}
-            </p>
-            <button
-              onClick={() => {
-                setSelected(proposal.id);
-                setDecision(null);
-              }}
-            >
-              Open proposal {proposal.id}
-            </button>
-          </>
-        )}
+        columns={[
+ {label:"Starts",render:proposal=>proposal.intervals[0]?formatDateTime(proposal.intervals[0].starts_at):"Closure"},
+ {label:"Time zone",render:proposal=>proposal.timezone},
+ {label:"Status",render:proposal=>proposal.status},
+ {label:"Actions",render:proposal=><><button type="button" onClick={()=>{setSelected(proposal.id);setDecision(null);}}>Open</button><ItemDetails>Proposal {proposal.id} · Revision {proposal.revision}</ItemDetails></>},
+ ]}
       />
       <Selected<Proposal>
         path={
@@ -1312,7 +1303,7 @@ export function DoctorManagement({
               )}
             </Resource>
             <CommandForm
-              title="Reconcile schedule" reviewLabel="Review reconcile" confirmLabel="Reconcile schedule" successMessage="Schedule reconciled."
+              title="Apply accepted schedule" reviewLabel="Review schedule update" confirmLabel="Apply schedule" successMessage="Schedule updated."
               path={`/api/v1/doctors/${doctor.id}/schedules/${proposal.id}/reconcile`}
               conditional
               etag={proposalEtag}
@@ -1325,15 +1316,16 @@ export function DoctorManagement({
           </>
         )}
       </Selected>
+      </section>
     </>
   );
 }
 export function DoctorDashboard() {
   return (
-    <Panel title="Your doctor profile">
+    <Panel title="Your day">
       <Resource<DoctorSelf> path="/api/v1/doctors/me">
         {(data, etag, refresh) => (
-          <DoctorManagement
+          <DoctorManagement dashboard
             key={data.doctor.id}
             doctor={data.doctor}
             etag={etag}

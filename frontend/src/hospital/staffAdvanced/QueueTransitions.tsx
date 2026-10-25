@@ -1,3 +1,4 @@
+import { MoreActions } from "../../components/PageTools";
 import { useState } from "react";
 import { useAuth } from "../../auth/authContext";
 import { WorkflowHistory } from "../../advanced/shared/WorkflowHistory";
@@ -7,6 +8,7 @@ import { errorMessage, idempotencyKey } from "./utils";
 
 export function QueueTransitions({ entry, refresh }: { entry: QueueEntry; refresh: () => void }) {
   const { api } = useAuth();
+  const [showReason, setShowReason] = useState(false);
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -26,13 +28,15 @@ export function QueueTransitions({ entry, refresh }: { entry: QueueEntry; refres
   const action = entry.state === "waiting" ? "skip" : "recall";
   return <div>
     {(entry.state === "waiting" || entry.state === "skipped") && <>
-      <label>Queue action reason<input value={reason} maxLength={500} onChange={event => setReason(event.target.value)} /></label>
+      {!showReason && <button type="button" onClick={()=>setShowReason(true)}>{action === "skip" ? "Skip" : "Recall"}</button>}
+      {showReason && <label>Queue action reason<input value={reason} placeholder="Why is this patient being skipped or recalled?" maxLength={500} onChange={event => setReason(event.target.value)} /></label>}
+      <span hidden={!showReason}>
       <button disabled={busy || !!attempt || !reason.trim()} onClick={() => void submit({ action, key: idempotencyKey(), version: entry.version, reason: reason.trim() })}>
-        {action === "skip" ? "Skip patient" : "Recall patient"}</button>
+        {action === "skip" ? "Skip patient" : "Recall patient"}</button></span>
     </>}
     {error && <p role="alert">{error}</p>}
     {attempt && !busy && <button onClick={() => void submit(attempt)}>Retry original queue command</button>}
-    <button onClick={() => setHistory(!history)}>Queue history</button>
-    {history && <WorkflowHistory path={`/api/v1/appointments/queue-entries/${entry.id}/history`} />}
+    <MoreActions><button onClick={() => setHistory(!history)}>Queue history</button>
+    {history && <WorkflowHistory path={`/api/v1/appointments/queue-entries/${entry.id}/history`} />}</MoreActions>
   </div>;
 }

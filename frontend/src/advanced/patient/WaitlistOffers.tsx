@@ -1,3 +1,4 @@
+import { ItemDetails, PageRefresh } from "../../components/PageTools";
 import { useEffect, useState } from "react";
 import { PatientGate, useLoad, usePagedItems, usePatientAccess } from "./hooks";
 import { formatTime, getErrorMessage, idempotencyRecovery, newIdempotencyKey, sendCommand } from "./api";
@@ -28,7 +29,7 @@ export function WaitlistOffers() {
       const response = await sendCommand<Offer | { offer: Offer; appointment: { id: string } }>(api,
         `/api/v1/appointments/waitlist-offers/${command.offer.id}/${command.action}`, {},
         { ifMatch: `"${command.offer.version}"` }, command.key);
-      setReceipt("appointment" in response.data ? `Booking confirmed: appointment ${response.data.appointment.id}.`
+      setReceipt("appointment" in response.data ? "Booking confirmed. Find your visit in Appointments."
         : `Offer ${response.data.state}.`);
       setAttempt(null); list.reload();
     } catch (failure) {
@@ -43,7 +44,8 @@ export function WaitlistOffers() {
     {list.error && <p role="alert">{list.error}</p>}{error && <p role="alert">{error}</p>}
     {receipt && <p role="status">{receipt}</p>}
     {list.items.map(offer => <article key={offer.id}>
-      <p>Slot …{offer.slot_id.slice(-4)} — {offer.state}. Expires {formatTime(offer.expires_at)}.</p>
+      <p>Appointment offer — {offer.state}. Expires {formatTime(offer.expires_at)}.</p>
+      <ItemDetails>Offer {offer.id} · Slot {offer.slot_id} · Version {offer.version}</ItemDetails>
       {offer.state === "pending" && Date.parse(offer.expires_at) > clock && <>
         <button disabled={busy || !!attempt} onClick={() => void submit({ offer, action: "accept", key: newIdempotencyKey() })}>Accept slot offer</button>
         <button disabled={busy || !!attempt} onClick={() => void submit({ offer, action: "decline", key: newIdempotencyKey() })}>Decline slot offer</button>
@@ -51,7 +53,7 @@ export function WaitlistOffers() {
       {offer.state === "pending" && Date.parse(offer.expires_at) <= clock && <p>Offer deadline passed; awaiting the service's expiry update.</p>}
     </article>)}
     {attempt && !busy && <button onClick={() => void submit(attempt)}>Retry original offer command</button>}
-    <button disabled={busy} onClick={list.reload}>Refresh offers</button>
+    <PageRefresh disabled={busy} onClick={list.reload}>Refresh offers</PageRefresh>
     {list.nextCursor && <button onClick={() => void list.loadMore()}>Load more offers</button>}
   </section>;
 }

@@ -1,3 +1,4 @@
+import { AdminHome } from "./AdminHome";
 import { PageHeader } from "../components/PageHeader";
 import { PageGrid } from "../components/PageGrid";
 import { departmentFor, pageSubtitle } from "../design/DepartmentIcon";
@@ -71,10 +72,7 @@ export function HospitalPage({
   if (role === "/admin") {
     if (route === "dashboard")
       content = (
-        <>
-          <Demographics admin />
-          <MedicineCatalog staff />
-        </>
+        <AdminHome />
       );
     if (route === "staff") content = <StaffManagement />;
     if (route === "doctors") content = <DoctorDirectory admin />;
@@ -87,7 +85,7 @@ export function HospitalPage({
   }
   if (role === "/receptionist")
     content =
-      route === "dashboard" ? <Demographics /> : <><Appointments reception /><details className="receptionist-care"><summary>Check-in and journey operations</summary><ReceptionWorkflowPanel /></details></>;
+      route === "dashboard" ? <Demographics /> : <><Appointments reception /><section className="receptionist-care"><h2>Check-in and patient journeys</h2><ReceptionWorkflowPanel /></section></>;
   if (!content)
     return <PlaceholderPage page={page} workspaceName={workspace.name} />;
   if (role === "/ops" || (role === "/admin" && ["control-room", "traces"].includes(route)))

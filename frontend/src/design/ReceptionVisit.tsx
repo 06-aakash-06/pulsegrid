@@ -1,3 +1,4 @@
+import { AdvancedLookup } from "../components/PageTools";
 import { Link } from "react-router-dom";
 import type { Appointment, Page } from "../hospital/models";
 import type { OwnQueue } from "../advanced/patient/contracts";
@@ -57,13 +58,13 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
         </small>
       </aside>
       {queue.response && (
-        <Link to="/patient/queue" className="counter-token-stand">
+        <AdvancedLookup title="Queue token slip"><Link to="/patient/queue" className="counter-token-stand">
           <small>YOUR TOKEN</small>
           <strong>{`A${String(queue.response.data.entry.token_number).padStart(3, "0")}`}</strong>
           <span>Consultation</span>
           <span>{queue.response.data.entry.state.replaceAll("_", " ")}</span>
           <b aria-hidden="true">→</b>
-        </Link>
+        </Link></AdvancedLookup>
       )}
       <div className="reception-information-rail">
         <section className="reception-today">

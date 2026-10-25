@@ -534,7 +534,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
                 disabled={loading || pendingProvider !== null || (!provider.version && !providerEtag)}
                 onClick={() => void requestRefresh(provider.id)}
               >
-                {pendingProvider === provider.id ? "Requesting…" : "Refresh source"}
+                {pendingProvider === provider.id ? "Requesting…" : "Update insurance data"}
               </button>
               {run && (
                 <div className="phase4-run-status">
@@ -549,7 +549,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
                       disabled={checkingRun !== null}
                       onClick={() => void checkRun(provider.id)}
                     >
-                      {checkingRun === provider.id ? "Checking…" : "Check refresh status"}
+                      {checkingRun === provider.id ? "Checking…" : "Check update status"}
                     </button>
                   ) : null}
                   {runError != null && (

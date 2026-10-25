@@ -1,3 +1,4 @@
+import { PageToolsProvider } from "../components/PageTools";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
@@ -119,7 +120,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
           <span aria-hidden="true">ⓘ</span>
           <div>
             <strong>Need help?</strong>
-            <small>Synthetic hospital prototype</small>
+            <small>Use the hospital directory</small>
           </div>
         </div>
         {allowed.length > 1 && (
@@ -151,7 +152,7 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
           className="workspace-content"
         >
           {logoutError && <p role="alert">{logoutError}</p>}
-          {state.status === "authenticated" && <Outlet />}
+          {state.status === "authenticated" && <PageToolsProvider key={location.pathname}><Outlet /></PageToolsProvider>}
         </main>
       </div>
       {menuOpen && (

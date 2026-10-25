@@ -1,3 +1,5 @@
+import { MoreActions } from "../../components/PageTools";
+import { PageRefresh } from "../../components/PageTools";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../auth/authContext";
 import { Fulfillment as ExistingFulfillment } from "../pharmacy";
@@ -88,9 +90,9 @@ function FulfillmentStatusLookup() {
         </label>
         <button type="submit" disabled={loading}>{loading ? "Loading fulfillment…" : "Load fulfillment status"}</button>
         {prescriptionId && (
-          <button type="button" disabled={loading} onClick={() => { setRefreshVersion((value) => value + 1); void load(prescriptionId); }}>
+          <PageRefresh type="button" disabled={loading} onClick={() => { setRefreshVersion((value) => value + 1); void load(prescriptionId); }}>
             Refresh fulfillment status
-          </button>
+          </PageRefresh>
         )}
       </form>
       {loading && <p role="status">Checking Records and Pharmacy…</p>}
@@ -181,10 +183,10 @@ export function StaffFulfillmentPanel({ title, workspaceName }: { title?: string
           pharmacist
           title={title}
           workspaceName={workspaceName}
-          verification={<>
+          verification={<MoreActions>
             <details className="fulfillment-verification"><summary>Verify prescription authority</summary><FulfillmentStatusLookup /></details>
             <details className="fulfillment-verification"><summary>Verify available stock</summary><StockVerification /></details>
-          </>}
+          </MoreActions>}
         />
       </div>
     </StaffRoleGate>

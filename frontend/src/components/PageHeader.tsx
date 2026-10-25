@@ -1,3 +1,4 @@
+import { PageRefreshControl } from "./PageTools";
 import type { ReactNode } from "react";
 import { DepartmentIcon, type Department } from "../design/DepartmentIcon";
 
@@ -8,6 +9,6 @@ export function PageHeader({ title, subtitle, department, actions, id }: {
   return <header className={`page-header page-header--${department}`}>
     <span className="page-header__icon" aria-hidden="true"><DepartmentIcon department={department} /></span>
     <div className="page-header__copy"><h1 id={id}>{title}</h1><p title={subtitle}>{subtitle}</p></div>
-    {actions && <div className="page-header__actions">{actions}</div>}
+    <div className="page-header__actions">{actions}<PageRefreshControl /></div>
   </header>;
 }
