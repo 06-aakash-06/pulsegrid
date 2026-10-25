@@ -2,7 +2,7 @@ import { MoreActions, ItemDetails, AdvancedLookup, PageRefresh } from "../compon
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { MedicineAutocomplete } from "../phase4";
 import { useAuth } from "../auth/authContext";
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { PatientFulfillmentPanel } from "../advanced/patient/PatientFulfillmentPanel";
 import { MedicineCabinet, PharmacyRoom, availabilityText, medicineLabel, useCursorPage } from "./pharmacyRoom";
@@ -310,8 +310,10 @@ function PrescriptionPaper({ prescriptionId, children }: { prescriptionId: strin
     </article>
   );
 }
-function BatchShelfLedger({ medicineId, revision }: { medicineId: string; revision: number }) {
+const batchFacts = (items: Batch[]) => Object.fromEntries(items.map((batch) => [batch.batch_code, `Batch ID ${batch.id} · Medicine ID ${batch.medicine_id} · Version ${batch.version}`]));
+function BatchShelfLedger({ medicineId, revision, onItems }: { medicineId: string; revision: number; onItems?: (items: Batch[]) => void }) {
   const batches = useCursorPage<Batch>(query("/api/v1/pharmacy/inventory", { medicine_id: medicineId }), revision);
+  useEffect(() => onItems?.(batches.items), [batches.items, onItems]);
   return (
     <div className="batch-ledger" aria-label="Inventory batches">
       <div className="batch-ledger__heading"><h3>Inventory batches</h3><PageRefresh type="button" disabled={batches.loading} onClick={batches.refresh}>Refresh</PageRefresh></div>
@@ -326,7 +328,7 @@ function BatchShelfLedger({ medicineId, revision }: { medicineId: string; revisi
         </table>
       )}
       {(batches.hasPrevious || batches.hasNext) && <div className="batch-ledger__pages"><button type="button" disabled={!batches.hasPrevious} onClick={batches.previous}>Previous batches</button><button type="button" disabled={!batches.hasNext} onClick={batches.next}>More batches</button></div>}
-      {batches.items.length > 0 && <ItemDetails><Facts values={Object.fromEntries(batches.items.map((batch) => [batch.batch_code, `Batch ID ${batch.id} · Medicine ID ${batch.medicine_id} · Version ${batch.version}`]))} /></ItemDetails>}
+      {!onItems && batches.items.length > 0 && <ItemDetails><Facts values={batchFacts(batches.items)} /></ItemDetails>}
     </div>
   );
 }
@@ -335,6 +337,7 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
   const [prescriptionId, setPrescriptionId] = useState<string | null>(null);
   const [ledgerMedicine, setLedgerMedicine] = useState("");
   const [revision, setRevision] = useState(0);
+  const [batchItems, setBatchItems] = useState<Batch[]>([]);
   const select = useCallback((id: string | null) => { setSelected(id); setLedgerMedicine(""); }, []);
   const medicine = useResource<Medicine>(selected ? `/api/v1/pharmacy/medicines/${selected}` : null, revision);
   const item = medicine.response?.data;
@@ -357,8 +360,7 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
               <p className="selected-medicine-name">{medicineLabel(item)}</p>
               <Facts values={{ "Catalog status": item.active ? "Active" : "Inactive", Availability: availabilityText[item.availability] }} />
               <p className="counter-note">Availability is advisory. Pharmacy rechecks stock when a reservation is made.</p>
-              <BatchShelfLedger medicineId={ledgerMedicine || item.id} revision={revision} />
-              <ItemDetails><Facts values={{ "Medicine ID": item.id, SKU: item.sku, "Catalog version": item.catalog_version, Version: item.version }} /></ItemDetails>
+              <BatchShelfLedger medicineId={ledgerMedicine || item.id} revision={revision} onItems={setBatchItems} />
             </div>
           )}
         </section>
@@ -366,7 +368,13 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
           <h2 id="dispensing-entry-title">Dispensing</h2>
           <p>Validate a Records prescription and review its Pharmacy reservation before dispensing.</p>
           <Link className="button" to={selected ? `/pharmacist/prescriptions?medicine=${encodeURIComponent(selected)}` : "/pharmacist/prescriptions"}>Open dispensing workspace →</Link>
-          <MoreActions>
+          <MoreActions label="Manage">
+          {item && (
+            <details className="catalog-reference">
+              <summary>Batch details</summary>
+              <Facts values={{ "Medicine ID": item.id, SKU: item.sku, "Catalog version": item.catalog_version, Version: item.version, ...batchFacts(batchItems) }} />
+            </details>
+          )}
           {item && (
             <details className="catalog-edit-tools"><summary>Edit selected catalog entry</summary>
               <CommandForm
@@ -471,7 +479,6 @@ export function Fulfillment({
           <FlashArea resetKey={selected}>
           {item && (
             <div key={item.id}>
-              <h3 className="dispensing-reservation-title">Current reservation</h3>
               <Facts values={{ State: item.state, "Expires (UTC)": item.expires_at }} />
               {item.items.map((line) => (
                 <div className="dispensing-medicine-line" key={line.prescription_item_id}>

@@ -1,12 +1,11 @@
-import { AdvancedLookup } from "../components/PageTools";
 import { Link } from "react-router-dom";
 import type { Appointment, Page } from "../hospital/models";
 import type { OwnQueue } from "../advanced/patient/contracts";
 import { formatDateTime, useResource } from "../hospital/ui";
-import { useLocalDemo } from "./localDemo";
 import { DepartmentIcon } from "./DepartmentIcon";
-export function ReceptionVisit({ patientId }: { patientId: string }) {
-  const demo = useLocalDemo();
+import { ReceptionScene } from "./ReceptionScene";
+const finishedStates = ["completed", "cancelled", "no_show"];
+export function ReceptionVisit({ patientId, name }: { patientId: string; name?: string }) {
   const visits = useResource<Page<Appointment>>(
     `/api/v1/appointments?patient_id=${patientId}&limit=20`,
   );
@@ -21,51 +20,43 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
   const queue = useResource<OwnQueue>(
     first ? `/api/v1/appointments/${first.id}/queue` : null,
   );
-  return (
-    <>
-      <aside className="reception-hospital-today">
-        <p className="eyebrow">YOUR VISIT TODAY</p>
+  const entry = queue.response?.data.entry;
+  const finished = !!entry && finishedStates.includes(entry.state);
+  const doctors = new Set(today.map((a) => a.doctor_id)).size;
+  const stats = (
+    <aside className="reception-hospital-today" aria-label="Your visit today">
+      <p className="eyebrow">Your visit today</p>
+      <div className="reception-stats">
         <div>
           <DepartmentIcon department="appointments" />
           <strong>{visits.loading ? "—" : today.length}</strong>
-          <span>{today.length === 1 ? "Visit today" : "Visits today"}</span>
+          <span>{today.length === 1 ? "visit today" : "visits today"}</span>
         </div>
         <div>
           <DepartmentIcon department="consultation" />
-          <strong>
-            {visits.loading ? "—" : new Set(today.map((a) => a.doctor_id)).size}
-          </strong>
-          <span>Doctors today</span>
+          <strong>{visits.loading ? "—" : doctors}</strong>
+          <span>{doctors === 1 ? "doctor today" : "doctors today"}</span>
         </div>
         <div>
           <DepartmentIcon department="waiting" />
-          <strong>{queue.response?.data.waiting_count ?? "—"}</strong>
-          <span>
-            {queue.response ? "In this queue" : "Queue after check-in"}
-          </span>
+          <strong>{entry && !finished ? queue.response?.data.waiting_count : "—"}</strong>
+          <span>{entry && !finished ? "in this queue" : finished ? "visit completed" : "after check-in"}</span>
         </div>
-        {visits.error && (
-          <p className="reception-live-error" role="alert">
-            Visit information unavailable.
-          </p>
-        )}
-        <small>
-          {!visits.loading && today.length === 0
-            ? upcoming
-              ? `No visits today. Next: ${formatDateTime(upcoming.starts_at)}`
-              : "No visits today"
-            : demo ? "Fictional demo" : "Times in UTC"}
-        </small>
-      </aside>
-      {queue.response && (
-        <AdvancedLookup title="Queue token slip"><Link to="/patient/queue" className="counter-token-stand">
-          <small>YOUR TOKEN</small>
-          <strong>{`A${String(queue.response.data.entry.token_number).padStart(3, "0")}`}</strong>
-          <span>Consultation</span>
-          <span>{queue.response.data.entry.state.replaceAll("_", " ")}</span>
-          <b aria-hidden="true">→</b>
-        </Link></AdvancedLookup>
+      </div>
+      {visits.error && (
+        <p className="reception-live-error" role="alert">
+          Visit information unavailable.
+        </p>
       )}
+      {!visits.loading && today.length === 0 && (
+        <small>
+          {upcoming ? `Next visit ${formatDateTime(upcoming.starts_at)}` : "No visits booked"}
+        </small>
+      )}
+    </aside>
+  );
+  return (
+    <ReceptionScene name={name} summary={stats}>
       <div className="reception-information-rail">
         <section className="reception-today">
           <div className="reception-info-title">
@@ -83,11 +74,9 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
                     : formatDateTime(first.starts_at)}
                 </time>
                 <span>
-                  {first.starts_at.slice(0, 10) !== todayUtc
-                    ? "No visits today · next consultation"
-                    : Date.parse(first.starts_at) > Date.now()
-                      ? "Your next consultation"
-                      : "Scheduled consultation"}
+                  {first.starts_at.slice(0, 10) === todayUtc && Date.parse(first.starts_at) <= Date.now()
+                    ? "Scheduled consultation"
+                    : "Your next consultation"}
                 </span>
               </p>
               <Link to="/patient/appointments?view=upcoming">
@@ -98,48 +87,49 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
             <p>Plan your next visit with the doctor directory.</p>
           )}
         </section>
-        <Link className="reception-queue-display" to="/patient/queue">
-          <span>{queue.response ? "YOUR QUEUE TOKEN" : "LIVE QUEUE"}</span>
-          <div className="queue-flaps">
-            {(queue.response
-              ? `A${String(queue.response.data.entry.token_number).padStart(3, "0")}`
-              : "—"
-            )
-              .split("")
-              .map((letter, i) => (
-                <strong key={i}>{letter}</strong>
-              ))}
-          </div>
-          <div>
-            <strong>
-              {queue.response?.data.entry.state.replaceAll("_", " ") ??
-                "Check in for your token"}
-            </strong>
-            <small>
-              {queue.response
-                ? `${queue.response.data.waiting_count} waiting in this queue`
-                : "Your place appears after check-in"}
-            </small>
-          </div>
-          <b aria-hidden="true">→</b>
-        </Link>
+        {finished ? (
+          <section className="reception-queue-display reception-queue-display--done">
+            <span>Your visit</span>
+            <strong>Visit completed</strong>
+            <Link className="button" to="/patient/journey">View visit summary</Link>
+          </section>
+        ) : entry ? (
+          <Link className="reception-queue-display" to="/patient/queue">
+            <span>Your queue token</span>
+            <div className="queue-flaps" aria-label={`Token A${String(entry.token_number).padStart(3, "0")}`}>
+              {`A${String(entry.token_number).padStart(3, "0")}`
+                .split("")
+                .map((letter, i) => (
+                  <strong key={i} aria-hidden="true">{letter}</strong>
+                ))}
+            </div>
+            <div>
+              <strong>{entry.state.replaceAll("_", " ")}</strong>
+              <small>{`${queue.response?.data.waiting_count} waiting in this queue`}</small>
+            </div>
+            <b aria-hidden="true">→</b>
+          </Link>
+        ) : (
+          <section className="reception-queue-display reception-queue-display--empty">
+            <span>Your queue token</span>
+            <strong>Not checked in yet</strong>
+            <small>Your token appears after check-in.</small>
+            <Link className="button" to="/patient/check-in">Check in</Link>
+          </section>
+        )}
         <section className="reception-announcements">
-          <h3>
-            Announcements <span aria-hidden="true">◖</span>
-          </h3>
-          <p>
-            <i aria-hidden="true" />
-            View the latest status of your visit in{" "}
-            <Link to="/patient/journey">Patient journey</Link>.
-          </p>
-          <p>
-            <i aria-hidden="true" />
-            Use <Link to="/patient/check-in">Check In</Link> for your secure
-            appointment token.
-          </p>
+          <h3>Announcements</h3>
+          <ul>
+            <li>
+              Follow your visit in <Link to="/patient/journey">Patient journey</Link>.
+            </li>
+            <li>
+              Use <Link to="/patient/check-in">Check In</Link> for your secure appointment token.
+            </li>
+          </ul>
           <small>Hospital announcements feed is not connected.</small>
         </section>
       </div>
-    </>
+    </ReceptionScene>
   );
 }

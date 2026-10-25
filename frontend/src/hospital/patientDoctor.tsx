@@ -5,7 +5,6 @@ import { DoctorPortrait, useLocalDemo } from "../design/localDemo";
 import { ReceptionVisit } from "../design/ReceptionVisit";
 import { ReferenceConsultation } from "../design/ReferenceConsultation";
 import { m } from "motion/react";
-import { ReceptionScene } from "../design/ReceptionScene";
 import { Link, useSearchParams } from "react-router-dom";
 import { DepartmentIcon } from "../design/DepartmentIcon";
 import { DepartmentSign } from "../design/DepartmentSign";
@@ -32,6 +31,7 @@ import {
   date,
   Facts,
   FlashArea,
+  formatSlot,
   id,
   idField,
   ids,
@@ -126,7 +126,7 @@ export function ProfileEditor({
 }
 export function PatientDashboard() {
   return <Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>{(profile,_etag,refresh)=><>
-    <ReceptionScene name={profile.display_name}><ReceptionVisit patientId={profile.id}/></ReceptionScene>
+    <ReceptionVisit patientId={profile.id} name={profile.display_name}/>
     <PageRefresh type="button" onClick={refresh}>Refresh profile</PageRefresh>
   </>}</Resource>;
 }
@@ -206,6 +206,7 @@ export function StaffManagement() {
     <PageGrid preset={selected ? "main+aside" : "main"} className="account-register">
       <Panel title="Filter accounts">
         <form
+          className="filter-row"
           onSubmit={(e) => {
             e.preventDefault();
             if (
@@ -239,7 +240,7 @@ export function StaffManagement() {
             values={draft}
             change={(name, value) => setDraft({ ...draft, [name]: value })}
           />
-          <button>Filter accounts</button>
+          <button aria-label="Filter accounts">Apply</button>
           {error && <p role="alert">{error}</p>}
         </form>
       </Panel>
@@ -349,7 +350,6 @@ const slotGroups = [
 export function AvailabilityPicker({
   doctorId,
   onSlot,
-  autoLoad = false,
   onClear,
   doctorName,
   day: chosenDay,
@@ -360,7 +360,6 @@ export function AvailabilityPicker({
   bookedAppointments?: Appointment[];
   revision?: number;
   doctorId: string;
-  autoLoad?: boolean;
   onClear?: () => void;
   onSlot?: (slotId: string, revision: number, startsAt: string, endsAt: string) => void;
   doctorName?: string;
@@ -388,10 +387,19 @@ export function AvailabilityPicker({
   useEffect(() => setSelectedSlot(null), [revision]);
   useEffect(() => {
     setSelectedSlot(null);
-    const span = Date.parse(values.to ?? "") - Date.parse(values.from ?? "");
-    const valid = values.from?.endsWith("Z") && values.to?.endsWith("Z") && span > 0 && span <= 31 * dayMs;
-    setPath(autoLoad && valid ? query("/api/v1/appointments/availability", { doctor_id: doctorId, from: values.from, to: values.to }) : null);
-  }, [doctorId, values.from, values.to, autoLoad]);
+    try {
+      const from = utc(values.from ?? "");
+      const to = utc(values.to ?? "");
+      const span = Date.parse(to) - Date.parse(from);
+      if (span <= 0 || span > 31 * dayMs) throw new Error("Choose a positive interval of at most 31 days.");
+      if (Date.parse(to) <= Date.now()) throw new Error("That date has passed. Choose today or a later date.");
+      setPath(query("/api/v1/appointments/availability", { doctor_id: id(doctorId), from, to }));
+      setError("");
+    } catch (err) {
+      setPath(null);
+      setError(err instanceof Error ? err.message : "Invalid interval.");
+    }
+  }, [doctorId, values.from, values.to]);
   const selectedDay = values.from?.slice(0, 10);
   return (
     <section className="availability-picker" aria-label="Accepted availability">
@@ -463,24 +471,7 @@ export function AvailabilityPicker({
           </div>
         )}
       </Resource>
-      <form
-        className="availability-range-form"
-        noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
-          try {
-            const from = utc(values.from ?? "");
-            const to = utc(values.to ?? "");
-            const span = Date.parse(to) - Date.parse(from);
-            if (span <= 0 || span > 31 * dayMs) throw new Error("Choose a positive interval of at most 31 days.");
-            if (Date.parse(to) <= Date.now()) throw new Error("That date has passed. Choose today or a later date.");
-            setPath(query("/api/v1/appointments/availability", { doctor_id: id(doctorId), from, to }));
-            setError("");
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Invalid interval.");
-          }
-        }}
-      >
+      <form className="availability-range-form" noValidate onSubmit={(e) => e.preventDefault()}>
         <details className="availability-range">
           <summary>Another date or UTC range</summary>
           <label className="availability-date">Choose date (UTC)<input type="date" min={today} value={selectedDay ?? today} onChange={(e) => { if (e.target.value) { setWeekStart(e.target.value); chooseDay(e.target.value); } }} /></label>
@@ -493,7 +484,6 @@ export function AvailabilityPicker({
             change={(name, value) => { setValues({ ...values, [name]: value }); onClear?.(); }}
           />
         </details>
-        <button>Load availability</button>
         {error && <p role="alert">{error}</p>}
       </form>
     </section>
@@ -551,7 +541,6 @@ export function Booking({
             key={doctor}
             doctorId={doctor}
             doctorName={doctorLabel ? `${doctorLabel}${specialty ? ` (${specialty})` : ""}` : undefined}
-            autoLoad={!doctorId}
             revision={availabilityRevision}
             onClear={() => setSlot(null)}
             onSlot={(id, revision, startsAt, endsAt) => { setConfirmed(null); setSlot({ id, revision, startsAt, endsAt }); }}
@@ -561,11 +550,11 @@ export function Booking({
       {patientProfile && (
         <section className="booking-patient-details" aria-labelledby="booking-patient-title">
           <h4 id="booking-patient-title">Patient details</h4>
-          <div className="booking-patient-fields">
-            <label>Full name<input readOnly value={patientProfile.display_name} /></label>
-            <label>Date of birth<input readOnly value={patientProfile.date_of_birth ?? "Not provided"} /></label>
-            <div className="readonly-field"><span>Contact</span><p>{patientProfile.synthetic_contact ?? "Not provided"}</p></div>
-          </div>
+          <dl className="booking-patient-facts">
+            <div><dt>Full name</dt><dd>{patientProfile.display_name}</dd></div>
+            <div><dt>Date of birth</dt><dd>{patientProfile.date_of_birth ?? "Not provided"}</dd></div>
+            <div><dt>Contact</dt><dd>{patientProfile.synthetic_contact ?? "Not provided"}</dd></div>
+          </dl>
           <small>From the patient profile. Edit it at Reception.</small>
         </section>
       )}
@@ -625,6 +614,10 @@ export function Booking({
                 />
               </div>
             ) : <p className="booking-hint">Select a doctor and an available time to continue.</p>}
+            <div className="printed-receipt printed-receipt--pending">
+              <p className="printed-receipt__brand"><DepartmentIcon department="appointments" />PulseGrid · Appointment slip</p>
+              <p>Your printed slip appears here after booking.</p>
+            </div>
           </>
         )}
       </aside>
@@ -854,7 +847,7 @@ export function Appointments({
                 const clinician = doctorFor(entry.doctor_id);
                 return (
                   <li key={entry.id} className="appointment-row" data-kind={kind}>
-                    <div className="appointment-row__when"><strong>{longDay(entry.starts_at)}</strong><span>{clock(entry.starts_at)} – {clock(entry.ends_at)} UTC</span></div>
+                    <div className="appointment-row__when"><strong>{formatSlot(entry.starts_at)}</strong><span>{new Date(entry.starts_at).toLocaleDateString("en", { weekday: "short", timeZone: "UTC" })} · {Math.round((Date.parse(entry.ends_at) - Date.parse(entry.starts_at)) / 60000)} min · UTC</span></div>
                     <div className="appointment-row__doctor"><DoctorPortrait name={clinician?.display_name ?? "Clinician"} index={demo?.doctors[entry.doctor_id]?.portrait}/><div><strong>{doctorName(entry.doctor_id)}</strong><small>{clinician?.specialties.map(s=>s.name).join(", ") ?? "Specialty not returned"}</small>{(reception||doctor)&&<small>{demo?.patients[entry.patient_id]?.name??`Patient …${entry.patient_id.slice(-4)}`}</small>}</div></div>
                     <span className="owner-state" data-state={kind}>{kind === "upcoming" ? "Confirmed" : kind === "past" ? "Past visit" : "Cancelled"}</span>
                     <div className="appointment-row__actions">
@@ -899,7 +892,7 @@ export function Appointments({
               {list.loading && <p role="status">Loading appointments…</p>}
               {list.items.filter((entry) => category(entry) === "upcoming").map((entry) => (
                 <button key={entry.id} type="button" className="reschedule-pick__row" aria-label={`Reschedule appointment ${entry.id}`} onClick={() => openChange(entry)}>
-                  <strong>{longDay(entry.starts_at)} · {clock(entry.starts_at)} UTC</strong><span>{doctorName(entry.doctor_id)}</span>
+                  <strong>{formatSlot(entry.starts_at)} UTC</strong><span>{doctorName(entry.doctor_id)}</span>
                 </button>
               ))}
               {list.loaded && counts.upcoming === 0 && <p>No upcoming appointments can be changed.</p>}
@@ -931,7 +924,7 @@ export function Appointments({
                     <section className="reschedule-slots" aria-labelledby="reschedule-slots-title">
                       <h3 id="reschedule-slots-title">Available time slots</h3>
                       <fieldset className="reschedule-calendar" disabled={managementLocked}>
-                        {targetDoctor && <AvailabilityPicker key={targetDoctor} doctorId={targetDoctor} doctorName={targetDoctor === item.doctor_id ? undefined : doctorName(targetDoctor)} day={targetDay} showWeek={false} autoLoad onClear={() => setTargetSlot(null)} onSlot={(id, revision, startsAt) => setTargetSlot({ id, revision, startsAt })} />}
+                        {targetDoctor && <AvailabilityPicker key={targetDoctor} doctorId={targetDoctor} doctorName={targetDoctor === item.doctor_id ? undefined : doctorName(targetDoctor)} day={targetDay} showWeek={false} onClear={() => setTargetSlot(null)} onSlot={(id, revision, startsAt) => setTargetSlot({ id, revision, startsAt })} />}
                       </fieldset>
                     </section>
                   </>
@@ -1216,7 +1209,7 @@ export function DoctorManagement({
       </section>
       <section hidden={dashboard && tab!=="Today"}>
       {dashboard && <><h2>Today's slots</h2><Link className="button" to="/doctor/queue">Open patient queue</Link></>}
-      <AvailabilityPicker doctorId={doctor.id} autoLoad />
+      <AvailabilityPicker doctorId={doctor.id} />
       </section>
       <section hidden={dashboard && tab!=="Schedule changes"}>
       {doctor.active && (

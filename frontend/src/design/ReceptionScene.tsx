@@ -37,10 +37,12 @@ const slips: {
 export function ReceptionScene({
   name,
   publicView = false,
+  summary,
   children,
 }: {
   name?: string;
   publicView?: boolean;
+  summary?: ReactNode;
   children?: ReactNode;
 }) {
   const scene = useRef<HTMLDivElement>(null);
@@ -68,7 +70,7 @@ export function ReceptionScene({
           {
             title: "Consultation",
             path: "doctors",
-            sub: "Doctors & specialties",
+            sub: "Find a doctor",
             dep: "consultation",
           },
           {
@@ -80,13 +82,13 @@ export function ReceptionScene({
           {
             title: "Pharmacy",
             path: "pharmacy",
-            sub: "Prescription fulfillment",
+            sub: "Your medicines",
             dep: "pharmacy",
           },
           {
             title: "Emergency",
             path: "emergency",
-            sub: "Urgent care requests",
+            sub: "Urgent help",
             dep: "emergency",
           },
         ].map((s) => (
@@ -118,6 +120,7 @@ export function ReceptionScene({
           </h2>
 
         </div>
+        {summary}
         {publicView && (
           <aside className="reception-guidance">
             <p className="eyebrow">YOUR VISIT, CONNECTED</p>
@@ -136,15 +139,17 @@ export function ReceptionScene({
           </aside>
         )}
       </section>
-      <div className="robot-conversation">
-        <p>
-          Hello{name ? ` ${name.split(" ")[0]}` : ""}.<br />
-          Find your way with the hospital directory.
-        </p>
-        <span aria-hidden="true">✦</span>
-      </div>
+      {publicView && (
+        <div className="robot-conversation">
+          <p>
+            Hello.<br />
+            Find your way with the hospital directory.
+          </p>
+          <span aria-hidden="true">✦</span>
+        </div>
+      )}
       <div className="reception-counter">
-        <p className="reception-counter-label">RECEPTION</p>
+        <h2 className="reception-counter-label">Start here</h2>
         <div className="appointment-slips">
           {slips.map((s) => (
             <Link

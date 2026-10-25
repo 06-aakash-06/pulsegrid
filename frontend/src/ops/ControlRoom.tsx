@@ -3,7 +3,7 @@ import { PageRefresh } from "../components/PageTools";
 import { PageGrid } from "../components/PageGrid";
 import { PageHeader } from "../components/PageHeader";
 import { SurgeModeControls } from "./SurgeModeControls";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { StatusBadge } from "../components/StatusBadge";
@@ -108,6 +108,10 @@ interface TraceSpan {
   duration_ms: number;
 }
 
+function queueLabel(name: string) {
+  const [service, kind, target] = name.replace("pulsegrid.", "").split(".");
+  return kind === "journey" && target ? `${service} to ${target}` : `${service} updates`;
+}
 function number(value: number | null | undefined, digits = 1): string {
   return value === null || value === undefined || !Number.isFinite(value)
     ? "No data"
@@ -379,7 +383,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
                   <div className="ops-table-wrap" tabIndex={0} role="region" aria-label="RabbitMQ queues">
                     <table className="ops-table ops-queue-table">
                       <thead><tr><th scope="col">Queue</th><th scope="col">Ready</th><th scope="col">Unacked</th><th scope="col">Consumers</th></tr></thead>
-                      <tbody>{queues.map((queue) => <tr key={queue.name}><th scope="row">{queue.name.replace("pulsegrid.", "").split(".")[0]} updates<ItemDetails>Queue {queue.name}</ItemDetails></th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
+                      <tbody>{queues.map((queue) => <tr key={queue.name}><th scope="row">{queueLabel(queue.name)}<ItemDetails><code className="ops-queue-name">{queue.name.split(".").map((part, i) => <Fragment key={i}>{i ? <>.<wbr /></> : null}{part}</Fragment>)}</code></ItemDetails></th><td>{queue.ready}</td><td>{queue.unacknowledged}</td><td>{queue.consumers}</td></tr>)}</tbody>
                     </table>
                   </div>
                 ) : <EmptyRows>No RabbitMQ queue samples.</EmptyRows>}

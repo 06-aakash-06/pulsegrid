@@ -353,6 +353,8 @@ function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: str
   return (
     <div className="cashier-import">
       <p>Import finalized sources for <strong><VisitLabel appointmentId={invoice.appointment_id}/></strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
+      <p className="cashier-import__hint">Records and Pharmacy do not list a visit's sources to Billing yet. Use the references they send you.</p>
+      <details className="item-details cashier-import__advanced" data-disclosure="advanced"><summary>Advanced: import by reference</summary>
       <CommandForm
         title="Import charges manually"
         reviewLabel="Review import"
@@ -374,6 +376,7 @@ function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: str
         onSuccess={onChange}
         notice="Source IDs must belong to this invoice's appointment and patient. Missing imports are not detected automatically."
       />
+      </details>
     </div>
   );
 }

@@ -19,3 +19,4 @@ import "./styles/responsive.css";
 import "./styles/layout-system.css";
 
 import "./styles/declutter.css";
+import "./styles/polish.css";

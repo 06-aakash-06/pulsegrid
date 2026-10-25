@@ -17,6 +17,7 @@ export function medicineLabel(item: Pick<Medicine, "id" | "name">) {
 
 const cartonTones = ["teal", "red", "ochre", "blue"] as const;
 const BAYS = "ABCDEFG".split("");
+const noItems: never[] = [];
 
 /** Bounded cursor paging for one owner collection; resets when its path changes. */
 export function useCursorPage<T>(path: string | null, revision = 0) {
@@ -28,7 +29,7 @@ export function useCursorPage<T>(path: string | null, revision = 0) {
   const resource = useResource<Page<T>>(paged, revision);
   const data = resource.response?.data;
   return {
-    items: data?.items ?? [],
+    items: data?.items ?? noItems,
     loaded: !!data,
     loading: resource.loading,
     error: resource.error,
@@ -136,7 +137,7 @@ export function MedicineCabinet({
             ))}
           </div>
           <details className="cabinet-rail__options">
-            <summary>More search options</summary>
+            <summary title="More search options"><span className="sr-only">More search options</span><span aria-hidden="true">⚙</span></summary>
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -177,9 +178,7 @@ export function MedicineCabinet({
             const label = medicineLabel(item);
             return (
               <li key={item.id} className="shelf-slot" data-selected={selected === item.id} data-availability={item.availability}>
-                <span className="carton" aria-hidden="true" data-tone={cartonTones[(Number(item.id.slice(-2)) || index) % cartonTones.length]}>
-                  <span>{label.split(/\s+/)[0]}</span>
-                </span>
+                <span className="carton" aria-hidden="true" data-tone={cartonTones[(Number(item.id.slice(-2)) || index) % cartonTones.length]} />
                 <button type="button" className="shelf-label" aria-pressed={selected === item.id} title={label} onClick={() => onSelect(item.id)}>
                   <strong>{label}</strong>
                   <span>

@@ -1,4 +1,3 @@
-import { ItemDetails } from "../components/PageTools";
 import { PageRefresh, AdvancedLookup } from "../components/PageTools";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
@@ -11,16 +10,11 @@ import type {
   Specialty,
   PatientProfile,
 } from "../hospital/models";
-import { useResource, query } from "../hospital/ui";
+import { useResource, query, formatSlot } from "../hospital/ui";
 import { DoctorAutocomplete } from "../phase4";
 import { DepartmentIcon } from "./DepartmentIcon";
 import { DoctorPortrait, useLocalDemo, type DemoHospital } from "./localDemo";
-const clock = (value: string) =>
-  new Date(value).toLocaleTimeString("en", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "UTC",
-  });
+const clock = (value: string) => formatSlot(value).split(" · ")[1];
 function bounds() {
   const from = new Date();
   from.setUTCHours(0, 0, 0, 0);
@@ -67,7 +61,7 @@ function DoctorAvailability({
       </strong>
       <small>
         {first
-          ? `${clock(first.starts_at)} · ${new Date(first.starts_at).toLocaleDateString("en", { day: "numeric", month: "short", timeZone: "UTC" })} UTC`
+          ? formatSlot(first.starts_at)
           : resource.error
             ? "Try again in Schedule"
             : "Next 48 hours"}
@@ -76,23 +70,13 @@ function DoctorAvailability({
         <div className="profile-schedule-metrics">
           <span>
             <strong>{resource.response.data.slots.length}</strong>
-            <small>Open times</small>
+            <small>Open slots, next 2 days</small>
           </span>
           <span>
-            <strong>
-              {
-                new Set(
-                  resource.response.data.slots.map((s) =>
-                    s.starts_at.slice(0, 10),
-                  ),
-                ).size
-              }
+            <strong title={doctor.specialties.map((s) => s.name).join(", ")}>
+              {doctor.specialties[0]?.name ?? "—"}
             </strong>
-            <small>Schedule days</small>
-          </span>
-          <span>
-            <ItemDetails>Accepted revision {resource.response.data.accepted_revision}</ItemDetails>
-            <small>Schedule confirmed</small>
+            <small>Specialty</small>
           </span>
         </div>
       )}
@@ -122,7 +106,7 @@ function ProfileSchedule({ doctor }: { doctor: Doctor }) {
         <p role="alert">{resource.error}</p>
       ) : resource.response ? (
         <>
-          <p>Accepted times · next 48 hours · UTC</p>
+          <p>Open times · next 48 hours · UTC</p>
           <div>
             {resource.response.data.slots.slice(0, 12).map((slot) => (
               <span key={slot.id}>
@@ -140,10 +124,7 @@ function ProfileSchedule({ doctor }: { doctor: Doctor }) {
           {!resource.response.data.slots.length && (
             <p>No available times in this range.</p>
           )}
-          <small>
-            Revision {resource.response.data.accepted_revision}. Booking
-            rechecks the selected time.
-          </small>
+          <small>Booking rechecks the selected time.</small>
         </>
       ) : null}
     </div>
@@ -473,6 +454,7 @@ export function ReferenceConsultation({
               </button>
             ))}
           </div>
+          {rows.length > 5 && <p className="roster-more" aria-hidden="true">Scroll for more doctors</p>}
           <div className="roster-pagination">
             <button
               disabled={bookingLocked || !history.length || roster.loading}

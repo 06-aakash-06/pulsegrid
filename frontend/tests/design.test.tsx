@@ -130,7 +130,7 @@ describe("hospital design integration", () => {
     expect(details.open).toBe(false);
     expect(account).toHaveFocus();
   });
-  it("date selection sets a UTC interval without making a booking or fetching prematurely", async () => {
+  it("date selection sets a UTC interval and loads its availability without a button", async () => {
     const fetcher = vi.fn(
       async (_url: RequestInfo | URL) =>
         new Response(
@@ -150,20 +150,18 @@ describe("hospital design integration", () => {
     });
     expect(screen.getByLabelText("From (UTC)")).toHaveValue(`${day}T00:00:00Z`);
     expect(screen.getByLabelText("To (UTC)")).toHaveValue(next);
-    expect(fetcher).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     await screen.findByText("No available slots in this interval.");
-    expect(fetcher).toHaveBeenCalledTimes(1);
-    expect(String(fetcher.mock.calls[0]?.[0])).toContain("doctor_id=31");
+    expect(String(fetcher.mock.calls.at(-1)?.[0])).toContain("doctor_id=31");
+    expect(String(fetcher.mock.calls.at(-1)?.[0])).toContain(encodeURIComponent(`${day}T00:00:00Z`));
+    expect(screen.queryByRole("button", { name: "Load availability" })).not.toBeInTheDocument();
   });
-  it("explains a past date inline instead of silently blocking the request", async () => {
-    const fetcher = vi.fn(async () => new Response("{}", { headers: { "Content-Type": "application/json" } }));
+  it("explains a past date inline and does not request it", async () => {
+    const fetcher = vi.fn(async (_url: RequestInfo | URL) => new Response("{}", { headers: { "Content-Type": "application/json" } }));
     mount(<AvailabilityPicker doctorId="31" />, fetcher);
     fireEvent.change(screen.getByLabelText("From (UTC)"), { target: { value: "2020-01-01T00:00:00Z" } });
     fireEvent.change(screen.getByLabelText("To (UTC)"), { target: { value: "2020-01-02T00:00:00Z" } });
-    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     expect(await screen.findByText("That date has passed. Choose today or a later date.")).toBeInTheDocument();
-    expect(fetcher).not.toHaveBeenCalled();
+    expect(fetcher.mock.calls.filter(([url]) => String(url).includes("2020-01-0"))).toHaveLength(0);
   });
   it("does not run the reception scene introduction when motion is reduced", () => {
     vi.stubGlobal(
