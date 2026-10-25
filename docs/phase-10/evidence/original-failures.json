@@ -1,0 +1,175 @@
+{
+  "failures": [
+    {
+      "timestamp": "2026-10-25T08:17:11.235701+00:00",
+      "level": "info",
+      "logger": "pulsegrid.records",
+      "message": "http_request_completed",
+      "service": "records",
+      "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+      "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+      "traceparent": "00-2ed408928748c17e9ec2109b12136596-18d806f0f1f53e94-01",
+      "method": "POST",
+      "path": "/api/v1/records/consultations",
+      "status_code": 504,
+      "duration_ms": 5717.265
+    },
+    {
+      "timestamp": "2026-10-25T08:29:19.463312+00:00",
+      "level": "info",
+      "logger": "pulsegrid.appointment",
+      "message": "http_request_completed",
+      "service": "appointment",
+      "request_id": "6996f2bb-521f-4496-ae06-2445b04c4063",
+      "correlation_id": "184e1bd2-6818-49b2-9a33-af8f6eaa21a5",
+      "traceparent": "00-749a518a721cae103c4d848ecb294393-269bea1a6185e612-01",
+      "method": "GET",
+      "path": "/api/v1/appointments/operations/surge-mode",
+      "status_code": 503,
+      "duration_ms": 102.807
+    }
+  ],
+  "correlated_requests": {
+    "patient": [
+      {
+        "timestamp": "2026-10-25T08:17:05.787182+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "patient",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-9b4ea30408a57499-01",
+        "method": "POST",
+        "path": "/internal/v1/authorization/check",
+        "status_code": 200,
+        "duration_ms": 21.464
+      },
+      {
+        "timestamp": "2026-10-25T08:17:06.298835+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "patient",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-ecab4dc6110346d8-01",
+        "method": "POST",
+        "path": "/internal/v1/authorization/check",
+        "status_code": 200,
+        "duration_ms": 34.4
+      },
+      {
+        "timestamp": "2026-10-25T08:17:06.996102+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "patient",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-9af79556e533d63b-01",
+        "method": "POST",
+        "path": "/internal/v1/authorization/check",
+        "status_code": 200,
+        "duration_ms": 12.308
+      },
+      {
+        "timestamp": "2026-10-25T08:17:08.603077+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "patient",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-5de8cf2ba6473414-01",
+        "method": "GET",
+        "path": "/internal/v1/patients/{patient_id}/status",
+        "status_code": 200,
+        "duration_ms": 344.702
+      },
+      {
+        "timestamp": "2026-10-25T08:29:19.390886+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "patient",
+        "request_id": "6996f2bb-521f-4496-ae06-2445b04c4063",
+        "correlation_id": "184e1bd2-6818-49b2-9a33-af8f6eaa21a5",
+        "traceparent": "00-749a518a721cae103c4d848ecb294393-b24a95a376afb244-01",
+        "method": "POST",
+        "path": "/internal/v1/authorization/check",
+        "status_code": 200,
+        "duration_ms": 13.479
+      }
+    ],
+    "doctor": [],
+    "doctor_replica": [],
+    "appointment": [
+      {
+        "timestamp": "2026-10-25T08:17:06.580307+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "appointment",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-fb4ec0616d153e4b-01",
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/consultation-context",
+        "status_code": 200,
+        "duration_ms": 15.486
+      },
+      {
+        "timestamp": "2026-10-25T08:17:07.007873+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "appointment",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-9b0b43010e8101f7-01",
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/workflow-context",
+        "status_code": 200,
+        "duration_ms": 43.674
+      },
+      {
+        "timestamp": "2026-10-25T08:17:10.748869+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "appointment",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-814d86f2f84937ac-01",
+        "method": "POST",
+        "path": "/internal/v1/appointments/{appointment_id}/clinical-hold",
+        "status_code": 200,
+        "duration_ms": 1203.513
+      },
+      {
+        "timestamp": "2026-10-25T08:29:19.463312+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "appointment",
+        "request_id": "6996f2bb-521f-4496-ae06-2445b04c4063",
+        "correlation_id": "184e1bd2-6818-49b2-9a33-af8f6eaa21a5",
+        "traceparent": "00-749a518a721cae103c4d848ecb294393-269bea1a6185e612-01",
+        "method": "GET",
+        "path": "/api/v1/appointments/operations/surge-mode",
+        "status_code": 503,
+        "duration_ms": 102.807
+      }
+    ],
+    "records": [
+      {
+        "timestamp": "2026-10-25T08:17:11.235701+00:00",
+        "level": "info",
+        "message": "http_request_completed",
+        "service": "records",
+        "request_id": "6e08ceaf-d3ec-457a-af3c-ed4e12fe1260",
+        "correlation_id": "e4b34845-95b3-40a8-a494-7e3bb4f06e41",
+        "traceparent": "00-2ed408928748c17e9ec2109b12136596-18d806f0f1f53e94-01",
+        "method": "POST",
+        "path": "/api/v1/records/consultations",
+        "status_code": 504,
+        "duration_ms": 5717.265
+      }
+    ],
+    "pharmacy": [],
+    "billing": [],
+    "emergency": []
+  }
+}

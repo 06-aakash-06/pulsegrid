@@ -1,0 +1,10 @@
+{
+  "issuedBy": "actual browser owner command",
+  "appointmentId": "6962637790565283778",
+  "expiresAt": "2026-10-25T09:26:00Z",
+  "hardwareReported": "FaceTime HD Camera",
+  "cameraStart": "pending permission; no active video observed",
+  "cancelRequest": "PASS; manual controls restored",
+  "physicalDecode": "BLOCKED pending browser permission and physical target",
+  "qrOrCredentialCommitted": false
+}

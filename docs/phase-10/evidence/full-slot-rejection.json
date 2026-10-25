@@ -1,0 +1,8 @@
+{
+  "isolated_project": "pulsegrid-audit-20261025",
+  "slot_id": "73702681858856591",
+  "first_booking_status": 201,
+  "second_patient_status": 409,
+  "second_patient_error": "slot_occupied",
+  "retained_records_touched": false
+}

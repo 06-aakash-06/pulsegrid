@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "profile_directory_and_account_authority",
+    "doctor_catalog_search_and_maintenance",
+    "medicine_catalog_search_autocomplete_and_version",
+    "clinical_rx_connected_journey",
+    "clinical_no_rx_connected_journey",
+    "clinical_rx_immutable_amendment",
+    "clinical_no_rx_immutable_amendment"
+  ],
+  "isolated": true,
+  "raw_tokens_recorded": false
+}

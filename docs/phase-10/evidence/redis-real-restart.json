@@ -1,0 +1,16 @@
+{
+  "default_user_still_disabled": true,
+  "runtime_admission_acl_unchanged": true,
+  "credentials_rotated": false,
+  "offline_replay_effects": [
+    "SELECT",
+    "HSET",
+    "PEXPIREAT",
+    "DEL"
+  ],
+  "isolated_redis_restart": true,
+  "started_at": "2026-10-25T09:06:54.495358557Z",
+  "aof_loading_errors": 0,
+  "retained_redis_restarted": false,
+  "volumes_deleted": false
+}

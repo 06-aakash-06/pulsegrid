@@ -1,0 +1,33 @@
+{
+  "planned_restarts": [
+    "redis",
+    "tempo"
+  ],
+  "configuration_only": true,
+  "credentials_rotated": false,
+  "volume_deletion": false,
+  "memory_ceiling_changed": false,
+  "services": {
+    "redis": {
+      "started_at": "2026-10-25T09:11:05.540633304Z",
+      "restart_count": 0,
+      "running": true,
+      "oom_killed_now": false,
+      "volume_names": [
+        "pulsegrid_redis_data"
+      ],
+      "log_lines_since_start": 33,
+      "aof_replay_errors": 0
+    },
+    "tempo": {
+      "started_at": "2026-10-25T09:11:16.072646567Z",
+      "restart_count": 0,
+      "running": true,
+      "oom_killed_now": false,
+      "volume_names": [
+        "pulsegrid_tempo_data"
+      ],
+      "log_lines_since_start": 24
+    }
+  }
+}

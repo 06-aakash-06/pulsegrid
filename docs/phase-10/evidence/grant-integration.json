@@ -1,0 +1,9 @@
+{
+  "isolated": true,
+  "grant_create_browser": 201,
+  "grant_id": "2089",
+  "authorized_history_before_revoke": 200,
+  "grant_revoke_browser": 204,
+  "history_after_revoke": 404,
+  "physical_camera": false
+}

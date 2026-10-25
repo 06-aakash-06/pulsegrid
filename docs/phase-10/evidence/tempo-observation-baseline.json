@@ -1,0 +1,875 @@
+{
+  "duration_target_seconds": 600,
+  "complete": true,
+  "observed_seconds": 624.9031138420105,
+  "samples": [
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 79.54585699917516
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 96.30427900083305
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.02451056e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.59883264e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "480735",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 395.8576429995446
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T08:59:04.215348+00:00",
+      "elapsed_seconds": 1.2888329029083252,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 81.4705379998486
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 6.964404001337243
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.52403448e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.72204032e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "481833",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 110.99508799998148
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T08:59:25.506488+00:00",
+      "elapsed_seconds": 22.487260818481445,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 22.724938000465045
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 8.108914998956607
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.03968112e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.78888704e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "482928",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 73.79207899975881
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T08:59:46.708397+00:00",
+      "elapsed_seconds": 43.08567690849304,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 16.5820829988661
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 8.532376999937696
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.20593432e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.86097664e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "484290",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 82.14940700054285
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:00:07.303491+00:00",
+      "elapsed_seconds": 64.08330988883972,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 16.150035999089596
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 6.366604999129777
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.11557232e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.03661312e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "485392",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 89.68622700012929
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:00:28.304845+00:00",
+      "elapsed_seconds": 84.6807930469513,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 84.16633300112153
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 7.4521569986245595
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.33808792e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.03792384e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "486282",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 17.182753999804845
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:00:48.899182+00:00",
+      "elapsed_seconds": 105.39025092124939,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 66.93815800099401
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 18.408055999316275
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.45177608e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.03792384e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "487698",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 91.84211100000539
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:01:09.607187+00:00",
+      "elapsed_seconds": 126.01661396026611,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 17.0885419993283
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 9.713802999613108
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.720028e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.05103104e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "488769",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 286.47621699929005
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:01:30.234093+00:00",
+      "elapsed_seconds": 146.8794457912445,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 16.37349200063909
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 13.6635489998298
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "9.8510344e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.00675328e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "489740",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 74.78635200095596
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:01:51.100437+00:00",
+      "elapsed_seconds": 167.4764268398285,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 15.876112000114517
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 8.214371000576648
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.09861616e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.00675328e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "491209",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 77.34699700085912
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:02:11.693170+00:00",
+      "elapsed_seconds": 187.98018884658813,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 65.73025599936955
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 7.30606999968586
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "8.2908792e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.01723904e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "492048",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 16.7086189994734
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:02:32.197611+00:00",
+      "elapsed_seconds": 208.48620676994324,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 16.188528999919072
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 13.186125999709475
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "9.158176e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.01723904e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "493137",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 70.53613199968822
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:02:52.703924+00:00",
+      "elapsed_seconds": 229.18653297424316,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 15.523980999205378
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 7.322860999920522
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.1934608e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.01723904e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "494481",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 90.56215300006443
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:03:13.413196+00:00",
+      "elapsed_seconds": 249.78362202644348,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 81.46002099965699
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 40.861720000975765
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "8.2757896e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.93396736e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "495367",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 78.73853599994618
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:03:34.007122+00:00",
+      "elapsed_seconds": 270.78863883018494,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 28.05043100124749
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 19.407099000090966
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "9.8827e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.94707456e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "496406",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 32.725932998801
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:03:55.009757+00:00",
+      "elapsed_seconds": 291.42015981674194,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 23.131341999032884
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 17.32007900136523
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.63892968e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.31493632e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "497825",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 267.7203000002919
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:04:15.640482+00:00",
+      "elapsed_seconds": 312.1794888973236,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 17.0422419996612
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 10.291429000062635
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.73031e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.34115072e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "498862",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 66.9642910015682
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:04:36.400632+00:00",
+      "elapsed_seconds": 332.6775119304657,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 22.663668998575304
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 13.741836000917829
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.16659848e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.34115072e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "499958",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 92.12335499978508
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:04:56.895444+00:00",
+      "elapsed_seconds": 353.3933689594269,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 66.6920339990611
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 6.658561000222107
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.45616048e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.3660544e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "501153",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 23.220339999170392
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:05:17.615124+00:00",
+      "elapsed_seconds": 374.0089330673218,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 67.45095400037826
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 8.88787400072033
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.55924736e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.372608e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "502274",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 23.357840998869506
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:05:38.230532+00:00",
+      "elapsed_seconds": 394.6112639904022,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 41.29937899961078
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 66.73211300039839
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "7.9790008e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.32820736e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "503347",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 94.80378599982942
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:05:58.834433+00:00",
+      "elapsed_seconds": 415.48376274108887,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 75.65002600131265
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 11.131934999866644
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "9.0393432e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.32951808e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "504709",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 99.82257999945432
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:06:19.704989+00:00",
+      "elapsed_seconds": 436.30680108070374,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 20.193850999930874
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 19.97364000089874
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.19449728e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.32951808e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "505825",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 75.59310599935998
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:06:40.529066+00:00",
+      "elapsed_seconds": 456.99973487854004,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 16.214772000239464
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 10.124884000106249
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "8.3854288e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.91848448e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "506624",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 86.25290900090476
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:07:01.217720+00:00",
+      "elapsed_seconds": 477.5977840423584,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 32.96992400100862
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 60.79738400148926
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "9.39442e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.91848448e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "508033",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 103.49589500037837
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:07:21.816228+00:00",
+      "elapsed_seconds": 498.59181094169617,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 23.691838001468568
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 20.439893000002485
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "7.0565824e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.70872832e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "509080",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 77.23461400019005
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:07:42.813925+00:00",
+      "elapsed_seconds": 519.3134698867798,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 23.241500999574782
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 21.47402599985071
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "9.2500232e+07",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.70872832e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "510174",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 83.49029300006805
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:08:03.535513+00:00",
+      "elapsed_seconds": 540.000226020813,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 20.199931001116056
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 15.34743000047456
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.02736672e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.70872832e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "511379",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 79.66833899990888
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:08:24.222417+00:00",
+      "elapsed_seconds": 560.7019481658936,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 68.48998700115771
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 12.652237999645877
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.04590688e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.71216896e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "512406",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 521.2585760000366
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:08:44.924956+00:00",
+      "elapsed_seconds": 581.7366828918457,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 24.145215000316966
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 16.74506599920278
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "1.13513384e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "1.72863488e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "513441",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 97.34470100011094
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:09:05.955825+00:00",
+      "elapsed_seconds": 602.6674311161041,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    },
+    {
+      "/ready": {
+        "http": 200,
+        "duration_ms": 134.34390200018242
+      },
+      "/metrics": {
+        "http": 200,
+        "duration_ms": 207.38513500145928
+      },
+      "metrics": {
+        "go_memstats_heap_alloc_bytes": "2.3697944e+08",
+        "go_memstats_sys_bytes": "4.82232696e+08",
+        "process_resident_memory_bytes": "2.444288e+08",
+        "tempo_distributor_spans_received_total{tenant=\"single-tenant\"}": "514774",
+        "tempo_live_store_failed_completions_total": "0",
+        "tempo_live_store_local_failed_flushes_total": "0"
+      },
+      "/api/search?tags=service.name%3Ddoctor&limit=5": {
+        "http": 200,
+        "duration_ms": 895.127998001044
+      },
+      "traces_found": 5,
+      "at": "2026-10-25T09:09:26.888263+00:00",
+      "elapsed_seconds": 624.9029958248138,
+      "restart_count": 4,
+      "running": true,
+      "oom_killed_now": false
+    }
+  ]
+}

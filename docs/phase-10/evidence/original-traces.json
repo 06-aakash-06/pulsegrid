@@ -1,0 +1,926 @@
+[
+  {
+    "trace_id": "2ed408928748c17e9ec2109b12136596",
+    "available": true,
+    "spans": [
+      {
+        "service": "traefik",
+        "name": "POST",
+        "start_ns": "1792916225515506463",
+        "duration_ms": 5726.941746,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "traefik",
+        "name": "ReverseProxy",
+        "start_ns": "1792916225515574170",
+        "duration_ms": 5725.955477,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST /api/v1/records/consultations",
+        "start_ns": "1792916225517410878",
+        "duration_ms": 5741.164377,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "EVALSHA",
+        "start_ns": "1792916225518675182",
+        "duration_ms": 0.590611,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "EVALSHA",
+        "start_ns": "1792916225519516579",
+        "duration_ms": 0.324743,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST /api/v1/records/consultations http receive",
+        "start_ns": "1792916225520482765",
+        "duration_ms": 0.012917,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST",
+        "start_ns": "1792916225756994743",
+        "duration_ms": 31.510817,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check",
+        "start_ns": "1792916225765451299",
+        "duration_ms": 22.442567,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916225765932496",
+        "duration_ms": 0.466989,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916225766600231",
+        "duration_ms": 0.308117,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916225768165403",
+        "duration_ms": 0.660485,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916225769028300",
+        "duration_ms": 0.462697,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http receive",
+        "start_ns": "1792916225770136774",
+        "duration_ms": 0.015083,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "connect",
+        "start_ns": "1792916225773422865",
+        "duration_ms": 0.456365,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916225787282422",
+        "duration_ms": 0.030207,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916225787532416",
+        "duration_ms": 0.011708,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916225787805951",
+        "duration_ms": 0.0155,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "EVALSHA",
+        "start_ns": "1792916225789987401",
+        "duration_ms": 1.704794,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "EVALSHA",
+        "start_ns": "1792916225791827359",
+        "duration_ms": 0.697192,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST",
+        "start_ns": "1792916226255214536",
+        "duration_ms": 44.728429,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check",
+        "start_ns": "1792916226264252536",
+        "duration_ms": 35.65618,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226266734979",
+        "duration_ms": 4.515563,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226271980900",
+        "duration_ms": 2.803436,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226276613835",
+        "duration_ms": 3.723248,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226280475705",
+        "duration_ms": 2.089702,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http receive",
+        "start_ns": "1792916226283967166",
+        "duration_ms": 0.070665,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "connect",
+        "start_ns": "1792916226289319376",
+        "duration_ms": 1.616255,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916226299056777",
+        "duration_ms": 0.03575,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916226299447602",
+        "duration_ms": 0.009791,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916226299854259",
+        "duration_ms": 0.01025,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "connect",
+        "start_ns": "1792916226301326309",
+        "duration_ms": 0.409532,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "GET",
+        "start_ns": "1792916226559669617",
+        "duration_ms": 21.31526,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/consultation-context",
+        "start_ns": "1792916226564576088",
+        "duration_ms": 16.266709,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226565092493",
+        "duration_ms": 0.893229,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226566142593",
+        "duration_ms": 0.367325,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226567357316",
+        "duration_ms": 0.242827,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226567709474",
+        "duration_ms": 0.279369,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "connect",
+        "start_ns": "1792916226569706345",
+        "duration_ms": 3.82287,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/consultation-context http send",
+        "start_ns": "1792916226580468639",
+        "duration_ms": 0.024249,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/consultation-context http send",
+        "start_ns": "1792916226580704342",
+        "duration_ms": 0.00725,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/consultation-context http send",
+        "start_ns": "1792916226580785590",
+        "duration_ms": 0.005292,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "GET",
+        "start_ns": "1792916226955075107",
+        "duration_ms": 599.490338,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/workflow-context",
+        "start_ns": "1792916226963941279",
+        "duration_ms": 44.502893,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226964409268",
+        "duration_ms": 0.303034,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226964848174",
+        "duration_ms": 0.218954,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226965862193",
+        "duration_ms": 0.252952,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916226966251392",
+        "duration_ms": 0.230828,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST",
+        "start_ns": "1792916226981003969",
+        "duration_ms": 15.757763,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check",
+        "start_ns": "1792916226983579119",
+        "duration_ms": 13.120906,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226984069066",
+        "duration_ms": 0.407074,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226984623220",
+        "duration_ms": 0.320617,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226985703611",
+        "duration_ms": 0.205662,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916226986032896",
+        "duration_ms": 0.248285,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http receive",
+        "start_ns": "1792916226986688630",
+        "duration_ms": 0.026291,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "connect",
+        "start_ns": "1792916226989842100",
+        "duration_ms": 1.142765,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916226996212161",
+        "duration_ms": 0.055791,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916226996563403",
+        "duration_ms": 0.013083,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916226996657401",
+        "duration_ms": 0.007208,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "connect",
+        "start_ns": "1792916226998064119",
+        "duration_ms": 0.416199,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/workflow-context http send",
+        "start_ns": "1792916227007979057",
+        "duration_ms": 0.035583,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/workflow-context http send",
+        "start_ns": "1792916227008288342",
+        "duration_ms": 0.012625,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /internal/v1/appointments/{appointment_id}/workflow-context http send",
+        "start_ns": "1792916227008393548",
+        "duration_ms": 0.006916,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "GET",
+        "start_ns": "1792916227798686123",
+        "duration_ms": 877.247866,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "GET /internal/v1/patients/{patient_id}/status",
+        "start_ns": "1792916228257925311",
+        "duration_ms": 362.629577,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916228259157908",
+        "duration_ms": 6.455101,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916228265793547",
+        "duration_ms": 2.281947,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916228269061180",
+        "duration_ms": 0.356075,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916228269616542",
+        "duration_ms": 1.649087,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "connect",
+        "start_ns": "1792916228291999902",
+        "duration_ms": 25.484373,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "GET /internal/v1/patients/{patient_id}/status http send",
+        "start_ns": "1792916228614951558",
+        "duration_ms": 0.032624,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "GET /internal/v1/patients/{patient_id}/status http send",
+        "start_ns": "1792916228619881528",
+        "duration_ms": 0.011625,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "GET /internal/v1/patients/{patient_id}/status http send",
+        "start_ns": "1792916228620482139",
+        "duration_ms": 0.01175,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "connect",
+        "start_ns": "1792916228710997933",
+        "duration_ms": 26.537181,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST",
+        "start_ns": "1792916229348715265",
+        "duration_ms": 1413.068375,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST /internal/v1/appointments/{appointment_id}/clinical-hold",
+        "start_ns": "1792916229519659626",
+        "duration_ms": 1253.989158,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916229627532103",
+        "duration_ms": 28.898793,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916229666761909",
+        "duration_ms": 5.232338,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916229691158598",
+        "duration_ms": 13.572938,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916229705189400",
+        "duration_ms": 4.279193,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST /internal/v1/appointments/{appointment_id}/clinical-hold http receive",
+        "start_ns": "1792916229751869660",
+        "duration_ms": 0.099414,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "connect",
+        "start_ns": "1792916229985251459",
+        "duration_ms": 8.521637,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "connect",
+        "start_ns": "1792916230030796453",
+        "duration_ms": 16.721157,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "connect",
+        "start_ns": "1792916230303473056",
+        "duration_ms": 8.295309,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST /internal/v1/appointments/{appointment_id}/clinical-hold http send",
+        "start_ns": "1792916230766199288",
+        "duration_ms": 0.227828,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST /internal/v1/appointments/{appointment_id}/clinical-hold http send",
+        "start_ns": "1792916230767693462",
+        "duration_ms": 0.023875,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST /internal/v1/appointments/{appointment_id}/clinical-hold http send",
+        "start_ns": "1792916230773612034",
+        "duration_ms": 0.01375,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST /api/v1/records/consultations http send",
+        "start_ns": "1792916231235973316",
+        "duration_ms": 3.024681,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST /api/v1/records/consultations http send",
+        "start_ns": "1792916231242074301",
+        "duration_ms": 0.013417,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "records",
+        "name": "POST /api/v1/records/consultations http send",
+        "start_ns": "1792916231258494382",
+        "duration_ms": 0.013999,
+        "status": {},
+        "events": []
+      }
+    ]
+  },
+  {
+    "trace_id": "749a518a721cae103c4d848ecb294393",
+    "available": true,
+    "spans": [
+      {
+        "service": "traefik",
+        "name": "GET",
+        "start_ns": "1792916959358493162",
+        "duration_ms": 105.834546,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "traefik",
+        "name": "ReverseProxy",
+        "start_ns": "1792916959358610254",
+        "duration_ms": 105.222918,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /api/v1/appointments/operations/surge-mode",
+        "start_ns": "1792916959360019731",
+        "duration_ms": 104.331479,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916959360911295",
+        "duration_ms": 0.474826,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916959361579218",
+        "duration_ms": 0.274811,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916959363226878",
+        "duration_ms": 0.182389,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916959363482438",
+        "duration_ms": 0.205432,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "POST",
+        "start_ns": "1792916959372828487",
+        "duration_ms": 19.795052,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check",
+        "start_ns": "1792916959376844027",
+        "duration_ms": 15.151633,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916959377950023",
+        "duration_ms": 0.958361,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916959379235699",
+        "duration_ms": 0.597001,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916959381480611",
+        "duration_ms": 0.215682,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "EVALSHA",
+        "start_ns": "1792916959381820385",
+        "duration_ms": 0.310106,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http receive",
+        "start_ns": "1792916959382893129",
+        "duration_ms": 0.026544,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "connect",
+        "start_ns": "1792916959385552279",
+        "duration_ms": 0.573292,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916959391284859",
+        "duration_ms": 0.048504,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916959391661553",
+        "duration_ms": 0.012084,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "patient",
+        "name": "POST /internal/v1/authorization/check http send",
+        "start_ns": "1792916959391824815",
+        "duration_ms": 0.011126,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "EVALSHA",
+        "start_ns": "1792916959393566899",
+        "duration_ms": 68.509147,
+        "status": {
+          "message": "TimeoutError: Timeout reading from redis:6379",
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": [
+          {
+            "name": "exception",
+            "exception_type": "redis.exceptions.TimeoutError"
+          }
+        ]
+      },
+      {
+        "service": "appointment",
+        "name": "GET /api/v1/appointments/operations/surge-mode http send",
+        "start_ns": "1792916959463564611",
+        "duration_ms": 0.031877,
+        "status": {
+          "code": "STATUS_CODE_ERROR"
+        },
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /api/v1/appointments/operations/surge-mode http send",
+        "start_ns": "1792916959464047938",
+        "duration_ms": 0.009542,
+        "status": {},
+        "events": []
+      },
+      {
+        "service": "appointment",
+        "name": "GET /api/v1/appointments/operations/surge-mode http send",
+        "start_ns": "1792916959464206449",
+        "duration_ms": 0.049504,
+        "status": {},
+        "events": []
+      }
+    ]
+  }
+]

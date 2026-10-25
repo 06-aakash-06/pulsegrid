@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "cancel_versioned_owner_command",
+    "reschedule_versioned_owner_command",
+    "clinical_rx_single_use_replay_rejected",
+    "clinical_no_rx_single_use_replay_rejected",
+    "invalid_token_no_mutation",
+    "queue_skip_recall_and_history",
+    "clinical_ownership_internal_route_boundary"
+  ],
+  "isolated": true,
+  "raw_tokens_recorded": false,
+  "internal_route_denial": 404
+}

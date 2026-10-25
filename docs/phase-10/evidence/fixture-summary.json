@@ -1,0 +1,24 @@
+{
+  "isolated_project": "pulsegrid-audit-20261025",
+  "actor_roles": [
+    "patient",
+    "other",
+    "third",
+    "doctor",
+    "alternate_doctor",
+    "receptionist",
+    "pharmacist",
+    "billing_staff",
+    "emergency_staff",
+    "hospital_admin",
+    "ops"
+  ],
+  "doctor_id": "1824268760453713301",
+  "patient_id": "2574454456638561420",
+  "medicine_id": "7853604977296318577",
+  "synthetic_appointments": 9,
+  "schedule_from": "2026-10-25T09:11:00+00:00",
+  "schedule_to": "2026-10-25T13:11:00+00:00",
+  "mutations_used": "owner public APIs",
+  "secrets_recorded": false
+}

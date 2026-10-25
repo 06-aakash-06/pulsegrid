@@ -1,0 +1,45 @@
+{
+  "baseline": {
+    "case": "previous",
+    "state_before": [
+      "SURGE",
+      "1"
+    ],
+    "state_after": [],
+    "persisted": false,
+    "ttl_before_ms": 599881,
+    "ttl_after_ms": -2,
+    "expiry_preserved": false,
+    "aof_acl_errors": 3,
+    "unauthenticated_denied": true,
+    "default_login_denied": true,
+    "outside_namespace_denied": true,
+    "container": "pulsegrid-p10-aof-previous-c2d242ef",
+    "volume_preserved": "pulsegrid-p10-aof-previous-c2d242ef-data",
+    "restart_count": 0
+  },
+  "current": {
+    "case": "current",
+    "state_before": [
+      "SURGE",
+      "1"
+    ],
+    "state_after": [
+      "SURGE",
+      "1"
+    ],
+    "persisted": true,
+    "ttl_before_ms": 599887,
+    "ttl_after_ms": 599390,
+    "expiry_preserved": true,
+    "aof_acl_errors": 0,
+    "unauthenticated_denied": true,
+    "default_login_denied": true,
+    "outside_namespace_denied": true,
+    "container": "pulsegrid-p10-aof-current-70f0de81",
+    "volume_preserved": "pulsegrid-p10-aof-current-70f0de81-data",
+    "restart_count": 0
+  },
+  "no_retained_stack_mutation": true,
+  "no_volume_deletion": true
+}

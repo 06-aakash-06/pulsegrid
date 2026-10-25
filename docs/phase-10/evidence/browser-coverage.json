@@ -1,0 +1,374 @@
+[
+  {
+    "role": "receptionist",
+    "path": "/receptionist/appointments",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Book Appointment",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Appointments",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Reschedule / Cancel",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Walk-in Registration",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "All",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Synthetic Phase3 Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Phase10 Acceptance Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Select Synthetic Phase3 Doctor, Synthetic Phase3 Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Select Synthetic Phase3 Doctor, Synthetic Phase3 Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Select Synthetic Phase3 Doctor, Synthetic Phase3 Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Select Phase10 Acceptance Doctor, Phase10 Acceptance Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Select Phase10 Acceptance alternate doctor, Phase10 Acceptance Care",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Search the complete directory",
+        "role": null,
+        "tag": "SUMMARY"
+      },
+      {
+        "disabled": false,
+        "name": "Doctor",
+        "role": "combobox",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Use a doctor ID",
+        "role": null,
+        "tag": "SUMMARY"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Open",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Previous week",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Sunday, 25 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Monday, 26 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Tuesday, 27 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Wednesday, 28 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Thursday, 29 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Friday, 30 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Saturday, 31 October",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Next week",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Another date or UTC range",
+        "role": null,
+        "tag": "SUMMARY"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Load availability",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Check-in and journey operations",
+        "role": null,
+        "tag": "SUMMARY"
+      },
+      {
+        "disabled": false,
+        "name": "Scan check-in QR",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Load workflow",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": true,
+        "name": "Review token check-in",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "role": null,
+        "tag": "TEXTAREA"
+      },
+      {
+        "disabled": true,
+        "name": "Review staff check-in fallback",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "TEXTAREA"
+      },
+      {
+        "disabled": false,
+        "name": "Review no-show",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Reload workflow",
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "role": null,
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Open",
+        "role": null,
+        "tag": "BUTTON"
+      }
+    ],
+    "views": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "layout": {
+          "headings": [
+            "Appointment coordination"
+          ],
+          "main": {
+            "bottom": 1024.140625,
+            "height": 3451.140625,
+            "left": 319.484375,
+            "right": 1536,
+            "top": -2427,
+            "width": 1216.515625,
+            "x": 319.484375,
+            "y": -2427
+          },
+          "scrollWidth": 1536,
+          "viewport": 1536
+        },
+        "screenshot": "browser/receptionist--receptionist-appointments-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "layout": {
+          "headings": [
+            "Appointment coordination"
+          ],
+          "main": {
+            "bottom": 968.5625,
+            "height": 3395.5625,
+            "left": 299.515625,
+            "right": 1440,
+            "top": -2427,
+            "width": 1140.484375,
+            "x": 299.515625,
+            "y": -2427
+          },
+          "scrollWidth": 1440,
+          "viewport": 1440
+        },
+        "screenshot": "browser/receptionist--receptionist-appointments-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "layout": {
+          "headings": [
+            "Appointment coordination"
+          ],
+          "main": {
+            "bottom": 1109.421875,
+            "height": 3536.421875,
+            "left": 266.234375,
+            "right": 1280,
+            "top": -2427,
+            "width": 1013.765625,
+            "x": 266.234375,
+            "y": -2427
+          },
+          "scrollWidth": 1280,
+          "viewport": 1280
+        },
+        "screenshot": "browser/receptionist--receptionist-appointments-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "layout": {
+          "headings": [
+            "Appointment coordination"
+          ],
+          "main": {
+            "bottom": 1577.796875,
+            "height": 4016.796875,
+            "left": 0,
+            "right": 390,
+            "top": -2439,
+            "width": 390,
+            "x": 0,
+            "y": -2439
+          },
+          "scrollWidth": 390,
+          "viewport": 390
+        },
+        "screenshot": "browser/receptionist--receptionist-appointments-390.jpg"
+      }
+    ]
+  }
+]

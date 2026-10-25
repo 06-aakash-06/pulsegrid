@@ -1,0 +1,12 @@
+{
+  "route": "/receptionist/appointments?view=walk-in",
+  "appointment_id": "4779000788505245956",
+  "sizes": [
+    1536,
+    1440,
+    1280,
+    390
+  ],
+  "documentWidthEqualsViewport": true,
+  "topOffset": 0
+}

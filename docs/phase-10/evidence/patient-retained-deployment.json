@@ -1,0 +1,7 @@
+{
+  "service": "patient",
+  "image": "pulsegrid-auth-patient:local",
+  "rollback_tag": "pulsegrid-p10-patient-before:local",
+  "deployment": "only Patient recreated; same named data volumes; no migration",
+  "commit": "21e9e1c"
+}

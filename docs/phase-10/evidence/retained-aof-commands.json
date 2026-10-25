@@ -1,0 +1,14 @@
+{
+  "commands": {
+    "MULTI": 1130,
+    "SELECT": 1,
+    "HSET": 2259,
+    "PEXPIREAT": 2258,
+    "EXEC": 1129,
+    "DEL": 168
+  },
+  "read_only": true,
+  "arguments_recorded": false,
+  "sample_bytes": 1048576,
+  "full_file_scan": false
+}

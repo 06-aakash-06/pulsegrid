@@ -1,0 +1,11 @@
+{
+  "project": "pulsegrid-audit-20261025",
+  "distinct_from_retained_volumes": true,
+  "all_shared_binds_read_only": true,
+  "networks_scoped": true,
+  "restart_used": "start existing containers",
+  "migrations_reexecuted": false,
+  "volumes_removed": false,
+  "configuration_mutated": false,
+  "container_count": 29
+}

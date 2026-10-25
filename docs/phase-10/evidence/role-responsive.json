@@ -1,0 +1,1320 @@
+[
+  {
+    "role": "patient",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Consultation\nDoctors & specialties\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Waiting Room\nYour live queue\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Pharmacy\nPrescription fulfillment\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Emergency\nUrgent care requests\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Book an Appointment\n\nFind a doctor and schedule your visit\n\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "My Appointments\n\nView and manage your upcoming visits\n\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Check In\n\nUse your secure QR code or check-in link\n\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "View Records\n\nAccess your authorized medical history\n\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "YOUR TOKEN\nA003\nConsultation\nwaiting\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "View your appointment →",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "YOUR QUEUE TOKEN\nA\n0\n0\n3\nwaiting\n2 waiting in this queue\n→",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Patient journey",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "Check In",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Reception",
+    "nav": [
+      {
+        "href": "/patient/dashboard",
+        "name": "ReceptionPatient→"
+      },
+      {
+        "href": "/patient/doctors",
+        "name": "ConsultationPatient→"
+      },
+      {
+        "href": "/patient/appointments",
+        "name": "AppointmentsPatient→"
+      },
+      {
+        "href": "/patient/waitlist",
+        "name": "WaitlistPatient→"
+      },
+      {
+        "href": "/patient/check-in",
+        "name": "QR check-inPatient→"
+      },
+      {
+        "href": "/patient/queue",
+        "name": "Waiting RoomPatient→"
+      },
+      {
+        "href": "/patient/journey",
+        "name": "Patient journeyPatient→"
+      },
+      {
+        "href": "/patient/records",
+        "name": "Medical RecordsPatient→"
+      },
+      {
+        "href": "/patient/prescriptions",
+        "name": "PrescriptionsPatient→"
+      },
+      {
+        "href": "/patient/pharmacy",
+        "name": "PharmacyPatient→"
+      },
+      {
+        "href": "/patient/billing",
+        "name": "BillingPatient→"
+      },
+      {
+        "href": "/patient/emergency",
+        "name": "EmergencyPatient→"
+      },
+      {
+        "href": "/patient/dashboard",
+        "name": "01\nReception\nAppointments & check-in\n→"
+      },
+      {
+        "href": "/patient/doctors",
+        "name": "02\nConsultation\nDoctors & patient care\n→"
+      },
+      {
+        "href": "/patient/queue",
+        "name": "03\nWaiting Room\nLive queue & status\n→"
+      },
+      {
+        "href": "/patient/pharmacy",
+        "name": "04\nPharmacy\nPrescriptions & medicines\n→"
+      },
+      {
+        "href": "/patient/billing",
+        "name": "05\nBilling\nInvoices & payments\n→"
+      },
+      {
+        "href": "/patient/emergency",
+        "name": "06\nEmergency\nUrgent care requests\n→"
+      },
+      {
+        "href": "/patient/records",
+        "name": "07\nMedical Records\nPatient history\n→"
+      },
+      {
+        "href": "/patient/doctors",
+        "name": "Consultation\nDoctors & specialties\n→"
+      },
+      {
+        "href": "/patient/queue",
+        "name": "Waiting Room\nYour live queue\n→"
+      },
+      {
+        "href": "/patient/pharmacy",
+        "name": "Pharmacy\nPrescription fulfillment\n→"
+      },
+      {
+        "href": "/patient/emergency",
+        "name": "Emergency\nUrgent care requests\n→"
+      }
+    ],
+    "url": "/patient/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1216.515625,
+          "viewport": 1536
+        },
+        "file": "browser/role-patient-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1140.484375,
+          "viewport": 1440
+        },
+        "file": "browser/role-patient-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 1013.765625,
+          "viewport": 1280
+        },
+        "file": "browser/role-patient-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-patient-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "doctor",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Review profile",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Previous week",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Sunday, 25 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Monday, 26 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Tuesday, 27 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Wednesday, 28 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Thursday, 29 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Friday, 30 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Saturday, 31 October",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Next week",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Load availability",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Add interval",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Review proposal",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh schedule proposals",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Open proposal 5239324484809976796",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Previous page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Next page",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Consultation",
+    "nav": [
+      {
+        "href": "/doctor/dashboard",
+        "name": "ConsultationDoctor→"
+      },
+      {
+        "href": "/doctor/consultations",
+        "name": "ConsultationsDoctor→"
+      },
+      {
+        "href": "/doctor/queue",
+        "name": "Queue managementDoctor→"
+      },
+      {
+        "href": "/doctor/prescriptions",
+        "name": "Prescription managementDoctor→"
+      },
+      {
+        "href": "/doctor/dashboard",
+        "name": "01\nConsultation\nDoctors & patient care\n→"
+      },
+      {
+        "href": "/doctor/queue",
+        "name": "02\nQueue management\nLive queue & status\n→"
+      },
+      {
+        "href": "/doctor/prescriptions",
+        "name": "03\nPrescription management\nPrescriptions & medicines\n→"
+      },
+      {
+        "href": "/doctor/consultations",
+        "name": "04\nConsultations\nPatient history\n→"
+      }
+    ],
+    "url": "/doctor/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1248,
+          "viewport": 1536
+        },
+        "file": "browser/role-doctor-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1152,
+          "viewport": 1440
+        },
+        "file": "browser/role-doctor-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 992,
+          "viewport": 1280
+        },
+        "file": "browser/role-doctor-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-doctor-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "receptionist",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Search patients",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh patients",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 8673752876572998729",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 8824065340227249868",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 1190585038259154406",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 7223049633017488144",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 5167062702819938245",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 8217489884302035656",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 180488010747666238",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 59655885717686349",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 8203819595732064575",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 9017441033860023531",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 5932765999807342792",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 3513295674556058232",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 6339758322798914552",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 8970907265834152196",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 564966434248746167",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 1569937475955838284",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 1190650266883223152",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 4578602317686198924",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 7151124944753354688",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View patient 5490263245286116476",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Previous page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Next page",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Reception",
+    "nav": [
+      {
+        "href": "/receptionist/dashboard",
+        "name": "ReceptionReceptionist→"
+      },
+      {
+        "href": "/receptionist/appointments",
+        "name": "Appointment coordinationReceptionist→"
+      },
+      {
+        "href": "/receptionist/dashboard",
+        "name": "01\nReception\nAppointments & check-in\n→"
+      },
+      {
+        "href": "/receptionist/appointments",
+        "name": "02\nAppointment coordination\n→"
+      }
+    ],
+    "url": "/receptionist/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1248,
+          "viewport": 1536
+        },
+        "file": "browser/role-receptionist-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1152,
+          "viewport": 1440
+        },
+        "file": "browser/role-receptionist-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 992,
+          "viewport": 1280
+        },
+        "file": "browser/role-receptionist-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-receptionist-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "pharmacist",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Search medicines…",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": true,
+        "name": "Previous shelf page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Next shelf page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "All",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Available",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Unavailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Availability not supplied",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Catalog medicine …5082\nAvailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Catalog medicine …9901\nAvailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Phase10 Synthetic Medicine Updated\nAvailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Open",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Open dispensing workspace →",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "TEXTAREA"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Pharmacy",
+    "nav": [
+      {
+        "href": "/pharmacist/dashboard",
+        "name": "PharmacyPharmacist→"
+      },
+      {
+        "href": "/pharmacist/inventory",
+        "name": "InventoryPharmacist→"
+      },
+      {
+        "href": "/pharmacist/prescriptions",
+        "name": "Prescription fulfillmentPharmacist→"
+      },
+      {
+        "href": "/pharmacist/dashboard",
+        "name": "01\nPharmacy\nPrescriptions & medicines\n→"
+      },
+      {
+        "href": "/pharmacist/inventory",
+        "name": "02\nInventory\n→"
+      },
+      {
+        "href": "/pharmacist/prescriptions",
+        "name": "03\nPrescription fulfillment\n→"
+      }
+    ],
+    "url": "/pharmacist/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1216.515625,
+          "viewport": 1536
+        },
+        "file": "browser/role-pharmacist-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1140.484375,
+          "viewport": 1440
+        },
+        "file": "browser/role-pharmacist-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 1013.765625,
+          "viewport": 1280
+        },
+        "file": "browser/role-pharmacist-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-pharmacist-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "billing_staff",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Change invoice",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Import charges",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Tariff reference",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "New invoice",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Review import",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 7585113532890204081",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 2091914334344536600",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 4474443748341127350",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 9214800040066503410",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 6060885097317768850",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 6894232243387651056",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 4335444056601789567",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "View invoice 9180694903066682790",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Billing",
+    "nav": [
+      {
+        "href": "/billing/dashboard",
+        "name": "BillingBilling staff→"
+      },
+      {
+        "href": "/billing/invoices",
+        "name": "InvoicesBilling staff→"
+      },
+      {
+        "href": "/billing/payments",
+        "name": "Payment managementBilling staff→"
+      },
+      {
+        "href": "/billing/insurance",
+        "name": "Insurance estimatesBilling staff→"
+      },
+      {
+        "href": "/billing/dashboard",
+        "name": "01\nBilling\nInvoices & payments\n→"
+      },
+      {
+        "href": "/billing/invoices",
+        "name": "02\nInvoices\n→"
+      },
+      {
+        "href": "/billing/payments",
+        "name": "03\nPayment management\n→"
+      },
+      {
+        "href": "/billing/insurance",
+        "name": "04\nInsurance estimates\n→"
+      }
+    ],
+    "url": "/billing/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1216.515625,
+          "viewport": 1536
+        },
+        "file": "browser/role-billing_staff-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1140.484375,
+          "viewport": 1440
+        },
+        "file": "browser/role-billing_staff-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 1013.765625,
+          "viewport": 1280
+        },
+        "file": "browser/role-billing_staff-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-billing_staff-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "emergency_staff",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Track request 6397308838291842492",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Track request 1932669919259250665",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Track request 5325170959587449354",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "TEXTAREA"
+      },
+      {
+        "disabled": false,
+        "name": "Review priority",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Cancel request",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Emergency",
+    "nav": [
+      {
+        "href": "/emergency/dashboard",
+        "name": "EmergencyEmergency staff→"
+      },
+      {
+        "href": "/emergency/requests",
+        "name": "Emergency managementEmergency staff→"
+      },
+      {
+        "href": "/emergency/dashboard",
+        "name": "01\nEmergency\nUrgent care requests\n→"
+      },
+      {
+        "href": "/emergency/requests",
+        "name": "02\nEmergency management\n→"
+      }
+    ],
+    "url": "/emergency/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1216.515625,
+          "viewport": 1536
+        },
+        "file": "browser/role-emergency_staff-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1140.484375,
+          "viewport": 1440
+        },
+        "file": "browser/role-emergency_staff-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 1013.765625,
+          "viewport": 1280
+        },
+        "file": "browser/role-emergency_staff-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-emergency_staff-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "hospital_admin",
+    "url": "/admin/dashboard",
+    "heading": "Administration",
+    "nav": [
+      "Staff & roles",
+      "Administration desk",
+      "Consultation",
+      "Control Room",
+      "Trace Explorer"
+    ],
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1248,
+          "viewport": 1536
+        },
+        "file": "browser/role-hospital_admin-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1152,
+          "viewport": 1440
+        },
+        "file": "browser/role-hospital_admin-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 992,
+          "viewport": 1280
+        },
+        "file": "browser/role-hospital_admin-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-hospital_admin-390.jpg"
+      }
+    ]
+  },
+  {
+    "role": "ops",
+    "controlCount": 1,
+    "heading": "Control Room",
+    "nav": [
+      {
+        "href": "/ops/dashboard",
+        "name": "Control RoomOperations→"
+      },
+      {
+        "href": "/ops/traces",
+        "name": "Trace ExplorerOperations→"
+      },
+      {
+        "href": "/ops/dashboard",
+        "name": "01\nControl Room\nSystem health & operations\n→"
+      },
+      {
+        "href": "/ops/traces",
+        "name": "02\nTrace Explorer\n→"
+      }
+    ],
+    "url": "/ops/dashboard",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "documentWidth": 1536,
+          "mainWidth": 1216.515625,
+          "viewport": 1536
+        },
+        "file": "browser/role-ops-1536.jpg"
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "metrics": {
+          "documentWidth": 1440,
+          "mainWidth": 1140.484375,
+          "viewport": 1440
+        },
+        "file": "browser/role-ops-1440.jpg"
+      },
+      {
+        "width": 1280,
+        "height": 800,
+        "metrics": {
+          "documentWidth": 1280,
+          "mainWidth": 1013.765625,
+          "viewport": 1280
+        },
+        "file": "browser/role-ops-1280.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "documentWidth": 390,
+          "mainWidth": 390,
+          "viewport": 390
+        },
+        "file": "browser/role-ops-390.jpg"
+      }
+    ]
+  }
+]

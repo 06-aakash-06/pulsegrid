@@ -1,0 +1,66 @@
+{
+  "captured_at": "2026-10-25T09:47:12.190201+00:00",
+  "retained": {
+    "container": "pulsegrid-otel-collector-1",
+    "log_scope": "docker logs --timestamps --tail 1000 at evidence capture",
+    "error_events": 99,
+    "dropped_items": 5770,
+    "first": {
+      "at": "2026-10-24T17:43:59.001718134Z",
+      "dropped_items": 67,
+      "destination_unavailable": false
+    },
+    "last": {
+      "at": "2026-10-25T09:11:35.720027174Z",
+      "dropped_items": 54,
+      "destination_unavailable": true
+    },
+    "connection_refused_events": 20,
+    "time_buckets": {
+      "2026-10-24T17:43": {
+        "events": 1,
+        "dropped_items": 67
+      },
+      "2026-10-24T17:44": {
+        "events": 50,
+        "dropped_items": 3100
+      },
+      "2026-10-24T17:45": {
+        "events": 18,
+        "dropped_items": 1100
+      },
+      "2026-10-24T17:46": {
+        "events": 10,
+        "dropped_items": 575
+      },
+      "2026-10-25T09:11": {
+        "events": 20,
+        "dropped_items": 928
+      }
+    }
+  },
+  "isolated": {
+    "container": "pulsegrid-audit-20261025-otel-collector-1",
+    "log_scope": "docker logs --timestamps --tail 1000 at evidence capture",
+    "error_events": 8,
+    "dropped_items": 453,
+    "first": {
+      "at": "2026-10-25T09:08:28.755458366Z",
+      "dropped_items": 11,
+      "destination_unavailable": true
+    },
+    "last": {
+      "at": "2026-10-25T09:08:33.649314321Z",
+      "dropped_items": 12,
+      "destination_unavailable": true
+    },
+    "connection_refused_events": 8,
+    "time_buckets": {
+      "2026-10-25T09:08": {
+        "events": 8,
+        "dropped_items": 453
+      }
+    }
+  },
+  "note": "Bounded log tails; older retained events are not attributed to a specific Tempo restart unless timestamps align. No hospital operation failure is inferred from telemetry loss."
+}

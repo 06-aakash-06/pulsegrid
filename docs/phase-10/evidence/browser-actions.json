@@ -1,0 +1,63 @@
+[
+  {
+    "action": "Patient real login/session restoration",
+    "outcome": "PASS"
+  },
+  {
+    "action": "Camera request/cancel",
+    "outcome": "PASS fallback; physical capture pending",
+    "streamObserved": false
+  },
+  {
+    "action": "Stale patient profile review/confirm",
+    "outcome": "PASS safe conflict",
+    "message": "Record changed; reload latest; no success shown"
+  },
+  {
+    "action": "Patient profile edit/review/confirm/refresh",
+    "outcome": "PASS",
+    "persistedContact": "Fictional browser Phase10 contact"
+  },
+  {
+    "action": "Patient creates explicit records:read grant to alternate active Doctor",
+    "outcome": "PASS",
+    "grant_id": "2089"
+  },
+  {
+    "action": "Grant revocation removes alternate Doctor historical access",
+    "outcome": "PASS",
+    "history_before": 200,
+    "history_after": 404
+  },
+  {
+    "action": "Receptionist search/select/edit demographics; keep-editing and confirm",
+    "outcome": "PASS"
+  },
+  {
+    "action": "Receptionist audited manual fallback validates workflow and allocates waiting queue token",
+    "outcome": "PASS",
+    "appointment_id": "3994668932387786581",
+    "queue_token": 3
+  },
+  {
+    "action": "Pharmacist medicine availability filter",
+    "outcome": "PASS",
+    "details": "Available filter became the selected state and the shelf remained scoped to available synthetic catalogue records."
+  },
+  {
+    "action": "Pharmacist medicine autocomplete and keyboard selection",
+    "outcome": "PASS",
+    "details": "Searching Phase10 returned the active synthetic medicine; ArrowDown and Enter selected the result."
+  },
+  {
+    "action": "Pharmacist stock adjustment review and confirmation",
+    "outcome": "PASS",
+    "details": "Required expiry validation was displayed; after segmented keyboard date entry, review showed the isolated synthetic batch, delta +1 and expected version 0. Confirmation returned Stock adjusted; refreshed inventory showed on-hand and available quantity 1.",
+    "screenshot": "browser/pharmacy-stock-adjustment-success.jpg"
+  },
+  {
+    "action": "Pharmacist route console check",
+    "outcome": "PASS",
+    "details": "No browser console errors or warnings after the filter, autocomplete, review/confirm and inventory refresh interactions."
+  }
+]

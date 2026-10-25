@@ -1,0 +1,55 @@
+{
+  "isolated_project": "pulsegrid-audit-20261025",
+  "checks": [
+    {
+      "check": "patient submission and idempotent replay",
+      "status": "PASS",
+      "state": "submitted"
+    },
+    {
+      "check": "patient ownership and staff-role authorization",
+      "status": "PASS",
+      "other_patient_status": 404,
+      "doctor_priority_status": 403
+    },
+    {
+      "check": "priority assignment and stale ETag rejection",
+      "status": "PASS",
+      "stale_status": 412
+    },
+    {
+      "check": "claim and processing-role authorization",
+      "status": "PASS",
+      "doctor_transition_status": 403
+    },
+    {
+      "check": "claim, processing, resolution and audited history",
+      "status": "PASS",
+      "states": [
+        "submitted",
+        "triaged",
+        "claimed",
+        "processing",
+        "resolved"
+      ]
+    },
+    {
+      "check": "patient-owned cancellation",
+      "status": "PASS",
+      "state": "cancelled"
+    },
+    {
+      "check": "concurrent same-version priority writes",
+      "status": "PASS",
+      "response_statuses": [
+        200,
+        412
+      ]
+    }
+  ],
+  "request_ids": {
+    "lifecycle": "3906040199084331066",
+    "cancellation": "3413017676493356363",
+    "version_race": "2682116042186637834"
+  }
+}

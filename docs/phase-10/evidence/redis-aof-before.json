@@ -1,0 +1,34 @@
+{
+  "baseline": {
+    "case": "previous",
+    "state_before": [
+      "SURGE",
+      "1"
+    ],
+    "state_after": [],
+    "persisted": false,
+    "aof_acl_errors": 3,
+    "unauthenticated_denied": true,
+    "default_login_denied": true,
+    "container": "pulsegrid-p10-aof-previous-6c146707",
+    "volume_preserved": "pulsegrid-p10-aof-previous-6c146707-data",
+    "restart_count": 0
+  },
+  "current": {
+    "case": "current",
+    "state_before": [
+      "SURGE",
+      "1"
+    ],
+    "state_after": [],
+    "persisted": false,
+    "aof_acl_errors": 3,
+    "unauthenticated_denied": true,
+    "default_login_denied": true,
+    "container": "pulsegrid-p10-aof-current-bb9045ec",
+    "volume_preserved": "pulsegrid-p10-aof-current-bb9045ec-data",
+    "restart_count": 0
+  },
+  "no_retained_stack_mutation": true,
+  "no_volume_deletion": true
+}

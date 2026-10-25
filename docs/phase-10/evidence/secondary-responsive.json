@@ -1,0 +1,340 @@
+[
+  {
+    "name": "pharmacy-inventory",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Search medicines…",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": true,
+        "name": "Previous shelf page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Next shelf page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "All",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Available",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Unavailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Availability not supplied",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Catalog medicine …5082\nAvailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Catalog medicine …9901\nAvailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Phase10 Synthetic Medicine Updated\nAvailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Open",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Open dispensing workspace →",
+        "tag": "A"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "TEXTAREA"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Inventory",
+    "url": "/pharmacist/inventory",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "height": 1024,
+          "scrollWidth": 1536,
+          "width": 1536
+        },
+        "file": "browser/secondary-pharmacy-inventory-1536.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "height": 844,
+          "scrollWidth": 390,
+          "width": 390
+        },
+        "file": "browser/secondary-pharmacy-inventory-390.jpg"
+      }
+    ]
+  },
+  {
+    "name": "pharmacy-prescriptions",
+    "controls": [
+      {
+        "disabled": false,
+        "name": "Search medicines…",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": true,
+        "name": "Previous shelf page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Next shelf page",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Refresh",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "All",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Available",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Unavailable",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "Availability not supplied",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "SELECT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "Open",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "Refresh reservations",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "INPUT"
+      },
+      {
+        "disabled": false,
+        "name": "",
+        "tag": "BUTTON"
+      },
+      {
+        "disabled": true,
+        "name": "",
+        "tag": "BUTTON"
+      }
+    ],
+    "heading": "Prescription fulfillment",
+    "url": "/pharmacist/prescriptions",
+    "shots": [
+      {
+        "width": 1536,
+        "height": 1024,
+        "metrics": {
+          "height": 1024,
+          "scrollWidth": 1536,
+          "width": 1536
+        },
+        "file": "browser/secondary-pharmacy-prescriptions-1536.jpg"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "metrics": {
+          "height": 844,
+          "scrollWidth": 390,
+          "width": 390
+        },
+        "file": "browser/secondary-pharmacy-prescriptions-390.jpg"
+      }
+    ]
+  }
+]
