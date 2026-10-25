@@ -238,15 +238,15 @@ export function createState() {
     patient_id, description, synthetic_contact: contact, claimed_by_user_id, claim_expires_at: claimMinutes === null ? null : minutes(claimMinutes), version: 1,
   });
   const emergencies: Emergency[] = [
-    emergency("7101", "submitted", "urgent", null, 4, "Synthetic: sudden chest tightness while climbing stairs, now resting.", patient.id, null, null, "asha.rao@example.test"),
-    emergency("7102", "submitted", "unspecified", null, 11, "Synthetic: dizziness after skipping lunch.", "2002"),
-    emergency("7103", "triaged", "urgent", 1, 16, "Synthetic: difficulty breathing reported by a family member; speaking in short sentences.", "2003", null, null, "+91-90000-00003"),
-    emergency("7104", "triaged", "urgent", 2, 23, "Synthetic: deep cut on the palm from a kitchen knife, bleeding controlled with pressure.", "2004"),
-    emergency("7105", "triaged", "unspecified", 4, 38, "Synthetic: rash on both forearms since this morning, mildly itchy.", "2005"),
-    emergency("7106", "claimed", "urgent", 2, 27, "Synthetic: high fever and vomiting in a young adult since last night; unable to keep fluids down.", "2006", "1099", 12, "+91-90000-00006"),
-    emergency("7107", "processing", "unspecified", 3, 52, "Synthetic: twisted knee during football.", "2007", "1006", 9),
-    emergency("7108", "resolved", "unspecified", 5, 140, "Synthetic: request for advice about a minor burn.", patient.id),
-    emergency("7109", "cancelled", "urgent", null, 95, "Synthetic: test request cancelled by the patient.", patient.id),
+    emergency("7101", "submitted", "urgent", null, 4, "sudden chest tightness while climbing stairs, now resting.", patient.id, null, null, "asha.rao@example.test"),
+    emergency("7102", "submitted", "unspecified", null, 11, "dizziness after skipping lunch.", "2002"),
+    emergency("7103", "triaged", "urgent", 1, 16, "difficulty breathing reported by a family member; speaking in short sentences.", "2003", null, null, "+91-90000-00003"),
+    emergency("7104", "triaged", "urgent", 2, 23, "deep cut on the palm from a kitchen knife, bleeding controlled with pressure.", "2004"),
+    emergency("7105", "triaged", "unspecified", 4, 38, "rash on both forearms since this morning, mildly itchy.", "2005"),
+    emergency("7106", "claimed", "urgent", 2, 27, "high fever and vomiting in a young adult since last night; unable to keep fluids down.", "2006", "1099", 12, "+91-90000-00006"),
+    emergency("7107", "processing", "unspecified", 3, 52, "twisted knee during football.", "2007", "1006", 9),
+    emergency("7108", "resolved", "unspecified", 5, 140, "request for advice about a minor burn.", patient.id),
+    emergency("7109", "cancelled", "urgent", null, 95, "test request cancelled by the patient.", patient.id),
   ];
 
   const tariff = (id: string, charge_code: string, revision: number, unit_amount_minor: number): Tariff => ({ id, charge_code, revision, unit_amount_minor, currency: "INR", version: 1 });
