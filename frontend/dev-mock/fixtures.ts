@@ -322,7 +322,7 @@ export function createState() {
     specialties,
     doctors,
     appointments,
-    nextId: 9500,
+    nextId: 100000,
     fulfillmentVersions: new Map<string, number>(),
     day,
     minutes,

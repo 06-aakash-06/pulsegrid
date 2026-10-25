@@ -1,4 +1,4 @@
-import { handleMockRequest } from "./handlers";
+import { createDemoStore } from "./storage";
 
 const SESSION_KEY = "pulsegrid_mock_session";
 const SESSION_COOKIE = /pulsegrid_mock_session=(\d*)/;
@@ -33,6 +33,7 @@ function addRibbon() {
 /** Answers same-origin /api/* requests from the synthetic fixtures for the public demo build. */
 export function installBrowserMock() {
   const realFetch = window.fetch.bind(window);
+  const demoRequest = createDemoStore(() => window.localStorage);
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const request = input instanceof Request ? input : null;
     const url = new URL(request ? request.url : String(input), window.location.origin);
@@ -48,7 +49,7 @@ export function installBrowserMock() {
     } catch {
       body = undefined;
     }
-    const result = handleMockRequest({ method: init?.method ?? request?.method ?? "GET", url, headers, body });
+    const result = await demoRequest({ method: init?.method ?? request?.method ?? "GET", url, headers, body });
     await new Promise((resolve) => setTimeout(resolve, LATENCY_MS));
     const responseHeaders = new Headers({ "Cache-Control": "no-store", "X-PulseGrid-Mock": "true" });
     if (result.etag) responseHeaders.set("ETag", result.etag);
