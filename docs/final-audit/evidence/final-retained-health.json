@@ -1,0 +1,79 @@
+{
+  "readiness": [
+    {
+      "process": "patient",
+      "status": 200,
+      "source_files": 21,
+      "source_matches": true
+    },
+    {
+      "process": "doctor",
+      "status": 200,
+      "source_files": 34,
+      "source_matches": true
+    },
+    {
+      "process": "appointment",
+      "status": 200,
+      "source_files": 62,
+      "source_matches": true
+    },
+    {
+      "process": "records",
+      "status": 200,
+      "source_files": 22,
+      "source_matches": true
+    },
+    {
+      "process": "pharmacy",
+      "status": 200,
+      "source_files": 26,
+      "source_matches": true
+    },
+    {
+      "process": "billing",
+      "status": 200,
+      "source_files": 38,
+      "source_matches": true
+    },
+    {
+      "process": "emergency",
+      "status": 200,
+      "source_files": 20,
+      "source_matches": true
+    },
+    {
+      "process": "doctor_replica",
+      "status": 200
+    }
+  ],
+  "queues": [
+    {
+      "messages": 0,
+      "name": "pulsegrid.appointment.journey.billing.v1",
+      "consumers": 1
+    },
+    {
+      "messages": 0,
+      "name": "pulsegrid.dlq.appointment.journey.billing.v1",
+      "consumers": 0
+    },
+    {
+      "messages": 0,
+      "name": "pulsegrid.dlq.appointment.journey.pharmacy.v1",
+      "consumers": 0
+    },
+    {
+      "messages": 0,
+      "name": "pulsegrid.appointment.journey.pharmacy.v1",
+      "consumers": 1
+    }
+  ],
+  "tempo": {
+    "running": true,
+    "restart_count": 4,
+    "oom_killed_now": false,
+    "memory_limit_bytes": 536870912
+  },
+  "data_or_volumes_removed": false
+}

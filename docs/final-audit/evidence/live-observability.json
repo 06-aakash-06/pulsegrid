@@ -1,0 +1,25 @@
+{
+  "isolated": true,
+  "summary_status": "available",
+  "summary_top_keys": [
+    "status",
+    "observed_at",
+    "system",
+    "services",
+    "trends",
+    "alerts",
+    "components",
+    "messaging",
+    "recent_events"
+  ],
+  "trace_search_status": "available",
+  "trace_count": 47,
+  "fresh_trace_id": "8a7c0f787318460b852bf37a3be2b4bb",
+  "request_status": 200,
+  "fresh_span_count": 13,
+  "fresh_services": [
+    "doctor"
+  ],
+  "detail_status": "HTTP 200",
+  "fresh_trace_correlated": true
+}

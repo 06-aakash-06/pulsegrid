@@ -1,0 +1,129 @@
+{
+  "isolated": true,
+  "checks": [
+    {
+      "check": "other appointment",
+      "status": 404,
+      "expected": [
+        404
+      ]
+    },
+    {
+      "check": "other journey",
+      "status": 404,
+      "expected": [
+        404
+      ]
+    },
+    {
+      "check": "other invoice",
+      "status": 404,
+      "expected": [
+        404
+      ]
+    },
+    {
+      "check": "other clinical record",
+      "status": 404,
+      "expected": [
+        404
+      ]
+    },
+    {
+      "check": "other prescription",
+      "status": 404,
+      "expected": [
+        404
+      ]
+    },
+    {
+      "check": "patient staff administration denied",
+      "status": 403,
+      "expected": [
+        403
+      ]
+    },
+    {
+      "check": "ops Surge mutation denied",
+      "status": 403,
+      "expected": [
+        403
+      ]
+    },
+    {
+      "check": "stale profile If-Match rejected",
+      "status": 412,
+      "expected": [
+        412
+      ]
+    },
+    {
+      "check": "patient role injection rejected",
+      "status": 422,
+      "expected": [
+        422
+      ]
+    },
+    {
+      "check": "spoofed actor headers do not grant administration",
+      "status": 403,
+      "expected": [
+        403
+      ]
+    },
+    {
+      "check": "internal owner route not gateway exposed",
+      "status": 404,
+      "expected": [
+        404
+      ]
+    },
+    {
+      "check": "invalid JWT rejected",
+      "status": 401,
+      "expected": [
+        401
+      ]
+    },
+    {
+      "check": "validly signed expired JWT rejected",
+      "status": 401,
+      "expected": [
+        401
+      ]
+    },
+    {
+      "check": "login missing CSRF rejected",
+      "status": 403,
+      "expected": [
+        403
+      ]
+    },
+    {
+      "check": "refresh rotates successfully",
+      "status": 200,
+      "expected": [
+        200
+      ]
+    },
+    {
+      "check": "old refresh replay rejected",
+      "status": 401,
+      "expected": [
+        401
+      ]
+    },
+    {
+      "check": "refresh family revoked after replay",
+      "status": 401,
+      "expected": [
+        401
+      ]
+    }
+  ],
+  "profile_unchanged": true,
+  "refresh_rotated": true,
+  "http_only_same_site_cookie_observed": true,
+  "development_http_mode": true,
+  "tokens_recorded": false
+}

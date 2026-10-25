@@ -1,0 +1,12 @@
+{
+  "appointment_old_image": "sha256:3cea340ecb7c7ee8f25402cfb90372e91b81302e901b13e2a15b8e9b32869f0b",
+  "appointment_new_image": "sha256:6901ff9727aeccf20e64549c26d768256aee8c83c1eb261f6601637b1d3bfe5e",
+  "rollback_image": "pulsegrid-audit-rollback-appointment:20261025",
+  "recreated_services": [
+    "appointment"
+  ],
+  "migrations_run": false,
+  "consumer_permission_added": "write pulsegrid.dlx",
+  "credentials_rotated": false,
+  "data_or_volumes_removed": false
+}

@@ -1,0 +1,71 @@
+{
+  "project": "pulsegrid-audit-20261025",
+  "gateway": "http://127.0.0.1:18880",
+  "frontend": "http://127.0.0.1:19173",
+  "ports": [
+    18880,
+    13000,
+    19173
+  ],
+  "services": [
+    "appointment",
+    "appointment-migrate",
+    "billing",
+    "billing-migrate",
+    "blackbox",
+    "cache_a",
+    "cache_b",
+    "doctor",
+    "doctor-migrate",
+    "doctor_replica",
+    "emergency",
+    "emergency-migrate",
+    "fixture_1",
+    "fixture_2",
+    "fixture_3",
+    "grafana",
+    "otel-collector",
+    "patient",
+    "patient-migrate",
+    "pharmacy",
+    "pharmacy-migrate",
+    "postgres",
+    "prometheus",
+    "rabbitmq",
+    "records",
+    "records-migrate",
+    "redis",
+    "tempo",
+    "traefik"
+  ],
+  "networks": {
+    "admission": "pulsegrid-audit-20261025_admission",
+    "backbone": "pulsegrid-audit-20261025_backbone",
+    "cache": "pulsegrid-audit-20261025_cache",
+    "database": "pulsegrid-audit-20261025_database",
+    "edge": "pulsegrid-audit-20261025_edge",
+    "grafana_access": "pulsegrid-audit-20261025_grafana_access",
+    "observability": "pulsegrid-audit-20261025_observability",
+    "synthetic": "pulsegrid-audit-20261025_synthetic"
+  },
+  "volumes": {
+    "grafana_data": "pulsegrid-audit-20261025_grafana_data",
+    "postgres_data": "pulsegrid-audit-20261025_postgres_data",
+    "prometheus_data": "pulsegrid-audit-20261025_prometheus_data",
+    "rabbitmq_data": "pulsegrid-audit-20261025_rabbitmq_data",
+    "redis_data": "pulsegrid-audit-20261025_redis_data",
+    "tempo_data": "pulsegrid-audit-20261025_tempo_data"
+  },
+  "configuration_private": true,
+  "all_bind_mounts_readonly": true,
+  "retained_namespace": "pulsegrid",
+  "new_volume_namespace": "pulsegrid-audit-20261025",
+  "source_commit": "99fd31bce9001e48e7521b69d14551bae6d90dda",
+  "subnets": [
+    "10.251.100.0/24",
+    "10.251.101.0/24"
+  ],
+  "setup_attempt_1": "Rejected overlap; no retained resources changed",
+  "actual_container_mounts_and_networks_verified": true,
+  "container_count": 29
+}

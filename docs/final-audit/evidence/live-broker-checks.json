@@ -1,0 +1,44 @@
+{
+  "isolated": true,
+  "checks": [
+    {
+      "check": "broker outage does not roll back successful local payment",
+      "pending_outbox_rows": 1
+    },
+    {
+      "check": "broker recovery drains durable event to consumer inbox",
+      "inbox_rows": 1
+    },
+    {
+      "check": "two duplicate deliveries retain one inbox effect",
+      "inbox_rows": 1
+    },
+    {
+      "check": "invalid synthetic envelope reaches dead letter queue",
+      "dlq_delta": 1
+    }
+  ],
+  "queues": [
+    {
+      "messages": 0,
+      "name": "pulsegrid.appointment.journey.billing.v1",
+      "consumers": 1
+    },
+    {
+      "messages": 1,
+      "name": "pulsegrid.dlq.appointment.journey.billing.v1",
+      "consumers": 0
+    },
+    {
+      "messages": 0,
+      "name": "pulsegrid.dlq.appointment.journey.pharmacy.v1",
+      "consumers": 0
+    },
+    {
+      "messages": 0,
+      "name": "pulsegrid.appointment.journey.pharmacy.v1",
+      "consumers": 1
+    }
+  ],
+  "retained_stack_mutated": false
+}

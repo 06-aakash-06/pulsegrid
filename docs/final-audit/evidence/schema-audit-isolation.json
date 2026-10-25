@@ -1,0 +1,72 @@
+[
+  {
+    "service": "patient",
+    "migration": "0005_waitlist_eligibility",
+    "tables": 10,
+    "exclusions": 0,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 18,
+    "audit_entries_verified": 1227,
+    "outbox_rows": 60
+  },
+  {
+    "service": "doctor",
+    "migration": "0005_phase4_directory_revision",
+    "tables": 12,
+    "exclusions": 1,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 13,
+    "audit_entries_verified": 76,
+    "outbox_rows": 12
+  },
+  {
+    "service": "appointment",
+    "migration": "0012_phase6_surge_audit",
+    "tables": 23,
+    "exclusions": 2,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 14,
+    "audit_entries_verified": 614,
+    "outbox_rows": 166
+  },
+  {
+    "service": "records",
+    "migration": "0005_phase3_workflow",
+    "tables": 13,
+    "exclusions": 0,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 15,
+    "audit_entries_verified": 432,
+    "outbox_rows": 12
+  },
+  {
+    "service": "pharmacy",
+    "migration": "0007_phase5_outbox_grants",
+    "tables": 16,
+    "exclusions": 0,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 16,
+    "audit_entries_verified": 162,
+    "outbox_rows": 8
+  },
+  {
+    "service": "billing",
+    "migration": "0010_phase5_event_delivery",
+    "tables": 17,
+    "exclusions": 0,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 8,
+    "audit_entries_verified": 521,
+    "outbox_rows": 26
+  },
+  {
+    "service": "emergency",
+    "migration": "0003_emergency_workflow",
+    "tables": 8,
+    "exclusions": 0,
+    "foreign_connections_denied": 6,
+    "frozen_routes_present": 7,
+    "audit_entries_verified": 12,
+    "outbox_rows": 1
+  }
+]

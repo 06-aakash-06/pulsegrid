@@ -1,0 +1,150 @@
+[
+  {
+    "service": "patient",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "patient",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "doctor",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "doctor",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "doctor_replica",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "doctor",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "appointment",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "appointment",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "records",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "records",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "pharmacy",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "pharmacy",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "billing",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "billing",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "service": "emergency",
+    "result": {
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "service": "emergency",
+        "application": "ready",
+        "dependencies": {
+          "database": {
+            "status": "available",
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  {
+    "unauthenticated_path": "/api/v1/doctors",
+    "status": 401
+  },
+  {
+    "unauthenticated_path": "/api/v1/appointments/operations/control-room/summary",
+    "status": 401
+  },
+  {
+    "unauthenticated_path": "/api/v1/records/consultations",
+    "status": 401
+  }
+]

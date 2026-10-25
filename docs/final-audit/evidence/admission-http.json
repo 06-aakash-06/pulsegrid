@@ -1,0 +1,25 @@
+{
+  "replica_final_http_metric_deltas": {
+    "pulsegrid-audit-20261025-doctor-1": {
+      "accepted": 35.0,
+      "limited": 15.0,
+      "unavailable": 0
+    },
+    "pulsegrid-audit-20261025-doctor_replica-1": {
+      "accepted": 37.0,
+      "limited": 13.0,
+      "unavailable": 0
+    }
+  },
+  "attempted": 100,
+  "admitted": 72,
+  "limited": 28,
+  "errors": 0,
+  "elapsed_seconds": 2.0604557499973453,
+  "attempted_throughput": 48.5329519938144,
+  "successful_throughput": 34.94372543554637,
+  "all_mean_ms": 73.3607149999807,
+  "all_p95_ms": 199.58130099985283,
+  "emergency_business_validation_after_search_overload": 422,
+  "spoofed_x_forwarded_for_cannot_expand_principal_quota": true
+}

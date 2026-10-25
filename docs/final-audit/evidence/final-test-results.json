@@ -1,0 +1,46 @@
+{
+  "runs": [
+    {
+      "file": "pulsegrid-phase29-backend.xml",
+      "collected": 675,
+      "passed": 623,
+      "skipped": 52,
+      "failed": 0
+    },
+    {
+      "file": "pulsegrid-phase29-records.xml",
+      "collected": 77,
+      "passed": 77,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "file": "pulsegrid-phase4-components.xml",
+      "collected": 158,
+      "passed": 158,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "file": "pulsegrid-final-appointment.xml",
+      "collected": 220,
+      "passed": 219,
+      "skipped": 1,
+      "failed": 0
+    }
+  ],
+  "distinct_service_passes": 677,
+  "distinct_component_passes": 158,
+  "combined_distinct_passes": 835,
+  "distinct_skips": 1,
+  "frontend_passes": 159,
+  "frontend_files": 12,
+  "typecheck": "PASS",
+  "normal_production_build": "PASS",
+  "deduplication": "623 initial service passes - 216 initial Appointment passes - 26 duplicate Records passes + 219 final Appointment passes + 77 isolated Records passes = 677. Components add 158.",
+  "skip_reason": "Short-link adapter benchmark intentionally invoked only through experiments/phase4/short_links/run.py; no new performance campaign run.",
+  "warnings": [
+    "Starlette testclient/httpx deprecation",
+    "Alembic path_separator deprecation"
+  ]
+}

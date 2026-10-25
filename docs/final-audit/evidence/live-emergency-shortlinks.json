@@ -1,0 +1,15 @@
+{
+  "isolated": true,
+  "checks": [
+    "patient emergency submission",
+    "emergency patient ownership",
+    "staff priority and claim replay",
+    "release reclaim process resolve history and minimal patient tracking",
+    "patient emergency cancellation",
+    "Snowflake-backed alias create safe navigation authorized resolution and owner denial",
+    "alias revocation prevents resolution"
+  ],
+  "emergency_history_items": 7,
+  "snowflake_worker": 256,
+  "raw_alias_or_tokens_recorded": false
+}

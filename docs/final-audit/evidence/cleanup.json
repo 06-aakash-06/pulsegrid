@@ -1,0 +1,22 @@
+{
+  "isolated_project": "pulsegrid-audit-20261025",
+  "audit_containers_stopped": 29,
+  "audit_volume_count_preserved": 8,
+  "audit_volumes_preserved": [
+    "9d8ddc2e3dfc3db8c7e6510c41ce7589f922a3301c98166721cd1475c9ab0f21",
+    "b80780a8e73be11a4fb6e9a58f02aec030894be08111f2ef1096938ef9a2c891",
+    "pulsegrid-audit-20261025_grafana_data",
+    "pulsegrid-audit-20261025_postgres_data",
+    "pulsegrid-audit-20261025_prometheus_data",
+    "pulsegrid-audit-20261025_rabbitmq_data",
+    "pulsegrid-audit-20261025_redis_data",
+    "pulsegrid-audit-20261025_tempo_data"
+  ],
+  "retained_running_containers_preserved": 30,
+  "retained_container_ids_unchanged_during_cleanup": true,
+  "audit_vite_pid_stopped": 40598,
+  "normal_frontend_5173_untouched": true,
+  "private_restart_configuration_preserved": true,
+  "volumes_deleted": false,
+  "docker_down_used": false
+}

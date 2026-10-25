@@ -1,0 +1,1 @@
+{"tempo": {"status": 200, "body": "ready\n"}, "prometheus": {"status": 200, "body": "Prometheus Server is Ready.\n"}, "grafana": {"status": 200, "body": "{\n  \"database\": \"ok\",\n  \"version\": \"13.2.2\",\n  \"commit\": \"1bea008f7e4e858b6824c9e364d608bd4d10b13a\"\n}"}}

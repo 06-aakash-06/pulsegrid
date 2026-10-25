@@ -1,0 +1,645 @@
+[
+  {
+    "service": "patient",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/csrf"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/register"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/login"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/refresh"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/auth/logout"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/patients/me"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/patients/me"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/auth/jwks"
+      },
+      {
+        "method": "POST",
+        "path": "/internal/v1/authorization/check"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/patients"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/patients/users"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/patients/users/{user_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/patients/{patient_id}"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/patients/{patient_id}"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/patients/users/{user_id}/roles"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/patients/users/{user_id}/account-state"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/patients/{patient_id}/status"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/users/{user_id}/staff-status"
+      },
+      {
+        "method": "POST",
+        "path": "/internal/v1/patients/waitlist-eligibility"
+      }
+    ]
+  },
+  {
+    "service": "doctor",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors/autocomplete"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors/specialties"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/doctors/specialties"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors/me"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/doctors"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors/{doctor_id}"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/doctors/{doctor_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/doctors/{doctor_id}/schedules"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors/{doctor_id}/schedules"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/doctors/{doctor_id}/schedules/{proposal_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/doctors/{doctor_id}/schedules/{proposal_id}/reconcile"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/doctors/{doctor_id}/identity"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/doctors/{doctor_id}/schedule-proposals/{proposal_id}"
+      }
+    ]
+  },
+  {
+    "service": "appointment",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/waitlists"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/waitlists"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/waitlists/{entry_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/waitlists/{entry_id}/withdraw"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/waitlist-slots/{slot_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/waitlist-offers"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/waitlist-offers/{offer_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/waitlist-offers/{offer_id}/accept"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/waitlist-offers/{offer_id}/decline"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/{appointment_id}/workflow"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/check-in-links"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/check-in"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/staff-check-in"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/workflow-context"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/queues"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/{appointment_id}/queue"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/queue-entries/{entry_id}/start"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/no-show"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/queue-entries/{entry_id}/skip"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/queue-entries/{entry_id}/recall"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/queue-entries/{entry_id}/history"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/journeys"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/journeys/{journey_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/journeys/{journey_id}/history"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/journeys/{journey_id}/reconcile"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/journeys/{journey_id}/discharge"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/short-links"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/short-links/{link_id}/revoke"
+      },
+      {
+        "method": "GET",
+        "path": "/s/{alias}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/schedule-decisions"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/schedule-decisions/{proposal_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/availability"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/{appointment_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/cancel"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/{appointment_id}/reschedule"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/schedule-decisions/{proposal_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/doctors/{doctor_id}/operational-status"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/consultation-context"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/billing-context"
+      },
+      {
+        "method": "POST",
+        "path": "/internal/v1/appointments/{appointment_id}/clinical-hold"
+      },
+      {
+        "method": "POST",
+        "path": "/internal/v1/appointments/{appointment_id}/clinical-hold/finalize"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/operations/surge-mode"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/appointments/operations/surge-mode"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/operations/control-room/summary"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/operations/control-room/traces"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/appointments/operations/control-room/traces/{trace_id}"
+      }
+    ]
+  },
+  {
+    "service": "records",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/records/patients/{patient_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/records/consultations"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/records/consultations"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/records/consultations/{consultation_id}"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/records/consultations/{consultation_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/records/consultations/{consultation_id}/finalize"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/records/prescriptions"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/records/prescriptions/{prescription_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/records/prescriptions/{prescription_id}/revoke"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/records/access-grants"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/records/access-grants/{grant_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/records/{record_id}/amendments"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/records/{record_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/prescriptions/{prescription_id}/dispensing-context"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/consultations/{consultation_id}/charge-context"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/workflow-snapshot"
+      }
+    ]
+  },
+  {
+    "service": "pharmacy",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/medicines/autocomplete"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/medicines"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/pharmacy/medicines"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/medicines/{medicine_id}"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/pharmacy/medicines/{medicine_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/inventory"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/pharmacy/inventory-adjustments"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/pharmacy/reservations"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/reservations"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/reservations/{reservation_id}"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/pharmacy/reservations/{reservation_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/pharmacy/reservations/{reservation_id}/dispense"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/pharmacy/reservations/{reservation_id}/revalidate"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/dispensings"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/dispensings/{dispensing_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/pharmacy/prescriptions/{prescription_id}/fulfillment"
+      },
+      {
+        "method": "POST",
+        "path": "/internal/v1/medicines/validate"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/dispensings/{dispensing_id}/charge-context"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/workflow-snapshot"
+      }
+    ]
+  },
+  {
+    "service": "billing",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "GET",
+        "path": "/internal/v1/appointments/{appointment_id}/workflow-snapshot"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/insurance/providers"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/billing/insurance/providers/{provider_id}/refresh"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/insurance/runs/{run_id}"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/billing/invoices/{invoice_id}/insurance-estimates"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/invoices/{invoice_id}/insurance-estimates"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/tariffs"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/billing/tariffs"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/billing/invoices"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/invoices"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/invoices/{invoice_id}"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/billing/invoices/{invoice_id}/payments"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/billing/invoices/{invoice_id}/payments"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/billing/invoices/{invoice_id}/charges"
+      }
+    ]
+  },
+  {
+    "service": "emergency",
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health/live"
+      },
+      {
+        "method": "GET",
+        "path": "/health/ready"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/emergencies"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/emergencies"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/emergencies/{request_id}/history"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/emergencies/{request_id}"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/emergencies/{request_id}/priority"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/emergencies/{request_id}/claim"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/emergencies/{request_id}/release"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/emergencies/{request_id}/transitions"
+      }
+    ]
+  }
+]

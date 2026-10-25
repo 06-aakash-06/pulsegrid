@@ -1,0 +1,1615 @@
+{
+  "routes": [
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Consultation",
+        "Specialties ⌕",
+        "Doctors",
+        "Consultation schedule",
+        "Quick Actions"
+      ],
+      "height": 1024,
+      "loading": [
+        "Loading doctor profile…"
+      ],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Appointments"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/waitlist",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Waitlist",
+        "Join a waitlist",
+        "Your waitlist entries",
+        "Temporary slot offers"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/check-in",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "QR check-in",
+        "Check In Here",
+        "Secure QR check-in"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Waiting Room",
+        "Check In Here",
+        "Live Queue",
+        "Your Turn"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/journey",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Patient journey",
+        "Patient journey"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Medical Records",
+        "Visit timeline",
+        "Record history",
+        "Linked prescriptions & journey",
+        "Historical access grants",
+        "Consultations"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/prescriptions",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Prescriptions",
+        "Prescriptions"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Pharmacy",
+        "Medicine cabinet",
+        "Prescription stand",
+        "Reservation"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Billing",
+        "Your invoices"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "headings": [
+        "Find your way",
+        "Emergency",
+        "New request",
+        "Your requests (0)"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/dashboard",
+      "alerts": [],
+      "headings": [
+        "Consultation",
+        "Your doctor profile",
+        "Schedule proposals",
+        "Schedule proposals"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/consultations",
+      "alerts": [],
+      "headings": [
+        "Consultations",
+        "Your consultations",
+        "Consultation for visit …0118"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/queue",
+      "alerts": [],
+      "headings": [
+        "Queue management",
+        "Assigned consultation queue",
+        "Patient journey"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/prescriptions",
+      "alerts": [],
+      "headings": [
+        "Prescription management",
+        "Prescriptions",
+        "Medicines",
+        "Medicine details",
+        "Demo catalog item …5082"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "receptionist",
+      "path": "/receptionist/dashboard",
+      "alerts": [],
+      "headings": [
+        "Reception",
+        "Patient demographics",
+        "Patients"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "receptionist",
+      "path": "/receptionist/appointments",
+      "alerts": [],
+      "headings": [
+        "Appointment coordination",
+        "Reception check-in",
+        "Patient journey"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "pharmacist",
+      "path": "/pharmacist/dashboard",
+      "alerts": [],
+      "headings": [
+        "Pharmacy",
+        "Medicine cabinet",
+        "Prescription counter",
+        "Selected medicine",
+        "Dispensing",
+        "Stock adjustment"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "pharmacist",
+      "path": "/pharmacist/inventory",
+      "alerts": [],
+      "headings": [
+        "Inventory",
+        "Medicine cabinet",
+        "Prescription counter",
+        "Selected medicine",
+        "Dispensing",
+        "Stock adjustment"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "pharmacist",
+      "path": "/pharmacist/prescriptions",
+      "alerts": [],
+      "headings": [
+        "Prescription fulfillment",
+        "Medicine cabinet",
+        "Prescription counter",
+        "Current reservation",
+        "Reservation register",
+        "Reservations",
+        "Prescription fulfillment status",
+        "Verify available stock",
+        "Stock batches"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/dashboard",
+      "alerts": [],
+      "headings": [
+        "Billing",
+        "Invoice register",
+        "Receipt"
+      ],
+      "height": 1024,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/invoices",
+      "alerts": [],
+      "headings": [
+        "Invoices",
+        "Invoice register",
+        "Receipt"
+      ],
+      "height": 1024,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/payments",
+      "alerts": [],
+      "headings": [
+        "Payment management",
+        "Invoice register",
+        "Receipt"
+      ],
+      "height": 1024,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/insurance",
+      "alerts": [],
+      "headings": [
+        "Insurance estimates"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "emergency_staff",
+      "path": "/emergency/dashboard",
+      "alerts": [],
+      "headings": [
+        "Emergency",
+        "Request queue (1)",
+        "Synthetic audit request only; no real emergency.",
+        "Next steps"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "emergency_staff",
+      "path": "/emergency/requests",
+      "alerts": [],
+      "headings": [
+        "Emergency management",
+        "Request queue (1)",
+        "Synthetic audit request only; no real emergency.",
+        "Next steps"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/dashboard",
+      "alerts": [],
+      "headings": [
+        "Administration",
+        "Patient demographics",
+        "Patients",
+        "Medicines",
+        "Medicine details",
+        "Demo catalog item …5082",
+        "New catalog medicine"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/staff",
+      "alerts": [],
+      "headings": [
+        "Staff & roles",
+        "Filter accounts",
+        "Accounts"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/doctors",
+      "alerts": [],
+      "headings": [
+        "Consultation",
+        "Specialties ⌕",
+        "Doctors",
+        "Synthetic Phase3 Doctor",
+        "Schedule proposals",
+        "Schedule proposals",
+        "Quick Actions",
+        "Create directory entries"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/control-room",
+      "alerts": [],
+      "headings": [
+        "Control Room",
+        "Service topology",
+        "Live alerts",
+        "Message bus & cache",
+        "Surge Mode",
+        "Event delivery"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/traces",
+      "alerts": [],
+      "headings": [
+        "Trace Explorer",
+        "Recent traces"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/settings",
+      "alerts": [],
+      "headings": [
+        "Administration desk",
+        "Administration desk"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "headings": [
+        "Control Room",
+        "Service topology",
+        "Live alerts",
+        "Message bus & cache",
+        "Surge Mode",
+        "Event delivery"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "ops",
+      "path": "/ops/traces",
+      "alerts": [],
+      "headings": [
+        "Trace Explorer",
+        "Recent traces"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "headings": [
+        "Control Room",
+        "Service topology",
+        "Live alerts",
+        "Message bus & cache",
+        "Surge Mode",
+        "Event delivery"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "headings": [
+        "Control Room",
+        "Service topology",
+        "Live alerts",
+        "Message bus & cache",
+        "Surge Mode",
+        "Event delivery"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "headings": [
+        "Control Room",
+        "Service topology",
+        "Live alerts",
+        "Message bus & cache",
+        "Surge Mode",
+        "Event delivery"
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "headings": [
+        "Reception",
+        "Synthetic."
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "headings": [
+        "Consultation",
+        "Specialties ⌕",
+        "Doctors",
+        "Synthetic Phase3 Doctor",
+        "Consultation schedule",
+        "Quick Actions"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "headings": [
+        "Appointments"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "headings": [
+        "Waiting Room",
+        "Check In Here",
+        "Live Queue",
+        "Your Turn"
+      ],
+      "height": 1024,
+      "loading": [
+        "Connecting to your queue…"
+      ],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "headings": [
+        "Pharmacy",
+        "Medicine cabinet",
+        "Prescription stand",
+        "Prescription details",
+        "Reservation",
+        "Prescription summary"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "headings": [
+        "Billing",
+        "Receipt",
+        "Your invoices"
+      ],
+      "height": 1024,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "headings": [
+        "Emergency",
+        "New request",
+        "Your requests (0)"
+      ],
+      "height": 1024,
+      "loading": [],
+      "scrollWidth": 1536,
+      "width": 1536
+    },
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "headings": [
+        "Reception",
+        "Synthetic."
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "headings": [
+        "Consultation",
+        "Specialties ⌕",
+        "Doctors",
+        "Synthetic Phase3 Doctor",
+        "Consultation schedule",
+        "Quick Actions"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "headings": [
+        "Appointments"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "headings": [
+        "Waiting Room",
+        "Check In Here",
+        "Live Queue",
+        "Your Turn"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "headings": [
+        "Pharmacy",
+        "Medicine cabinet",
+        "Prescription stand",
+        "Prescription details",
+        "Reservation",
+        "Prescription summary"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "headings": [
+        "Billing",
+        "Receipt",
+        "Your invoices"
+      ],
+      "height": 900,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "headings": [
+        "Emergency",
+        "New request",
+        "Your requests (0)"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "headings": [
+        "Medical Records",
+        "Visit timeline",
+        "25 Oct 2026",
+        "Record history",
+        "Linked prescriptions & journey",
+        "Historical access grants",
+        "Consultations",
+        "Visit …0118"
+      ],
+      "height": 900,
+      "loading": [],
+      "scrollWidth": 1440,
+      "width": 1440
+    },
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "headings": [
+        "Reception",
+        "Synthetic."
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "headings": [
+        "Consultation",
+        "Specialties ⌕",
+        "Doctors",
+        "Synthetic Phase3 Doctor",
+        "Consultation schedule",
+        "Quick Actions"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "headings": [
+        "Appointments"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "headings": [
+        "Waiting Room",
+        "Check In Here",
+        "Live Queue",
+        "Your Turn"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "headings": [
+        "Pharmacy",
+        "Medicine cabinet",
+        "Prescription stand",
+        "Prescription details",
+        "Reservation",
+        "Prescription summary"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "headings": [
+        "Billing",
+        "Receipt",
+        "Your invoices"
+      ],
+      "height": 800,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "headings": [
+        "Emergency",
+        "New request",
+        "Your requests (0)"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "headings": [
+        "Medical Records",
+        "Visit timeline",
+        "25 Oct 2026",
+        "Record history",
+        "Linked prescriptions & journey",
+        "Historical access grants",
+        "Consultations",
+        "Visit …0118"
+      ],
+      "height": 800,
+      "loading": [],
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "headings": [
+        "Reception",
+        "Synthetic."
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "headings": [
+        "Appointments"
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "headings": [
+        "Waiting Room",
+        "Check In Here",
+        "Live Queue",
+        "Your Turn"
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "headings": [
+        "Pharmacy",
+        "Medicine cabinet",
+        "Prescription stand",
+        "Prescription details",
+        "Reservation",
+        "Prescription summary"
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "headings": [
+        "Billing",
+        "Receipt",
+        "Your invoices"
+      ],
+      "height": 844,
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "headings": [
+        "Emergency",
+        "New request",
+        "Your requests (0)"
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "headings": [
+        "Medical Records",
+        "Visit timeline",
+        "25 Oct 2026",
+        "Record history",
+        "Linked prescriptions & journey",
+        "Historical access grants",
+        "Consultations",
+        "Visit …0118"
+      ],
+      "height": 844,
+      "loading": [],
+      "scrollWidth": 390,
+      "width": 390
+    }
+  ],
+  "actions": [
+    {
+      "role": "patient",
+      "action": "registration",
+      "result": "identity service accepted new isolated account"
+    },
+    {
+      "role": "patient",
+      "action": "login",
+      "result": "authenticated own reception and empty collections"
+    },
+    {
+      "role": "patient",
+      "action": "emergency request",
+      "result": "reviewed and submitted; owner register shows submitted request"
+    },
+    {
+      "check": "browser doctor profile Schedule/Details and accepted-slot review/confirm booking",
+      "mode": "real isolated backend",
+      "result": "APPOINTMENT BOOKED; Confirmed by the Appointment service",
+      "visitSuffix": "7253",
+      "pass": true
+    },
+    {
+      "check": "new booking persisted in My Appointments, detail opens, cancellation review and confirm",
+      "mode": "real isolated backend",
+      "result": "Appointment cancelled; status Cancelled",
+      "visitSuffix": "7253",
+      "pass": true
+    }
+  ],
+  "responsive": [
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "width": 390,
+      "height": 844,
+      "overflow": false,
+      "alerts": [],
+      "manual_completed_recheck": true
+    },
+    {
+      "check": "mobile navigation focus trap and Escape",
+      "width": 390,
+      "dialogModal": true,
+      "initialFocus": "Reception",
+      "shiftTabFocus": "Sign out",
+      "escapeReturnFocus": "Open navigation menu",
+      "pass": true
+    },
+    {
+      "check": "department search navigation and settled Billing panels",
+      "width": 390,
+      "search": "billing",
+      "route": "/patient/billing",
+      "paymentHistoryVisible": true,
+      "insuranceEstimateProvenanceVisible": true,
+      "pass": true
+    },
+    {
+      "check": "notifications explains owner-confirmed updates",
+      "width": 390,
+      "pass": true
+    }
+  ],
+  "desktopPatient": [
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "loading": [
+        "Connecting to your queue…"
+      ],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "path": "/patient/records",
+      "width": 1536,
+      "height": 1024,
+      "error": "Error: Error: Playwright selector deadline exceeded\nlocator.waitFor(hidden) timed out for selector internal:role=status >> nth=0\nLocator diagnostics: {\"kind\":\"action_failed\",\"action\":\"waitFor\",\"locator\":\"internal:role=status >> nth=0\",\"matchCount\":1,\"matches\":[{\"ariaLabel\":null,\"disabled\":false,\"role\":\"status\",\"tag\":\"p\",\"text\":\"Loading clinical document…\",\"type\":null,\"visible\":true}],\"visibleCount\":1,\"truncated\":false}"
+    },
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "compactPatient": [
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/doctors",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "role": "patient",
+      "path": "/patient/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "/patient/doctors",
+      "width": 390,
+      "height": 844,
+      "error": "Error: Playwright selector deadline exceeded"
+    },
+    {
+      "role": "patient",
+      "path": "/patient/appointments",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "role": "patient",
+      "path": "/patient/queue",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "role": "patient",
+      "path": "/patient/pharmacy",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "role": "patient",
+      "path": "/patient/billing",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "role": "patient",
+      "path": "/patient/emergency",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    },
+    {
+      "role": "patient",
+      "path": "/patient/records",
+      "alerts": [],
+      "loading": [],
+      "overflow": false,
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "staff": [
+    {
+      "role": "receptionist",
+      "path": "/receptionist/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "receptionist",
+      "path": "/receptionist/appointments",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "pharmacist",
+      "path": "/pharmacist/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "pharmacist",
+      "path": "/pharmacist/inventory",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "pharmacist",
+      "path": "/pharmacist/prescriptions",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/dashboard",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/invoices",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/payments",
+      "alerts": [],
+      "loading": [
+        "Loading invoice payments…",
+        "Loading invoice version and insurance estimates…"
+      ],
+      "overflow": false
+    },
+    {
+      "role": "billing_staff",
+      "path": "/billing/insurance",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "emergency_staff",
+      "path": "/emergency/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "emergency_staff",
+      "path": "/emergency/requests",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/staff",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    }
+  ],
+  "remainingAdmin": [
+    {
+      "role": "hospital_admin",
+      "path": "/admin/control-room",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/traces",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "hospital_admin",
+      "path": "/admin/settings",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    }
+  ],
+  "ops": [
+    {
+      "role": "ops",
+      "path": "/ops/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "ops",
+      "path": "/ops/traces",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    }
+  ],
+  "doctor": [
+    {
+      "role": "doctor",
+      "path": "/doctor/dashboard",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/consultations",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/queue",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    },
+    {
+      "role": "doctor",
+      "path": "/doctor/prescriptions",
+      "alerts": [],
+      "loading": [],
+      "overflow": false
+    }
+  ],
+  "limitations": [
+    "Not every mutation or control exercised in browser; booking/cancellation and Emergency mutations were exercised",
+    "Physical camera QR decoding unverified",
+    "Four-size coverage limited to patient primary departments and Control Room",
+    "Child loading snapshots supplemented by settled Billing recheck"
+  ],
+  "console": []
+}

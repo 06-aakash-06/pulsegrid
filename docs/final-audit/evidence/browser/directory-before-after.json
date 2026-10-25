@@ -1,0 +1,102 @@
+{
+  "before": [
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "flex",
+      "label": "Administration",
+      "smallColor": "rgb(16, 38, 56)",
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "none",
+      "label": "Staff & roles",
+      "smallColor": null,
+      "visible": false
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "none",
+      "label": "Administration desk",
+      "smallColor": null,
+      "visible": false
+    },
+    {
+      "active": true,
+      "background": "rgb(16, 56, 62)",
+      "display": "flex",
+      "label": "Consultation",
+      "smallColor": "rgb(16, 38, 56)",
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "flex",
+      "label": "Control Room",
+      "smallColor": "rgb(16, 38, 56)",
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "none",
+      "label": "Trace Explorer",
+      "smallColor": null,
+      "visible": false
+    }
+  ],
+  "after": [
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "flex",
+      "label": "Administration",
+      "smallColor": "rgb(16, 38, 56)",
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "grid",
+      "label": "Staff & roles",
+      "smallColor": null,
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "grid",
+      "label": "Administration desk",
+      "smallColor": null,
+      "visible": true
+    },
+    {
+      "active": true,
+      "background": "rgb(16, 56, 62)",
+      "display": "flex",
+      "label": "Consultation",
+      "smallColor": "rgb(226, 235, 223)",
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "flex",
+      "label": "Control Room",
+      "smallColor": "rgb(16, 38, 56)",
+      "visible": true
+    },
+    {
+      "active": false,
+      "background": "rgba(0, 0, 0, 0)",
+      "display": "grid",
+      "label": "Trace Explorer",
+      "smallColor": null,
+      "visible": true
+    }
+  ]
+}

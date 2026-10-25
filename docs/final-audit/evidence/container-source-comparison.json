@@ -1,0 +1,44 @@
+[
+  {
+    "service": "patient",
+    "source_files": 21,
+    "matches": true,
+    "different": []
+  },
+  {
+    "service": "doctor",
+    "source_files": 34,
+    "matches": true,
+    "different": []
+  },
+  {
+    "service": "appointment",
+    "source_files": 62,
+    "matches": true,
+    "different": []
+  },
+  {
+    "service": "records",
+    "source_files": 22,
+    "matches": true,
+    "different": []
+  },
+  {
+    "service": "pharmacy",
+    "source_files": 26,
+    "matches": true,
+    "different": []
+  },
+  {
+    "service": "billing",
+    "source_files": 38,
+    "matches": true,
+    "different": []
+  },
+  {
+    "service": "emergency",
+    "source_files": 20,
+    "matches": true,
+    "different": []
+  }
+]

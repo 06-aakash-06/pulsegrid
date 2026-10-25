@@ -55,12 +55,17 @@ PostgreSQL transactions, locks and constraints enforce business correctness. Red
 
 Phases 1–8 have implementation and verification reports with their scoped limitations. Phase 8.2 completed its documented local Doctor scalability matrix; those measurements are not production capacity estimates.
 
-Phase 9 redesigned the hospital workspaces and retained the approved Reception and Consultation compositions. The latest visual correction checkpoint is **PARTIAL**: shared directory and Waiting Room corrections are complete within documented limits; Pharmacy cabinet/counter positioning and additional role/responsive browser checks remain. Physical QR camera decoding is unverified in the tested environment.
+Phase 9 redesigned the hospital workspaces and retained the approved Reception and Consultation compositions. The 25 October full audit reconstructed the accessible project history, reconciled 94 feature groups, and repaired waitlist transport/deadline failures, RabbitMQ dead-letter permissions and staff navigation/readability. Real isolated hospital journeys and all 35 role routes were exercised.
 
-Latest checkpoint validation: **142 frontend tests passed**, TypeScript passed and production build passed. These are recorded checks, not a claim that every backend scenario was rerun at that checkpoint.
+The audit verdict remains **PARTIAL**: physical QR camera decoding, exhaustive control/responsive coverage and sustained telemetry stability remain unverified. Current validation: **677 service tests, 158 component tests and 159 frontend tests passed**, with one intentionally skipped adapter benchmark; TypeScript and the normal production build passed. The reports distinguish actual execution, historical measurements, scope decisions and remaining gaps.
+
+- [Final audit verdict, repairs and remaining acceptance](docs/final-audit/FINAL-VERDICT.md)
+- [Historical scope reconstruction](docs/final-audit/00-scope-reconstruction.md)
+- [Feature traceability matrix](docs/final-audit/02-feature-traceability.md)
+- [Missing-feature reconciliation](docs/final-audit/10-missing-features.md)
 
 - [Phase 9 continuation and workflow evidence](docs/phase-9-resume.md)
-- [Latest visual corrections and exact resume point](docs/phase-9-visual-fidelity-corrections.md)
+- [Historical visual correction checkpoint](docs/phase-9-visual-fidelity-corrections.md)
 - [Frontend design system](docs/phase-9-design-system.md)
 - [Phase 8.2 measured scalability evaluation](docs/phase-8-2-scalability-finalization.md)
 

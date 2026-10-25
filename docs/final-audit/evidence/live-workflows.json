@@ -1,0 +1,58 @@
+{
+  "isolated": true,
+  "workflow_groups": [
+    "registration_doctor_search_accepted_schedule",
+    "fully_booked_fifo_offer_reserves_capacity",
+    "workflow1_qr_queue_clinical_rx_pharmacy_billing_payment_discharge",
+    "workflow5_no_prescription_pharmacy_skipped_paid_discharge",
+    "workflow2_offer_acceptance_gateway_race_one_booking",
+    "workflow4_skip_recall_fifo_busy_guard_completion_history",
+    "durable_expiry_offer_started",
+    "workflow6",
+    "workflow3_durable_offer_expiry_next_patient_worker_recovery",
+    "gateway_authentication_ownership_internal_route_isolation"
+  ],
+  "natural_expiry_successor_delay_seconds": 5.185877,
+  "offer_history": [
+    {
+      "state": "expired",
+      "created_at": "2026-10-25 08:20:48.948642+00:00",
+      "expires_at": "2026-10-25 08:25:48.976912+00:00"
+    },
+    {
+      "state": "expired",
+      "created_at": "2026-10-25 08:25:54.162789+00:00",
+      "expires_at": "2026-10-25 08:30:54.168526+00:00"
+    }
+  ],
+  "selected_publishers": {
+    "billing": [
+      {
+        "event_type": "billing.payment.succeeded.v1",
+        "selected_events": 6,
+        "published": 6
+      }
+    ],
+    "pharmacy": [
+      {
+        "event_type": "pharmacy.reservation.dispensed.v1",
+        "selected_events": 2,
+        "published": 2
+      }
+    ]
+  },
+  "selected_inbox_effects": [
+    {
+      "consumer_name": "appointment.journey.billing.v1",
+      "effects": 6
+    },
+    {
+      "consumer_name": "appointment.journey.pharmacy.v1",
+      "effects": 2
+    }
+  ],
+  "transient_failures": [
+    "One consultation dependency_timeout HTTP 504; resumed same fixture and idempotency keys successfully"
+  ],
+  "raw_tokens_or_credentials_recorded": false
+}

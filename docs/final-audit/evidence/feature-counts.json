@@ -1,0 +1,13 @@
+{
+  "total_groups": 94,
+  "current_included_groups": 86,
+  "verified_scoped_groups": 46,
+  "tested_live_detail_partial_groups": 31,
+  "partial_acceptance_or_implementation_groups": 9,
+  "proposed_only_groups": 3,
+  "excluded_groups": 2,
+  "deferred_groups": 2,
+  "uncertain_groups": 1,
+  "currently_reproduced_broken_groups_after_repairs": 0,
+  "confirmed_entirely_absent_current_agreed_business_groups": 0
+}

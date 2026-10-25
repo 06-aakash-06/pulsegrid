@@ -1,0 +1,28 @@
+{
+  "isolated": true,
+  "manual_activation_observed": "SURGE",
+  "deactivation_observed": "RECOVERY",
+  "final_state": {
+    "state": "NORMAL",
+    "version": 2,
+    "changed_at": "2026-10-25T08:29:32.529000Z",
+    "expires_at": null,
+    "reason_code": "recovery_elapsed"
+  },
+  "cache_outage_owner_directory_equal": true,
+  "cache_recovery": [
+    {
+      "node": "cache_a",
+      "running": true,
+      "health": "healthy"
+    },
+    {
+      "node": "cache_b",
+      "running": true,
+      "health": "healthy"
+    }
+  ],
+  "transient_failure": "One status GET returned 503 admission_unavailable during recovery polling; later GET confirmed NORMAL recovery_elapsed",
+  "continuous_recovery_poll_pass": false,
+  "retained_stack_mutated": false
+}
