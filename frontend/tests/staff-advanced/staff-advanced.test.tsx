@@ -72,7 +72,7 @@ function fill(label: string, value: string) {
 async function confirm(title: string) {
   fireEvent.click(screen.getByRole("button", { name: commandLabels(title).review }));
   fireEvent.click(await screen.findByRole("button", { name: commandLabels(title).confirm }));
-  await screen.findByText(commandLabels(title).success);
+  await screen.findByText((_text, element) => element?.getAttribute("role") === "status" && (element.textContent ?? "").includes(commandLabels(title).success));
 }
 
 const token = "0123456789012345678901";

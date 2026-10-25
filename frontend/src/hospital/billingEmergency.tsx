@@ -249,14 +249,14 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
       {register.items.length > 0 && (
         <table className="cashier-register__table">
           <caption className="sr-only">Invoices</caption>
-          <thead><tr><th scope="col">Invoice</th><th scope="col">Visit</th><th scope="col">Status</th><th scope="col">Total</th><th scope="col">Balance</th><th scope="col"><span className="sr-only">Open</span></th></tr></thead>
+          <thead><tr><th scope="col">Invoice</th><th scope="col" className="cashier-register__visit">Visit</th><th scope="col">Status</th><th scope="col">Total</th><th scope="col">Balance</th><th scope="col"><span className="sr-only">Open</span></th></tr></thead>
           <tbody>{register.items.map((item) => (
             <tr key={item.id} data-selected={selected === item.id}>
-              <th scope="row">…{item.id.slice(-4)}</th>
-              <td>…{item.appointment_id.slice(-4)}</td>
-              <td><InvoiceStatus invoice={item} /></td>
-              <td>{money(item.total_minor)}</td>
-              <td>{money(item.balance_minor)}</td>
+              <th scope="row" data-label="Invoice">…{item.id.slice(-4)}</th>
+              <td className="cashier-register__visit">…{item.appointment_id.slice(-4)}</td>
+              <td data-label="Status"><InvoiceStatus invoice={item} /></td>
+              <td data-label="Total">{money(item.total_minor)}</td>
+              <td data-label="Balance">{money(item.balance_minor)}</td>
               <td><button type="button" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
             </tr>
           ))}</tbody>

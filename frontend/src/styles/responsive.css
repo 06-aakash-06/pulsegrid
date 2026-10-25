@@ -1,0 +1,68 @@
+/* Laptop tier between the single-column phone layout and the full desk compositions. Loaded last. */
+@media (min-width: 901px) and (max-width: 1199px) {
+  .workspace-shell .directory-copy small,
+  .workspace-shell .directory-arrow,
+  .workspace-shell .directory-number,
+  .workspace-shell .directory-help { display: none; }
+  .workspace-shell .workspace-nav-link { min-height: 44px; }
+  .workspace-shell.reference-departments .workspace-nav-link { grid-template-columns: 24px minmax(0, 1fr); }
+  .workspace-shell .directory-copy { min-width: 0; }
+  .workspace-shell .directory-copy strong { white-space: normal; overflow-wrap: break-word; hyphens: auto; }
+  .workspace-shell.reference-departments .workspace-sidebar { width: max(15.6vw, 168px); }
+
+  .department-page--billing .cashier-register__table,
+  .department-page--billing .cashier-register__table tbody { display: block; }
+  .department-page--billing .cashier-register__table thead,
+  .department-page--billing .cashier-register__table .cashier-register__visit { display: none; }
+  .department-page--billing .cashier-register__table tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: center; gap: 4px 12px; padding: 10px 8px; border-bottom: 1px solid #e0d0b6; }
+  .department-page--billing .cashier-register__table :is(th, td) { padding: 0; border: 0; text-align: left; }
+  .department-page--billing .cashier-register__table [data-label]::before { content: attr(data-label); display: block; font-size: 12px; font-weight: 500; color: #4a5250; }
+  .department-page--billing .cashier-register__table tr > :first-child { grid-column: 1 / -2; }
+  .department-page--billing .cashier-register__table td:last-child { grid-column: -2; grid-row: 1 / span 2; }
+
+  .department-page--emergency .er-desk--staff { grid-template-columns: minmax(0, 40fr) minmax(0, 60fr); grid-template-areas: "sign sign" "notice notice" "register case" "register steps"; }
+  .department-page--emergency .er-desk--staff > .er-register { max-height: none; align-self: stretch; }
+  .department-page--emergency .er-case__header { flex-wrap: wrap; }
+  .department-page--emergency .er-case__header > div:first-child { flex-basis: 16ch; }
+  .department-page--emergency .er-counts > li:not(.er-counts__scope) { min-width: max-content; }
+
+  .department-page--pharmacy .cabinet-rail__row { flex-wrap: wrap; }
+  .department-page--pharmacy .cabinet-rail__search { flex-basis: 100%; }
+  .department-page--pharmacy .pharmacy-room__counter { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .department-page--pharmacy :is(.prescription-stand, .counter-tray) { overflow: visible; }
+  .department-page--pharmacy .prescribed-document-lines > li { grid-template-columns: minmax(10ch, 1fr) auto; }
+
+  .ops-console .ops-tile :is(small, span, dd) { white-space: nowrap; }
+  .ops-console .ops-alert-list { max-height: 220px; overflow: auto; }
+  .ops-console .ops-alert-list > li { min-width: 0; overflow-wrap: anywhere; }
+}
+
+@media (min-width: 901px) and (max-width: 1099px) {
+  .department-page--pharmacy .pharmacy-room { --bays: 2; }
+  .department-page--pharmacy .shelf-bays li:nth-child(n+3) { display: none; }
+  .department-page--pharmacy .pharmacy-room { grid-template-columns: minmax(0, 1fr) minmax(300px, 1fr); }
+}
+.department-page--pharmacy .shelf-label > span { overflow-wrap: anywhere; }
+
+@media (min-width: 901px) and (max-width: 1299px) {
+  .reception-scene { height: auto; min-height: 900px; }
+  .reception-scene .counter-token-stand { display: none; }
+  .reception-scene .reception-counter { top: 400px; height: auto; }
+  .reception-scene .reception-counter-label { position: static; width: 100%; margin: 0 0 10px; text-align: center; }
+  .reception-scene .appointment-slips { position: static; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; padding: 0 4% 12px; }
+  .workspace-content .reception-scene .appointment-slip,
+  .reception-scene .appointment-slip { position: relative; inset: auto; width: auto; min-height: 112px; transform: none; }
+  .reception-scene .reception-information-rail { top: auto; bottom: 0; }
+}
+.reception-scene .robot-conversation { height: auto; }
+
+.department-page--emergency .er-desk .er-row { grid-template-columns: minmax(0, 1fr) auto; }
+.department-page--emergency .er-row__main small { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+
+/* Pharmacy side panels grow with their content so the reservation form and dispensing actions are never trapped. */
+.department-page--pharmacy .pharmacy-room { align-items: start; }
+.department-page--pharmacy .pharmacy-room__right-stack { position: static; }
+.department-page--pharmacy .pharmacy-room :is(.counter-upper, .counter-lower) { flex: none; overflow: visible; }
+@media (min-width: 901px) {
+  .department-page--pharmacy .pharmacy-room { grid-template-areas: "sign ." "cabinet right" "counter right" "front right" ". right"; grid-template-rows: auto auto auto auto 1fr; }
+}

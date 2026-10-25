@@ -4,7 +4,6 @@ import { MedicineAutocomplete } from "../phase4";
 import { useAuth } from "../auth/authContext";
 import { useCallback, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { m } from "motion/react";
 import { PatientFulfillmentPanel } from "../advanced/patient/PatientFulfillmentPanel";
 import { MedicineCabinet, PharmacyRoom, availabilityText, medicineLabel, useCursorPage } from "./pharmacyRoom";
 import type {
@@ -20,6 +19,7 @@ import {
   CommandForm,
   date,
   Facts,
+  FlashArea,
   idField,
   Inputs,
   integer,
@@ -433,7 +433,6 @@ export function Fulfillment({
   const [medicine, setMedicine] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
-  const [dispensing, setDispensing] = useState<Dispensing | null>(null);
   const reservation = useResource<Reservation>(selected ? `/api/v1/pharmacy/reservations/${selected}` : null);
   const item = reservation.response?.data;
   const etag = reservation.response?.etag ?? null;
@@ -467,8 +466,9 @@ export function Fulfillment({
           {!selected && <p>Choose a reservation from the register below to review it.</p>}
           {reservation.loading && <p role="status">Loading reservation…</p>}
           {reservation.error && <p role="alert">{reservation.error}</p>}
+          <FlashArea resetKey={selected}>
           {item && (
-            <div key={`${item.id}:${item.version}`}>
+            <div key={item.id}>
               <h3 className="dispensing-reservation-title">Reservation …{item.id.slice(-4)}</h3>
               <Facts values={{ State: item.state, "Expires (UTC)": item.expires_at }} />
               {item.items.map((line) => (
@@ -479,33 +479,31 @@ export function Fulfillment({
                 </div>
               ))}
               <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Reservation ID": item.id, "Prescription ID": item.prescription_id, Version: item.version, Items: item.items.map((line) => `Prescription item ${line.prescription_item_id} · Medicine ${line.medicine_id}`).join("; ") }} /></details>
-              {item.state !== "dispensed" && (
-                <CommandForm title="Release reservation" reviewLabel="Release…" confirmLabel="Release reservation" successMessage="Reservation released." path={`/api/v1/pharmacy/reservations/${item.id}`} method="DELETE" conditional etag={etag} onSuccess={changed} />
+              {pharmacist && item.state === "reserved" && (
+                <div className="dispense-primary" data-check="pharmacy-dispense">
+                  <CommandForm<Dispensing>
+                    title="Dispense reservation" reviewLabel="Review dispensing" confirmLabel="Dispense" successMessage={(result: Dispensing) => `Dispensed (…${result.id.slice(-4)}). Billing can now import this dispensing.`}
+                    path={`/api/v1/pharmacy/reservations/${item.id}/dispense`}
+                    conditional
+                    etag={etag}
+                    onReload={reservation.refresh}
+                    reloadLabel="Reload reservation"
+                    onSuccess={changed}
+                  />
+                </div>
               )}
-              {pharmacist && (
-                <>
-                  <CommandForm title="Revalidate reservation" reviewLabel="Revalidate…" confirmLabel="Revalidate reservation" successMessage="Reservation revalidated." path={`/api/v1/pharmacy/reservations/${item.id}/revalidate`} conditional etag={etag} onSuccess={changed} />
-                  {item.state === "reserved" && (
-                    <CommandForm<Dispensing>
-                      title="Dispense reservation" reviewLabel="Review dispensing" confirmLabel="Dispense" successMessage="Dispensed. Billing can now import this dispensing."
-                      path={`/api/v1/pharmacy/reservations/${item.id}/dispense`}
-                      conditional
-                      etag={etag}
-                      onSuccess={(result) => {
-                        setDispensing(result);
-                        changed();
-                      }}
-                    />
-                  )}
-                </>
-              )}
+              {item.state !== "dispensed" && (pharmacist ? (
+                <details className="reservation-more-actions">
+                  <summary>More actions</summary>
+                  <CommandForm title="Revalidate reservation" reviewLabel="Revalidate…" confirmLabel="Revalidate reservation" successMessage="Reservation revalidated." path={`/api/v1/pharmacy/reservations/${item.id}/revalidate`} conditional etag={etag} onReload={reservation.refresh} reloadLabel="Reload reservation" onSuccess={changed} />
+                  <CommandForm title="Release reservation" reviewLabel="Release…" confirmLabel="Release reservation" successMessage="Reservation released." path={`/api/v1/pharmacy/reservations/${item.id}`} method="DELETE" conditional etag={etag} onReload={reservation.refresh} reloadLabel="Reload reservation" onSuccess={changed} />
+                </details>
+              ) : (
+                <CommandForm title="Release reservation" reviewLabel="Release…" confirmLabel="Release reservation" successMessage="Reservation released." path={`/api/v1/pharmacy/reservations/${item.id}`} method="DELETE" conditional etag={etag} onReload={reservation.refresh} reloadLabel="Reload reservation" onSuccess={changed} />
+              ))}
             </div>
           )}
-          {dispensing && (
-            <m.p key={dispensing.id} className="owner-confirmation" initial={{ backgroundColor: "#f3dd9a" }} animate={{ backgroundColor: "#f3dd9a00" }} transition={{ duration: 1.2 }} role="status">
-              Completed dispensing {dispensing.id}. Billing must explicitly import this source ID.
-            </m.p>
-          )}
+          </FlashArea>
         </section>
         <section className="counter-lower" aria-labelledby="reservation-register-title">
           <h2 id="reservation-register-title" className="sr-only">Reservation register</h2>

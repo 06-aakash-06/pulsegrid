@@ -11,7 +11,7 @@ const labels: Record<string, { review: string; confirm: string; success: string 
   "Create medicine": { review: "Review medicine", confirm: "Add medicine", success: "Medicine added." },
   "Adjust stock": { review: "Review stock change", confirm: "Adjust stock", success: "Stock adjusted." },
   "Reserve medicines": { review: "Review reservation", confirm: "Reserve medicines", success: "Medicines reserved." },
-  "Dispense reservation": { review: "Review dispensing", confirm: "Dispense", success: "Dispensed. Billing can now import this dispensing." },
+  "Dispense reservation": { review: "Review dispensing", confirm: "Dispense", success: "Billing can now import this dispensing." },
   "Release reservation": { review: "Release…", confirm: "Release reservation", success: "Reservation released." },
   "Revalidate reservation": { review: "Revalidate…", confirm: "Revalidate reservation", success: "Reservation revalidated." },
   "Reconcile journey": { review: "Review reconcile", confirm: "Reconcile journey", success: "Journey reconciled." },
