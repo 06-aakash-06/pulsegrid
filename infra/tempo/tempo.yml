@@ -1,9 +1,23 @@
 stream_over_http_enabled: true
 
+# Keep Go's soft memory target below the existing 512 MiB container ceiling.
+memory:
+  automemlimit_enabled: true
+  automemlimit_ratio: 0.8
+
 server:
   http_listen_port: 3200
   grpc_listen_port: 9095
   log_level: warn
+
+# This monolithic demonstration runs on 0.25 CPU; cluster-sized defaults
+# otherwise permit 20 queries and hundreds of simultaneous block reads.
+querier:
+  max_concurrent_queries: 2
+
+query_frontend:
+  search:
+    concurrent_jobs: 4
 
 distributor:
   receivers:
@@ -17,6 +31,9 @@ distributor:
 storage:
   trace:
     backend: local
+    pool:
+      max_workers: 8
+      queue_depth: 64
     wal:
       path: /var/tempo/wal
     local:
