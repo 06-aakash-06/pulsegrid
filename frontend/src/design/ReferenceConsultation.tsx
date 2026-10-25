@@ -360,6 +360,7 @@ export function ReferenceConsultation({
           {(specialties.response?.data.items ?? []).map((s) => (
               <button
                 key={s.id}
+                data-tour="specialty-option"
                 className={filters.specialty_id === s.id ? "is-selected" : ""}
                 onClick={() => {
                   setManual({ ...manual, specialty_id: s.id });
@@ -429,6 +430,7 @@ export function ReferenceConsultation({
                 aria-pressed={selected === d.id}
                 disabled={bookingLocked}
                 className="reference-doctor-row"
+                data-tour="doctor-option"
                 onClick={() => {
                   setSelected(d.id);
                   setTab("About");
@@ -557,6 +559,7 @@ export function ReferenceConsultation({
               {patient && (
                 <button
                   className="reference-book-button"
+                  data-tour="open-booking"
                   disabled={bookingLocked}
                   onClick={() => setBookOpen(!bookOpen)}
                   aria-expanded={bookOpen}

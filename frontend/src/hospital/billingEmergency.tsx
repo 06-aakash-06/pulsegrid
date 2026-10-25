@@ -109,7 +109,7 @@ function InvoiceReceipt({
           </table>
         </div>
       )}
-      <dl className="cashier-balance" data-check="billing-balance">
+      <dl className="cashier-balance" data-check="billing-balance" data-tour="invoice-balance">
         <div><dt>Total</dt><dd>{money(invoice.total_minor)}</dd></div>
         <div><dt>Paid</dt><dd>{money(invoice.paid_minor)}</dd></div>
         <div className="cashier-balance__due"><dt>Balance due</dt><dd>{money(invoice.balance_minor)}</dd></div>
@@ -117,6 +117,7 @@ function InvoiceReceipt({
       <p className="cashier-simulated">No card is charged here. Never enter card or bank details.</p>
       {invoice.balance_minor > 0 && (
         <CommandForm<Payment>
+          tour="pay"
           title="Submit payment"
           reviewLabel="Review payment"
           confirmLabel="Pay"
@@ -261,7 +262,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
               <td data-label="Status"><InvoiceStatus invoice={item} /></td>
               <td data-label="Total">{money(item.total_minor)}</td>
               <td data-label="Balance">{money(item.balance_minor)}</td>
-              <td><button type="button" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
+              <td><button type="button" data-tour="invoice-option" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
             </tr>
           ))}</tbody>
         </table></div>

@@ -417,8 +417,8 @@ export function AvailabilityPicker({
         <div className="week-strip">
           <button type="button" aria-label="Previous week" disabled={weekStart <= today} onClick={() => setWeekStart(isoDay(Math.max(Date.parse(utcStart(today)), Date.parse(utcStart(weekStart)) - 7 * dayMs)))}>‹</button>
           <div className="calendar-strip" aria-label="Available date selection">
-            {days.map((d) => (
-              <button type="button" key={d.toISOString()} aria-pressed={selectedDay === isoDay(d)} aria-label={d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })} onClick={() => chooseDay(isoDay(d))}>
+            {days.map((d, dayIndex) => (
+              <button type="button" key={d.toISOString()} data-tour={dayIndex === 1 ? "date-option" : undefined} aria-pressed={selectedDay === isoDay(d)} aria-label={d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })} onClick={() => chooseDay(isoDay(d))}>
                 <small>{d.toLocaleDateString("en", { weekday: "short", timeZone: "UTC" })}</small>
                 <strong>{d.getUTCDate()}</strong>
                 <small>{d.toLocaleDateString("en", { month: "short", timeZone: "UTC" })}</small>
@@ -448,6 +448,7 @@ export function AvailabilityPicker({
                           key={slot.id}
                           type="button"
                           className="available-slot"
+                          data-tour={slot.state === "bookable" ? "slot-option" : undefined}
                           data-state={slot.state}
                           disabled={slot.state !== "bookable"}
                           aria-label={`Select ${clock(slot.starts_at)}, ${new Date(slot.starts_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })} (UTC)${slot.state !== "bookable" ? ", unavailable" : ""}`}
@@ -566,7 +567,7 @@ export function Booking({
           <div><strong>{doctorLabel || (doctor ? `Doctor …${doctor.slice(-4)}` : "Choose a doctor")}</strong>{specialty && <small>{specialty}</small>}</div>
         </div>
         {confirmed ? (
-          <m.div initial={{ opacity: 0.5, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="printed-receipt" role="status">
+          <m.div initial={{ opacity: 0.5, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="printed-receipt" role="status" data-tour="booking-receipt">
             <p className="printed-receipt__brand"><DepartmentIcon department="appointments" />PulseGrid · Appointment slip</p>
             <strong>Appointment booked</strong>
             <dl>
@@ -592,6 +593,7 @@ export function Booking({
                 <CommandForm<Appointment>
                   key={slot.id}
                   onLockChange={value=>{setLocked(value);onLockChange?.(value);}}
+                  tour="book"
                   title="Book appointment"
                   reviewLabel="Review booking"
                   confirmLabel="Confirm booking"
@@ -818,7 +820,7 @@ export function Appointments({
     <div className="appointment-workspace">
       {title && <DepartmentSign department="appointments" title={title} subtitle={subtitle ?? ""} />}
       {ownProfile.error&&<p role="alert">{ownProfile.error}</p>}
-      {!doctor && <nav className="department-tabs" aria-label="Appointment views">{tabs.map((entry) => <button type="button" key={entry.key} disabled={anyLocked} aria-pressed={view===entry.key} onClick={()=>setView(entry.key)}><DepartmentIcon department={entry.key === "walk-in" ? "reception" : "appointments"} />{reception && entry.key === "manage" ? "Appointments" : entry.label}</button>)}</nav>}
+      {!doctor && <nav className="department-tabs" aria-label="Appointment views">{tabs.map((entry) => <button type="button" key={entry.key} data-tour={`appointments-tab-${entry.key}`} disabled={anyLocked} aria-pressed={view===entry.key} onClick={()=>setView(entry.key)}><DepartmentIcon department={entry.key === "walk-in" ? "reception" : "appointments"} />{reception && entry.key === "manage" ? "Appointments" : entry.label}</button>)}</nav>}
       {reception && view === "walk-in" && <section className="appointment-walkin"><WalkinRegistration onSuccess={()=>setRevision(v=>v+1)} onLockChange={setWalkinLocked}/></section>}
       {!doctor && view === "book" && (
         <section className="appointment-booking" aria-label="Book an appointment">
@@ -841,7 +843,7 @@ export function Appointments({
             {list.loading && <p role="status">Loading appointments…</p>}
             {list.error && <p role="alert">{list.error}</p>}
             {list.loaded && !list.loading && rows.length === 0 && <p className="appointment-empty">No {listTab} appointments in this list.</p>}
-            <ol className="appointment-rows">
+            <ol className="appointment-rows" data-tour="appointment-list">
               {rows.map((entry) => {
                 const kind = category(entry);
                 const clinician = doctorFor(entry.doctor_id);

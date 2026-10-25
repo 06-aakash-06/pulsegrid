@@ -381,7 +381,7 @@ function History({
           <ol className="visit-list">
             {visits.map((entry) => (
               <li key={entry.consultationId}>
-                <button type="button" className="visit-entry" aria-pressed={entry.versions.some((version) => version.id === selected)} aria-label={`View record ${entry.latest.id}`} onClick={() => setSelected(entry.latest.id)}>
+                <button type="button" className="visit-entry" data-tour={entry.versions.some((version) => version.id === selected) ? undefined : "visit-earlier"} aria-pressed={entry.versions.some((version) => version.id === selected)} aria-label={`View record ${entry.latest.id}`} onClick={() => setSelected(entry.latest.id)}>
                   <time className="visit-date-chip" dateTime={entry.first.created_at}>{shortDateTime(entry.first.created_at)}</time>
                   <strong>Visit record</strong>
                   <small>{entry.versions.length > 1 ? `Amended` : "Original record"}</small>

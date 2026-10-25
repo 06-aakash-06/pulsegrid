@@ -400,7 +400,7 @@ export function PatientCheckinPage({
   const manualOpen = manualMode || !!appointmentId;
   return (
     <div className="patient-workflow waiting-station">
-      <aside className="checkin-kiosk"><h2>Check In Here</h2><p>Scan your secure QR code.</p><div className="scanner-frame"><Suspense fallback={<p role="status">Loading scanner…</p>}><PatientScanner disabled={confirmPending || issuePending} onScan={scan=>{setAppointmentId(scan.appointmentId);setManualToken(scan.token);setLanding(null);setInvalidLanding(false);setIssue(null);setActionError(null);setConfirmationKey(null);setResult(null);}}/></Suspense></div><button type="button" onClick={()=>setManualMode(true)}>Check in manually</button></aside>
+      <aside className="checkin-kiosk"><h2>Check In Here</h2><p>Scan your secure QR code.</p><div className="scanner-frame"><Suspense fallback={<p role="status">Loading scanner…</p>}><PatientScanner disabled={confirmPending || issuePending} onScan={scan=>{setAppointmentId(scan.appointmentId);setManualToken(scan.token);setLanding(null);setInvalidLanding(false);setIssue(null);setActionError(null);setConfirmationKey(null);setResult(null);}}/></Suspense></div><button type="button" data-tour="checkin-manual" onClick={()=>setManualMode(true)}>Check in manually</button></aside>
       <details id="manual-checkin" className="patient-workflow__panel" open={manualOpen || undefined}><summary>Check in manually</summary><section aria-labelledby="checkin-title">
         <h2 id="checkin-title">Secure QR check-in</h2>
         <p>Opening a QR link never checks you in. Confirm below to send the authenticated check-in command.</p>
@@ -411,7 +411,7 @@ export function PatientCheckinPage({
         {appointments.loading && <p role="status">Loading your appointments…</p>}
         {appointments.error && <div role="alert"><p>{appointments.error}</p><RetryButton onClick={appointments.reload} /></div>}
         {ownAppointments.length > 0 && <label htmlFor="checkin-appointment-select">Choose a confirmed appointment</label>}
-        {ownAppointments.length > 0 && <select id="checkin-appointment-select" value={appointmentId} onChange={(event) => {
+        {ownAppointments.length > 0 && <select id="checkin-appointment-select" data-tour="checkin-appointment" value={appointmentId} onChange={(event) => {
           setAppointmentId(event.target.value);
           setManualToken("");
           setLanding(null);
@@ -446,7 +446,7 @@ export function PatientCheckinPage({
           <div><dt>Check-in closes</dt><dd><time dateTime={workflow.data.checkin_window.ends_at}>{formatTime(workflow.data.checkin_window.ends_at)}</time></dd></div>
         </dl>}
         {(result || (workflow.data && workflow.data.state !== "booked")) ? (
-          <div className="patient-workflow__done" role="status">
+          <div className="patient-workflow__done" role="status" data-tour="checkin-done">
             <h3>{result || workflow.data?.state === "checked_in" ? "You're checked in" : workflowLabels[workflow.data!.state]}</h3>
             {result && <p>Your queue token is <strong>{result.queue_entry.token_number}</strong>.</p>}
             {(result || workflow.data?.state === "checked_in" || workflow.data?.state === "in_consultation") && <Link className="button" to="/patient/queue">Follow your place in the Waiting Room →</Link>}
@@ -454,7 +454,7 @@ export function PatientCheckinPage({
         ) : workflow.data?.state === "booked" && <>
           <div className="patient-workflow__step">
             <p>No QR to scan? Ask for a one-time check-in code for this appointment, then confirm below.</p>
-            <button type="button" disabled={issuePending || workflow.loading || !workflow.etag} onClick={() => void issueLink()}>{issuePending ? "Requesting code…" : issue ? "Issue a new check-in code" : "Get a check-in code"}</button>
+            <button type="button" data-tour="checkin-get-code" disabled={issuePending || workflow.loading || !workflow.etag} onClick={() => void issueLink()}>{issuePending ? "Requesting code…" : issue ? "Issue a new check-in code" : "Get a check-in code"}</button>
           </div>
           {issueError && <div role="alert"><p>{issueError}</p><button type="button" disabled={issuePending} onClick={() => void issueLink()}>Request a new code</button></div>}
           {issue && activeIssueUrl && <details className="patient-workflow__item" aria-label="Check-in link receipt">
@@ -475,7 +475,7 @@ export function PatientCheckinPage({
               setConfirmationKey(null);
             }} maxLength={22} />
             <span id="checkin-token-help" className="patient-workflow__hint">Filled in for you when you scan a QR or get a code above.</span>
-            <button type="submit" disabled={confirmPending || workflow.loading || !workflow.etag}>{confirmPending ? "Confirming…" : confirmationKey ? "Retry check-in confirmation" : "Confirm check-in"}</button>
+            <button type="submit" data-tour="checkin-confirm" disabled={confirmPending || workflow.loading || !workflow.etag}>{confirmPending ? "Confirming…" : confirmationKey ? "Retry check-in confirmation" : "Confirm check-in"}</button>
           </form>
         </>}
       </section></details>
@@ -579,7 +579,7 @@ export function PatientQueuePage() {
       {!live.error && selectedId && <PageRefresh type="button" onClick={live.retryNow}>Refresh queue now</PageRefresh>}
       <footer className="queue-monitor-footer"><span>PulseGrid · Consultation queue</span>{live.data?.queue && <time dateTime={live.data.queue.observed_at}>Observed {formatTime(live.data.queue.observed_at)}</time>}</footer>
     </section>
-    <aside className="queue-wait-sign"><header><DepartmentIcon department="waiting"/><h2>Your Turn</h2></header><div className="waiting-position-display"><small>QUEUE POSITION</small><strong>{live.data?.queue?.entry.position??'—'}</strong><p>{live.data?.queue?.entry.position?'Your current queue position':'Check in for your position'}</p></div><dl className="waiting-status-lines"><div><dt>Your token</dt><dd>{live.data?.queue?.entry.token_number??'Not checked in'}</dd></div><div><dt>Status</dt><dd>{live.data?.queue?.entry.state.replaceAll('_',' ')??'Not available'}</dd></div></dl><p>Keep this page open for status updates.</p><small>Wait estimates are not supplied by the service.</small></aside>
+    <aside className="queue-wait-sign" data-tour="queue-position"><header><DepartmentIcon department="waiting"/><h2>Your Turn</h2></header><div className="waiting-position-display"><small>QUEUE POSITION</small><strong>{live.data?.queue?.entry.position??'—'}</strong><p>{live.data?.queue?.entry.position?'Your current queue position':'Check in for your position'}</p></div><dl className="waiting-status-lines"><div><dt>Your token</dt><dd>{live.data?.queue?.entry.token_number??'Not checked in'}</dd></div><div><dt>Status</dt><dd>{live.data?.queue?.entry.state.replaceAll('_',' ')??'Not available'}</dd></div></dl><p>Keep this page open for status updates.</p><small>Wait estimates are not supplied by the service.</small></aside>
   </div>;
 }
 

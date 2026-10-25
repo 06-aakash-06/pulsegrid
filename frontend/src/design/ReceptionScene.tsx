@@ -154,6 +154,7 @@ export function ReceptionScene({
           {slips.map((s) => (
             <Link
               className={`appointment-slip slip-object--${s.path.split("?")[0]}`}
+              data-tour={`slip-${s.path.split("?")[0]}`}
               key={s.label}
               to={href(s.path)}
             >
