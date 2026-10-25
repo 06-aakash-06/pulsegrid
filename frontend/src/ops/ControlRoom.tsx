@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { StatusBadge } from "../components/StatusBadge";
 import { DepartmentIcon } from "../design/DepartmentIcon";
+import { formatDateTime } from "../hospital/ui";
 import "./controlRoom.css";
 
 const API_ROOT = "/api/v1/appointments/operations/control-room";
@@ -111,14 +112,11 @@ function number(value: number | null | undefined, digits = 1): string {
 }
 
 function time(value: string | null | undefined): string {
-  if (!value) return "Time unavailable";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Time unavailable" : date.toLocaleString();
+  return formatDateTime(value);
 }
 
 function localTimeFromNanos(value: number): string {
-  const date = new Date(value / 1_000_000);
-  return Number.isNaN(date.getTime()) ? "Time unavailable" : date.toLocaleTimeString();
+  return formatDateTime(value / 1_000_000);
 }
 
 function toneForHealth(value: string): "success" | "warning" | "danger" | "neutral" {
@@ -214,7 +212,7 @@ function TrendChart({ title, unit, points, description }: {
             <table className="ops-table">
               <caption className="sr-only">{title} samples ({unit})</caption>
               <thead><tr><th scope="col">Time</th><th scope="col">{unit}</th></tr></thead>
-              <tbody>{points.map((point) => <tr key={point.timestamp}><th scope="row">{new Date(point.timestamp * 1000).toLocaleTimeString()}</th><td>{number(point.value, 2)}</td></tr>)}</tbody>
+              <tbody>{points.map((point) => <tr key={point.timestamp}><th scope="row">{formatDateTime(point.timestamp * 1000)}</th><td>{number(point.value, 2)}</td></tr>)}</tbody>
             </table>
           </div>
         </details>
@@ -302,7 +300,7 @@ export function ControlRoom({ workspaceBasePath }: { workspaceBasePath: "/ops" |
         <>
           <div className="ops-kpi-row" aria-label="System overview">
             <KpiCard label="Throughput" value={number(system?.request_rate_per_second, 2)} unit="req/s" detail="5 minute rate" points={trendRates} />
-            <KpiCard label="p95 latency" value={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No data" : number(system.p95_latency_ms, 0)} unit="ms" detail="No latency series returned" tone={(system?.p95_latency_ms ?? 0) > 150 ? "warning" : "neutral"} />
+            <KpiCard label="p95 latency" value={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No data" : number(system.p95_latency_ms, 0)} unit="ms" detail={system?.p95_latency_ms === null || system?.p95_latency_ms === undefined ? "No latency samples in this window" : "95th percentile · 5 minute window"} tone={(system?.p95_latency_ms ?? 0) > 150 ? "warning" : "neutral"} />
             <KpiCard label="HTTP 5xx rate" value={system?.error_rate_percent === null || system?.error_rate_percent === undefined ? "No data" : number(system.error_rate_percent)} unit="%" detail="Observed status classes" points={trendErrors} tone={(system?.error_rate_percent ?? 0) > 5 ? "danger" : "neutral"} />
             <KpiCard label="RabbitMQ backlog" value={backlog === null ? "No data" : String(backlog)} unit="msgs" detail={`${queues.length} queues · ready + unacked`} tone={(backlog ?? 0) > 50 ? "warning" : "neutral"} />
             <KpiCard label="Redis hit rate" value={hitRate === null ? "No data" : number(hitRate)} unit="%" detail={hitRate === null ? "No cache samples" : `${number(hits, 2)} hits · ${number(misses, 2)} misses /s`} />

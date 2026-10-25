@@ -120,20 +120,27 @@ describe("hospital design integration", () => {
         ),
     );
     mount(<AvailabilityPicker doctorId="31" />, fetcher);
+    const day = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);
+    const next = new Date(Date.parse(`${day}T00:00:00Z`) + 86400000).toISOString();
     fireEvent.change(screen.getByLabelText("Choose date (UTC)"), {
-      target: { value: "2026-10-20" },
+      target: { value: day },
     });
-    expect(screen.getByLabelText("From (UTC)")).toHaveValue(
-      "2026-10-20T00:00:00Z",
-    );
-    expect(screen.getByLabelText("To (UTC)")).toHaveValue(
-      "2026-10-21T00:00:00.000Z",
-    );
+    expect(screen.getByLabelText("From (UTC)")).toHaveValue(`${day}T00:00:00Z`);
+    expect(screen.getByLabelText("To (UTC)")).toHaveValue(next);
     expect(fetcher).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
     await screen.findByText("No available slots in this interval.");
     expect(fetcher).toHaveBeenCalledTimes(1);
     expect(String(fetcher.mock.calls[0]?.[0])).toContain("doctor_id=31");
+  });
+  it("explains a past date inline instead of silently blocking the request", async () => {
+    const fetcher = vi.fn(async () => new Response("{}", { headers: { "Content-Type": "application/json" } }));
+    mount(<AvailabilityPicker doctorId="31" />, fetcher);
+    fireEvent.change(screen.getByLabelText("From (UTC)"), { target: { value: "2020-01-01T00:00:00Z" } });
+    fireEvent.change(screen.getByLabelText("To (UTC)"), { target: { value: "2020-01-02T00:00:00Z" } });
+    fireEvent.click(screen.getByRole("button", { name: "Load availability" }));
+    expect(await screen.findByText("That date has passed. Choose today or a later date.")).toBeInTheDocument();
+    expect(fetcher).not.toHaveBeenCalled();
   });
   it("does not run the reception scene introduction when motion is reduced", () => {
     vi.stubGlobal(

@@ -1,5 +1,5 @@
 import type { Appointment, Batch, Consultation, Dispensing, Emergency, Grant, Invoice, MedicalRecord, Medicine, Payment, Prescription, Reservation, Slot, Tariff } from "../src/hospital/models";
-import type { Fulfillment, OwnQueue, Workflow } from "../src/advanced/patient/contracts";
+import type { CheckinResult, Fulfillment, OwnQueue, TokenIssue, Workflow } from "../src/advanced/patient/contracts";
 import { createState, users, type MockUser } from "./fixtures";
 import { controlRoomSummary, traceList, traceSpans } from "./operations";
 
@@ -827,20 +827,62 @@ const routes: Route[] = [
     return ok(state.surge, state.surge.version);
   }],
   ["GET", /^\/api\/v1\/appointments\/(\d+)\/queue$/, (_request, _user, match) => {
-    if (match[1] !== "5101") return error(404, "not_found", "No queue entry for this appointment.");
+    const stamp = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+    if (match[1] === "5101") {
+      const queue: OwnQueue = {
+        entry: { id: "9301", appointment_id: "5101", doctor_id: "8001", local_date: state.day(0), token_number: 3, state: "waiting", position: 2, version: 1 },
+        waiting_count: 4, in_consultation_count: 1, queue_version: 1, observed_at: stamp,
+      };
+      return ok(queue, 1);
+    }
+    const checked = state.checkinEntries.get(match[1]);
+    const workflow = state.workflows.find((item) => item.appointment_id === match[1]);
+    if (!checked || !workflow) return error(404, "not_found", "No queue entry for this appointment.");
     const queue: OwnQueue = {
-      entry: { id: "9301", appointment_id: "5101", doctor_id: "8001", local_date: state.day(0), token_number: 3, state: "waiting", position: 2, version: 1 },
-      waiting_count: 4, in_consultation_count: 1, queue_version: 1, observed_at: new Date().toISOString().replace(/\.\d{3}Z$/, "Z"),
+      entry: { id: checked.id, appointment_id: match[1], doctor_id: workflow.doctor_id, local_date: state.day(0), token_number: checked.token_number, state: "waiting", position: 1, version: 1 },
+      waiting_count: 1, in_consultation_count: 0, queue_version: 1, observed_at: stamp,
     };
     return ok(queue, 1);
   }],
   ["GET", /^\/api\/v1\/appointments\/(\d+)\/workflow$/, (_request, _user, match) => {
-    if (match[1] !== "5101") return error(404, "not_found", "No workflow for this appointment.");
-    const workflow: Workflow = {
-      appointment_id: "5101", journey_id: "9401", patient_id: state.patient.id, doctor_id: "8001", state: "checked_in",
-      checkin_window: { starts_at: state.minutes(-20), ends_at: state.minutes(40) }, queue_entry_id: "9301", version: 2,
+    const workflow = state.workflows.find((item) => item.appointment_id === match[1]);
+    if (!workflow) return error(404, "not_found", "No workflow for this appointment.");
+    return ok(workflow satisfies Workflow, workflow.version);
+  }],
+  ["POST", /^\/api\/v1\/appointments\/(\d+)\/check-in-links$/, (request, _user, match) => {
+    const workflow = state.workflows.find((item) => item.appointment_id === match[1]);
+    if (!workflow) return error(404, "not_found", "No workflow for this appointment.");
+    const stale = versionMatches(request, workflow.version);
+    if (stale) return stale;
+    if (workflow.state !== "booked") return error(409, "invalid_state", "This appointment is not waiting for check-in.");
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const token = Array.from({ length: 22 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
+    state.checkinLinks.set(match[1], token);
+    workflow.version += 1;
+    const issue: TokenIssue = {
+      link_id: nextId(), appointment_id: match[1], expires_at: state.minutes(10), token,
+      landing_path: `/patient/check-in#appointment_id=${match[1]}&token=${token}`, version: 1,
     };
-    return ok(workflow, workflow.version);
+    return ok(issue, 1, 201);
+  }],
+  ["POST", /^\/api\/v1\/appointments\/(\d+)\/check-in$/, (request, _user, match) => {
+    const workflow = state.workflows.find((item) => item.appointment_id === match[1]);
+    if (!workflow) return error(404, "not_found", "No workflow for this appointment.");
+    const stale = versionMatches(request, workflow.version);
+    if (stale) return stale;
+    const token = (request.body as { token?: string } | undefined)?.token;
+    if (!token || state.checkinLinks.get(match[1]) !== token) return error(422, "token_invalid", "The check-in token is invalid.");
+    state.checkinLinks.delete(match[1]);
+    const entry = { id: nextId(), token_number: 5 };
+    state.checkinEntries.set(match[1], entry);
+    workflow.state = "checked_in";
+    workflow.queue_entry_id = entry.id;
+    workflow.version += 1;
+    const result: CheckinResult = {
+      workflow,
+      queue_entry: { id: entry.id, appointment_id: match[1], doctor_id: workflow.doctor_id, local_date: state.day(0), token_number: entry.token_number, state: "waiting", position: 1, version: 1 },
+    };
+    return ok(result, workflow.version);
   }],
 ];
 

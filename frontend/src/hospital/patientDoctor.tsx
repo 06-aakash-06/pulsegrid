@@ -28,6 +28,7 @@ import {
   CommandForm,
   date,
   Facts,
+  FlashArea,
   id,
   idField,
   ids,
@@ -92,7 +93,7 @@ export function ProfileEditor({
         }}
       />
       <CommandForm
-        title="Save profile"
+        title="Save profile" reviewLabel="Review profile" confirmLabel="Save profile" successMessage="Profile saved."
         path={path}
         method="PATCH"
         conditional
@@ -278,7 +279,7 @@ export function StaffManagement() {
                 }}
               />
               <CommandForm
-                title="Replace roles"
+                title="Replace roles" reviewLabel="Review roles" confirmLabel="Save roles" successMessage="Roles saved."
                 path={`/api/v1/patients/users/${user.id}/roles`}
                 method="PATCH"
                 conditional
@@ -310,7 +311,7 @@ export function StaffManagement() {
                 notice="Role changes revoke sessions. The service protects your administrator role and the last active administrator."
               />
               <CommandForm
-                title="Change account state"
+                title="Change account state" reviewLabel="Review account state" confirmLabel="Change account state" successMessage="Account state changed."
                 path={`/api/v1/patients/users/${user.id}/account-state`}
                 method="PATCH"
                 conditional
@@ -358,7 +359,9 @@ export function AvailabilityPicker({
   doctorName,
   day: chosenDay,
   showWeek = true,
+  revision = 0,
 }: {
+  revision?: number;
   doctorId: string;
   autoLoad?: boolean;
   onClear?: () => void;
@@ -385,6 +388,7 @@ export function AvailabilityPicker({
       setSelectedSlot(null);
     }
   }, [chosenDay]);
+  useEffect(() => setSelectedSlot(null), [revision]);
   useEffect(() => {
     setSelectedSlot(null);
     const span = Date.parse(values.to ?? "") - Date.parse(values.from ?? "");
@@ -419,7 +423,7 @@ export function AvailabilityPicker({
           <button type="button" aria-label="Next week" onClick={() => setWeekStart(isoDay(Date.parse(utcStart(weekStart)) + 7 * dayMs))}>›</button>
         </div>
       )}
-      <Resource<Availability> path={path} showReload={false}>
+      <Resource<Availability> path={path} revision={revision} showReload={false}>
         {(data) => (
           <div className="slot-board">
             {!data.slots.length && <p className="slot-empty">No available slots in this interval.</p>}
@@ -461,6 +465,7 @@ export function AvailabilityPicker({
       </Resource>
       <form
         className="availability-range-form"
+        noValidate
         onSubmit={(e) => {
           e.preventDefault();
           try {
@@ -468,6 +473,7 @@ export function AvailabilityPicker({
             const to = utc(values.to ?? "");
             const span = Date.parse(to) - Date.parse(from);
             if (span <= 0 || span > 31 * dayMs) throw new Error("Choose a positive interval of at most 31 days.");
+            if (Date.parse(to) <= Date.now()) throw new Error("That date has passed. Choose today or a later date.");
             setPath(query("/api/v1/appointments/availability", { doctor_id: id(doctorId), from, to }));
             setError("");
           } catch (err) {
@@ -518,11 +524,13 @@ export function Booking({
   const [doctorLabel,setDoctorLabel] = useState(doctorName??"");
   const [locked,setLocked] = useState(false);
   const [confirmed,setConfirmed] = useState<{ appointment: Appointment; doctor: string } | null>(null);
+  const [availabilityRevision, setAvailabilityRevision] = useState(0);
   const chooseDoctor = (value: string, label: string, info: Doctor | null) => {
     setDoctor(value);
     setDoctorLabel(label);
     setDoctorInfo(info);
     setSlot(null);
+    setConfirmed(null);
   };
   const specialty = doctorInfo?.specialties.map((item) => item.name).join(", ");
   return (
@@ -542,8 +550,9 @@ export function Booking({
             doctorId={doctor}
             doctorName={doctorLabel ? `${doctorLabel}${specialty ? ` (${specialty})` : ""}` : undefined}
             autoLoad={!doctorId}
+            revision={availabilityRevision}
             onClear={() => setSlot(null)}
-            onSlot={(id, revision, startsAt, endsAt) => setSlot({ id, revision, startsAt, endsAt })}
+            onSlot={(id, revision, startsAt, endsAt) => { setConfirmed(null); setSlot({ id, revision, startsAt, endsAt }); }}
           />
         )}
       </fieldset>
@@ -565,42 +574,55 @@ export function Booking({
           <DoctorPortrait name={doctorLabel || "Doctor"} index={doctor ? demo?.doctors[doctor]?.portrait : undefined} />
           <div><strong>{doctorLabel || (doctor ? `Doctor …${doctor.slice(-4)}` : "Choose a doctor")}</strong>{specialty && <small>{specialty}</small>}</div>
         </div>
-        <dl className="booking-summary-facts">
-          <div><dt>Date</dt><dd>{slot ? longDay(slot.startsAt) : "Choose a time"}</dd></div>
-          <div><dt>Time (UTC)</dt><dd>{slot ? `${clock(slot.startsAt)} – ${clock(slot.endsAt)}` : "—"}</dd></div>
-          <div><dt>Patient</dt><dd>{patientName || (patientId ? `Patient …${patientId.slice(-4)}` : "Enter the patient below")}</dd></div>
-        </dl>
-        {slot ? (
-          <div data-check="appointments-primary">
-            <CommandForm<Appointment>
-              key={slot.id}
-              onLockChange={value=>{setLocked(value);onLockChange?.(value);}}
-              title="Book appointment"
-              path="/api/v1/appointments"
-              fields={patientId ? [] : [idField("patient_id", "Patient ID")]}
-              build={(values) => ({
-                patient_id: patientId ?? id(values.patient_id.trim()),
-                slot_id: slot.id,
-                expected_schedule_revision: slot.revision,
-              })}
-              onSuccess={(item) => { setConfirmed({ appointment: item, doctor: doctorLabel }); onSuccess?.(); }}
-              notice="Appointment rechecks this accepted time when you confirm."
-            />
-          </div>
-        ) : <p className="booking-hint">Select a doctor and an available time to continue.</p>}
-        {confirmed && (
+        {confirmed ? (
           <m.div initial={{ opacity: 0.5, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="printed-receipt" role="status">
             <p className="printed-receipt__brand"><DepartmentIcon department="appointments" />PulseGrid · Appointment slip</p>
-            <strong>Appointment {confirmed.appointment.state}</strong>
+            <strong>Appointment booked</strong>
             <dl>
               <div><dt>Doctor</dt><dd>{confirmed.doctor || `Doctor …${confirmed.appointment.doctor_id.slice(-4)}`}</dd></div>
               <div><dt>Date</dt><dd>{longDay(confirmed.appointment.starts_at)}</dd></div>
               <div><dt>Time (UTC)</dt><dd>{clock(confirmed.appointment.starts_at)} – {clock(confirmed.appointment.ends_at)}</dd></div>
+              <div><dt>Patient</dt><dd>{patientName || (patientId ? `Patient …${patientId.slice(-4)}` : "—")}</dd></div>
               <div><dt>Visit</dt><dd>…{confirmed.appointment.id.slice(-4)}</dd></div>
             </dl>
             <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Appointment ID": confirmed.appointment.id, "Doctor ID": confirmed.appointment.doctor_id, "Slot ID": confirmed.appointment.slot_id }} /></details>
             <p>Confirmed by the Appointment service.</p>
+            <button type="button" className="printed-receipt__again" onClick={() => setConfirmed(null)}>Book another appointment</button>
           </m.div>
+        ) : (
+          <>
+            <dl className="booking-summary-facts">
+              <div><dt>Date</dt><dd>{slot ? longDay(slot.startsAt) : "Choose a time"}</dd></div>
+              <div><dt>Time (UTC)</dt><dd>{slot ? `${clock(slot.startsAt)} – ${clock(slot.endsAt)}` : "—"}</dd></div>
+              <div><dt>Patient</dt><dd>{patientName || (patientId ? `Patient …${patientId.slice(-4)}` : "Enter the patient below")}</dd></div>
+            </dl>
+            {slot ? (
+              <div data-check="appointments-primary">
+                <CommandForm<Appointment>
+                  key={slot.id}
+                  onLockChange={value=>{setLocked(value);onLockChange?.(value);}}
+                  title="Book appointment"
+                  reviewLabel="Review booking"
+                  confirmLabel="Confirm booking"
+                  successMessage="Appointment booked."
+                  path="/api/v1/appointments"
+                  fields={patientId ? [] : [idField("patient_id", "Patient ID")]}
+                  build={(values) => ({
+                    patient_id: patientId ?? id(values.patient_id.trim()),
+                    slot_id: slot.id,
+                    expected_schedule_revision: slot.revision,
+                  })}
+                  onSuccess={(item) => {
+                    setConfirmed({ appointment: item, doctor: doctorLabel });
+                    setSlot(null);
+                    setAvailabilityRevision((value) => value + 1);
+                    onSuccess?.();
+                  }}
+                  notice="Appointment rechecks this accepted time when you confirm."
+                />
+              </div>
+            ) : <p className="booking-hint">Select a doctor and an available time to continue.</p>}
+          </>
         )}
       </aside>
     </div>
@@ -614,7 +636,7 @@ export function DoctorDirectory({admin=false}:{admin?:boolean}) {
     booking={(doctor,onLockChange)=>patient?<Resource<PatientProfile> path="/api/v1/patients/me" showReload={false}>{profile=><Booking patientId={profile.id} patientName={profile.display_name} doctorId={doctor.id} doctorName={doctor.display_name} onLockChange={onLockChange}/>}</Resource>:<AvailabilityPicker doctorId={doctor.id}/>}
     createEntries={admin?<Panel title="Create directory entries">
           <CommandForm
-            title="Create specialty"
+            title="Create specialty" reviewLabel="Review specialty" confirmLabel="Create specialty" successMessage="Specialty created."
             path="/api/v1/doctors/specialties"
             fields={[
               {
@@ -647,7 +669,7 @@ export function DoctorDirectory({admin=false}:{admin?:boolean}) {
             onSuccess={() => setRevision((v) => v + 1)}
           />
           <CommandForm
-            title="Create doctor"
+            title="Create doctor" reviewLabel="Review doctor" confirmLabel="Create doctor" successMessage="Doctor created."
             path="/api/v1/doctors"
             fields={[
               idField("staff_user_id", "Doctor-role user ID"),
@@ -800,7 +822,7 @@ export function Appointments({
     <div className="appointment-workspace">
       {title && <DepartmentSign department="appointments" title={title} subtitle={subtitle ?? ""} />}
       {ownProfile.error&&<p role="alert">{ownProfile.error}</p>}
-      {!doctor && <nav className="department-tabs" aria-label="Appointment views">{tabs.map((entry) => <button type="button" key={entry.key} disabled={anyLocked} aria-pressed={view===entry.key} onClick={()=>setView(entry.key)}><DepartmentIcon department={entry.key === "walk-in" ? "reception" : "appointments"} />{entry.label}</button>)}</nav>}
+      {!doctor && <nav className="department-tabs" aria-label="Appointment views">{tabs.map((entry) => <button type="button" key={entry.key} disabled={anyLocked} aria-pressed={view===entry.key} onClick={()=>setView(entry.key)}><DepartmentIcon department={entry.key === "walk-in" ? "reception" : "appointments"} />{reception && entry.key === "manage" ? "Appointments" : entry.label}</button>)}</nav>}
       {reception && view === "walk-in" && <section className="appointment-walkin"><WalkinRegistration onSuccess={()=>setRevision(v=>v+1)} onLockChange={setWalkinLocked}/></section>}
       {!doctor && view === "book" && (
         <section className="appointment-booking" aria-label="Book an appointment">
@@ -855,7 +877,7 @@ export function Appointments({
           {!doctor && (
             <aside className="appointment-overview" aria-labelledby="appointment-overview-title">
               <h3 id="appointment-overview-title">Appointment overview</h3>
-              <p className="appointment-overview__scope">Counted from the {list.items.length} appointments loaded{paged ? " on this page" : ""}.</p>
+{paged && <p className="appointment-overview__scope">Based on this page of appointments.</p>}
               <dl>
                 <div data-kind="upcoming"><dt>Upcoming</dt><dd>{counts.upcoming}</dd></div>
                 <div data-kind="past"><dt>Past</dt><dd>{counts.past}</dd></div>
@@ -883,7 +905,8 @@ export function Appointments({
           {selected && current.loading && !item && <p role="status">Loading appointment…</p>}
           {current.error && <p role="alert">{current.error}</p>}
           {item && (
-            <div key={`${item.id}:${item.version}`}>
+            <FlashArea resetKey={item.id}>
+            <div key={item.id}>
               <div className="reschedule-columns">
                 <section className="reschedule-current" aria-labelledby="reschedule-current-title">
                   <h3 id="reschedule-current-title">Current appointment</h3>
@@ -893,7 +916,7 @@ export function Appointments({
                     <div><dt>Time (UTC)</dt><dd>{clock(item.starts_at)} – {clock(item.ends_at)}</dd></div>
                     <div><dt>Status</dt><dd><span className="owner-state" data-state={category(item)}>{item.state === "cancelled" ? "Cancelled" : "Confirmed"}</span></dd></div>
                   </dl>
-                  <fieldset className="reschedule-doctor" disabled={managementLocked}><details><summary>Choose a different doctor</summary><Lookup label="Target doctor ID" onSelect={(value) => { setTargetDoctor(value); setTargetSlot(null); }} /></details></fieldset>
+                  {item.state === "confirmed" && <fieldset className="reschedule-doctor" disabled={managementLocked}><details><summary>Choose a different doctor</summary><Lookup label="Target doctor ID" onSelect={(value) => { setTargetDoctor(value); setTargetSlot(null); }} /></details></fieldset>}
                   <button type="button" disabled={managementLocked} onClick={() => { setSelected(null); setTargetSlot(null); }}>Choose another appointment</button>
                 </section>
                 {item.state === "confirmed" ? (
@@ -917,10 +940,15 @@ export function Appointments({
                     <CommandForm
                       onLockChange={setManagementLocked}
                       title="Cancel appointment"
+                      reviewLabel="Review cancellation"
+                      confirmLabel="Cancel appointment"
+                      successMessage="Appointment cancelled."
                       path={`/api/v1/appointments/${item.id}/cancel`}
-                      fields={[reasonField]}
+                      fields={[{ ...reasonField, label: "Reason for cancelling" }]}
                       conditional
                       etag={current.response?.etag ?? null}
+                      onReload={() => { current.refresh(); list.refresh(); }}
+                      reloadLabel="Reload appointment"
                       onSuccess={() => { setTargetSlot(null); setRevision((v) => v + 1); }}
                     />
                   </div>
@@ -930,9 +958,14 @@ export function Appointments({
                         key={targetSlot.id}
                         onLockChange={setManagementLocked}
                         title="Reschedule appointment"
+                        reviewLabel="Review new time"
+                        confirmLabel="Confirm new time"
+                        successMessage={(moved: Appointment) => `Appointment moved to ${visitTime(moved.starts_at)}.`}
                         path={`/api/v1/appointments/${item.id}/reschedule`}
                         conditional
                         etag={current.response?.etag ?? null}
+                        onReload={() => { current.refresh(); list.refresh(); setTargetSlot(null); }}
+                        reloadLabel="Reload appointment"
                         build={() => ({
                           target_slot_id: targetSlot.id,
                           expected_schedule_revision: targetSlot.revision,
@@ -945,6 +978,7 @@ export function Appointments({
                 </div>
               )}
             </div>
+            </FlashArea>
           )}
         </section>
       )}
@@ -997,7 +1031,7 @@ function ScheduleForm({
       </p>
 
       <CommandForm<Proposal>
-        title="Submit schedule proposal"
+        title="Submit schedule proposal" reviewLabel="Review proposal" confirmLabel="Submit proposal" successMessage="Schedule proposal submitted."
         path={`/api/v1/doctors/${doctor.id}/schedules`}
         fields={fields}
         conditional
@@ -1148,7 +1182,7 @@ export function DoctorManagement({
   return (
     <>
       <CommandForm
-        title="Save doctor profile"
+        title="Save doctor profile" reviewLabel="Review profile" confirmLabel="Save profile" successMessage="Profile saved."
         path={`/api/v1/doctors/${doctor.id}`}
         method="PATCH"
         fields={fields}
@@ -1225,7 +1259,7 @@ export function DoctorManagement({
               }}
             />
             <CommandForm<Decision>
-              title="Request schedule decision"
+              title="Request schedule decision" reviewLabel="Review decision" confirmLabel="Send decision" successMessage="Decision sent."
               path="/api/v1/appointments/schedule-decisions"
               fields={[
                 {
@@ -1268,7 +1302,7 @@ export function DoctorManagement({
               )}
             </Resource>
             <CommandForm
-              title="Reconcile schedule"
+              title="Reconcile schedule" reviewLabel="Review reconcile" confirmLabel="Reconcile schedule" successMessage="Schedule reconciled."
               path={`/api/v1/doctors/${doctor.id}/schedules/${proposal.id}/reconcile`}
               conditional
               etag={proposalEtag}

@@ -184,36 +184,47 @@ function ConsultationEditor({
         <>
           <CommandForm
             title="Save consultation draft"
+            reviewLabel="Review draft"
+            confirmLabel="Save draft"
+            successMessage="Draft saved."
             path={`/api/v1/records/consultations/${item.id}`}
             method="PATCH"
             conditional
             etag={etag}
+            onReload={refresh}
+            reloadLabel="Reload consultation"
             fields={clinicalFields(item.clinical_content)}
             build={(values) => ({ clinical_content: content(values) })}
             onSuccess={refresh}
           />
+          <div className="consultation-finalize">
           <CommandForm<FinalizeResult>
             title="Finalize consultation"
+            reviewLabel="Review finalization"
+            confirmLabel="Finalize consultation"
+            successMessage="Consultation finalized."
             path={`/api/v1/records/consultations/${item.id}/finalize`}
             conditional
             etag={etag}
+            onReload={refresh}
+            reloadLabel="Reload consultation"
             build={() => ({ prescription_items: prescriptionItems(items) })}
-            onSuccess={(result) => setFinalized(result)}
+            onSuccess={(result) => {
+              setFinalized(result);
+              refresh();
+            }}
             notice="Finalization freezes the draft and creates an immutable medical record and optional prescription. Clinical work blocks appointment cancellation and rescheduling."
           >
             <PrescriptionItems items={items} setItems={setItems} />
           </CommandForm>
+          </div>
         </>
       )}
       {finalized && (
-        <div role="status">
-          <p>
-            Finalized consultation {finalized.consultation.id}. Medical record
-            ID: {finalized.record.id}. Prescription ID:{" "}
-            {finalized.prescription?.id ?? "None"}.
-          </p>
-          <button onClick={refresh}>Refresh finalized consultation</button>
-        </div>
+        <p role="status" className="command-receipt">
+          Consultation finalized. Medical record …{finalized.record.id.slice(-4)}
+          {finalized.prescription ? ` and prescription …${finalized.prescription.id.slice(-4)} were` : " was"} created.
+        </p>
       )}
     </>
   );
@@ -255,7 +266,7 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
         {current.loading && !item && <p role="status">Loading consultation…</p>}
         {current.error && <p role="alert">{current.error}</p>}
         {item && (
-          <div key={`${item.id}:${item.version}`}>
+          <div key={item.id}>
             {doctor ? (
               <ConsultationEditor item={item} etag={current.response?.etag ?? null} refresh={() => { current.refresh(); setRevision((v) => v + 1); }} />
             ) : (
@@ -272,7 +283,7 @@ export function Consultations({ doctor = false, title, subtitle }: { doctor?: bo
         <aside className="dossier-side" aria-label="Consultation tools">
           <details className="dossier-more" open={!selected}><summary>New consultation</summary>
             <CommandForm<Consultation>
-              title="Create consultation"
+              title="Create consultation" reviewLabel="Review consultation" confirmLabel="Create consultation" successMessage="Consultation created."
               path="/api/v1/records/consultations"
               fields={[idField("appointment_id", "Assigned appointment ID"), ...clinicalFields()]}
               build={(values) => ({ appointment_id: id(values.appointment_id.trim()), clinical_content: content(values) })}
@@ -382,7 +393,7 @@ function History({
           {record.loading && !item && <p role="status">Loading clinical document…</p>}
           {record.error && <p role="alert">{record.error}</p>}
           {item && (
-            <div key={`${item.id}:${item.version}`}>
+            <div key={item.id}>
               <header className="dossier-header" data-check="records-dossier-header">
                 <div>
                   <p className="dossier-eyebrow">Visit record</p>
@@ -398,7 +409,7 @@ function History({
               {doctor && (
                 <details className="dossier-more"><summary>Amend this record</summary>
                   <CommandForm<MedicalRecord>
-                    title="Amend medical record"
+                    title="Amend medical record" reviewLabel="Review amendment" confirmLabel="Save amendment" successMessage="Record amended."
                     path={`/api/v1/records/${item.id}/amendments`}
                     conditional
                     etag={record.response?.etag ?? null}
@@ -455,7 +466,7 @@ function Grants({ patientId }: { patientId: string }) {
   return (
     <Panel title="Historical access grants">
       <CommandForm<Grant>
-        title="Grant historical access"
+        title="Grant historical access" reviewLabel="Review access grant" confirmLabel="Grant access" successMessage="Access granted."
         path="/api/v1/records/access-grants"
         fields={[
           idField("grantee_user_id", "Doctor user ID"),
@@ -493,7 +504,7 @@ function Grants({ patientId }: { patientId: string }) {
             Grant {grant.id}: {grant.scope} until {grant.expires_at}. This page retains its version for revocation while open.
           </p>
           <CommandForm
-            title="Revoke access grant"
+            title="Revoke access grant" reviewLabel="Review revocation" confirmLabel="Revoke access" successMessage="Access revoked."
             path={`/api/v1/records/access-grants/${grant.id}`}
             method="DELETE"
             conditional
@@ -614,7 +625,7 @@ export function Prescriptions({
             )}
             {doctor && prescription.state === "issued" && (
               <CommandForm
-                title="Revoke prescription"
+                title="Revoke prescription" reviewLabel="Review revocation" confirmLabel="Revoke prescription" successMessage="Prescription revoked."
                 path={`/api/v1/records/prescriptions/${prescription.id}/revoke`}
                 conditional
                 etag={etag}

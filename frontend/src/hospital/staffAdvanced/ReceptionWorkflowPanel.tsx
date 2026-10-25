@@ -249,7 +249,7 @@ function CheckinPanel() {
               {workflow.state !== "booked" && <p className="staff-advanced-muted">This workflow is not eligible for another check-in. Reload it after any concurrent state change.</p>}
               {!pendingCommand && (workflow.state === "booked" || workflow.state === "checked_in") && (
                 <CommandForm<Workflow>
-                  title="Mark no-show"
+                  title="Mark no-show" reviewLabel="Review no-show" confirmLabel="Mark no-show" successMessage="Marked as no-show."
                   path={`/api/v1/appointments/${workflow.appointment_id}/no-show`}
                   conditional
                   etag={etag}

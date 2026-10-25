@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Appointment, Page } from "../hospital/models";
 import type { OwnQueue } from "../advanced/patient/contracts";
-import { useResource } from "../hospital/ui";
+import { formatDateTime, useResource } from "../hospital/ui";
 import { useLocalDemo } from "./localDemo";
 import { DepartmentIcon } from "./DepartmentIcon";
 export function ReceptionVisit({ patientId }: { patientId: string }) {
@@ -13,30 +13,28 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
     (a) => a.state === "confirmed",
   );
   rows.sort((a, b) => a.starts_at.localeCompare(b.starts_at));
-  const first =
-    rows.find(
-      (a) => a.starts_at.slice(0, 10) === new Date().toISOString().slice(0, 10),
-    ) ?? rows[0];
+  const todayUtc = new Date().toISOString().slice(0, 10);
+  const today = rows.filter((a) => a.starts_at.slice(0, 10) === todayUtc);
+  const upcoming = rows.find((a) => Date.parse(a.ends_at) > Date.now());
+  const first = today.find((a) => Date.parse(a.ends_at) > Date.now()) ?? today[0] ?? upcoming;
   const queue = useResource<OwnQueue>(
     first ? `/api/v1/appointments/${first.id}/queue` : null,
   );
   return (
     <>
       <aside className="reception-hospital-today">
-        <p className="eyebrow">
-          {demo ? "YOUR VISIT TODAY" : "YOUR VISIT TODAY"}
-        </p>
+        <p className="eyebrow">YOUR VISIT TODAY</p>
         <div>
           <DepartmentIcon department="appointments" />
-          <strong>{visits.loading ? "—" : rows.length}</strong>
-          <span>Confirmed visits</span>
+          <strong>{visits.loading ? "—" : today.length}</strong>
+          <span>{today.length === 1 ? "Visit today" : "Visits today"}</span>
         </div>
         <div>
           <DepartmentIcon department="consultation" />
           <strong>
-            {visits.loading ? "—" : new Set(rows.map((a) => a.doctor_id)).size}
+            {visits.loading ? "—" : new Set(today.map((a) => a.doctor_id)).size}
           </strong>
-          <span>Consulting doctors</span>
+          <span>Doctors today</span>
         </div>
         <div>
           <DepartmentIcon department="waiting" />
@@ -51,9 +49,11 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
           </p>
         )}
         <small>
-          {demo
-            ? "Fictional demo · Owner service data"
-            : "Your authorized appointments"}
+          {!visits.loading && today.length === 0
+            ? upcoming
+              ? `No visits today. Next: ${formatDateTime(upcoming.starts_at)}`
+              : "No visits today"
+            : demo ? "Fictional demo" : "Times in UTC"}
         </small>
       </aside>
       {queue.response && (
@@ -70,28 +70,23 @@ export function ReceptionVisit({ patientId }: { patientId: string }) {
           <div className="reception-info-title">
             <h3>Today at PulseGrid</h3>
             <span>
-              {new Date().toLocaleDateString("en", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
+              {formatDateTime(new Date(), { time: false })}
             </span>
           </div>
           {first ? (
             <>
               <p className="reception-next-time">
                 <time dateTime={first.starts_at}>
-                  {new Date(first.starts_at).toLocaleTimeString("en", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    timeZone: "UTC",
-                  })}{" "}
-                  UTC
+                  {first.starts_at.slice(0, 10) === todayUtc
+                    ? `${first.starts_at.slice(11, 16)} UTC`
+                    : formatDateTime(first.starts_at)}
                 </time>
                 <span>
-                  {Date.parse(first.starts_at) > Date.now()
-                    ? "Your next consultation"
-                    : "Scheduled consultation"}
+                  {first.starts_at.slice(0, 10) !== todayUtc
+                    ? "No visits today · next consultation"
+                    : Date.parse(first.starts_at) > Date.now()
+                      ? "Your next consultation"
+                      : "Scheduled consultation"}
                 </span>
               </p>
               <Link to="/patient/appointments?view=upcoming">

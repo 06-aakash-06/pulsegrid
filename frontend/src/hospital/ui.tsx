@@ -1,6 +1,6 @@
 import { StatusBadge } from "../components/StatusBadge";
 import { m } from "motion/react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ApiError,
   type ApiResponse,
@@ -33,19 +33,54 @@ export function query(
   });
   return params.size ? `${path}?${params}` : path;
 }
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+export function formatDateTime(
+  value: string | number | Date | null | undefined,
+  { utc = true, time = true }: { utc?: boolean; time?: boolean } = {},
+): string {
+  if (value === null || value === undefined || value === "") return "—";
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return "—";
+  const day = utc ? date.getUTCDate() : date.getDate();
+  const month = monthNames[utc ? date.getUTCMonth() : date.getMonth()];
+  const year = utc ? date.getUTCFullYear() : date.getFullYear();
+  const dateText = `${day} ${month} ${year}`;
+  if (!time) return dateText;
+  const hours = String(utc ? date.getUTCHours() : date.getHours()).padStart(2, "0");
+  const minutes = String(utc ? date.getUTCMinutes() : date.getMinutes()).padStart(2, "0");
+  return `${dateText}, ${hours}:${minutes}${utc ? " UTC" : ""}`;
+}
+const ReloadContext = createContext<(() => void) | null>(null);
+const FlashContext = createContext<((message: string) => void) | null>(null);
+export function FlashArea({ resetKey, children }: { resetKey?: string | null; children: ReactNode }) {
+  const [message, setMessage] = useState<string | null>(null);
+  useEffect(() => setMessage(null), [resetKey]);
+  return (
+    <FlashContext.Provider value={setMessage}>
+      {message && <m.p initial={{ opacity: .5, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .22 }} role="status" className="command-receipt">{message}</m.p>}
+      {children}
+    </FlashContext.Provider>
+  );
+}
 export function useResource<T>(path: string | null, revision = 0) {
   const { api, state } = useAuth();
+  // The effect keys on the request, not on the client object, so a re-created client never re-fetches.
+  const apiRef = useRef(api);
+  apiRef.current = api;
   const [response, setResponse] = useState<ApiResponse<T> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [reload, setReload] = useState(0);
+  const loadedPath = useRef<string | null>(null);
   useEffect(() => {
-    setResponse(null);
+    // Refreshing the same resource keeps the current data on screen so forms below it stay mounted.
+    if (loadedPath.current !== path) setResponse(null);
+    loadedPath.current = path;
     setError(null);
     setLoading(!!path);
     if (!path) return;
     const controller = new AbortController();
-    void api
+    void apiRef.current
       .requestWithMetadata<T>(path, { signal: controller.signal })
       .then((result) => {
         if (!controller.signal.aborted) {
@@ -64,7 +99,7 @@ export function useResource<T>(path: string | null, revision = 0) {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [api, path, revision, reload]);
+  }, [path, revision, reload]);
   return {
     response,
     error,
@@ -111,12 +146,14 @@ export function Resource<T>({
           Refresh
         </button>
       )}
-      {resource.response &&
-        children(
-          resource.response.data,
-          resource.response.etag,
-          resource.refresh,
-        )}
+      <ReloadContext.Provider value={resource.refresh}>
+        {resource.response &&
+          children(
+            resource.response.data,
+            resource.response.etag,
+            resource.refresh,
+          )}
+      </ReloadContext.Provider>
     </>
   );
 }
@@ -418,6 +455,11 @@ export function CommandForm<T = unknown>({
   notice,
   preview,
   children,
+  reviewLabel,
+  confirmLabel,
+  successMessage,
+  onReload,
+  reloadLabel = "Reload latest version",
 }: {
   title: string;
   path: string;
@@ -431,24 +473,50 @@ export function CommandForm<T = unknown>({
   notice?: string;
   preview?: (values: Values) => ReactNode;
   children?: ReactNode;
+  reviewLabel?: string;
+  confirmLabel?: string;
+  successMessage?: string | ((data: T) => string);
+  onReload?: () => void;
+  reloadLabel?: string;
 }) {
   const { api } = useAuth();
-  const [values, setValues] = useState<Values>(() =>
-    Object.fromEntries(fields.map((f) => [f.name, f.initial ?? ""])),
-  );
+  const flash = useContext(FlashContext);
+  const contextReload = useContext(ReloadContext);
+  const reload = onReload ?? contextReload;
+  const initialValues = () => Object.fromEntries(fields.map((f) => [f.name, f.initial ?? ""]));
+  const [values, setValues] = useState<Values>(initialValues);
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [ambiguous, setAmbiguous] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [stale, setStale] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
   const lock = useRef(false);
+  const latestInitial = useRef(initialValues);
+  latestInitial.current = initialValues;
+  const previousEtag = useRef(etag);
+  const dirty = useRef(false);
   useEffect(()=>{onLockChange?.(!!attempt || pending);},[attempt,pending,onLockChange]);
+  useEffect(() => {
+    if (previousEtag.current === etag) return;
+    previousEtag.current = etag;
+    // A new server version invalidates any reviewed command built against the old one.
+    if (!lock.current) {
+      if (!dirty.current) setValues(latestInitial.current());
+      setAttempt((current) => (ambiguous ? current : null));
+      setStale(false);
+      if (!ambiguous) setError(null);
+    }
+  }, [etag, ambiguous]);
+  const review = reviewLabel ?? `Review ${title.charAt(0).toLowerCase()}${title.slice(1)}`;
+  const confirm = confirmLabel ?? title;
   async function send(command: Attempt) {
     if (lock.current) return;
     lock.current = true;
     setPending(true);
     setError(null);
-    setSuccess(false);
+    setStale(false);
+    setSuccess(null);
     try {
       const response = await api.requestWithMetadata<T>(
         command.path,
@@ -456,10 +524,15 @@ export function CommandForm<T = unknown>({
       );
       setAttempt(null);
       setAmbiguous(false);
-      setSuccess(true);
+      dirty.current = false;
+      setValues(latestInitial.current());
+      const message = typeof successMessage === "function" ? successMessage(response.data) : successMessage ?? `${title}: done.`;
+      if (flash) flash(message);
+      else setSuccess(message);
       onSuccess?.(response.data, response.etag);
     } catch (err) {
       setError(errorMessage(err));
+      setStale(err instanceof ApiError && err.status === 412);
       const uncertain =
         method === "POST" &&
         err instanceof ApiError &&
@@ -480,8 +553,9 @@ export function CommandForm<T = unknown>({
       onSubmit={(e) => {
         e.preventDefault();
         if (pending || attempt) return;
-        setSuccess(false);
+        setSuccess(null);
         setError(null);
+        setStale(false);
         try {
           if (conditional && (!etag || !/^"[1-9][0-9]*"$/.test(etag)))
             throw new Error(
@@ -524,30 +598,49 @@ export function CommandForm<T = unknown>({
       <Inputs
         fields={fields}
         values={values}
-        change={(name, value) => setValues({ ...values, [name]: value })}
+        change={(name, value) => { dirty.current = true; setValues({ ...values, [name]: value }); }}
         disabled={!!attempt || pending}
       />
       {preview?.(values)}
-      {error && <p role="alert">{error}</p>}
-      {success && <m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{title}: confirmed by the service.</m.p>}
-      {pending && <p role="status">Submitting {title.toLowerCase()}…</p>}
+      {error && (
+        <div role="alert" className="command-error">
+          <p>{stale && reload ? "This record changed since you loaded it. Reload the latest version, then review your change again." : error}</p>
+          {stale && reload && (
+            <button
+              type="button"
+              onClick={() => {
+                setError(null);
+                setStale(false);
+                setAttempt(null);
+                dirty.current = false;
+                setValues(latestInitial.current());
+                reload();
+              }}
+            >
+              {reloadLabel}
+            </button>
+          )}
+        </div>
+      )}
+      {success && <m.p initial={{opacity:.5,y:5}} animate={{opacity:1,y:0}} transition={{duration:.22}} role="status" className="command-receipt">{success}</m.p>}
+      {pending && <p role="status">Sending…</p>}
       {attempt ? (
         <m.div initial={{opacity:.7}} animate={{opacity:1}} transition={{duration:.18}}
           className="hospital-confirm"
           role="group"
-          aria-label={`Confirm ${title}`}
+          aria-label={`Confirm: ${title}`}
         >
           <p>
             {ambiguous
               ? "The outcome is uncertain. Retry the original command with the same content and key before starting a different command. Keep this page open to retain the retry."
-              : `Confirm ${title.toLowerCase()} with the values shown above?`}
+              : "Check the details above, then confirm."}
           </p>
           <button
             type="button"
             disabled={pending}
             onClick={() => void send(attempt)}
           >
-            {ambiguous ? "Retry original command" : `Confirm ${title}`}
+            {ambiguous ? "Retry original command" : confirm}
           </button>
           {!ambiguous && (
             <button
@@ -561,7 +654,7 @@ export function CommandForm<T = unknown>({
         </m.div>
       ) : (
         <button type="submit" disabled={pending || (conditional && !etag)}>
-          Review {title}
+          {review}
         </button>
       )}
     </form>
@@ -604,7 +697,7 @@ export function Facts({ values }: { values: Record<string, ReactNode> }) {
       {Object.entries(values).map(([key, value]) => (
         <div key={key}>
           <dt>{key}</dt>
-          <dd>{typeof value === "string" && /^\d{4}-\d\d-\d\dT/.test(value) && Number.isFinite(Date.parse(value)) ? <time dateTime={value} title={value}>{new Date(value).toLocaleString("en-IN",{timeZone:"UTC",dateStyle:"medium",timeStyle:"short"})} UTC</time> : ["State","Status"].includes(key) && typeof value === "string" ? <StatusBadge tone={["confirmed","paid","finalized","completed","dispensed","resolved","success"].includes(value)?"success":["cancelled","declined","revoked"].includes(value)?"danger":"warning"}>{value.replaceAll("_"," ")}</StatusBadge> : value ?? "None"}</dd>
+          <dd>{typeof value === "string" && /^\d{4}-\d\d-\d\dT/.test(value) && Number.isFinite(Date.parse(value)) ? <time dateTime={value} title={value}>{formatDateTime(value)}</time> : ["State","Status"].includes(key) && typeof value === "string" ? <StatusBadge tone={["confirmed","paid","finalized","completed","dispensed","resolved","success"].includes(value)?"success":["cancelled","declined","revoked"].includes(value)?"danger":"warning"}>{value.replaceAll("_"," ")}</StatusBadge> : value ?? "—"}</dd>
         </div>
       ))}
     </dl>
@@ -621,13 +714,15 @@ export function Selected<T extends Versioned>({
 }) {
   return path ? (
     <Panel title={path.includes("/doctors/") ? "Doctor profile" : path.includes("/billing/invoices/") ? "Current invoice" : path.includes("/emergencies/") ? "Active request" : path.includes("/pharmacy/reservations/") ? "Current reservation" : path.includes("/pharmacy/medicines/") ? "Medicine details" : path.includes("/appointments/") ? "Appointment details" : path.includes("/records/prescriptions/") ? "Prescription details" : path.includes("/records/") ? "Clinical dossier" : "Selected resource"}>
-      <Resource<T> path={path} revision={revision}>
-        {(item, etag, refresh) => (
-          <div key={`${item.id}:${item.version}`}>
-            {children(item, etag, refresh)}
-          </div>
-        )}
-      </Resource>
+      <FlashArea resetKey={path}>
+        <Resource<T> path={path} revision={revision}>
+          {(item, etag, refresh) => (
+            <div key={item.id}>
+              {children(item, etag, refresh)}
+            </div>
+          )}
+        </Resource>
+      </FlashArea>
     </Panel>
   ) : null;
 }

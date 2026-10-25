@@ -61,7 +61,7 @@ export function StaffJourneyTools() {
                 ))}
               </ol>
               <CommandForm<Journey>
-                title="Reconcile journey"
+                title="Reconcile journey" reviewLabel="Review reconcile" confirmLabel="Reconcile journey" successMessage="Journey reconciled."
                 path={`/api/v1/appointments/journeys/${journey.id}/reconcile`}
                 conditional
                 etag={etag}
@@ -73,7 +73,7 @@ export function StaffJourneyTools() {
               />
               {canDischarge ? (
                 <CommandForm<Journey>
-                  title="Discharge journey"
+                  title="Discharge journey" reviewLabel="Review discharge" confirmLabel="Discharge journey" successMessage="Journey discharged."
                   path={`/api/v1/appointments/journeys/${journey.id}/discharge`}
                   conditional
                   etag={etag}

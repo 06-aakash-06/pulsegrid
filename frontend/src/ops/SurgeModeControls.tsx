@@ -37,7 +37,7 @@ export function SurgeModeControls({ onChange }: { onChange: () => void }) {
               require review and an audited reason.
             </p>
             <CommandForm
-              title="Change Surge Mode"
+              title="Change Surge Mode" reviewLabel="Review change" confirmLabel="Apply change" successMessage="Surge Mode change accepted."
               path={path}
               fields={[
                 {

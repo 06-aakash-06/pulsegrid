@@ -122,7 +122,7 @@ export function MedicineCatalog({
             <details className="owner-identifiers"><summary>Catalog identifiers</summary><Facts values={{"Medicine ID":item.id,SKU:item.sku}}/></details>
             {staff && (<details className="catalog-edit-tools"><summary>Edit selected catalog entry</summary>
               <CommandForm
-                title="Save medicine"
+                title="Save medicine" reviewLabel="Review changes" confirmLabel="Save medicine" successMessage="Medicine saved."
                 path={`/api/v1/pharmacy/medicines/${item.id}`}
                 method="PATCH"
                 conditional
@@ -165,7 +165,7 @@ export function MedicineCatalog({
       {staff && (
         <details className="pharmacy-catalog-tools"><summary>Add catalog medicine</summary><Panel title="New catalog medicine">
           <CommandForm
-            title="Create medicine"
+            title="Create medicine" reviewLabel="Review medicine" confirmLabel="Add medicine" successMessage="Medicine added."
             path="/api/v1/pharmacy/medicines"
             fields={[
               { name: "sku", label: "SKU", required: true, max: 128 },
@@ -227,7 +227,7 @@ export function StockAdjustment({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Panel title="Stock adjustment">
       <CommandForm<{ movement_id: string; batch: Batch }>
-        title="Adjust stock"
+        title="Adjust stock" reviewLabel="Review stock change" confirmLabel="Adjust stock" successMessage="Stock adjusted."
         path="/api/v1/pharmacy/inventory-adjustments"
         fields={fields}
         build={(values) => {
@@ -264,7 +264,7 @@ function Reserve({
   return (
     <Panel title="Request prescribed medicines">
       <CommandForm
-        title="Reserve medicines"
+        title="Reserve medicines" reviewLabel="Review reservation" confirmLabel="Reserve medicines" successMessage="Medicines reserved."
         path="/api/v1/pharmacy/reservations"
         fields={fields}
         build={(values) => {
@@ -372,7 +372,7 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
             <details className="catalog-edit-tools"><summary>Edit selected catalog entry</summary>
               <CommandForm
                 key={`${item.id}:${item.version}`}
-                title="Save medicine"
+                title="Save medicine" reviewLabel="Review changes" confirmLabel="Save medicine" successMessage="Medicine saved."
                 path={`/api/v1/pharmacy/medicines/${item.id}`}
                 method="PATCH"
                 conditional
@@ -390,7 +390,7 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
             </details>
           )}
           <details className="pharmacy-catalog-tools"><summary>Add catalog medicine</summary>
-            <CommandForm title="Create medicine" path="/api/v1/pharmacy/medicines" fields={[{ name: "sku", label: "SKU", required: true, max: 128 }, { name: "name", label: "Medicine name", required: true, max: 200 }]} onSuccess={changed} />
+            <CommandForm title="Create medicine" reviewLabel="Review medicine" confirmLabel="Add medicine" successMessage="Medicine added." path="/api/v1/pharmacy/medicines" fields={[{ name: "sku", label: "SKU", required: true, max: 128 }, { name: "name", label: "Medicine name", required: true, max: 200 }]} onSuccess={changed} />
           </details>
           <details className="pharmacy-stock-tools"><summary>Adjust batch stock</summary><StockAdjustment onSuccess={changed} /></details>
           <details className="inventory-source-filter"><summary>Inventory reference filter</summary><Lookup label="Inventory medicine ID filter" onSelect={setLedgerMedicine} /></details>
@@ -480,14 +480,14 @@ export function Fulfillment({
               ))}
               <details className="owner-identifiers"><summary>Details</summary><Facts values={{ "Reservation ID": item.id, "Prescription ID": item.prescription_id, Version: item.version, Items: item.items.map((line) => `Prescription item ${line.prescription_item_id} · Medicine ${line.medicine_id}`).join("; ") }} /></details>
               {item.state !== "dispensed" && (
-                <CommandForm title="Release reservation" path={`/api/v1/pharmacy/reservations/${item.id}`} method="DELETE" conditional etag={etag} onSuccess={changed} />
+                <CommandForm title="Release reservation" reviewLabel="Release…" confirmLabel="Release reservation" successMessage="Reservation released." path={`/api/v1/pharmacy/reservations/${item.id}`} method="DELETE" conditional etag={etag} onSuccess={changed} />
               )}
               {pharmacist && (
                 <>
-                  <CommandForm title="Revalidate reservation" path={`/api/v1/pharmacy/reservations/${item.id}/revalidate`} conditional etag={etag} onSuccess={changed} />
+                  <CommandForm title="Revalidate reservation" reviewLabel="Revalidate…" confirmLabel="Revalidate reservation" successMessage="Reservation revalidated." path={`/api/v1/pharmacy/reservations/${item.id}/revalidate`} conditional etag={etag} onSuccess={changed} />
                   {item.state === "reserved" && (
                     <CommandForm<Dispensing>
-                      title="Dispense reservation"
+                      title="Dispense reservation" reviewLabel="Review dispensing" confirmLabel="Dispense" successMessage="Dispensed. Billing can now import this dispensing."
                       path={`/api/v1/pharmacy/reservations/${item.id}/dispense`}
                       conditional
                       etag={etag}

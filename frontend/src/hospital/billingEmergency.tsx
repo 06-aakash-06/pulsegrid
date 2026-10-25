@@ -18,6 +18,8 @@ import {
   Collection,
   CommandForm,
   Facts,
+  FlashArea,
+  formatDateTime,
   id,
   idField,
   ids,
@@ -113,8 +115,12 @@ function InvoiceReceipt({
       <p className="cashier-simulated">Payments are simulated. Do not enter card, bank or real payment credentials.</p>
       {invoice.balance_minor > 0 && (
         <CommandForm<Payment>
-          key={`${invoice.id}:${invoice.version}`}
           title="Submit simulated payment"
+          reviewLabel="Review payment"
+          confirmLabel="Pay (simulated)"
+          successMessage="Simulated payment submitted."
+          onReload={onRefresh}
+          reloadLabel="Reload invoice"
           path={`/api/v1/billing/invoices/${invoice.id}/payments`}
           conditional
           etag={etag}
@@ -125,7 +131,7 @@ function InvoiceReceipt({
           preview={(values) => {
             try {
               const paise = paiseFromRupees(values.amount_rupees ?? "", invoice.balance_minor);
-              return <p className="paise-preview" aria-live="polite">{money(paise)} → {paise} paise will be submitted</p>;
+              return <p className="paise-preview" aria-live="polite">You will pay {money(paise)}.</p>;
             } catch (problem) {
               return <p className="paise-preview" aria-live="polite">{problem instanceof Error ? problem.message : "Enter an amount."}</p>;
             }
@@ -310,6 +316,9 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
                 {tab === "new" && (
                   <CommandForm<Invoice>
                     title="Create invoice"
+                    reviewLabel="Review invoice"
+                    confirmLabel="Create invoice"
+                    successMessage="Invoice created."
                     path="/api/v1/billing/invoices"
                     fields={[idField("appointment_id", "Appointment ID")]}
                     build={(values) => ({ appointment_id: id(values.appointment_id.trim()), currency: "INR" })}
@@ -341,8 +350,10 @@ function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: str
     <div className="cashier-import">
       <p>Import finalized sources for <strong>Visit …{invoice.appointment_id.slice(-4)}</strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
       <CommandForm
-        key={`${invoice.id}:${invoice.version}`}
         title="Import charges manually"
+        reviewLabel="Review import"
+        confirmLabel="Import charges"
+        successMessage="Charges imported. The receipt shows the new lines."
         path={`/api/v1/billing/invoices/${invoice.id}/charges`}
         conditional
         etag={etag}
@@ -370,6 +381,9 @@ function Tariffs({ onCreated }: { onCreated: () => void }) {
   return (
     <CommandForm
       title="Create tariff revision"
+      reviewLabel="Review tariff"
+      confirmLabel="Create tariff revision"
+      successMessage="Tariff revision created."
       path="/api/v1/billing/tariffs"
       fields={fields}
       build={(values) => {
@@ -399,9 +413,7 @@ function elapsed(from: string, now: number) {
   const hours = Math.floor(minutes / 60);
   return hours < 48 ? `${hours} h ${minutes % 60} min` : `${Math.floor(hours / 24)} days`;
 }
-function utcTime(value: string) {
-  return `${new Date(value).toLocaleString("en-IN", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" })} UTC`;
-}
+const utcTime = (value: string) => formatDateTime(value);
 function PriorityChip({ priority }: { priority: number | null }) {
   return (
     <span className="priority-chip" data-priority={priority ?? "none"}>
@@ -416,6 +428,9 @@ function requestTitle(item: Emergency) {
   return item.description?.trim() || `Request …${item.id.slice(-4)}`;
 }
 const terminalStates = ["resolved", "cancelled"];
+export function sortEmergencyQueue(items: Emergency[]): Emergency[] {
+  return [...items].sort((a, b) => (a.assigned_priority ?? 99) - (b.assigned_priority ?? 99) || a.created_at.localeCompare(b.created_at));
+}
 
 function NextSteps({
   item,
@@ -431,27 +446,42 @@ function NextSteps({
   onChange: () => void;
 }) {
   const owned = !!userId && item.claimed_by_user_id === userId;
-  const transition = (title: string, target: Emergency["state"]) => (
-    <CommandForm
-      title={title}
-      path={`/api/v1/emergencies/${item.id}/transitions`}
-      conditional
-      etag={etag}
-      fields={[reasonField]}
-      build={(values) => ({ ...buildFields([reasonField], values), state: target })}
-      onSuccess={onChange}
-    />
-  );
+  const [openAction, setOpenAction] = useState<string | null>(null);
+  useEffect(() => setOpenAction(null), [item.state, item.claimed_by_user_id]);
+  const transition = (title: string, target: Emergency["state"], labels: { review: string; confirm: string; success: string; reason: string }) => {
+    const reason = { ...reasonField, label: labels.reason };
+    return (
+      <CommandForm
+        title={title}
+        reviewLabel={labels.review}
+        confirmLabel={labels.confirm}
+        successMessage={labels.success}
+        path={`/api/v1/emergencies/${item.id}/transitions`}
+        conditional
+        etag={etag}
+        onReload={onChange}
+        reloadLabel="Reload request"
+        fields={[reason]}
+        build={(values) => ({ ...buildFields([reason], values), state: target })}
+        onSuccess={onChange}
+      />
+    );
+  };
   const priority = (title: string) => (
     <CommandForm
       title={title}
+      reviewLabel="Review priority"
+      confirmLabel="Set priority"
+      successMessage={(updated: Emergency) => `Priority set to P${updated.assigned_priority ?? "—"}.`}
       path={`/api/v1/emergencies/${item.id}/priority`}
       method="PATCH"
       conditional
       etag={etag}
+      onReload={onChange}
+      reloadLabel="Reload request"
       fields={[
         { name: "assigned_priority", label: "Assigned priority (1 highest, 5 lowest)", kind: "number", min: 1, max: 5, required: true },
-        reasonField,
+        { ...reasonField, label: "Reason for priority" },
       ]}
       onSuccess={onChange}
     />
@@ -459,9 +489,14 @@ function NextSteps({
   const claim = (
     <CommandForm
       title="Claim request"
+      reviewLabel="Review claim"
+      confirmLabel="Claim request"
+      successMessage="Request claimed. You hold it for 15 minutes."
       path={`/api/v1/emergencies/${item.id}/claim`}
       conditional
       etag={etag}
+      onReload={onChange}
+      reloadLabel="Reload request"
       onSuccess={onChange}
       notice="Claims have a 15-minute lease. Refresh before processing to check the current claim."
     />
@@ -469,14 +504,19 @@ function NextSteps({
   const release = (
     <CommandForm
       title="Release claim"
+      reviewLabel="Review release"
+      confirmLabel="Confirm release"
+      successMessage="Claim released."
       path={`/api/v1/emergencies/${item.id}/release`}
       conditional
       etag={etag}
-      fields={[reasonField]}
+      onReload={onChange}
+      reloadLabel="Reload request"
+      fields={[{ ...reasonField, label: "Reason for releasing" }]}
       onSuccess={onChange}
     />
   );
-  const cancel = transition("Cancel emergency request", "cancelled");
+  const cancel = transition("Cancel emergency request", "cancelled", { review: "Review cancellation", confirm: "Confirm cancellation", success: "Request cancelled.", reason: "Reason for cancelling" });
   const claimUntil = item.claim_expires_at ? ` until ${utcTime(item.claim_expires_at)}` : "";
 
   let primary: ReactNode = null;
@@ -495,30 +535,48 @@ function NextSteps({
     secondary.push({ label: "Change priority", form: priority("Set priority") }, { label: "Cancel request", form: cancel });
   } else if (item.state === "claimed") {
     if (owned) {
-      primary = transition("Start processing", "processing");
+      primary = transition("Start processing", "processing", { review: "Review start", confirm: "Start processing", success: "Processing started.", reason: "Reason for starting" });
       secondary.push({ label: "Release claim", form: release });
     } else note = `Claimed by another staff member${claimUntil}. Only the claim holder can process or release it.`;
     secondary.push({ label: "Change priority", form: priority("Set priority") }, { label: "Cancel request", form: cancel });
   } else if (item.state === "processing") {
-    if (owned) primary = transition("Resolve request", "resolved");
+    if (owned) primary = transition("Resolve request", "resolved", { review: "Review resolution", confirm: "Resolve request", success: "Request resolved.", reason: "Reason for resolving" });
     else note = "Another staff member is processing this request.";
     secondary.push({ label: "Change priority", form: priority("Set priority") });
   }
   return (
     <aside className="er-steps" aria-labelledby="er-steps-title">
       <h2 id="er-steps-title">{staff ? "Next steps" : "Request actions"}</h2>
-      {note && <p className="er-steps__note">{note}</p>}
-      {primary && <div className="er-primary" data-check="emergency-primary">{primary}</div>}
-      {secondary.map(({ label, form }) => (
-        <details className="er-secondary" key={label}>
-          <summary>{label}</summary>
-          {form}
-        </details>
-      ))}
+      <FlashArea resetKey={item.id}>
+        {note && <p className="er-steps__note">{note}</p>}
+        {primary && <div className="er-primary" data-check="emergency-primary">{primary}</div>}
+        {secondary.length > 0 && (
+          <div className="er-secondary-actions" role="group" aria-label="Other actions">
+            {secondary.map(({ label }) => (
+              <button key={label} type="button" aria-expanded={openAction === label} onClick={() => setOpenAction(openAction === label ? null : label)}>{label}</button>
+            ))}
+          </div>
+        )}
+        {secondary.filter(({ label }) => label === openAction).map(({ label, form }) => <div className="er-secondary" key={label}>{form}</div>)}
+      </FlashArea>
     </aside>
   );
 }
 
+function EmergencyRow({ entry, staff, now, selected, onSelect }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void }) {
+  const rowTitle = staff ? requestTitle(entry) : `Request …${entry.id.slice(-4)}`;
+  return (
+    <li>
+      <button type="button" className="er-row" data-state={entry.state} aria-pressed={selected} aria-label={`Track request ${entry.id}`} onClick={() => onSelect(entry.id)}>
+        <span className="er-row__main">
+          <strong title={rowTitle}>{rowTitle}</strong>
+          <small><StateChip state={entry.state} /><span>{entry.reported_urgency === "urgent" ? "Reported urgent" : "Urgency not specified"}</span><time dateTime={entry.created_at}>{elapsed(entry.created_at, now)}</time></small>
+        </span>
+        <PriorityChip priority={entry.assigned_priority} />
+      </button>
+    </li>
+  );
+}
 function EmergencyCase({ item, staff, userId, loading, onRefresh, now }: { item: Emergency; staff: boolean; userId?: string; loading: boolean; onRefresh: () => void; now: number }) {
   const claimHolder = item.claimed_by_user_id ? (item.claimed_by_user_id === userId ? "You" : "Another staff member") : null;
   return (
@@ -563,7 +621,9 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
   const request = useResource<Emergency>(selected ? `/api/v1/emergencies/${selected}` : null, revision);
   const item = request.response?.data;
   const changed = () => setRevision((v) => v + 1);
-  const open = register.items.filter((entry) => !terminalStates.includes(entry.state));
+  const openEntries = register.items.filter((entry) => !terminalStates.includes(entry.state));
+  const open = staff ? sortEmergencyQueue(openEntries) : [...openEntries].sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const closed = register.items.filter((entry) => terminalStates.includes(entry.state));
   const paged = register.hasNext || register.hasPrevious;
   const counts = [
     { label: "Unassigned", value: open.filter((entry) => entry.assigned_priority === null).length, tone: "neutral" },
@@ -581,18 +641,9 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
       {register.error && <p role="alert">{register.error}</p>}
       {register.loaded && !register.loading && register.items.length === 0 && <p>No emergency requests found.</p>}
       <ol className="er-queue">
-        {register.items.map((entry) => (
-          <li key={entry.id}>
-            <button type="button" className="er-row" data-state={entry.state} aria-pressed={selected === entry.id} aria-label={`Track request ${entry.id}`} onClick={() => setSelected(entry.id)}>
-              <PriorityChip priority={entry.assigned_priority} />
-              <span className="er-row__main">
-                <strong>{staff ? requestTitle(entry) : `Request …${entry.id.slice(-4)}`}</strong>
-                <small>{entry.reported_urgency === "urgent" ? "Reported urgent" : "Urgency not specified"}</small>
-              </span>
-              <span className="er-row__meta"><StateChip state={entry.state} /><time dateTime={entry.created_at}>{elapsed(entry.created_at, now)}</time></span>
-            </button>
-          </li>
-        ))}
+        {open.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
+        {closed.length > 0 && <li className="er-queue__divider" role="presentation"><span>Closed</span></li>}
+        {closed.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
       </ol>
       {paged && <div className="er-register__pages"><button type="button" disabled={!register.hasPrevious} onClick={register.previous}>Previous page</button><button type="button" disabled={!register.hasNext} onClick={register.next}>Next page</button></div>}
       <details className="er-lookup"><summary>Open a request by ID</summary><Lookup label="Emergency request ID" onSelect={setSelected} /></details>
@@ -604,7 +655,7 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
       {request.loading && !item && <p role="status" className="er-case">Loading request…</p>}
       {request.error && <p role="alert" className="er-case">{request.error}</p>}
       {item && <EmergencyCase key={`${item.id}:${item.version}`} item={item} staff={staff} userId={userId} loading={request.loading} onRefresh={request.refresh} now={now} />}
-      {item && <NextSteps key={`steps:${item.id}:${item.version}`} item={item} etag={request.response?.etag ?? null} staff={staff} userId={userId} onChange={changed} />}
+      {item && <NextSteps key={`steps:${item.id}`} item={item} etag={request.response?.etag ?? null} staff={staff} userId={userId} onChange={changed} />}
     </>
   );
   return (
@@ -627,10 +678,13 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
             {(profile) => (
               <CommandForm<Emergency>
                 title="Submit emergency request"
+                reviewLabel="Review request"
+                confirmLabel="Send emergency request"
+                successMessage="Request sent. It now appears in Your requests."
                 path="/api/v1/emergencies"
                 fields={[
                   textField("description", "Synthetic request description"),
-                  { name: "reported_urgency", label: "Reported urgency (advisory)", kind: "select", required: true, options: ["unspecified", "urgent"], initial: "unspecified" },
+                  { name: "reported_urgency", label: "Reported urgency (advisory)", kind: "select", required: true, options: ["unspecified", "urgent"], optionLabels: { unspecified: "Not sure", urgent: "Urgent" }, initial: "unspecified" },
                   { name: "synthetic_contact", label: "Synthetic contact", max: 256 },
                 ]}
                 build={(values) => ({

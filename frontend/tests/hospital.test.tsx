@@ -1,3 +1,4 @@
+import { commandLabels } from "./commandLabels";
 import {
   fireEvent,
   render,
@@ -242,9 +243,9 @@ function fill(label: string, value: string) {
   fireEvent.change(screen.getByLabelText(label), { target: { value } });
 }
 async function command(title: string) {
-  fireEvent.click(screen.getByRole("button", { name: `Review ${title}` }));
+  fireEvent.click(screen.getByRole("button", { name: commandLabels(title).review }));
   fireEvent.click(
-    await screen.findByRole("button", { name: `Confirm ${title}` }),
+    await screen.findByRole("button", { name: commandLabels(title).confirm }),
   );
 }
 function writes(fetcher: ReturnType<typeof setup>["fetcher"]) {
@@ -290,7 +291,7 @@ describe("patient profiles and appointment commands", () => {
     await screen.findByDisplayValue(profile.display_name);
     fill("Display name", " ");
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Save profile" }),
+      screen.getByRole("button", { name: commandLabels("Save profile").review }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Display name is required",
@@ -298,7 +299,7 @@ describe("patient profiles and appointment commands", () => {
     fill("Display name", "Synthetic");
     fill("Date of birth", "2999-01-01");
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Save profile" }),
+      screen.getByRole("button", { name: commandLabels("Save profile").review }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "cannot be in the future",
@@ -408,9 +409,9 @@ describe("patient profiles and appointment commands", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: /^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i }),
     );
-    expect(screen.getByRole("button",{name:"Review Book appointment"})).toBeInTheDocument();
+    expect(screen.getByRole("button",{name:commandLabels("Book appointment").review})).toBeInTheDocument();
     fill("From (UTC)", "2027-01-02T00:00:00Z");
-    expect(screen.queryByRole("button",{name:"Review Book appointment"})).not.toBeInTheDocument();
+    expect(screen.queryByRole("button",{name:commandLabels("Book appointment").review})).not.toBeInTheDocument();
     fill("From (UTC)", "2027-01-01T00:00:00Z");
     fireEvent.click(await screen.findByRole("button",{name:/^Select 09:00 am, 1 Jan 2027 \(UTC\)$/i}));
     await command("Book appointment");
@@ -421,7 +422,7 @@ describe("patient profiles and appointment commands", () => {
       expected_schedule_revision: 4,
     });
     expect(
-      await screen.findByText("Book appointment: confirmed by the service."),
+      await screen.findByText("Appointment booked"),
     ).toBeInTheDocument();
   });
   it("rejects non-UTC and overlong availability windows without a request", async () => {
@@ -465,8 +466,8 @@ describe("patient profiles and appointment commands", () => {
       await screen.findByRole("button", { name: "Cancel appointment 51" }),
     );
     expect(fetcher.mock.calls.some(([url])=>String(url).includes("patient_id=11"))).toBe(true);
-    await screen.findByLabelText("Reason");
-    fill("Reason", "Synthetic cancellation");
+    await screen.findByLabelText("Reason for cancelling");
+    fill("Reason for cancelling", "Synthetic cancellation");
     await command("Cancel appointment");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/appointments/51/cancel", "POST", '"5"');
@@ -486,7 +487,7 @@ describe("patient profiles and appointment commands", () => {
         return undefined;
       },
     );
-    fireEvent.click(await screen.findByRole("button", { name: "My Appointments" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Appointments" }));
     fireEvent.click(
       await screen.findByRole("button", { name: "Reschedule appointment 51" }),
     );
@@ -548,7 +549,7 @@ describe("command safety and states", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Retry original command" }),
     );
-    await screen.findByText("Test command: confirmed by the service.");
+    await screen.findByText("Test command: done.");
     const calls = writes(fetcher);
     expect(calls).toHaveLength(2);
     expect(calls[0][1]?.body).toBe(calls[1][1]?.body);
@@ -565,12 +566,12 @@ describe("command safety and states", () => {
       <CommandForm title="Test command" path="/api/v1/test" />,
     );
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Test command" }),
+      screen.getByRole("button", { name: commandLabels("Test command").review }),
     );
     expect(writes(fetcher)).toHaveLength(0);
     fireEvent.click(screen.getByRole("button", { name: "Keep editing" }));
     expect(
-      screen.getByRole("button", { name: "Review Test command" }),
+      screen.getByRole("button", { name: commandLabels("Test command").review }),
     ).toBeEnabled();
   });
   it("reports stale versions with reload guidance and does not retry PATCH", async () => {
@@ -608,13 +609,13 @@ describe("command safety and states", () => {
     );
     await command("Test command");
     expect(
-      await screen.findByText("Submitting test command…"),
+      await screen.findByText("Sending…"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Confirm Test command" }),
+      screen.getByRole("button", { name: commandLabels("Test command").confirm }),
     ).toBeDisabled();
     release(json({}));
-    await screen.findByText("Test command: confirmed by the service.");
+    await screen.findByText("Test command: done.");
     expect(writes(fetcher)).toHaveLength(1);
   });
   it("disables conditional mutation without an owner ETag", () => {
@@ -630,7 +631,7 @@ describe("command safety and states", () => {
         etag={null}
       />,
     );
-    expect(screen.getByRole("button", { name: "Review Edit" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: commandLabels("Edit").review })).toBeDisabled();
   });
   it("shows empty lists and deferred workflows without commands", async () => {
     const { fetcher, view } = setup("/patient/appointments?view=upcoming", "patient");
@@ -725,7 +726,7 @@ describe("clinical and pharmacy workflows", () => {
       ],
     });
     expect(
-      await screen.findByText(/Medical record ID: 62/),
+      await screen.findByText(/Medical record …62/),
     ).toBeInTheDocument();
   });
   it("reads own medical history and record detail", async () => {
@@ -826,7 +827,7 @@ describe("clinical and pharmacy workflows", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "View reservation 91" }),
     );
-    await screen.findByRole("button", { name: `Review ${title}` });
+    await screen.findByRole("button", { name: commandLabels(title).review });
     await command(title);
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(
@@ -856,7 +857,7 @@ describe("clinical and pharmacy workflows", () => {
     fill("Expected batch version (0 for new batch)", "0");
     fill("Reason", "Synthetic setup");
     fireEvent.click(
-      screen.getByRole("button", { name: "Review Adjust stock" }),
+      screen.getByRole("button", { name: commandLabels("Adjust stock").review }),
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "cannot be zero",
@@ -1005,7 +1006,7 @@ describe("billing, emergency, doctor and administration workflows", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "Track request 121" }),
     );
-    await screen.findByRole("button", { name: "Review Claim request" });
+    await screen.findByRole("button", { name: commandLabels("Claim request").review });
     await command("Claim request");
     await waitFor(() => expect(writes(fetcher)).toHaveLength(1));
     expectConditional(fetcher, "/api/v1/emergencies/121/claim", "POST", '"3"');

@@ -17,6 +17,8 @@ import type {
 } from "../src/hospital/models";
 import type { PatientProfile } from "../src/api/authApi";
 import type { Role } from "../src/auth/authContext";
+import type { Workflow } from "../src/advanced/patient/contracts";
+type WorkflowState = Workflow["state"];
 
 // Synthetic fixtures for `npm run dev:mock`. Nothing here is real or clinical advice.
 
@@ -175,6 +177,15 @@ export function createState() {
     booked("5109", "8002", -12, "0930"),
     booked("5110", "8003", -40, "1100"),
     booked("5111", "8006", 3, "1500", "cancelled"),
+    {
+      id: "5112", journey_id: null, patient_id: patient.id, doctor_id: "8002", slot_id: "9112",
+      starts_at: minutes(25), ends_at: minutes(40), state: "confirmed", version: 1,
+    },
+  ];
+  // Only today's visits have a check-in workflow; 5112 stays open for a manual check-in.
+  const workflows = [
+    { appointment_id: "5101", journey_id: "9401", patient_id: patient.id, doctor_id: "8001", state: "checked_in" as WorkflowState, checkin_window: { starts_at: minutes(-20), ends_at: minutes(40) }, queue_entry_id: "9301" as string | null, version: 2 },
+    { appointment_id: "5112", journey_id: "9402", patient_id: patient.id, doctor_id: "8002", state: "booked" as WorkflowState, checkin_window: { starts_at: minutes(-35), ends_at: minutes(25) }, queue_entry_id: null as string | null, version: 1 },
   ];
 
   const at = (date: string) => `${date}Z`;
@@ -287,6 +298,9 @@ export function createState() {
 
   return {
     queue,
+    workflows,
+    checkinLinks: new Map<string, string>(),
+    checkinEntries: new Map<string, { id: string; token_number: number }>(),
     waitlists,
     proposals,
     journeyVersion: 3,
