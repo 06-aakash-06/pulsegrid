@@ -573,6 +573,9 @@ const routes: Route[] = [
     }, user);
   }],
 
+  // Explicit synthetic empty state until a provider fixture is configured.
+  ["GET", /^\/api\/v1\/billing\/insurance\/providers$/, (request, user) =>
+    isBilling(user) ? page([], request.url) : forbidden()],
   ["GET", /^\/api\/v1\/billing\/tariffs$/, (request, user) =>
     isBilling(user) ? page([...state.tariffs].sort((a, b) => a.charge_code.localeCompare(b.charge_code) || b.revision - a.revision), request.url) : forbidden()],
   ["POST", /^\/api\/v1\/billing\/tariffs$/, (request, user) => {

@@ -108,3 +108,8 @@
   .workspace-shell :is(button,.text-link,.week-arrow,.roster-pagination a) { min-height: 40px; padding-block: 10px; }
   .workspace-shell .department-page > .page-heading { padding: 14px; }
 }
+.readonly-field p { margin: 6px 0 0; padding: 10px 12px; background: var(--surface-solid); border: 1px solid var(--line); border-radius: 5px; overflow-wrap: anywhere; }
+.appointment-booking { padding: 18px; }
+.roster-scroll-hint { margin: 4px 12px; font-size: var(--text-min); color: var(--ink); }
+.doctor-availability strong { white-space: nowrap; }
+.ops-console .ops-table th { white-space: normal; overflow-wrap: anywhere; }

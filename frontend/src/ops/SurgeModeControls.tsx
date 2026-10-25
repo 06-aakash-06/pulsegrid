@@ -24,11 +24,11 @@ export function SurgeModeControls({ onChange }: { onChange: () => void }) {
           <>
             <Facts
               values={{
-                State: snapshot.state,
+                State: snapshot.state.replaceAll("_", " "),
                 Version: snapshot.version,
                 "Changed (UTC)": snapshot.changed_at,
                 "Expires (UTC)": snapshot.expires_at,
-                Reason: snapshot.reason_code,
+                Reason: snapshot.reason_code?.replaceAll("_", " ") ?? "—",
               }}
             />
             <p>

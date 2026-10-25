@@ -23,6 +23,7 @@ import type {
   UserView,
 } from "./models";
 import {
+  formatDateTime,
   buildFields,
   Collection,
   CommandForm,
@@ -562,7 +563,7 @@ export function Booking({
           <div className="booking-patient-fields">
             <label>Full name<input readOnly value={patientProfile.display_name} /></label>
             <label>Date of birth<input readOnly value={patientProfile.date_of_birth ?? "Not provided"} /></label>
-            <label>Contact<input readOnly value={patientProfile.synthetic_contact ?? "Not provided"} /></label>
+            <div className="readonly-field"><span>Contact</span><p>{patientProfile.synthetic_contact ?? "Not provided"}</p></div>
           </div>
           <small>From the patient profile. Edit it at Reception.</small>
         </section>
@@ -1335,5 +1336,5 @@ export function DoctorDashboard() {
   );
 }
 function visitTime(value: string) {
-  return `${new Date(value).toLocaleString("en-IN", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" })} UTC`;
+  return formatDateTime(value, { utc: true });
 }

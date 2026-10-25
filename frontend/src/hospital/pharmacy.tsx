@@ -54,7 +54,7 @@ export function MedicineCatalog({
   const [availability, setAvailability] = useState<Medicine["availability"] | "">("");
   return (
     <div className="pharmacy-catalog"><div className="pharmacy-search-counter">
-      <div className="pharmacy-autocomplete"><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} label="Quick medicine lookup" placeholder="Find a medicine by name…" onSelect={item => {setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(true);}} /></div>
+      <div className="pharmacy-autocomplete"><MedicineAutocomplete api={api} roleHints={state.status === "authenticated" ? state.roleHints : []} label="Quick medicine lookup" placeholder="Search medicines…" onSelect={item => {setSelected(item.id);if(inventory)setMedicineId(item.id);setDemoSelected(true);}} /></div>
       <nav className="medicine-availability-tabs" aria-label="Catalog availability on this page">{[["","All medicines"],["available","Available"],["unavailable","Unavailable"],["unknown","Availability not supplied"]].map(([value,label])=><button type="button" key={value} aria-pressed={availability===value} onClick={()=>{setAvailability(value as Medicine["availability"]|"");setSelected(null);setDemoSelected(false);}}>{label}</button>)}</nav>
       <details className="pharmacy-catalog-search"><summary>Search & catalog filters</summary>
       <Panel title="Medicine search">

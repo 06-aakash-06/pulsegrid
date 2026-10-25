@@ -17,6 +17,7 @@ import type {
   RecordSummary,
 } from "./models";
 import {
+  formatDateTime,
   buildFields,
   Collection,
   CommandForm,
@@ -146,10 +147,10 @@ function MedicineName({ medicineId }: { medicineId: string }) {
   return <>{name && !name.startsWith("Synthetic") ? name : `Medicine …${medicineId.slice(-4)}`}</>;
 }
 function longDate(value: string) {
-  return new Date(value).toLocaleDateString("en-IN", { timeZone: "UTC", day: "numeric", month: "long", year: "numeric" });
+  return formatDateTime(value, { utc: true, time: false });
 }
 function shortDateTime(value: string) {
-  return `${new Date(value).toLocaleString("en-IN", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short" })} UTC`;
+  return formatDateTime(value, { utc: true });
 }
 function ConsultationEditor({
   item,

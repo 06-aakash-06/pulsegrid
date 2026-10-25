@@ -170,6 +170,7 @@ function ScheduleRail({ demo }: { demo: DemoHospital | null }) {
     )
     .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
     .slice(0, 6);
+  if (!destination) return null;
   return (
     <section className="consultation-schedule">
       <div className="schedule-title">
@@ -467,6 +468,7 @@ export function ReferenceConsultation({
           {!roster.loading && !rows.length && (
             <p>No doctors match this search.</p>
           )}
+          <p className="roster-scroll-hint">Scroll for more doctors</p>
           <div className="reference-doctor-list">
             {rows.map((d) => (
               <button
@@ -486,8 +488,8 @@ export function ReferenceConsultation({
                   index={demo?.doctors[d.id]?.portrait}
                 />
                 <span className="doctor-row-name">
-                  <strong>{d.display_name}</strong>
-                  <span>{d.specialties.map((s) => s.name).join(", ")}</span>
+                  <strong title={d.display_name}>{d.display_name}</strong>
+                  <span title={d.specialties.map((s) => s.name).join(", ")}>{d.specialties.map((s) => s.name).join(", ")}</span>
                   <small>
                     {d.active ? "Active clinician" : "Inactive directory entry"}
                   </small>
