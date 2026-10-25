@@ -17,6 +17,10 @@ Implementation and automated unit/component checks pass. Visual acceptance is **
 - Authenticated API buttons for doctor/medicine autocomplete, directory reads, Control Room summary and appointment-link creation. Link creation uses current workflow ETag, the real `appointment` purpose, idempotency and the ordinary authenticated client. API permission and unavailable errors are displayed; no fabricated fallback result.
 - Three-minute script: `docs/system-design-lab-script.md`.
 
+## Local integration
+
+Merged `feature/simulation-mode` into `ui/cleanup` at `db341b1`, then `feature/system-design-playground` at `414f827`. Both are ancestors of the review branch; no push or deployment. Re-ran typecheck, all 193 tests and production build on the merged tree successfully. The saved passing logs are from this post-merge run.
+
 ## Checks actually run
 
 | Check | Result | Evidence |

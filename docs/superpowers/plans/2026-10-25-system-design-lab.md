@@ -19,7 +19,7 @@
 - [x] Add route/header/admin+ops links and system-design tour/picker entry; extend audit/tour harnesses for lab.
 - [x] Write three-minute four-presenter script and verification report, noting unavailable original team split.
 - [ ] Run dev:mock, layout audits at 1536/1280/390, tour e2e and functional checks; inspect screenshots; typecheck/test/build; commit.
-- [ ] Review final diff, merge both authorized feature branches into ui/cleanup locally, verify clean tree and no push.
+- [x] Review final diff, merge both authorized feature branches into ui/cleanup locally, verify clean tree and no push.
 
 ## Execution record
 - Algorithms observed failing at missing imports, then passed; added fixed-point refill and single-replica Surge floors after reviewing policies.py.
@@ -28,3 +28,5 @@
 - Fresh reviewer checked backend parity, provenance, API contracts, tours and responsive risks. Fixed small-bucket floor; tour wording now only requests controls permitted by its spotlight. Clarified adapter-only link figures and reduced header crowding at intermediate widths.
 - Ruling: original UI_SIMULATION_SPEC.md/team split is unavailable; use the full corrected user brief and explicitly provisional presenter assignments rather than inventing names or claiming a match.
 - Browser execution is blocked: localhost listen EPERM and Chromium MachPort permission denied. No visual pass or screenshot is claimed.
+
+- Post-merge verification on ui/cleanup: typecheck, 193 tests and production build pass. Simulation merge db341b1; lab merge 414f827. No push. The remaining unchecked visual task is blocked by sandbox permissions, with exact failures saved in docs/verification/system-design/.
