@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import { workspaces, type WorkspaceConfig } from "../navigation/workspaces";
+import { useResource } from "../hospital/ui";
 import { HospitalHeader } from "../design/HospitalHeader";
 import {
   DepartmentIcon,
@@ -26,6 +27,10 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const { state, logout } = useAuth();
+  // Load owner-confirmed identity even when entering a department directly.
+  useResource(state.status === "authenticated" && state.roleHints.includes("patient")
+    ? "/api/v1/patients/me"
+    : state.status === "authenticated" && state.roleHints.includes("doctor") ? "/api/v1/doctors/me" : null);
   const location = useLocation();
   const main = useRef<HTMLElement>(null);
   const sidebar = useRef<HTMLElement>(null);
@@ -108,7 +113,9 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
     }
   }
   useEffect(() => {
+    const fromDrawer = menuOpen;
     setMenuOpen(false);
+    if (fromDrawer) requestAnimationFrame(() => main.current?.focus());
     window.scrollTo?.({ top: 0, behavior: "instant" });
     sidebar.current?.querySelector<HTMLElement>(".workspace-nav-link--active")?.scrollIntoView?.({ block: "nearest", inline: "nearest" });
     if (document.activeElement?.closest(".workspace-nav"))
@@ -225,15 +232,14 @@ export function WorkspaceLayout({ workspace }: { workspace: WorkspaceConfig }) {
                       end
                       key={item.path}
                       to={`${workspace.basePath}/${item.path}`}
-                      onClick={() => setMenuOpen(false)}
                       className={({ isActive }) =>
                         `workspace-nav-link${isActive ? " workspace-nav-link--active" : ""}${i ? " directory-subroute" : ""}`
                       }
                     >
-                      {!i && (
+                      {(
                         <>
                           <span className="directory-number">
-                            {String(groupIndex + 1).padStart(2, "0")}
+                            {String(groups.slice(0, groupIndex).reduce((n, g) => n + g.items.length, 0) + i + 1).padStart(2, "0")}
                           </span>
                           <DepartmentIcon
                             department={navDepartment(item.path)}

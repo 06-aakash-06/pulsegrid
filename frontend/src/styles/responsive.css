@@ -91,3 +91,20 @@
 .medicine-table-row[data-selected="true"] { box-shadow: inset 4px 0 0 var(--select-teal, #0f6b6b); padding-left: 10px; }
 @media (max-width: 580px) { .medicine-table-row { grid-template-columns: minmax(0, 1fr) auto; } .medicine-table-row small { grid-row: 2; } }
 .medicine-table .hospital-items { max-height: 420px; overflow: auto; overscroll-behavior: contain; }
+
+/* Shared accessibility: readable headings, disclosures and touch controls. */
+.workspace-shell .department-page > .page-heading { margin-bottom: 16px; padding: 16px 22px; min-height: 100px; border-radius: 8px; background: #f8f1e9ed; color: var(--ink); border: 1px solid #fff3df; box-shadow: var(--shadow); backdrop-filter: blur(8px); }
+.workspace-shell .department-page > .page-heading :is(h1,p) { color: var(--ink); }
+.workspace-shell .department-page.route-queue > .page-heading { padding-left: 22px; }
+.workspace-shell details > summary { display: list-item; list-style: disclosure-closed inside; min-height: 40px; padding: 10px 8px; cursor: pointer; }
+.workspace-shell details[open] > summary { list-style-type: disclosure-open; }
+.workspace-shell details > summary::marker { color: currentColor; }
+.workspace-shell details > summary::-webkit-details-marker { display: inline; }
+.workspace-shell .account-menu > summary { display: flex; }
+.workspace-shell .directory-subroute { display: grid; }
+.workspace-shell .ops-footnote { padding: 12px 16px; border-radius: 6px; background: var(--surface-solid); color: var(--ink); }
+.workspace-shell :is(.directory-copy small,.directory-heading span,.directory-help small,.workspace-context,.welcome-motto,.visit-today-panel small) { color: var(--ink); }
+@media (max-width: 767px) {
+  .workspace-shell :is(button,.text-link,.week-arrow,.roster-pagination a) { min-height: 40px; padding-block: 10px; }
+  .workspace-shell .department-page > .page-heading { padding: 14px; }
+}

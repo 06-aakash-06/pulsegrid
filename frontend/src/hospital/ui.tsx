@@ -402,6 +402,7 @@ export function Inputs({
           {field.label}
           {field.kind === "select" ? (
             <select
+              title={values[field.name] || field.label}
               value={values[field.name] ?? ""}
               disabled={disabled}
               onChange={(e) => change(field.name, e.target.value)}
@@ -413,6 +414,7 @@ export function Inputs({
             </select>
           ) : field.kind === "textarea" ? (
             <textarea
+              title={values[field.name] || field.label}
               value={values[field.name] ?? ""}
               disabled={disabled}
               maxLength={field.max}
@@ -427,6 +429,7 @@ export function Inputs({
                     ? "number"
                     : "text"
               }
+              title={values[field.name] || field.label}
               value={values[field.name] ?? ""}
               disabled={disabled}
               maxLength={field.kind !== "number" ? field.max : undefined}

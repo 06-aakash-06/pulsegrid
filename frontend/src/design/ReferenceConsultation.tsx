@@ -448,7 +448,7 @@ export function ReferenceConsultation({
               id="reference-doctor-search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search doctor by name…"
+              placeholder="Search doctors…" title="Search doctors by name"
             />
             <button type="submit">Search</button>
           </form>

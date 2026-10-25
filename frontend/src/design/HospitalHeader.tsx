@@ -24,6 +24,35 @@ export function HospitalHeader({
   );
   const dialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
+  const noticeWrap = useRef<HTMLDivElement>(null);
+  const noticeTrigger = useRef<HTMLButtonElement>(null);
+  const accountMenu = useRef<HTMLDetailsElement>(null);
+  const searchInput = useRef<HTMLInputElement>(null);
+  function openSearch() {
+    dialog.current?.showModal();
+    searchInput.current?.focus();
+  }
+  useEffect(() => {
+    function dismiss(event: KeyboardEvent | PointerEvent) {
+      const escape = event instanceof KeyboardEvent && event.key === "Escape";
+      if (event instanceof KeyboardEvent && !escape) return;
+      const target = event.target as Node;
+      if (notice && (escape || !noticeWrap.current?.contains(target))) {
+        setNotice(false);
+        noticeTrigger.current?.focus();
+      }
+      if (accountMenu.current?.open && (escape || !accountMenu.current.contains(target))) {
+        accountMenu.current.open = false;
+        accountMenu.current.querySelector("summary")?.focus();
+      }
+    }
+    document.addEventListener("keydown", dismiss);
+    document.addEventListener("pointerdown", dismiss);
+    return () => {
+      document.removeEventListener("keydown", dismiss);
+      document.removeEventListener("pointerdown", dismiss);
+    };
+  }, [notice]);
   const allowed =
     state.status === "authenticated"
       ? workspaces.filter((w) =>
@@ -41,12 +70,13 @@ export function HospitalHeader({
   useEffect(() => {
     dialog.current?.close?.();
     setNotice(false);
+    if (accountMenu.current) accountMenu.current.open = false;
   }, [location.pathname]);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        dialog.current?.showModal();
+        openSearch();
       }
     };
     document.addEventListener("keydown", handler);
@@ -84,19 +114,20 @@ export function HospitalHeader({
       <button
         className="global-search"
         aria-label="Search hospital departments and workflows"
-        onClick={() => dialog.current?.showModal()}
+        onClick={openSearch}
         type="button"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="10" cy="10" r="6.5" />
           <path d="m15 15 6 6" />
         </svg>
-        <span>Search hospital departments & workflows…</span>
+        <span title="Search hospital departments and workflows">Search departments…</span>
         <kbd>⌘ K</kbd>
       </button>
       <div className="header-account">
-        <div className="notification-wrap">
+        <div className="notification-wrap" ref={noticeWrap}>
           <button
+            ref={noticeTrigger}
             className="notification-button"
             aria-label="Notifications"
             aria-expanded={notice}
@@ -118,7 +149,7 @@ export function HospitalHeader({
           )}
         </div>
         {state.status === "authenticated" ? (
-          <details className="account-menu">
+          <details className="account-menu" ref={accountMenu}>
             <summary aria-label={`${identity} account menu`}>
               <span className="account-avatar" aria-hidden="true">
                 <DepartmentIcon department="reception" />
@@ -175,10 +206,12 @@ export function HospitalHeader({
         <label>
           Search your available workflows
           <input
+            ref={searchInput}
             autoFocus
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Find a department or workflow…"
+            placeholder="Search departments…"
+            title="Search your available hospital departments and workflows"
           />
         </label>
         <p>Search within a department using its existing search tools.</p>

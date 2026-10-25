@@ -502,7 +502,7 @@ export function TraceExplorer() {
           <div className="ops-panel-heading"><div><h2>Recent traces</h2><p>Service and operation summaries are allowlisted by the server.</p></div></div>
           {loading && !traces.length ? <p className="ops-loading" role="status">Loading recent traces…</p> : null}
           {!loading && !traces.length && !error ? <EmptyRows>No traces found in the last hour.</EmptyRows> : null}
-          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
+          {traces.length ? <ul className="ops-trace-list">{traces.map((trace) => <li key={trace.trace_id}><button className={selected === trace.trace_id ? "ops-trace-row ops-trace-row--selected" : "ops-trace-row"} aria-pressed={selected === trace.trace_id} onClick={() => void openTrace(trace.trace_id)} type="button"><span><strong title={trace.operation}>{trace.operation}</strong><small>{trace.service} · {localTimeFromNanos(trace.start_time_unix_nano)}</small></span><span className="ops-trace-duration">{number(trace.duration_ms)} ms</span></button></li>)}</ul> : null}
         </section>
         <section className="ops-panel ops-trace-detail" aria-label="Selected trace details">
           {!selected && !detailLoading ? (
@@ -512,12 +512,12 @@ export function TraceExplorer() {
               <div className="ops-panel-heading"><div><h2>{selectedTrace?.operation ?? "Trace details"}</h2><p>{`Trace ID ${selected}`}</p></div></div>
               {detailLoading ? <p className="ops-loading" role="status">Loading trace spans…</p> : null}
               {selected && !detailLoading && !spans.length ? <EmptyRows>No safe span details are available.</EmptyRows> : null}
-              {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
+              {spans.length ? <ol className="ops-span-list">{spans.map((span, index) => <li key={`${span.service}-${span.start_time_unix_nano}-${index}`}><span className="ops-span-copy"><strong title={span.operation}>{span.operation}</strong><small>{span.service} · {number(span.duration_ms)} ms</small></span><span className="ops-span-bar" aria-hidden="true"><i data-service={span.service} style={{ left: `${((span.start_time_unix_nano - traceStart) / traceSpan) * 100}%`, width: `${Math.max(1.5, ((span.duration_ms * 1_000_000) / traceSpan) * 100)}%` }} /></span></li>)}</ol> : null}
             </>
           )}
+          <p className="ops-footnote">Trace results include safe service, operation, and timing fields only.</p>
         </section>
       </div>
-      <p className="ops-footnote">Trace results include safe service, operation, and timing fields only.</p>
     </section>
   );
 }
