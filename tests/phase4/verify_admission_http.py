@@ -32,7 +32,9 @@ def metrics():
   counts={}
   for line in raw.splitlines():
    if line.startswith('pulsegrid_http_admission_requests_total{') and 'policy="doctor_directory_search_directory"' in line:
-    labels=dict(__import__('re').findall(r'([a-z_]+)="([^"]*)"',line));counts[labels['outcome']]=float(line.rsplit(' ',1)[1])
+    labels=dict(__import__('re').findall(r'([a-z_]+)="([^"]*)"',line))
+    # A policy has separate counter series for each Surge state and class.
+    outcome=labels['outcome'];counts[outcome]=counts.get(outcome,0)+float(line.rsplit(' ',1)[1])
   result[node]=counts
  return result
 before_metrics=metrics()

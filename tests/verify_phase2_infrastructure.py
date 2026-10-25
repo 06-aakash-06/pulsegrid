@@ -33,6 +33,7 @@ from DOMAIN_service.main import app
 s=Settings.from_env()
 engine=create_engine(s.database_url,connect_args=s.connection_options,hide_parameters=True)
 with engine.connect() as c:
+    c.execute(text('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY'))
     assert c.scalar(text('SELECT current_user'))=='DOMAIN_app'
     assert not any(c.execute(text('SELECT rolsuper,rolcreatedb,rolcreaterole,rolreplication FROM pg_roles WHERE rolname=current_user')).one())
     assert not c.scalar(text("SELECT has_schema_privilege(current_user,'public','CREATE')"))
@@ -61,6 +62,8 @@ with engine.connect() as c:
         for index in inspector.get_indexes(name):
             if not index['unique']:continue
             key=tuple(index['column_names'])
+            # Expression indexes do not establish direct column uniqueness.
+            if any(column is None for column in key):continue
             predicate=str(index.get('dialect_options',{}).get('postgresql_where','')).strip()
             # A one-column IS NOT NULL index has ordinary PostgreSQL UNIQUE
             # semantics: NULL legacy references do not conflict with each other.

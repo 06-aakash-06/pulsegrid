@@ -130,7 +130,7 @@ rabbitmqctl set_permissions -p / "$publisher_user" \
   '^pulsegrid\.events$' '^pulsegrid\.events$' '^$' >/dev/null
 rabbitmqctl set_permissions -p / "$consumer_user" \
   '^pulsegrid\.(events|dlx|appointment\.journey\.(pharmacy|billing)\.v1|dlq\.appointment\.journey\.(pharmacy|billing)\.v1)$' \
-  '^pulsegrid\.(events|appointment\.journey\.(pharmacy|billing)\.v1|dlq\.appointment\.journey\.(pharmacy|billing)\.v1)$' \
+  '^pulsegrid\.(events|dlx|appointment\.journey\.(pharmacy|billing)\.v1|dlq\.appointment\.journey\.(pharmacy|billing)\.v1)$' \
   '^pulsegrid\.(events|dlx|appointment\.journey\.(pharmacy|billing)\.v1|dlq\.appointment\.journey\.(pharmacy|billing)\.v1)$' >/dev/null
 if rabbitmqctl list_users | awk '$1=="pulsegrid_events"{found=1} END{exit !found}'; then
   rabbitmqctl delete_user pulsegrid_events >/dev/null
