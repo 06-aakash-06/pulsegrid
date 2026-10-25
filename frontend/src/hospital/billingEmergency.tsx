@@ -86,7 +86,7 @@ function InvoiceReceipt({
       {invoice.items.length === 0 ? (
         <p className="cashier-receipt__empty">No charges have been imported.</p>
       ) : (
-        <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items">
+        <div className="invoice-line-scroll" tabIndex={0} role="region" aria-label="Invoice line items" data-tour="receipt-lines">
           <table className="cashier-lines">
             <caption className="sr-only">Itemized invoice</caption>
             <thead><tr><th scope="col">Charge</th><th scope="col">Qty × unit</th><th scope="col">Amount</th></tr></thead>
@@ -109,18 +109,19 @@ function InvoiceReceipt({
           </table>
         </div>
       )}
-      <dl className="cashier-balance" data-check="billing-balance">
+      <dl className="cashier-balance" data-check="billing-balance" data-tour="invoice-balance">
         <div><dt>Total</dt><dd>{money(invoice.total_minor)}</dd></div>
         <div><dt>Paid</dt><dd>{money(invoice.paid_minor)}</dd></div>
         <div className="cashier-balance__due"><dt>Balance due</dt><dd>{money(invoice.balance_minor)}</dd></div>
       </dl>
-      <p className="cashier-simulated">Payments are simulated. Do not enter card, bank or real payment credentials.</p>
+      <p className="cashier-simulated">No card is charged here. Never enter card or bank details.</p>
       {invoice.balance_minor > 0 && (
         <CommandForm<Payment>
-          title="Submit simulated payment"
+          tour="pay"
+          title="Submit payment"
           reviewLabel="Review payment"
-          confirmLabel="Pay (simulated)"
-          successMessage="Simulated payment submitted."
+          confirmLabel="Pay"
+          successMessage="Payment submitted."
           onReload={onRefresh}
           reloadLabel="Reload invoice"
           path={`/api/v1/billing/invoices/${invoice.id}/payments`}
@@ -128,7 +129,7 @@ function InvoiceReceipt({
           etag={etag}
           fields={[
             { name: "amount_rupees", label: "Payment amount (₹)", required: true, max: 20, initial: rupees(invoice.balance_minor) },
-            { name: "simulated_outcome", label: "Demo payment result", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
+            { name: "simulated_outcome", label: "Payment result", kind: "select", required: true, options: ["success", "decline"], initial: "success" },
           ]}
           preview={(values) => {
             try {
@@ -152,7 +153,7 @@ function InvoiceReceipt({
       {payment && payment.invoice_id === invoice.id && (
         <m.p key={payment.id} initial={{ backgroundColor: "#f3dd9a" }} animate={{ backgroundColor: "#f1ebe1" }} transition={{ duration: 1.2 }} role="status" className="cashier-payment-result">
           Payment result:{" "}
-          {payment.status === "declined" ? "simulated decline recorded; balance was not paid" : "simulated success recorded"}. Amount {money(payment.amount_minor)}.
+          {payment.status === "declined" ? "decline recorded; balance was not paid" : "payment recorded"}. Amount {money(payment.amount_minor)}.
         </m.p>
       )}
       <MoreActions>
@@ -261,7 +262,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
               <td data-label="Status"><InvoiceStatus invoice={item} /></td>
               <td data-label="Total">{money(item.total_minor)}</td>
               <td data-label="Balance">{money(item.balance_minor)}</td>
-              <td><button type="button" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
+              <td><button type="button" data-tour="invoice-option" aria-label={`View invoice ${item.id}`} aria-pressed={selected === item.id} onClick={() => select(item.id)}>{selected === item.id ? "Open" : "View"}</button></td>
             </tr>
           ))}</tbody>
         </table></div>
@@ -282,7 +283,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
     <div className={`cashier-desk cashier-desk--${staff ? "staff" : "patient"}`}>
       {title && (
         <DepartmentSign department="billing" title={title} subtitle={subtitle ?? ""}>
-          <p className="department-sign__note"><strong>Simulated payments</strong><span>Balances include only charges imported by Billing staff.</span></p>
+          <p className="department-sign__note"><strong>Balances</strong><span>Balances include only charges imported by Billing staff.</span></p>
         </DepartmentSign>
       )}
       {context}
@@ -290,7 +291,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
         <>
           <div className="cashier-left">
             <section className="cashier-workbench" aria-label="Cashier actions">
-              <div className="cashier-tabs" role="tablist" aria-label="Cashier actions">
+              <div className="cashier-tabs" role="tablist" aria-label="Cashier actions" data-tour="cashier-tabs">
                 {cashierTabs.map((item, index) => (
                   <button
                     key={item.key}
@@ -351,7 +352,7 @@ export function BillingPage({ staff = false, title, subtitle }: { staff?: boolea
 }
 function ChargeImport({ invoice, etag, onChange }: { invoice: Invoice; etag: string | null; onChange: () => void }) {
   return (
-    <div className="cashier-import">
+    <div className="cashier-import" data-tour="charge-import">
       <p>Import finalized sources for <strong><VisitLabel appointmentId={invoice.appointment_id}/></strong>: a finalized consultation from Records and completed dispensings from Pharmacy. Prices come from Billing tariffs.</p>
       <p className="cashier-import__hint">Records and Pharmacy do not list a visit's sources to Billing yet. Use the references they send you.</p>
       <details className="item-details cashier-import__advanced" data-disclosure="advanced"><summary>Advanced: import by reference</summary>
@@ -461,6 +462,7 @@ function NextSteps({
     const reason = { ...reasonField, label: labels.reason };
     return (
       <CommandForm
+        tour={`er-${target}`}
         title={title}
         reviewLabel={labels.review}
         confirmLabel={labels.confirm}
@@ -478,6 +480,7 @@ function NextSteps({
   };
   const priority = (title: string) => (
     <CommandForm
+      tour="er-priority"
       title={title}
       reviewLabel="Review priority"
       confirmLabel="Set priority"
@@ -497,6 +500,7 @@ function NextSteps({
   );
   const claim = (
     <CommandForm
+      tour="er-claim"
       title="Claim request"
       reviewLabel="Review claim"
       confirmLabel="Claim request"
@@ -572,11 +576,11 @@ function NextSteps({
   );
 }
 
-function EmergencyRow({ entry, now, selected, onSelect }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void }) {
+function EmergencyRow({ entry, now, selected, onSelect, top = false }: { entry: Emergency; staff: boolean; now: number; selected: boolean; onSelect: (id: string) => void; top?: boolean }) {
   const rowTitle = requestTitle(entry);
   return (
     <li>
-      <button type="button" className="er-row" data-state={entry.state} aria-pressed={selected} aria-label={`Track request ${entry.id}`} onClick={() => onSelect(entry.id)}>
+      <button type="button" className="er-row" data-tour={top ? "er-case-top" : undefined} data-state={entry.state} aria-pressed={selected} aria-label={`Track request ${entry.id}`} onClick={() => onSelect(entry.id)}>
         <span className="er-row__main">
           <strong title={rowTitle}>{rowTitle}</strong>
           <small><StateChip state={entry.state} /><span>{entry.reported_urgency === "urgent" ? "Reported urgent" : "Urgency not specified"}</span><time dateTime={entry.created_at}>{elapsed(entry.created_at, now)}</time></small>
@@ -649,8 +653,8 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
       {register.loading && <p role="status">Loading emergency requests…</p>}
       {register.error && <p role="alert">{register.error}</p>}
       {register.loaded && !register.loading && register.items.length === 0 && <p>No emergency requests found.</p>}
-      <ol className="er-queue">
-        {open.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
+      <ol className="er-queue" data-tour="er-queue">
+        {open.map((entry, index) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} top={index === 0} />)}
         {closed.length > 0 && <li className="er-queue__divider" role="presentation"><span>Closed</span></li>}
         {closed.map((entry) => <EmergencyRow key={entry.id} entry={entry} staff={staff} now={now} selected={selected === entry.id} onSelect={setSelected} />)}
       </ol>
@@ -679,7 +683,7 @@ export function EmergencyPage({ staff = false, title, subtitle }: { staff?: bool
           )}
         </DepartmentSign>
       )}
-      <p className="er-notice" role="note">Demo only, not real emergency dispatch.</p>
+      <p className="er-notice" role="note">This desk does not dispatch ambulances. In a life-threatening emergency, call your local emergency number.</p>
       {!staff && (
         <section className="er-intake" aria-labelledby="er-intake-title">
           <h2 id="er-intake-title">New request</h2>

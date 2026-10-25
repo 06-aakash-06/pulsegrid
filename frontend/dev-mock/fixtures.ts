@@ -29,14 +29,14 @@ export interface MockUser {
 }
 
 export const users: MockUser[] = [
-  { id: "1001", email: "patient@mock.test", roles: ["patient"] },
-  { id: "1002", email: "pharmacist@mock.test", roles: ["pharmacist"] },
-  { id: "1003", email: "doctor@mock.test", roles: ["doctor"] },
-  { id: "1004", email: "admin@mock.test", roles: ["hospital_admin"] },
-  { id: "1005", email: "billing@mock.test", roles: ["billing_staff"] },
-  { id: "1006", email: "emergency@mock.test", roles: ["emergency_staff"] },
-  { id: "1007", email: "receptionist@mock.test", roles: ["receptionist"] },
-  { id: "1008", email: "ops@mock.test", roles: ["ops"] },
+  { id: "1001", email: "patient@pulsegrid.test", roles: ["patient"] },
+  { id: "1002", email: "pharmacist@pulsegrid.test", roles: ["pharmacist"] },
+  { id: "1003", email: "doctor@pulsegrid.test", roles: ["doctor"] },
+  { id: "1004", email: "admin@pulsegrid.test", roles: ["hospital_admin"] },
+  { id: "1005", email: "billing@pulsegrid.test", roles: ["billing_staff"] },
+  { id: "1006", email: "emergency@pulsegrid.test", roles: ["emergency_staff"] },
+  { id: "1007", email: "receptionist@pulsegrid.test", roles: ["receptionist"] },
+  { id: "1008", email: "ops@pulsegrid.test", roles: ["ops"] },
 ];
 
 const now = Date.now();

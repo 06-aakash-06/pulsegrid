@@ -54,7 +54,7 @@ export function DoctorPortrait({
     <span
       className={`reference-portrait${large ? " reference-portrait--large" : ""}`}
       role="img"
-      aria-label={`Illustrative fictional portrait of ${name}`}
+      aria-label={`Portrait of ${name}`}
       style={{
         backgroundImage: "url(/environments/demo-clinicians.webp)",
         backgroundPosition: `${(index % 3) * 50}% ${Math.floor(index / 3) * 100}%`,

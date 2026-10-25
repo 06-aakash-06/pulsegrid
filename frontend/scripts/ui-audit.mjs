@@ -88,7 +88,7 @@ try {
    await page.goto(`${base}/login`);
    const demo = page.locator('.auth-demo__roles button').filter({hasText:new RegExp(`^${role==='ops'?'Ops':role[0].toUpperCase()+role.slice(1)}$`)});
    await demo.click();
-   if (await page.locator('#login-email').inputValue()!==`${role}@mock.test` || await page.locator('#login-password').inputValue()!=='demo') throw Error(`Demo autofill failed: ${role}`);
+   if (await page.locator('#login-email').inputValue()!==`${role}@pulsegrid.test` || await page.locator('#login-password').inputValue()!=='demo') throw Error(`Demo autofill failed: ${role}`);
    await page.getByRole('button',{name:'Sign in',exact:true}).click();
    await page.waitForURL(`**/${role}/dashboard`);
    await page.locator('.workspace-nav a').first().waitFor({state:'attached'});

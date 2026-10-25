@@ -315,7 +315,7 @@ function BatchShelfLedger({ medicineId, revision, onItems }: { medicineId: strin
   const batches = useCursorPage<Batch>(query("/api/v1/pharmacy/inventory", { medicine_id: medicineId }), revision);
   useEffect(() => onItems?.(batches.items), [batches.items, onItems]);
   return (
-    <div className="batch-ledger" aria-label="Inventory batches">
+    <div className="batch-ledger" aria-label="Inventory batches" data-tour="batch-ledger">
       <div className="batch-ledger__heading"><h3>Inventory batches</h3><PageRefresh type="button" disabled={batches.loading} onClick={batches.refresh}>Refresh</PageRefresh></div>
       {batches.loading && <p role="status">Loading inventory batches…</p>}
       {batches.error && <p role="alert">{batches.error}</p>}
@@ -367,7 +367,7 @@ export function PharmacistPharmacy({ title, workspaceName }: { title: string; wo
         <section className="counter-lower" aria-labelledby="dispensing-entry-title">
           <h2 id="dispensing-entry-title">Dispensing</h2>
           <p>Validate a Records prescription and review its Pharmacy reservation before dispensing.</p>
-          <Link className="button" to={selected ? `/pharmacist/prescriptions?medicine=${encodeURIComponent(selected)}` : "/pharmacist/prescriptions"}>Open dispensing workspace →</Link>
+          <Link className="button" data-tour="open-dispensing" to={selected ? `/pharmacist/prescriptions?medicine=${encodeURIComponent(selected)}` : "/pharmacist/prescriptions"}>Open dispensing workspace →</Link>
           <MoreActions label="Manage">
           {item && (
             <details className="catalog-reference">
@@ -491,6 +491,7 @@ export function Fulfillment({
               {pharmacist && item.state === "reserved" && (
                 <div className="dispense-primary" data-check="pharmacy-dispense">
                   <CommandForm<Dispensing>
+                    tour="dispense"
                     title="Dispense reservation" reviewLabel="Review dispensing" confirmLabel="Dispense" successMessage={(result: Dispensing) => `Dispensed (…${result.id.slice(-4)}). Billing can now import this dispensing.`}
                     path={`/api/v1/pharmacy/reservations/${item.id}/dispense`}
                     conditional
@@ -525,7 +526,7 @@ export function Fulfillment({
             renderItem={(entry) => (
               <div className="reservation-slip">
                 <span><strong>Reservation</strong><span className="owner-state">{entry.state}</span></span>
-                <button aria-label={`View reservation ${entry.id}`} aria-pressed={selected === entry.id} onClick={() => setSelected(entry.id)}>Review →</button>
+                <button data-tour="reservation-option" aria-label={`View reservation ${entry.id}`} aria-pressed={selected === entry.id} onClick={() => setSelected(entry.id)}>Review →</button>
               </div>
             )}
           />

@@ -1,3 +1,4 @@
+import { announceCommandSuccess } from "../simulation/engine";
 import { AdvancedLookup, ItemDetails, useInAdvanced, useInDetails, PageRefresh } from "../components/PageTools";
 import { StatusBadge } from "../components/StatusBadge";
 import { m } from "motion/react";
@@ -118,12 +119,14 @@ export function useResource<T>(path: string | null, revision = 0) {
 export function Panel({
   title,
   children,
+  tour,
 }: {
   title: string;
   children: ReactNode;
+  tour?: string;
 }) {
   return (
-    <section className="hospital-panel" data-panel={title.toLowerCase().replaceAll(" ", "-")}>
+    <section className="hospital-panel" data-panel={title.toLowerCase().replaceAll(" ", "-")} data-tour={tour}>
       <h2>{title}</h2>
       {children}
     </section>
@@ -423,7 +426,7 @@ export function Inputs({
       {primary.map((field) => field.choiceButtons ? <fieldset key={field.name}><legend>{field.label}</legend><div className="priority-choices" role="group" aria-label={field.label}>{field.options?.map(option=><button type="button" key={option} aria-label={`Priority ${option}`} disabled={disabled} aria-pressed={values[field.name]===option} onClick={()=>change(field.name,option)}>{option}</button>)}</div></fieldset> : (
         <label key={field.name}>
           {field.name !== "simulated_outcome" && field.label}
-          {field.name === "simulated_outcome" ? <details><summary>Demo options</summary><select aria-label="Demo payment result" value={values[field.name]??""} onChange={e=>change(field.name,e.target.value)} disabled={disabled}>{field.options?.map(option=><option key={option} value={option}>{option}</option>)}</select></details> : field.kind === "select" ? (
+          {field.name === "simulated_outcome" ? <details><summary>Outcome options</summary><select aria-label="Payment result" value={values[field.name]??""} onChange={e=>change(field.name,e.target.value)} disabled={disabled}>{field.options?.map(option=><option key={option} value={option}>{option}</option>)}</select></details> : field.kind === "select" ? (
             <select
               title={values[field.name] || field.label}
               value={values[field.name] ?? ""}
@@ -488,7 +491,10 @@ export function CommandForm<T = unknown>({
   successMessage,
   onReload,
   reloadLabel = "Reload latest version",
+  tour,
 }: {
+  /** `data-tour` id for the walkthrough; the review, confirm and cancel buttons get `-review`, `-confirm` and `-cancel`. */
+  tour?: string;
   title: string;
   path: string;
   fields?: Field[];
@@ -561,6 +567,7 @@ export function CommandForm<T = unknown>({
       if (flash) flash(message);
       else setSuccess(message);
       onSuccess?.(response.data, response.etag);
+      announceCommandSuccess(title);
     } catch (err) {
       setError(errorMessage(err));
       setStale(err instanceof ApiError && err.status === 412);
@@ -581,6 +588,7 @@ export function CommandForm<T = unknown>({
     <form
       className="hospital-form"
       noValidate
+      data-tour={tour}
       onSubmit={(e) => {
         e.preventDefault();
         if (pending || attempt) return;
@@ -669,6 +677,7 @@ export function CommandForm<T = unknown>({
           <button
             type="button"
             disabled={pending}
+            data-tour={tour && `${tour}-confirm`}
             onClick={() => void send(attempt)}
           >
             {ambiguous ? "Retry original command" : confirm}
@@ -677,6 +686,7 @@ export function CommandForm<T = unknown>({
             <button
               type="button"
               disabled={pending}
+              data-tour={tour && `${tour}-cancel`}
               onClick={() => setAttempt(null)}
             >
               Keep editing
@@ -684,7 +694,7 @@ export function CommandForm<T = unknown>({
           )}
         </m.div>
       ) : (
-        <button type="submit" disabled={pending || (conditional && !etag)}>
+        <button type="submit" disabled={pending || (conditional && !etag)} data-tour={tour && `${tour}-review`}>
           {review}
         </button>
       )}

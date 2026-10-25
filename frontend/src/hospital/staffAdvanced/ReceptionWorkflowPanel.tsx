@@ -159,6 +159,7 @@ function CheckinPanel() {
         <label>
           Appointment ID
           <input
+            data-tour="reception-appointment-id"
             value={appointmentDraft}
             onChange={(event) => {
               const value = event.target.value;
@@ -179,7 +180,7 @@ function CheckinPanel() {
             disabled={busy || !!pendingCommand}
           />
         </label>
-        <button type="submit" disabled={busy || !!pendingCommand}>Load workflow</button>
+        <button type="submit" data-tour="reception-load-workflow" disabled={busy || !!pendingCommand}>Load workflow</button>
       </form>
       {validationError && <p role="alert">{validationError}</p>}
       {appointmentId && (
@@ -214,13 +215,14 @@ function CheckinPanel() {
                 <label>
                   Audited manual check-in reason
                   <textarea
+                    data-tour="reception-checkin-reason"
                     value={reason}
                     onChange={(event) => setReason(event.target.value)}
                     maxLength={500}
                     disabled={busy || !!pendingCommand || workflow.state !== "booked"}
                   />
                 </label>
-                <button type="submit" disabled={busy || !!pendingCommand || workflow.state !== "booked"}>Review staff check-in fallback</button>
+                <button type="submit" data-tour="reception-checkin-review" disabled={busy || !!pendingCommand || workflow.state !== "booked"}>Review staff check-in fallback</button>
               </form>
               {pendingCommand && (
                 <div className="hospital-confirm" role="group" aria-label="Confirm check-in">
@@ -231,7 +233,7 @@ function CheckinPanel() {
                         ? `Confirm token check-in for appointment ${pendingCommand.appointmentId}? The token will not be shown here.`
                         : `Confirm audited staff check-in for appointment ${pendingCommand.appointmentId}?`}
                   </p>
-                  <button type="button" disabled={busy} onClick={() => void send(pendingCommand)}>
+                  <button type="button" data-tour="reception-checkin-confirm" disabled={busy} onClick={() => void send(pendingCommand)}>
                     {busy ? "Submitting check-in…" : ambiguous ? "Retry original check-in" : "Confirm check-in"}
                   </button>
                   {!ambiguous && (
@@ -243,7 +245,7 @@ function CheckinPanel() {
               )}
               {commandError && <p role="alert">{commandError}</p>}
               {receipt && (
-                <div role="status" className="staff-advanced-summary">
+                <div role="status" className="staff-advanced-summary" data-tour="reception-checkin-done">
                   Check-in confirmed by Appointment. Queue token {receipt.queue_entry.token_number}; queue state {receipt.queue_entry.state}.
                 </div>
               )}

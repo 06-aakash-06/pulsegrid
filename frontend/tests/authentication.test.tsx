@@ -108,7 +108,7 @@ describe("authentication pages", () => {
     await screen.findByRole("heading", { name: "Create a patient account" });
     fillRegistration();
     fireEvent.change(screen.getByLabelText("Date of birth Optional"), { target: { value: "2000-01-02" } });
-    fireEvent.change(screen.getByLabelText("Synthetic contact Optional"), { target: { value: "synthetic@example.test" } });
+    fireEvent.change(screen.getByLabelText("Contact number or email Optional"), { target: { value: "synthetic@example.test" } });
     fireEvent.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(screen.getByRole("button", { name: "Submitting…" })).toBeDisabled();

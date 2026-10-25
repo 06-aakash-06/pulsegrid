@@ -89,7 +89,7 @@ function EstimateCard({ estimate }: { estimate: InsuranceEstimate }) {
           {estimate.freshness_state === "stale" ? "Source data stale" : "Source data current"}
         </span>
       </div>
-      <p className="phase4-estimate__notice">Simulated estimate. It is not an approval or a guarantee of payment.</p>
+      <p className="phase4-estimate__notice">Estimate only. It is not an approval or a guarantee of payment.</p>
       <dl className="phase4-facts">
         <div><dt>Estimated benefit</dt><dd>{formatInr(estimate.estimate_minor)}</dd></div>
         <div><dt>Eligible invoice amount</dt><dd>{formatInr(estimate.eligible_minor)}</dd></div>
@@ -250,7 +250,7 @@ export function InsuranceEstimatePanel({
           <p className="phase4-eyebrow">Billing information</p>
           <h3 id="phase4-insurance-estimate-heading">Insurance estimates</h3>
         </div>
-        <span className="phase4-feature-indicator">Simulated</span>
+        <span className="phase4-feature-indicator">Estimate</span>
       </div>
       <p className="phase4-panel__description">
         Estimates are informational and do not change invoice charges, payments, or appointment workflow status.
@@ -278,7 +278,7 @@ export function InsuranceEstimatePanel({
       {providerChoices.length > 0 ? (
         <div className="phase4-estimate-request">
           <h4>Request an informational estimate</h4>
-          <label htmlFor="phase4-estimate-provider">Synthetic provider</label>
+          <label htmlFor="phase4-estimate-provider">Insurance provider</label>
           <select
             id="phase4-estimate-provider"
             value={providerId}
@@ -493,7 +493,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
       <div className="phase4-panel__heading">
         <div>
           <p className="phase4-eyebrow">Billing staff</p>
-          <h3 id="phase4-insurance-refresh-heading">Synthetic provider sources</h3>
+          <h3 id="phase4-insurance-refresh-heading">Insurance provider sources</h3>
         </div>
         <span className="phase4-feature-indicator">Allowlisted sources</span>
       </div>
@@ -509,7 +509,7 @@ export function InsuranceRefreshPanel({ api, roleHints }: InsuranceRefreshPanelP
           onRetry={() => setLoadCount((count) => count + 1)}
         />
       )}
-      {!loading && !loadError && providers.length === 0 && <p className="phase4-empty">No synthetic insurance providers were returned.</p>}
+      {!loading && !loadError && providers.length === 0 && <p className="phase4-empty">No insurance providers were returned.</p>}
       {refreshError !== null && (
         <AdmissionFeedback
           error={refreshError}

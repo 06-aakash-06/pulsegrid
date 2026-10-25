@@ -201,9 +201,10 @@ function bookableSlot(slotId: string, revision: unknown, except?: string): Slot 
   if (slotTaken(slot.id, except)) return error(409, "slot_taken", "Another booking took this time.");
   return slot;
 }
+const staffNames: Record<string, string> = { "1002": "Neha Kapoor", "1003": "Dr. Meera Iyer", "1004": "Vikram Shah", "1005": "Anil Kumar", "1006": "Farah Ali", "1007": "Lakshmi Menon", "1008": "Sameer Joshi" };
 function userView(item: MockUser) {
   const name = item.email.split("@")[0];
-  return { id: item.id, email: item.email, display_name: patientFor(item)?.display_name ?? `Mock ${name[0].toUpperCase()}${name.slice(1)}`, roles: item.roles, state: "active" as const, auth_version: 1, version: 1 };
+  return { id: item.id, email: item.email, display_name: patientFor(item)?.display_name ?? staffNames[item.id] ?? `${name[0].toUpperCase()}${name.slice(1)}`, roles: item.roles, state: "active" as const, auth_version: 1, version: 1 };
 }
 function journey() {
   const source = (owner: "records" | "pharmacy" | "billing", resource_type: string, resource_id: string) => ({ owner, resource_type, resource_id, version: 1, observed_at: stamp() });

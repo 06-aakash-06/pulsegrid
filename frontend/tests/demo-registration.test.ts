@@ -80,7 +80,7 @@ describe("public demo patient registration", () => {
     expect((await request("/api/v1/patients/me", "GET", undefined, restored)).body).toMatchObject({ id: profile.id, display_name: "Updated Patient" });
     expect((await request("/api/v1/appointments", "GET", undefined, restored)).body).toMatchObject({ items: [booking.body] });
     expect((await request("/api/v1/emergencies", "GET", undefined, restored)).body).toMatchObject({ items: [expect.objectContaining({ id: (emergency.body as { id: string }).id })] });
-    const seededToken = await login("patient@mock.test", "x");
+    const seededToken = await login("patient@pulsegrid.test", "x");
     expect((await request(`/api/v1/appointments/${(booking.body as { id: string }).id}`, "GET", undefined, seededToken)).status).toBe(404);
   });
   it("does not accept malformed registration or passwords without anonymous command headers", async () => {

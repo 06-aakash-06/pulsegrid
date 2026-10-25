@@ -360,6 +360,7 @@ export function ReferenceConsultation({
           {(specialties.response?.data.items ?? []).map((s) => (
               <button
                 key={s.id}
+                data-tour="specialty-option"
                 className={filters.specialty_id === s.id ? "is-selected" : ""}
                 onClick={() => {
                   setManual({ ...manual, specialty_id: s.id });
@@ -381,7 +382,6 @@ export function ReferenceConsultation({
               onSelect={(s) => apply({ ...filters, specialty_id: s.id })}
             />
           </details>
-          {demo && <p className="demo-footnote">Fictional demo hospital</p>}
         </aside>
         <section className="reference-roster">
           <h2 className="sr-only">Doctors</h2>
@@ -430,6 +430,7 @@ export function ReferenceConsultation({
                 aria-pressed={selected === d.id}
                 disabled={bookingLocked}
                 className="reference-doctor-row"
+                data-tour="doctor-option"
                 onClick={() => {
                   setSelected(d.id);
                   setTab("About");
@@ -495,7 +496,6 @@ export function ReferenceConsultation({
                   </span>
                   <h2>{doctor.display_name}</h2>
                   <p>{doctor.specialties.map((s) => s.name).join(", ")}</p>
-                  {demo && <small>Fictional demo clinician</small>}
                 </div>
               </div>
               <div className="reference-profile-status">
@@ -559,6 +559,7 @@ export function ReferenceConsultation({
               {patient && (
                 <button
                   className="reference-book-button"
+                  data-tour="open-booking"
                   disabled={bookingLocked}
                   onClick={() => setBookOpen(!bookOpen)}
                   aria-expanded={bookOpen}
