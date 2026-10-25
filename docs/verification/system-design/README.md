@@ -2,64 +2,59 @@
 
 ## Result
 
-Implementation and automated unit/component checks pass. Visual acceptance is **not complete**: the sandbox prevents both binding the requested dev server and launching Playwright Chromium. There are **no screenshots** in this evidence set and no claim that the page/tour passed at any viewport.
+PASS: typecheck, 193 tests, production build, three layout-audit viewports and three complete eight-step guided tours. The earlier sandbox restrictions were removed later in the session; these successful browser runs replace the initial blocked result. No Docker or backend was started.
 
-## Implemented
+## Screenshots
 
-- `/system-design`: eight cream/teal cards, shared PageHeader/PageGrid, 12px minimum lab text, keyboard-accessible controls, two columns with mobile stacking.
-- Header access for every signed-in role and mock/demo mode; Administration and Operations sidebar links; Simulation Mode picker entry and an eight-step `system-design` tour.
-- Measured figures only in `frontend/src/systemDesign/measuredResults.ts`, with lab workload caveats and source document paths. Source files are emitted as build assets; Vite's filesystem allowlist includes only the frontend and docs directories.
-- Browser SHA-256 ring (128 virtual nodes, full digest, matching backend framing, clockwise lookup, actual ten-thousand-key ring/modulo remap, add/remove and key lookup).
-- Fixed-point token bucket with capacity/refill/burst controls and real class A/B/C Surge factors, integer budget truncation and the backend's single-replica minimum floor. This models one bucket; it does not claim shared Redis coordination.
-- Snowflake packing from the implemented epoch, service/replica worker split, sequence exhaustion wait, rollback rejection, actual collision and ordering checks. Browser allocator does not claim durable ownership/restart safety.
-- Generated-data trie vs linear scan with alternating repeated batches and median lookup timings. Index preparation is excluded; the recorded lab baseline was sorted-prefix, not SQL.
-- Random Base62 token/digest generation; local TTL cache; synthetic crawler validation/deduplication/quarantine; seven ownership tiles and an illustrative blocked join/outbox path.
-- Authenticated API buttons for doctor/medicine autocomplete, directory reads, Control Room summary and appointment-link creation. Link creation uses current workflow ETag, the real `appointment` purpose, idempotency and the ordinary authenticated client. API permission and unavailable errors are displayed; no fabricated fallback result.
-- Three-minute script: `docs/system-design-lab-script.md`.
+| Width | Layout audit | Guided tour |
+|---|---|---|
+| 1536 | [Full page](after/system-design-1536.png) | [First step](system-design/step-01-1536.png) |
+| 1280 | [Full page](after/system-design-1280.png) | [First step](system-design/step-01-1280.png) |
+| 390 | [Full page](after/system-design-390.png) | [First step](system-design/step-01-390.png) |
 
-## Local integration
-
-Merged `feature/simulation-mode` into `ui/cleanup` at `db341b1`, then `feature/system-design-playground` at `414f827`. Both are ancestors of the review branch; no push or deployment. Re-ran typecheck, all 193 tests and production build on the merged tree successfully. The saved passing logs are from this post-merge run.
+Every tour step has a screenshot in `system-design/`. Desktop and mobile full-page images were inspected. The layout audit found no text-size, overflow, overlap or covered-control issues. Engineering terms/large numbers are justified content on this route. Its standalone layout has no drawer; the audit returns to the admin workspace to verify sign-out and reload.
 
 ## Checks actually run
 
 | Check | Result | Evidence |
 |---|---|---|
-| Initial algorithm test before implementation | Failed on missing module as expected | Execution history; followed by passing implementations |
-| Algorithm + source provenance + widget interactions | 16 passed | Included in full suite |
 | `npm run typecheck --prefix frontend` | PASS | `typecheck.txt` |
 | `npm test --prefix frontend` | PASS: 193 tests, 18 files | `tests.txt` |
 | `npm run build --prefix frontend` | PASS | `build.txt` |
 | `git diff --check` | PASS | No whitespace errors |
-| Fresh whole-change review | Completed; important findings fixed | See review fixes below |
-| `npm run dev:mock --prefix frontend` | BLOCKED before serving | `dev-mock-output.txt`: listen EPERM on 127.0.0.1:5173 |
-| Fix 1 Playwright audit, lab route, widths 1536/1280/390 | BLOCKED before any page executed | `ui-audit-output.txt`: Chromium MachPort bootstrap permission denied |
-| `system-design` tour e2e, widths 1536/1280/390 | BLOCKED before any tour executed | `tour-e2e-output.txt`: same Chromium sandbox failure |
+| Fresh whole-change review | Completed; important findings fixed | Details below |
+| `npm run dev:mock --prefix frontend` | Running at 127.0.0.1:5175 | Existing ports 5173/5174 were occupied; the initial blocked-start log remains as historical evidence |
+| Fix 1 Playwright audit at 1536/1280/390 | PASS: 3 cases, zero findings | `ui-audit-output.txt`, `audit-report.json`, `after/` |
+| `system-design` tour e2e at 1536/1280/390 | PASS: 8 steps at each width | `tour-e2e-output.txt`, `system-design/` |
 
-The audit retains layout/text-size/overlap/hit-target checks. Engineering words and large numbers are explicitly justified on this educational route rather than classified as accidental implementation leakage. There is no sidebar/drawer on the standalone lab route, so that route skips drawer-only checks. Tour harness signs in as Patient for the role-neutral lab tour, then runs the existing spotlight/card checks.
+## Implementation and review
 
-## Review fixes
+- `/system-design` uses eight cream/teal cards, shared PageHeader/PageGrid, 12px minimum lab text, accessible controls, desktop columns and mobile stacking.
+- Header access for all signed-in roles and demo mode; Admin/Ops links; Simulation Mode picker and role-neutral tour.
+- All lab figures live in `frontend/src/systemDesign/measuredResults.ts`. Source documents are emitted as assets. Short-link figures explicitly describe adapter/fake-port conditions and partial authenticated high-concurrency endpoint verification.
+- SHA-256 hash ring matches backend framing, full digest and clockwise lookup with 128 virtual nodes. Browser remap compares the same ten thousand keys with modulo.
+- Fixed-point token bucket matches the single-replica integer Surge floors. It models one bucket, not shared Redis coordination.
+- Snowflake uses the implemented epoch, service/replica partition and sequence-overflow wait, with actual collision/order checks. Browser allocation does not claim durable worker ownership or restart protection.
+- Trie/linear scan uses generated data, alternating batches and median timing; the lab baseline was sorted-prefix rather than SQL.
+- Random Base62/digest, local TTL cache, validated synthetic fixtures, conflict quarantine and illustrative blocked cross-database join/outbox path.
+- API buttons use ordinary authentication. Link creation reads its workflow ETag and sends the real `appointment` purpose plus idempotency. Permission/unavailable responses remain explicit.
+- Review fixes included budget floors, spotlight-compatible tour instructions, adapter-only provenance and intermediate-width header spacing. Existing conditional tour-target scan and admin navigation inventory were corrected.
 
-- Ported the backend's fixed-point refill and small-budget floor rather than allowing fractional capacities below one token.
-- Tour text asks only for controls that its spotlight permits; the remaining sibling controls are explicitly offered after the tour.
-- Short-link lab figures explicitly identify adapter/fake-port conditions and partial authenticated high-concurrency endpoint acceptance.
-- Hide the header tagline through intermediate widths to reserve space for the new link; this is inspected code, **not visually verified**.
-- Existing target-discovery test now handles conditional `data-tour` literals; admin navigation inventory includes the new seventh link. jsdom's missing scrollBy is stubbed like scrollTo.
+## Local integration
 
-## Unavailable or deliberately excluded
+`feature/simulation-mode` merged into `ui/cleanup` at `db341b1`; `feature/system-design-playground` at `414f827`. Post-merge typecheck, 193 tests and build passed. The user subsequently authorized pushing to GitHub and redeploying; browser evidence was completed before publication.
 
-1. `UI_SIMULATION_SPEC.md` was not attached in the accessible workspace or found under the SystemDesign folder. The user's full corrected prompt is the implementation specification. The presentation script uses clearly provisional Presenter 1–4 allocations because section 11 and its exact team split could not be read; no team names or assignments were invented as authoritative.
-2. No screenshots, responsive visual approval, browser timing samples or tour e2e success: host sandbox denies local listening and Chromium's required MachPort access. Approval escalation is disabled in this session. Re-run the commands below in an ordinary local terminal.
-3. Existing dev mock provides medicine autocomplete and Control Room data, but has no doctor-autocomplete or short-link creation handler. Their buttons still call the real backend contracts and display the unavailable response in mock mode. Backend endpoint behavior was not verified here, and no backend was started.
-4. Stampede locking, custom aliases, link click counters/Redis link caching, crawler robots/ETag fetches, and sharding are excluded because the repo does not implement them. Browser demos explicitly disclose their teaching scope.
+## Remaining limits / omitted spec items
 
-## Re-run visual acceptance
+1. `UI_SIMULATION_SPEC.md` and section 11/team split were not attached in the accessible workspace. The corrected user brief is the implementation specification. `docs/system-design-lab-script.md` therefore uses explicitly provisional Presenter 1–4 assignments rather than claiming the unavailable team's exact split.
+2. The dev mock has medicine autocomplete and Control Room data, but lacks doctor-autocomplete and short-link creation handlers. Those buttons call the existing backend contracts and show the unavailable mock response. No backend was started or endpoint performance remeasured.
+3. Stampede locks, custom aliases, click counters, Redis link caches, crawler robots/ETag fetches and sharding are excluded because the repo does not implement them.
 
-From `frontend/`, keep `npm run dev:mock` running in one terminal, then run:
+## Re-run
+
+Keep `npm run dev:mock` running from `frontend/`, then use its reported port:
 
 ```bash
-UI_AUDIT_ROLES=admin UI_AUDIT_ROUTES=/system-design UI_AUDIT_OUTPUT=../docs/verification/system-design npm run ui:audit
-TOUR_E2E_ROLES=system-design TOUR_E2E_OUTPUT=../docs/verification/system-design npm run tour:e2e
+UI_AUDIT_URL=http://127.0.0.1:5175 UI_AUDIT_ROLES=admin UI_AUDIT_ROUTES=/system-design UI_AUDIT_OUTPUT=../docs/verification/system-design npm run ui:audit
+TOUR_E2E_URL=http://127.0.0.1:5175 TOUR_E2E_ROLES=system-design TOUR_E2E_OUTPUT=../docs/verification/system-design npm run tour:e2e
 ```
-
-Audit screenshots will be saved under `after/`; tour screenshots under `system-design/`. Both harnesses cover 1536, 1280 and 390 widths. Docker and backend are unnecessary. No push is part of this work.

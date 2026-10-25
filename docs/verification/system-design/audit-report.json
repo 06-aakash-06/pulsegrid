@@ -1,13 +1,3605 @@
 {
-  "status": "blocked",
-  "route": "/system-design",
-  "requestedWidths": [1536, 1280, 390],
-  "executedPages": 0,
-  "executedTourSteps": 0,
-  "screenshots": [],
-  "reason": "Host sandbox denies localhost listen (EPERM) and Playwright Chromium MachPort bootstrap (permission denied).",
-  "typecheck": "pass",
-  "tests": { "status": "pass", "files": 18, "passed": 193 },
-  "build": "pass",
-  "visualAcceptance": "pending outside sandbox"
+  "base": "http://127.0.0.1:5175",
+  "pages": [
+    {
+      "role": "admin",
+      "route": "/system-design",
+      "width": 1536,
+      "height": 864,
+      "refreshCount": 0,
+      "justified": [
+        {
+          "text": "System Design Lab: the 7 components behind PulseGrid",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Run the algorithms. Inspect the evidence. Understand the trade-offs.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Run guided tour",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Seven algorithms and infrastructure components, plus the database ownership boundary they work inside. Browser experiments are illustrative; lab evidence below records the measured workload and its limits.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consistent hashing",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Spreads the doctor cache across Redis nodes so adding one moves fewer keys.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Clockwise lookup",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "SHA-256 · 128 vnodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_1",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_2",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_3",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Add node",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Remove node",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Add or remove a node to compute placement changes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Test key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Locate key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Same full digest for both placements.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "256",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "-bit hash space; no replication or automatic failover.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "25.43–25.50% vs 74.97–75.12%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Ring vs modulo movement · one million keys, three to four nodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "28.56% vs 67.31%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live Redis topology · ten thousand keys, two to three nodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Modulo is cheaper per lookup but moves more keys when the node count changes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Rate limiter + Surge Mode",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shares admission budgets across replicas and protects critical workflows during pressure.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Control Room",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Capacity",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refill / second",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Burst requests",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Traffic class",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Surge Mode",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Effective capacity",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· refill",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "/s. Single-replica floor: at least one whole token. Policy edits create a fresh teaching bucket.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Fire burst",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refill to now",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Reset bucket",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Accepted",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· rejected",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· tokens",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "This single bucket demonstrates token accounting. The backend also enforces finite source and aggregate quotas; class A is not unlimited.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60/160 vs 120/160",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shared Redis admissions vs process-local baseline · shared budget sixty",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "6.725–7.722 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Redis decision p95 · coordination has a cost",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "63 admitted · 37 limited",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live gateway · one hundred authenticated searches",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A 100% · B 60% · C 15%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Implemented SURGE owner-budget profile, not a timing measurement",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A process-local limiter multiplies a shared quota across replicas; coordination costs latency.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "URL shortener",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Issues revocable, scoped appointment capabilities with unpredictable tokens.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointments",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "128 random bits → 22-character Base62 → SHA-256 at rest. No custom aliases, click counter or Redis link cache.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate random token",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Browser sample only; this token is not a server link. Authentication, ownership, workflow state, revocation and expiry are checked by the service.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Owned appointment ID",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · create link",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Dev mock has no short-link creation handler; an unavailable response is expected. Use a connected backend to issue a link.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "118.03–128.89 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Adapter resolution p95 · thirty-two clients; fake authorization/effect ports",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "32,935 resolutions · zero errors",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Post-fix adapter workload; authenticated high-concurrency endpoint acceptance remains partial",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sequential IDs are guessable; random tokens reduce enumeration, while authorization still controls access.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Autocomplete",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Finds doctor and medicine prefixes through bounded owner-local indexes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Prefix",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generated catalog",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "root",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "d",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "o",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "c",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "t",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "o",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "r",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "␠",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "matches",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00001",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00003",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00005",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00007",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Race trie vs linear scan",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "In-browser demo over generated data; index construction excluded. Browser clock precision and device load affect these medians. Lab baseline was sorted-prefix, not SQL.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · doctors",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · medicines",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0.0025 ms vs 0.0025 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor high CPU mean · trie vs sorted-prefix baseline, not SQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "123.03 MiB > 64 MiB",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor trie estimate at one hundred thousand entries → database fallback",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A trie is an experiment in indexing, not a proven speed win here; oversized catalogs fall back to the owner database.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Key-value cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Serves repeated directory reads while preserving database authority on misses and outages.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Directory cache key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Directory request",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→ TTL cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→ owner database on miss",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Read directory",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Invalidate cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Read once to miss, then again to hit.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Hits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· misses",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· local TTL 10 seconds",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "No network latency is simulated here. No mutex stampede lock was implemented. The owner database remains authoritative.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "15.836 ms vs 36.418 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High-load p95 · warm cache vs uncached",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "2,535.1 vs 1,754.9 reads/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High-load warm vs uncached · means across three trials",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Repeated database reads cost more under the measured high load; TTL and invalidation trade freshness for reuse.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Snowflake IDs",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Allocates ordered, distributed identifiers within explicitly assigned service and replica partitions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointment identifiers",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Epoch: 2026-01-01 UTC · worker = service << 7 | replica · service 1, replica 0.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sign",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "1 bit",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Time",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "41 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Worker",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sequence",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "12 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate to inspect an ID",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate 10,000 IDs",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Real bit packing, rollback rejection and sequence-overflow wait. This browser instance has no durable worker reservation, restart protection or cross-tab coordination; the server uses PostgreSQL for those.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "4.5 million · zero collisions",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Snowflake allocations/inserts across benchmark levels",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10,449–10,849 IDs/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Medium-load Snowflake pipeline",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "1.806× faster CSPRNG",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Medium-load baseline mean throughput; no Snowflake speed win",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "CSPRNG was faster in our lab; Snowflake adds ordering and explicit worker identity, with durable reservation complexity.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Web crawler",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refreshes synthetic insurance rules with provenance and rejects conflicting revisions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Insurance estimates",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Allowlisted synthetic fixture host only. No external crawling, robots.txt or conditional ETag fetches.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Fetch fixture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Try revision conflict",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Publish next revision",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Ready: fetch → validate → dedupe → estimate\nConflict → quarantine → estimate blocked",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Local fixture state machine, not a network fetch or an insurance coverage decision.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "52.38 pages/s · 100% accuracy",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Synthetic crawler high workload · eight slots; extraction/rule correctness",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "293/300 pages · seven failures",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High workload; eight invalid pages rejected separately · fake persistence port",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Blind overwrites conceal source conflicts; version and hash validation preserve trustworthy estimates.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Database per service (isolation)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Keeps each domain’s writes, schema and credentials inside its ownership boundary.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Control Room event delivery",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Patient",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointment",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Records",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Pharmacy",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Billing",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Emergency",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Try cross-database join",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "At-least-once delivery; no global transaction. These are service databases, not shards of one table.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Seven owner databases",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Verified architecture; isolation is not a latency benchmark",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "One matching inbox row · attempt 2",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Payment outbox replay after broker recovery; at-least-once delivery",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "126.33 → 245.33 requests/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor replicas one to two · sixteen clients; service scaling, not sharding",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-8-2-scalability-finalization.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shared tables simplify joins but couple domains; owner APIs and outbox/inbox delivery preserve independent transactions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/system-design",
+      "width": 1280,
+      "height": 800,
+      "refreshCount": 0,
+      "justified": [
+        {
+          "text": "System Design Lab: the 7 components behind PulseGrid",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Run the algorithms. Inspect the evidence. Understand the trade-offs.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Run guided tour",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Seven algorithms and infrastructure components, plus the database ownership boundary they work inside. Browser experiments are illustrative; lab evidence below records the measured workload and its limits.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consistent hashing",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Spreads the doctor cache across Redis nodes so adding one moves fewer keys.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Clockwise lookup",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "SHA-256 · 128 vnodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_1",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_2",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_3",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Add node",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Remove node",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Add or remove a node to compute placement changes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Test key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Locate key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Same full digest for both placements.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "256",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "-bit hash space; no replication or automatic failover.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "25.43–25.50% vs 74.97–75.12%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Ring vs modulo movement · one million keys, three to four nodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "28.56% vs 67.31%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live Redis topology · ten thousand keys, two to three nodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Modulo is cheaper per lookup but moves more keys when the node count changes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Rate limiter + Surge Mode",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shares admission budgets across replicas and protects critical workflows during pressure.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Control Room",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Capacity",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refill / second",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Burst requests",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Traffic class",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Surge Mode",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Effective capacity",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· refill",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "/s. Single-replica floor: at least one whole token. Policy edits create a fresh teaching bucket.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Fire burst",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refill to now",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Reset bucket",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Accepted",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· rejected",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· tokens",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "This single bucket demonstrates token accounting. The backend also enforces finite source and aggregate quotas; class A is not unlimited.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60/160 vs 120/160",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shared Redis admissions vs process-local baseline · shared budget sixty",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "6.725–7.722 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Redis decision p95 · coordination has a cost",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "63 admitted · 37 limited",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live gateway · one hundred authenticated searches",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A 100% · B 60% · C 15%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Implemented SURGE owner-budget profile, not a timing measurement",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A process-local limiter multiplies a shared quota across replicas; coordination costs latency.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "URL shortener",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Issues revocable, scoped appointment capabilities with unpredictable tokens.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointments",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "128 random bits → 22-character Base62 → SHA-256 at rest. No custom aliases, click counter or Redis link cache.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate random token",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Browser sample only; this token is not a server link. Authentication, ownership, workflow state, revocation and expiry are checked by the service.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Owned appointment ID",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · create link",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Dev mock has no short-link creation handler; an unavailable response is expected. Use a connected backend to issue a link.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "118.03–128.89 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Adapter resolution p95 · thirty-two clients; fake authorization/effect ports",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "32,935 resolutions · zero errors",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Post-fix adapter workload; authenticated high-concurrency endpoint acceptance remains partial",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sequential IDs are guessable; random tokens reduce enumeration, while authorization still controls access.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Autocomplete",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Finds doctor and medicine prefixes through bounded owner-local indexes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Prefix",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generated catalog",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "root",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "d",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "o",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "c",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "t",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "o",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "r",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "␠",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "matches",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00001",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00003",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00005",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00007",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Race trie vs linear scan",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "In-browser demo over generated data; index construction excluded. Browser clock precision and device load affect these medians. Lab baseline was sorted-prefix, not SQL.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · doctors",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · medicines",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0.0025 ms vs 0.0025 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor high CPU mean · trie vs sorted-prefix baseline, not SQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "123.03 MiB > 64 MiB",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor trie estimate at one hundred thousand entries → database fallback",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A trie is an experiment in indexing, not a proven speed win here; oversized catalogs fall back to the owner database.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Key-value cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Serves repeated directory reads while preserving database authority on misses and outages.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Directory cache key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Directory request",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→ TTL cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→ owner database on miss",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Read directory",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Invalidate cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Read once to miss, then again to hit.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Hits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· misses",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· local TTL 10 seconds",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "No network latency is simulated here. No mutex stampede lock was implemented. The owner database remains authoritative.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "15.836 ms vs 36.418 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High-load p95 · warm cache vs uncached",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "2,535.1 vs 1,754.9 reads/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High-load warm vs uncached · means across three trials",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Repeated database reads cost more under the measured high load; TTL and invalidation trade freshness for reuse.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Snowflake IDs",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Allocates ordered, distributed identifiers within explicitly assigned service and replica partitions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointment identifiers",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Epoch: 2026-01-01 UTC · worker = service << 7 | replica · service 1, replica 0.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sign",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "1 bit",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Time",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "41 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Worker",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sequence",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "12 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate to inspect an ID",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate 10,000 IDs",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Real bit packing, rollback rejection and sequence-overflow wait. This browser instance has no durable worker reservation, restart protection or cross-tab coordination; the server uses PostgreSQL for those.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "4.5 million · zero collisions",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Snowflake allocations/inserts across benchmark levels",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10,449–10,849 IDs/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Medium-load Snowflake pipeline",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "1.806× faster CSPRNG",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Medium-load baseline mean throughput; no Snowflake speed win",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "CSPRNG was faster in our lab; Snowflake adds ordering and explicit worker identity, with durable reservation complexity.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Web crawler",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refreshes synthetic insurance rules with provenance and rejects conflicting revisions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Insurance estimates",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Allowlisted synthetic fixture host only. No external crawling, robots.txt or conditional ETag fetches.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Fetch fixture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Try revision conflict",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Publish next revision",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Ready: fetch → validate → dedupe → estimate\nConflict → quarantine → estimate blocked",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Local fixture state machine, not a network fetch or an insurance coverage decision.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "52.38 pages/s · 100% accuracy",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Synthetic crawler high workload · eight slots; extraction/rule correctness",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "293/300 pages · seven failures",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High workload; eight invalid pages rejected separately · fake persistence port",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Blind overwrites conceal source conflicts; version and hash validation preserve trustworthy estimates.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Database per service (isolation)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Keeps each domain’s writes, schema and credentials inside its ownership boundary.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Control Room event delivery",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Patient",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointment",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Records",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Pharmacy",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Billing",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Emergency",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Try cross-database join",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "At-least-once delivery; no global transaction. These are service databases, not shards of one table.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Seven owner databases",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Verified architecture; isolation is not a latency benchmark",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "One matching inbox row · attempt 2",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Payment outbox replay after broker recovery; at-least-once delivery",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "126.33 → 245.33 requests/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor replicas one to two · sixteen clients; service scaling, not sharding",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-8-2-scalability-finalization.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shared tables simplify joins but couple domains; owner APIs and outbox/inbox delivery preserve independent transactions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "role": "admin",
+      "route": "/system-design",
+      "width": 390,
+      "height": 844,
+      "refreshCount": 0,
+      "justified": [
+        {
+          "text": "System Design Lab: the 7 components behind PulseGrid",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Run the algorithms. Inspect the evidence. Understand the trade-offs.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Run guided tour",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Seven algorithms and infrastructure components, plus the database ownership boundary they work inside. Browser experiments are illustrative; lab evidence below records the measured workload and its limits.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consistent hashing",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Spreads the doctor cache across Redis nodes so adding one moves fewer keys.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Clockwise lookup",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "SHA-256 · 128 vnodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_1",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_2",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "redis_3",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Add node",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Remove node",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Add or remove a node to compute placement changes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Test key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Locate key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Same full digest for both placements.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "256",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "-bit hash space; no replication or automatic failover.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "25.43–25.50% vs 74.97–75.12%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Ring vs modulo movement · one million keys, three to four nodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "28.56% vs 67.31%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live Redis topology · ten thousand keys, two to three nodes",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Modulo is cheaper per lookup but moves more keys when the node count changes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Rate limiter + Surge Mode",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shares admission budgets across replicas and protects critical workflows during pressure.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Control Room",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Capacity",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refill / second",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Burst requests",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Traffic class",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Surge Mode",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Effective capacity",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· refill",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "/s. Single-replica floor: at least one whole token. Policy edits create a fresh teaching bucket.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Fire burst",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refill to now",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Reset bucket",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Accepted",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· rejected",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· tokens",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60.00",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "This single bucket demonstrates token accounting. The backend also enforces finite source and aggregate quotas; class A is not unlimited.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "60/160 vs 120/160",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shared Redis admissions vs process-local baseline · shared budget sixty",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "6.725–7.722 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Redis decision p95 · coordination has a cost",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "63 admitted · 37 limited",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live gateway · one hundred authenticated searches",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A 100% · B 60% · C 15%",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Implemented SURGE owner-budget profile, not a timing measurement",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A process-local limiter multiplies a shared quota across replicas; coordination costs latency.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "URL shortener",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Issues revocable, scoped appointment capabilities with unpredictable tokens.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointments",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "128 random bits → 22-character Base62 → SHA-256 at rest. No custom aliases, click counter or Redis link cache.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate random token",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Browser sample only; this token is not a server link. Authentication, ownership, workflow state, revocation and expiry are checked by the service.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Owned appointment ID",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · create link",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Dev mock has no short-link creation handler; an unavailable response is expected. Use a connected backend to issue a link.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "118.03–128.89 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Adapter resolution p95 · thirty-two clients; fake authorization/effect ports",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "32,935 resolutions · zero errors",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Post-fix adapter workload; authenticated high-concurrency endpoint acceptance remains partial",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sequential IDs are guessable; random tokens reduce enumeration, while authorization still controls access.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Autocomplete",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Finds doctor and medicine prefixes through bounded owner-local indexes.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Prefix",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generated catalog",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "root",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "d",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "o",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "c",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "t",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "o",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "r",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "␠",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "matches",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00001",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00003",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00005",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "doctor 00007",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Race trie vs linear scan",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "In-browser demo over generated data; index construction excluded. Browser clock precision and device load affect these medians. Lab baseline was sorted-prefix, not SQL.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · doctors",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service · medicines",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0.0025 ms vs 0.0025 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor high CPU mean · trie vs sorted-prefix baseline, not SQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "123.03 MiB > 64 MiB",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor trie estimate at one hundred thousand entries → database fallback",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "A trie is an experiment in indexing, not a proven speed win here; oversized catalogs fall back to the owner database.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Key-value cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Serves repeated directory reads while preserving database authority on misses and outages.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Consultation search",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Directory cache key",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Directory request",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→ TTL cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→ owner database on miss",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Read directory",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Invalidate cache",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Read once to miss, then again to hit.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Hits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· misses",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "0",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "· local TTL 10 seconds",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "No network latency is simulated here. No mutex stampede lock was implemented. The owner database remains authoritative.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "15.836 ms vs 36.418 ms",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High-load p95 · warm cache vs uncached",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "2,535.1 vs 1,754.9 reads/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High-load warm vs uncached · means across three trials",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Repeated database reads cost more under the measured high load; TTL and invalidation trade freshness for reuse.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Snowflake IDs",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Allocates ordered, distributed identifiers within explicitly assigned service and replica partitions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointment identifiers",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Epoch: 2026-01-01 UTC · worker = service << 7 | replica · service 1, replica 0.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sign",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "1 bit",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Time",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "41 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Worker",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Sequence",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "12 bits",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate to inspect an ID",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Generate 10,000 IDs",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Real bit packing, rollback rejection and sequence-overflow wait. This browser instance has no durable worker reservation, restart protection or cross-tab coordination; the server uses PostgreSQL for those.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "4.5 million · zero collisions",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Snowflake allocations/inserts across benchmark levels",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "10,449–10,849 IDs/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Medium-load Snowflake pipeline",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "1.806× faster CSPRNG",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Medium-load baseline mean throughput; no Snowflake speed win",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "CSPRNG was faster in our lab; Snowflake adds ordering and explicit worker identity, with durable reservation complexity.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Web crawler",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Refreshes synthetic insurance rules with provenance and rejects conflicting revisions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Insurance estimates",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Allowlisted synthetic fixture host only. No external crawling, robots.txt or conditional ETag fetches.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Fetch fixture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Try revision conflict",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Publish next revision",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Ready: fetch → validate → dedupe → estimate\nConflict → quarantine → estimate blocked",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Local fixture state machine, not a network fetch or an insurance coverage decision.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "52.38 pages/s · 100% accuracy",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Synthetic crawler high workload · eight slots; extraction/rule correctness",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "293/300 pages · seven failures",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "High workload; eight invalid pages rejected separately · fake persistence port",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-4-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Blind overwrites conceal source conflicts; version and hash validation preserve trustworthy estimates.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Explore the architecture",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Database per service (isolation)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Keeps each domain’s writes, schema and credentials inside its ownership boundary.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Where it’s used:",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Control Room event delivery",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "→",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Workspace permissions apply",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Live in your browser (illustrative)",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Patient",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Appointment",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Records",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Pharmacy",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Billing",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Emergency",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Private PostgreSQL",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Try cross-database join",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "At-least-once delivery; no global transaction. These are service databases, not shards of one table.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Call the real service",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Connected to dev/demo mock API · synthetic response",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Seven owner databases",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Verified architecture; isolation is not a latency benchmark",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "One matching inbox row · attempt 2",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Payment outbox replay after broker recovery; at-least-once delivery",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-6-integration-verification.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "126.33 → 245.33 requests/s",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Doctor replicas one to two · sixteen clients; service scaling, not sharding",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Measured in our lab · source",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "docs/phase-8-2-scalability-finalization.md",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Why not the simple option?",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        },
+        {
+          "text": "Shared tables simplify joins but couple domains; owner APIs and outbox/inbox delivery preserve independent transactions.",
+          "reason": "System Design Lab: algorithm inputs, identifiers and measured engineering evidence are the intended content"
+        }
+      ],
+      "failures": []
+    }
+  ],
+  "regressions": [
+    "admin/1536: demo autofill and sign out survive reload",
+    "admin/1280: demo autofill and sign out survive reload",
+    "admin/390: demo autofill and sign out survive reload"
+  ],
+  "failures": []
 }

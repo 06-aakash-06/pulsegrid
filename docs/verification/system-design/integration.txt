@@ -5,5 +5,5 @@ Feature commits: f504216 (algorithms/tests), 1702d51 (lab/tour/API integration),
 Both requested feature branches are ancestors of the merged review branch.
 Post-merge verification: typecheck PASS; 193 tests in 18 files PASS; production build PASS.
 Frontend tree is identical to feature/system-design-playground after both merges.
-Visual acceptance remains pending: no screenshots or browser tour pass.
-No Docker/backend startup, push, deployment or branch deletion performed.
+Follow-up visual acceptance PASS: 3 layout widths and 8 tour steps at each width; screenshots saved.
+No Docker/backend startup or branch deletion performed. User subsequently authorized GitHub push and Vercel redeploy.

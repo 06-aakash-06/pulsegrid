@@ -200,6 +200,12 @@ try {
     console.log(`${record.failures.length?'FAIL':'PASS'} ${width} ${route} (${record.failures.length})`);
     for(const failure of record.failures)console.log(`  ${failure}`);
    }
+   // The standalone lab has no workspace sidebar; return to the signed-in
+   // workspace for the existing sign-out/reload regression.
+   if(new URL(page.url()).pathname==='/system-design') {
+    await page.goto(`${base}/${role}/dashboard`);
+    await page.locator('.workspace-nav').waitFor({state:'attached'});
+   }
    if(width<900)await page.getByRole('button',{name:'Open navigation menu',exact:true}).click();
    await page.locator('.sign-out-button').click();await page.waitForURL('**/login');await page.reload();await page.waitForURL('**/login');
    await page.locator('#login-email').waitFor();

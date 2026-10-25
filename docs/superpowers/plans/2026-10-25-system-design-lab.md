@@ -18,7 +18,7 @@
 - [x] Add measured registry sourced from phase 4, phase 6 and phase 8.2 docs; implement cards and functional visuals; source-integrity/render tests.
 - [x] Add route/header/admin+ops links and system-design tour/picker entry; extend audit/tour harnesses for lab.
 - [x] Write three-minute four-presenter script and verification report, noting unavailable original team split.
-- [ ] Run dev:mock, layout audits at 1536/1280/390, tour e2e and functional checks; inspect screenshots; typecheck/test/build; commit.
+- [x] Run dev:mock, layout audits at 1536/1280/390, tour e2e and functional checks; inspect screenshots; typecheck/test/build; commit.
 - [x] Review final diff, merge both authorized feature branches into ui/cleanup locally, verify clean tree and no push.
 
 ## Execution record
@@ -30,3 +30,5 @@
 - Browser execution is blocked: localhost listen EPERM and Chromium MachPort permission denied. No visual pass or screenshot is claimed.
 
 - Post-merge verification on ui/cleanup: typecheck, 193 tests and production build pass. Simulation merge db341b1; lab merge 414f827. No push. The remaining unchecked visual task is blocked by sandbox permissions, with exact failures saved in docs/verification/system-design/.
+
+- Follow-up: sandbox permissions were lifted when the user authorized GitHub push/redeploy. Ran dev:mock on port 5175; layout audit passed at all three widths, tour passed eight steps at each width, screenshots saved and inspected. Initial blocked logs are historical, not the final acceptance result.
